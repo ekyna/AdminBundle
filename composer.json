@@ -33,7 +33,8 @@
         "FortAwesome/Font-Awesome" : "*",
         "infinite-networks/form-bundle": "dev-master",
         "ekyna/core-bundle" : "0.1.*@dev",
-        "ekyna/user-bundle" : "0.1.*@dev"
+        "ekyna/user-bundle" : "0.1.*@dev",
+        "ekyna/table-bundle" : "0.1.*@dev"
     },
     "repositories" : [{
             "type" : "package",
