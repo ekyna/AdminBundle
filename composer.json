@@ -35,18 +35,6 @@
         "ekyna/user-bundle" : "0.1.*@dev",
         "ekyna/table-bundle" : "0.1.*@dev"
     },
-    "repositories" : [{
-            "type" : "package",
-            "package" : {
-                "name" : "jquery/jquery",
-                "version" : "1.11.0",
-                "dist" : {
-                    "type" : "file",
-                    "url" : "http://code.jquery.com/jquery-1.11.0.js"
-                }
-            }
-        }
-    ],
     "autoload" : {
         "psr-0" : {
             "Ekyna\\Bundle\\AdminBundle" : ""
