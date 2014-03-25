@@ -1,0 +1,62 @@
+{
+    "name" : "ekyna/admin-bundle",
+    "description" : "Admin creation tools",
+    "type" : "symfony-bundle",
+    "authors" : [{
+            "name" : "Etienne Dauvergne",
+            "homepage" : "http://ekyna.com"
+        }
+    ],
+    "keywords" : [
+        "symfony2",
+        "administration",
+        "backend",
+        "bundle"
+    ],
+    "homepage" : "https://github.com/ekyna/AdminBundle",
+    "license" : [
+        "MIT"
+    ],
+    "require" : {
+        "php" : ">=5.3.3",
+        "symfony/framework-bundle" : "~2.3",
+        "twig/extensions" : "~1.0",
+        "stof/doctrine-extensions-bundle" : "~1.1@dev",
+        "white-october/pagerfanta-bundle": "dev-master",
+        "knplabs/knp-menu-bundle" : "2.0.*@dev",
+        "knplabs/knp-menu" : "2.0.*@dev",
+        "knplabs/knp-paginator-bundle": "2.4.*@dev",
+        "jquery/jquery" : "1.11.*",
+        "twbs/bootstrap" : "3.1.*",
+        "braincrafted/bootstrap-bundle" : "2.0.0",
+        "stfalcon/tinymce-bundle" : "0.3.*@dev",
+        "FortAwesome/Font-Awesome" : "*",
+        "infinite-networks/form-bundle": "dev-master",
+        "ekyna/core-bundle" : "0.1.*@dev",
+        "ekyna/user-bundle" : "0.1.*@dev"
+    },
+    "repositories" : [{
+            "type" : "package",
+            "package" : {
+                "name" : "jquery/jquery",
+                "version" : "1.11.0",
+                "dist" : {
+                    "type" : "file",
+                    "url" : "http://code.jquery.com/jquery-1.11.0.js"
+                }
+            }
+        }
+    ],
+    "autoload" : {
+        "psr-0" : {
+            "Ekyna\\Bundle\\AdminBundle" : ""
+        }
+    },
+    "target-dir" : "Ekyna/Bundle/AdminBundle",
+    "minimum-stability" : "dev",
+    "extra" : {
+        "branch-alias" : {
+            "dev-master" : "0.1.x-dev"
+        }
+    }
+}
