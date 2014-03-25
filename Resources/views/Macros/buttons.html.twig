@@ -1,0 +1,56 @@
+{% macro show(url, message) %}
+<a href="{{ url }}" class="btn btn-default btn-sm">
+   <i class="glyphicon glyphicon-eye-open"></i>
+    {{ message is empty ? 'ekyna.admin.button.show'|trans : message }}
+</a>
+{% endmacro %}
+
+{% macro create(url, message) %}
+<a href="{{ url }}" class="btn btn-primary btn-sm">
+    <i class="glyphicon glyphicon-plus"></i>
+    {{ message is empty ? 'ekyna.admin.button.create'|trans : message }}
+</a>
+{% endmacro %}
+
+{% macro edit(url, message) %}
+<a href="{{ url }}" class="btn btn-warning btn-sm">
+    <i class="glyphicon glyphicon-pencil"></i>
+    {{ message is empty ? 'ekyna.admin.button.edit'|trans : message }}
+</a>
+{% endmacro %}
+
+{% macro delete(url, message) %}
+<form action="{{ url }}" method="post" style="display: inline-block;">
+    <input type="hidden" name="_method" value="DELETE">
+    <button class="btn btn-danger btn-sm" onclick="return confirm('{{ 'ekyna.admin.confirm.delete'|trans }}');">
+        <i class="glyphicon glyphicon-trash"></i>
+        {{ message is empty ? 'ekyna.admin.button.delete'|trans : message }}
+    </button>
+</form>
+{% endmacro %}
+
+{% macro manage(url, message) %}
+<a href="{{ url }}" class="btn btn-default btn-sm">
+    <i class="glyphicon glyphicon-list"></i>
+    {{ message is empty ? 'ekyna.admin.button.manage'|trans : message }}
+</a>
+{% endmacro %}
+
+{% macro list_show(url, message) %}
+<li><a href="{{ url }}">{{ message is empty ? 'ekyna.admin.button.show'|trans : message }}</a></li>
+{% endmacro %}
+
+{% macro list_edit(url, message) %}
+<li><a href="{{ url }}">{{ message is empty ? 'ekyna.admin.button.edit'|trans : message }}</a></li>
+{% endmacro %}
+
+{% macro list_delete(url, message) %}
+<li>
+    <form action="{{ url }}" method="post" style="display: inline-block;">
+        <button class="btn btn-link" onclick="return confirm('{{ 'ekyna.admin.confirm.delete'|trans }}');">
+            {{ message is empty ? 'ekyna.admin.button.delete'|trans : message }}
+        </button>
+        <input type="hidden" name="_method" value="DELETE">
+    </form>
+</li>
+{% endmacro %}

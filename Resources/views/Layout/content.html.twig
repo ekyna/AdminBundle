@@ -1,0 +1,38 @@
+{% extends 'EkynaAdminBundle::base.html.twig' %}
+
+{% import 'EkynaAdminBundle:Macros:misc.html.twig' as misc %}
+
+{% block body %}
+    <!-- navbar -->
+    <header class="navbar navbar-inverse" role="banner">
+        <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" id="menu-toggler">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ path('ekyna_admin_dashboard') }}"><img src="{{ asset('bundles/ekynaadmin/img/logo.png') }}"></a>
+        </div>
+        {% include 'EkynaAdminBundle:Layout:navbar.html.twig' %}
+    </header>
+    <!-- end navbar -->
+
+    <!-- sidebar -->
+    <div id="sidebar-nav">
+        {{ knp_menu_render('ekyna_admin.side', {'template': 'EkynaAdminBundle:Layout:sidemenu.html.twig', 'currentClass': 'active', 'ancestorClass': 'active'}) }}
+    </div>
+    <!-- end sidebar -->
+
+	<!-- main container -->
+    <div class="content">
+        {{ misc.breadcrumb() }}
+        <div id="pad-wrapper">
+        {% include 'EkynaAdminBundle:Ui:flashes.html.twig' %}
+        
+        {% block content %}
+        {% endblock %}
+        </div>
+    </div>
+    <!-- end main container -->
+{% endblock %}

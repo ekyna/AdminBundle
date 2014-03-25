@@ -1,0 +1,27 @@
+ekyna_admin:
+    pattern: /
+    defaults:
+        _controller: FrameworkBundle:Redirect:urlRedirect
+        path: /admin/dashboard
+        permanent: true
+
+ekyna_admin_dashboard:
+    pattern:  /dashboard
+    methods: [GET]
+    defaults:
+        _controller: EkynaAdminBundle:Dashboard:index
+
+ekyna_admin_security_login:
+    pattern: /login
+    methods: [GET]
+    defaults:
+        _controller: EkynaAdminBundle:Security:login
+
+ekyna_admin_security_check:
+    pattern: /login-check
+    methods: [POST]
+    defaults: 
+        _controller: EkynaAdminBundle:Security:checkAction
+
+ekyna_admin_security_logout:
+    pattern: /logout

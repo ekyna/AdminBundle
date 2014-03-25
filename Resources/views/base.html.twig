@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}">
+<head>
+	<title>
+        {% block page_title %}Administration{% endblock %}
+    </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="noindex, nofollow">
+    <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+    {% block stylesheets %}
+    {% stylesheets output='css/admin.css' filter='cssrewrite, ?yui_css'
+        'css/bootstrap.css'
+        'css/font-awesome.css'
+        'bundles/ekynaadmin/css/bootstrap-overrides.css'
+
+        'bundles/ekynaadmin/css/lib/jquery-ui.css'
+        'bundles/ekynaadmin/css/lib/bootstrap.datepicker.css'
+        'bundles/ekynaadmin/css/lib/select2.css'
+        'bundles/ekynaadmin/css/lib/uniform.default.css'
+
+        'bundles/ekynaadmin/css/layout.css'
+        'bundles/ekynaadmin/css/elements.css'
+        'bundles/ekynaadmin/css/ui-elements.css'
+        'bundles/ekynaadmin/css/form.css'
+        'bundles/ekynaadmin/css/show.css'
+        'bundles/ekynaadmin/css/table.css'
+        'bundles/ekynaadmin/css/modal-gallery.css'
+
+        'bundles/ekynacms/css/content-editor.css'
+    %}
+        <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
+    {% endstylesheets %}
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
+    {% endblock %}
+
+    {% include 'BraincraftedBootstrapBundle::ie8-support.html.twig' %}
+</head>
+<body>
+    {% block body %}
+    {% endblock %}
+
+    {% include 'EkynaAdminBundle:Layout:modal-gallery.html.twig' %}
+    {% include 'EkynaAdminBundle:Layout:modal.html.twig' %}
+
+    {% block javascripts %}
+    {% javascripts output='js/admin.js' filter='?closure'
+        'bundles/ekynacore/js/string.prototypes.js'
+        'js/jquery.js'
+        'js/bootstrap.js'
+        'bundles/ekynaadmin/js/jquery-ui.js'
+        'bundles/ekynaadmin/js/bootstrap.datepicker.js'
+        'bundles/ekynaadmin/js/select2.min.js'
+        'bundles/ekynaadmin/js/jquery.uniform.min.js'
+        'bundles/ekynaadmin/js/jquery.autosize.min.js'
+        'bundles/ekynaadmin/js/forms.js'
+        'bundles/ekynaadmin/js/load-image.js'
+        'bundles/ekynaadmin/js/modal-gallery.js'
+        'bundles/ekynaadmin/js/theme.js'
+        'bundles/ekynaadmin/js/ui.js'
+        
+        'bundles/ekynacms/js/content-editor.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {{ tinymce_init() }}
+    {% endblock %}
+</body>
+</html>

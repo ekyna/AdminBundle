@@ -1,0 +1,102 @@
+{% import 'EkynaAdminBundle:Macros:alerts.html.twig' as alerts %}
+
+{% block show_row %}
+{% spaceless %}
+    {% if compound and label is sameas(false) %}
+        {{ content|raw }}
+    {% else %}
+    <div class="row show-row">
+        {{ block('show_label') }}
+        <div class="col-md-{{ nb_col }}">
+            {{ content|raw }}
+        </div>
+    </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock %}
+
+{% block show_label %}
+{% spaceless %}
+    {% if label is not sameas(false) %}
+    <div class="col-md-{{ label_nb_col }} show-label">{{ label|trans }}</div>
+    {% endif %}
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_simple %}
+{% spaceless %}
+    <div class="show-widget show-widget-simple">{{ content }}</div>
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_checkbox %}
+{% spaceless %}
+    <div class="show-widget show-widget-simple">{% if content is sameas(true) %}{{ 'ekyna.core.yes'|trans }}{% else %}{{ 'ekyna.core.no'|trans }}{% endif %}</div>
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_entity %}
+{% spaceless %}
+    <div class="show-widget show-widget-simple">
+    {% for entity in entities %}
+        <a href="{{ path(route, {'id': entity.id}) }}" class="show-entity">{{ attribute(entity, field) }}</a>
+    {% endfor %}
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_url %}
+{% spaceless %}
+    <div class="show-widget show-widget-simple">
+        <a href="{{ content }}" target="{{ target }}">{{ content }}</a>
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_textarea %}
+{% spaceless %}
+    <div class="show-widget show-widget-textarea">
+        {{ content|raw }}
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_tinymce %}
+{% spaceless %}
+    <div class="show-widget show-widget-textarea">
+        {{ content|raw }}
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_metas %}
+{% spaceless %}
+    {{ show_row(metas.title, null, 'ekyna.core.field.title.label') }}
+    {{ show_row(metas.description, 'textarea', 'ekyna.core.field.description.label') }}
+    {{ show_row(metas.keywords, null, 'ekyna.core.field.keywords.label') }}
+    <div class="row">
+        <div class="col-md-6">
+            {{ show_row(metas.index, 'checkbox', 'ekyna.core.field.index.label', {'label_nb_col': 4}) }}
+        </div>
+        <div class="col-md-6">
+            {{ show_row(metas.follow, 'checkbox', 'ekyna.core.field.follow.label', {'label_nb_col': 4}) }}
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block show_widget_images %}
+{% spaceless %}
+    {% if images|length > 0 %}
+    <div class="modal-gallery">
+        {% for image in images %}
+        <a href="{{ image.path|imagine_filter('admin_modal') }}" class="thumbnail" title="{{ image.alt }}">
+            <img src="{{ image.path|imagine_filter('admin_thumb') }}" alt="{{ image.alt }}" />
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+        {{ alerts.info('ekyna.admin.alert.no_image'|trans) }}
+    {% endif %}
+{% endspaceless %}
+{% endblock %}

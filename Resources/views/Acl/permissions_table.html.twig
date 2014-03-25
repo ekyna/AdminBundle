@@ -1,0 +1,24 @@
+{% if acl_datas|length > 0 %}
+<table class="table table-striped">
+<thead>
+    <tr>
+        <th></th>
+        {% for permission, enabled in acl_datas|first %}
+        <th>{{ permission|capitalize }}</th>
+        {% endfor %}
+    </tr>
+</thead>
+<tbody> 
+{% for object, permissions in acl_datas %}
+    <tr>
+        <th>{{ object|capitalize }}</th>
+        {% for permission, enabled in permissions %}
+        <td><span class="glyphicon glyphicon-{{ enabled ? 'ok' : 'remove' }}"></span></td>
+        {% endfor %}
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>Aucune permission répertoriée.</p>
+{% endif %}

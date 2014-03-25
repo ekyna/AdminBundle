@@ -1,0 +1,17 @@
+{% macro create(cancel_url) %}
+<div class="row">
+    <div class="col-md-10 col-md-offset-2">
+        <button type="submit" class="btn btn-primary btn-large"><i class="glyphicon glyphicon-ok"></i> {{ 'ekyna.admin.button.submit.create'|trans }}</button>
+        <a href="{{ cancel_url }}" class="btn btn-default btn-large"><i class="glyphicon glyphicon-remove"></i> {{ 'ekyna.admin.button.cancel'|trans }}</a>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro update(cancel_url) %}
+<div class="row">
+    <div class="col-md-10 col-md-offset-2">
+        <button type="submit" class="btn btn-primary btn-large"><i class="glyphicon glyphicon-ok"></i> {{ 'ekyna.admin.button.submit.update'|trans }}</button>
+        <a href="{{ cancel_url }}" class="btn btn-default btn-large"><i class="glyphicon glyphicon-remove"></i> {{ 'ekyna.admin.button.cancel'|trans }}</a>
+    </div>
+</div>
+{% endmacro %}
