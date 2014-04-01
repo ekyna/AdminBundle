@@ -9,4 +9,9 @@ use Doctrine\ORM\EntityRepository as BaseRepository;
  */
 class ResourceRepository extends BaseRepository
 {
+    public function createNew()
+    {
+        $class = $this->getClassName();
+        return new $class;
+    }
 }
