@@ -79,30 +79,30 @@
 
 {% block show_widget_image %}
 {% spaceless %}
-    {% if image is not sameas(null) %}
     <div class="modal-gallery">
+    {% if image is not sameas(null) %}
         {{ block('render_image') }}
-    </div>
     {% else %}
-    <span class="thumbnail">
-        <img src="http://placehold.it/145x96/f7f7f7/6e829b&text=No+image" />
-    </span>
+	    <span class="thumbnail">
+	        <img src="http://placehold.it/145x96/f7f7f7/6e829b&text=No+image" />
+	    </span>
     {% endif %}
+    </div>
 {% endspaceless %}
 {% endblock show_widget_image %}
 
 {% block show_widget_images %}
 {% spaceless %}
-    {% if images|length > 0 %}
     <div class="modal-gallery">
+    {% if images|length > 0 %}
         {% for image in images %}
         {{ block('render_image') }}
         {% endfor %}
-    </div>
     {% else %}
-    <span class="thumbnail">
-        <img src="http://placehold.it/145x96/f7f7f7/6e829b&text=No+image" />
-    </span>
+	    <span class="thumbnail">
+	        <img src="http://placehold.it/145x96/f7f7f7/6e829b&text=No+image" />
+	    </span>
     {% endif %}
+    </div>
 {% endspaceless %}
 {% endblock show_widget_images %}
