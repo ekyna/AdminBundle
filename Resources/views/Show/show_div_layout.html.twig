@@ -83,6 +83,10 @@
     <div class="modal-gallery">
         {{ block('render_image') }}
     </div>
+    {% else %}
+    <span class="thumbnail">
+        <img src="http://placehold.it/145x96/f7f7f7/6e829b&text=No+image" />
+    </span>
     {% endif %}
 {% endspaceless %}
 {% endblock show_widget_image %}
@@ -96,7 +100,9 @@
         {% endfor %}
     </div>
     {% else %}
-        {{ alerts.info('ekyna.admin.alert.no_image'|trans) }}
+    <span class="thumbnail">
+        <img src="http://placehold.it/145x96/f7f7f7/6e829b&text=No+image" />
+    </span>
     {% endif %}
 {% endspaceless %}
 {% endblock show_widget_images %}
