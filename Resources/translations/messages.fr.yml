@@ -33,6 +33,7 @@ ekyna:
             title: Titre
             subtitle: Sous-titre
             description: Description
+            image: Image
             images: Images
             file: Fichier
             login: Identifiant

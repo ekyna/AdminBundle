@@ -8,11 +8,6 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 class UiExtension extends \Twig_Extension
 {
     /**
-     * @var \Twig_Environment
-     */
-    private $environment;
-
-    /**
      * @var \Twig_Template
      */
     private $template;
@@ -22,21 +17,22 @@ class UiExtension extends \Twig_Extension
      */
     private $prefix;
 
-    public function __construct(\Twig_Environment $environment, $template = 'EkynaAdminBundle:Ui:controls.html.twig', $prefix = 'ui')
+    public function __construct($template = 'EkynaAdminBundle:Ui:controls.html.twig', $prefix = 'ui')
     {
-        $this->environment = $environment;
         $this->template = $template;
         $this->prefix = $prefix;
     }
 
-    private function getTemplate()
+    /**
+     * {@inheritdoc}
+     */
+    public function initRuntime(\Twig_Environment $environment)
     {
-        if (!$this->template instanceof \Twig_Template) {
-            $this->template = $this->environment->loadTemplate($this->template);
+        if (! $this->template instanceof \Twig_Template) {
+            $this->template = $environment->loadTemplate($this->template);
         }
-        return $this->template;
     }
-    
+
     /**
      * {@inheritdoc}
      */
@@ -67,7 +63,7 @@ class UiExtension extends \Twig_Extension
             $class = sprintf('btn btn-%s', str_replace('btn-', '', $theme));
         }
 
-        return trim($this->getTemplate()->renderBlock('link', array(
+        return trim($this->template->renderBlock('link', array(
             'class' => $class,
             'label' => $label,
             'left_icon' => $leftIcon,
@@ -94,7 +90,7 @@ class UiExtension extends \Twig_Extension
             $class = sprintf('btn btn-%s', str_replace('btn-', '', $theme));
         }
 
-        return trim($this->getTemplate()->renderBlock('button', array(
+        return trim($this->template->renderBlock('button', array(
             'class' => $class,
             'id' => $id,
             'label' => $label,
@@ -110,7 +106,7 @@ class UiExtension extends \Twig_Extension
             $icon = $faIcon ? 'fa fa-'.$icon : 'glyphicon glyphicon-'.$icon;
             $icon = sprintf('<span class="%s"></span>', $icon);
         }
-        return $this->getTemplate()->renderBlock('form_footer', array(
+        return $this->template->renderBlock('form_footer', array(
             'path' => $path,
             'label' => $label,
             'theme' => $theme,
