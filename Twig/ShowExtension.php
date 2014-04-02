@@ -147,7 +147,7 @@ class ShowExtension extends \Twig_Extension
         ));
     }
 
-    protected function renderImageWidget(ImageInterface $image, array $options = array())
+    protected function renderImageWidget(ImageInterface $image = null, array $options = array())
     {
         return $this->renderBlock('show_widget_image', array(
             'image' => $image
