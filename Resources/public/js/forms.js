@@ -111,7 +111,7 @@
 		
 		this.each(function() {
 			$(this).find('.file-widget').fileWidget();
-			$(this).find('.rename-widget').renameWidget({file: $(this).find('input:file')});
+			$(this).find('.rename-widget').renameWidget({file: $(this).find('.file-widget')});
 		});
 		return this;
 	};
@@ -135,17 +135,18 @@
 				var maxIndex = $container.children().length-1;
 				$container.find('> div').each(function(index, child) {
 					var $child = $(child);
-					if($child.hasClass('image-widget')) {
+					if($child.find('.image-widget').length == 1) {
 						$child.find('button[data-role="move-up"]').prop('disabled', (index == 0));
 						$child.find('button[data-role="move-down"]').prop('disabled', (index == maxIndex));
 						$child.find('input[data-role="position"]').val(index);
 					}
 				});
 			};
-			
+
 			$collection.initChild = function($child) {
-				if($child.hasClass('image-widget')) {
-					$child.imageWidget();
+				var $imageWidget = $child.find('.image-widget');
+				if($imageWidget.length == 1) {
+					$imageWidget.imageWidget();
 					
 					$child.find('button[data-role="remove"]').bind('click', function(e) {
 						e.preventDefault();
@@ -165,8 +166,6 @@
 						$child.next().after($child.detach());
 						$collection.updateChilds();
 					});
-					
-					$file.trigger('click');
 				}
 			};
 			

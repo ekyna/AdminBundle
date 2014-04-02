@@ -11,6 +11,20 @@
 {% endspaceless %}
 {% endblock collection_widget %}
 
+{% block form_widget_compound %}
+{% spaceless %}
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {{ form_errors(form) }}
+        {% endif %}
+        <div class="childs">
+        {{ block('form_rows') }}
+        {{ form_rest(form) }}
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock form_widget_compound %}
+
 {% block form_widget_simple %}
 {% spaceless %}
     {% if sizing is defined and sizing is not empty %}

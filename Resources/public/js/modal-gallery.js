@@ -4,13 +4,13 @@
 		var defauts = {
 			modalId: 'modal-gallery'
         };
-		var parametres = $.extend(defauts, options);
+		var parameters = $.extend(defauts, options);
 		
 	    return this.each(function() {
 			
 			var $gallery = $(this);
 			var $links = $gallery.find('a.thumbnail');
-			var $modal = $('#'+parametres.modalId);
+			var $modal = $('#'+parameters.modalId);
 			var $modalImage = $modal.find('.modal-image');
 			var $image = null;
 			var imageWidth = null;
@@ -83,12 +83,10 @@
 				});
 				if($links.length > 1) {
 					$modal.find('button.btn-prev').show().click(function(e) {
-						if(parametres.debug) console.log('prev');
 						e.preventDefault();
 						$gallery.prev();
 					});
 					$modal.find('button.btn-next').show().click(function(e) {
-						if(parametres.debug) console.log('next');
 						e.preventDefault();
 						$gallery.next();
 					});
@@ -96,8 +94,8 @@
 					$modal.find('button.btn-prev').hide();
 					$modal.find('button.btn-next').hide();
 				}
-				$modal.on('show.bs.modal', function() { console.log('modal show'); modalShown = true; });
-				$modal.on('hide.bs.modal', function() { console.log('modal hide'); modalShown = false; });
+				$modal.on('show.bs.modal', function() { modalShown = true; });
+				$modal.on('hide.bs.modal', function() { modalShown = false; });
 				$(window).on('resize', function() { $gallery.redraw(); });
 			};
 			
