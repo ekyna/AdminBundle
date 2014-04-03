@@ -13,20 +13,20 @@
     {% stylesheets output='css/admin.css' filter='cssrewrite, ?yui_css'
         'css/bootstrap.css'
         'css/font-awesome.css'
+
+        'bundles/ekynacore/css/lib/bootstrap.datepicker.css'
+        'bundles/ekynacore/css/lib/select2.css'
+        'bundles/ekynacore/css/form.css'
+        'bundles/ekynacore/css/modal-gallery.css'
+
         'bundles/ekynaadmin/css/bootstrap-overrides.css'
-
         'bundles/ekynaadmin/css/lib/jquery-ui.css'
-        'bundles/ekynaadmin/css/lib/bootstrap.datepicker.css'
-        'bundles/ekynaadmin/css/lib/select2.css'
         'bundles/ekynaadmin/css/lib/uniform.default.css'
-
         'bundles/ekynaadmin/css/layout.css'
         'bundles/ekynaadmin/css/elements.css'
         'bundles/ekynaadmin/css/ui-elements.css'
-        'bundles/ekynaadmin/css/form.css'
         'bundles/ekynaadmin/css/show.css'
         'bundles/ekynaadmin/css/table.css'
-        'bundles/ekynaadmin/css/modal-gallery.css'
 
         'bundles/ekynacms/css/content-editor.css'
     %}
@@ -42,25 +42,27 @@
     {% block body %}
     {% endblock %}
 
-    {% include 'EkynaAdminBundle:Layout:modal-gallery.html.twig' %}
-    {% include 'EkynaAdminBundle:Layout:modal.html.twig' %}
+    {% include 'EkynaCoreBundle:Ui:modal-gallery.html.twig' %}
+    {% include 'EkynaCoreBundle:Ui:modal.html.twig' %}
 
     {% block javascripts %}
     {% javascripts output='js/admin.js' filter='?closure'
-        'bundles/ekynacore/js/string.prototypes.js'
         'js/jquery.js'
         'js/bootstrap.js'
+
+        'bundles/ekynacore/js/jquery.autosize.min.js'
+        'bundles/ekynacore/js/bootstrap.datepicker.js'
+        'bundles/ekynacore/js/select2.min.js'
+        'bundles/ekynacore/js/load-image.js'
+        'bundles/ekynacore/js/modal-gallery.js'
+        'bundles/ekynacore/js/string.prototypes.js'
+        'bundles/ekynacore/js/forms.js'
+
         'bundles/ekynaadmin/js/jquery-ui.js'
-        'bundles/ekynaadmin/js/bootstrap.datepicker.js'
-        'bundles/ekynaadmin/js/select2.min.js'
         'bundles/ekynaadmin/js/jquery.uniform.min.js'
-        'bundles/ekynaadmin/js/jquery.autosize.min.js'
-        'bundles/ekynaadmin/js/forms.js'
-        'bundles/ekynaadmin/js/load-image.js'
-        'bundles/ekynaadmin/js/modal-gallery.js'
         'bundles/ekynaadmin/js/theme.js'
         'bundles/ekynaadmin/js/ui.js'
-        
+
         'bundles/ekynacms/js/content-editor.js'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
