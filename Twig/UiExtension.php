@@ -100,7 +100,7 @@ class UiExtension extends \Twig_Extension
         )));
     }
 
-    public function renderFormFooter($path = null, $label = 'Enregistrer', $theme = 'primary', $icon = 'ok', $faIcon = false)
+    public function renderFormFooter($path = null, $label = 'Enregistrer', $theme = 'primary', $icon = 'ok', $faIcon = false, $offset = 3)
     {
         if(0 < strlen($icon)) {
             $icon = $faIcon ? 'fa fa-'.$icon : 'glyphicon glyphicon-'.$icon;
@@ -111,6 +111,7 @@ class UiExtension extends \Twig_Extension
             'label' => $label,
             'theme' => $theme,
             'icon' => $icon,
+            'offset' => $offset,
         ));
     }
 

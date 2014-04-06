@@ -9,7 +9,7 @@
 {% block form_footer %}
 <div class="form-footer">
     <div class="form-group row">
-        <div class="col-sm-offset-3 col-sm-9">
+        <div class="col-sm-offset-{{ offset }} col-sm-{{ 12 - offset }}">
             <button type="submit" class="btn btn-{{ theme }}">{{ icon|raw }}{{ label|trans|raw }}</button>
             {% if path is not sameas(null) %}
             <a href="{{ path }}" class="btn btn-default"><span class="glyphicon glyphicon-remove"></span> Annuler</a>
