@@ -107,6 +107,9 @@ class ShowExtension extends \Twig_Extension
         if (! (isset($options['route']) && isset($options['field']))) {
             throw new \RuntimeException('Missing option(s) for entity widget.');
         }
+        if (! isset($options['route_params_map'])) {
+            $options['route_params_map'] = array('id' => 'id');
+        }
 
         if (! ($entities instanceof Collection)) {
             $entities = new ArrayCollection(array(
@@ -117,6 +120,7 @@ class ShowExtension extends \Twig_Extension
         $vars = array(
             'route' => $options['route'],
             'field' => $options['field'],
+            'route_params_map' => $options['route_params_map'],
             'entities' => $entities
         );
 

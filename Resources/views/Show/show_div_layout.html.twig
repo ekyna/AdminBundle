@@ -39,7 +39,11 @@
 {% spaceless %}
     <div class="show-widget show-widget-simple">
     {% for entity in entities %}
-        <a href="{{ path(route, {'id': entity.id}) }}" class="show-entity">{{ attribute(entity, field) }}</a>
+        {% set route_params = [] %}
+        {% for param, property in route_params_map %}
+            {% set route_params = route_params|merge({(param): attribute(entity, property)}) %}
+        {% endfor %}
+        <a href="{{ path(route, route_params) }}" class="show-entity">{{ attribute(entity, field) }}</a>
     {% endfor %}
     </div>
 {% endspaceless %}
