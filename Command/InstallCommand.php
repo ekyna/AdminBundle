@@ -98,9 +98,9 @@ class InstallCommand extends ContainerAwareCommand
             3
         );
 
-        $em = $this->getContainer()->get('ekyna_user.manager');
+        $em = $this->getContainer()->get('ekyna_user.group.manager');
         $group = $this->getContainer()
-            ->get('ekyna_group.repository')
+            ->get('ekyna_user.group.repository')
             ->findOneBy(array('name' => array_keys($this->defaultGroups)[0]));
 
         $user = new User();
@@ -130,8 +130,8 @@ class InstallCommand extends ContainerAwareCommand
     {
         $output->writeln('<info>Creating groups.</info>');
 
-        $em = $this->getContainer()->get('ekyna_group.manager');
-        $repository = $this->getContainer()->get('ekyna_group.repository');
+        $em = $this->getContainer()->get('ekyna_user.group.manager');
+        $repository = $this->getContainer()->get('ekyna_user.group.repository');
 
         foreach($this->defaultGroups as $name => $options) {
             if(null !== $group = $repository->findOneBy(array('name' => $name))) {
@@ -164,7 +164,7 @@ class InstallCommand extends ContainerAwareCommand
 
         $registry = $this->getContainer()->get('ekyna_admin.pool_registry');
         $aclManipulator = $this->getContainer()->get('ekyna_admin.acl_manipulator');
-        $groups = $this->getContainer()->get('ekyna_group.repository')->findAll();
+        $groups = $this->getContainer()->get('ekyna_user.group.repository')->findAll();
 
         foreach($groups as $group) {
             if(isset($this->defaultGroups[$group->getName()])) {

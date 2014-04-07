@@ -13,7 +13,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  */
 abstract class AbstractExtension extends Extension
 {
-    protected $prefix = 'ekyna';
     protected $configDirectory = '/../Resources/config';
     protected $configFiles = array(
         'services',
@@ -29,13 +28,16 @@ abstract class AbstractExtension extends Extension
     }
 
     /**
+     * Configure the pool builder
+     * 
      * @param array                  $configs
+     * @param string                 $prefix
      * @param ConfigurationInterface $configuration
      * @param ContainerBuilder       $container
      *
      * @return array
      */
-    public function configure(array $configs, ConfigurationInterface $configuration, ContainerBuilder $container)
+    public function configure(array $configs, $prefix, ConfigurationInterface $configuration, ContainerBuilder $container)
     {
         $config = $this->processConfiguration($configuration, $configs);
 
@@ -43,7 +45,7 @@ abstract class AbstractExtension extends Extension
         $this->loadConfigurationFile($this->configFiles, $loader);
 
         foreach ($config['pools'] as $resourceName => $params) {
-            $builder = new PoolBuilder($container, $this->prefix, $resourceName, $params);
+            $builder = new PoolBuilder($container, $prefix, $resourceName, $params);
             $builder->build();
         }
 
@@ -51,6 +53,8 @@ abstract class AbstractExtension extends Extension
     }
 
     /**
+     * Load bundle configuration files
+     * 
      * @param array         $config
      * @param XmlFileLoader $loader
      */

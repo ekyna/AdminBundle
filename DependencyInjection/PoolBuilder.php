@@ -43,15 +43,17 @@ class PoolBuilder
             $this->getRepositoryDefinition($this->getServiceClass('repository'))
         );
 
-        if(!$this->container->hasDefinition($this->getContainerKey('form'))) {
+        if(!$this->container->hasDefinition($this->getContainerKey('form_type'))) {
             $this->createFormDefinition();
         }
 
-        if(!$this->container->hasDefinition($this->getContainerKey('table'))) {
+        if(!$this->container->hasDefinition($this->getContainerKey('table_type'))) {
             $this->createTableDefinition();
         }
 
-        $this->setManagerAlias();
+        if(!$this->container->hasDefinition($this->getContainerKey('manager'))) {
+            $this->setManagerAlias();
+        }
     }
 
     protected function getConfigurationDefinition()
@@ -59,20 +61,18 @@ class PoolBuilder
         $templates = isset($this->config['templates']) ? $this->config['templates'] : null; 
         $parentId = isset($this->config['parent']) ? $this->config['parent'] : null;
 
-        $id = sprintf('%s_%s', $this->prefix, $this->resourceName);
-
         $definition = new Definition('Ekyna\Bundle\AdminBundle\Pool\Configuration');
         $definition
             ->setFactoryService('ekyna_admin.pool_factory')
             ->setFactoryMethod('createConfiguration')
             ->setArguments(array(
-                $id,
-                $this->config['entity'],
+                $this->prefix,
                 $this->resourceName,
+                $this->config['entity'],
                 $templates,
                 $parentId
             ))
-            ->addTag('ekyna_admin.configuration', array('alias' => $id))
+            ->addTag('ekyna_admin.configuration', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)))
         ;
         return $definition;
     }
@@ -126,14 +126,14 @@ class PoolBuilder
     protected function createFormDefinition()
     {
         if(null !== $class = $this->getServiceClass('form')) {
-            $key = $this->getContainerKey('form');
+            $key = $this->getContainerKey('form_type');
             if(!$this->container->has($key)) {
                 $definition = new Definition($class);
                 $definition
                     ->setArguments(array($this->config['entity']))
                     ->addTag('form.type', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)))
                 ;
-                $this->container->setDefinition($this->getContainerKey('form'), $definition);
+                $this->container->setDefinition($key, $definition);
             }
         }
     }
@@ -141,7 +141,7 @@ class PoolBuilder
     protected function createTableDefinition()
     {
         if(null !== $class = $this->getServiceClass('table')) {
-            $key = $this->getContainerKey('table');
+            $key = $this->getContainerKey('table_type');
             if(!$this->container->has($key)) {
                 $definition = new Definition($class);
                 $definition
@@ -168,7 +168,7 @@ class PoolBuilder
 
     protected function getContainerKey($service, $suffix = null)
     {
-        return sprintf('%s_%s.%s%s', $this->prefix, $this->resourceName, $service, $suffix);
+        return sprintf('%s.%s.%s%s', $this->prefix, $this->resourceName, $service, $suffix);
     }
 
     protected function getServiceClass($service, $default = null)

@@ -12,17 +12,17 @@ class Configuration
     /**
      * @var string
      */
-    protected $id;
-
-    /**
-     * @var string
-     */
-    protected $resourceClass;
+    protected $prefix;
 
     /**
      * @var string
      */
     protected $resourceName;
+
+    /**
+     * @var string
+     */
+    protected $resourceClass;
 
     /**
      * @var string
@@ -37,24 +37,29 @@ class Configuration
     /**
      * Constructor
      * 
-     * @param string $id                The configuration identifier
-     * @param string $resourceClass     The resource FQCN
+     * @param string $prefix            The configuration prefix
      * @param string $resourceName      The resource name
+     * @param string $resourceClass     The resource FQCN
      * @param string $templateNamespace The template namespace
      * @param string $parentId          The parent configuration identifier
      */
-    public function __construct($id, $resourceClass, $resourceName, $templateNamespace = null, $parentId = null)
+    public function __construct($prefix, $resourceName, $resourceClass, $templateNamespace = null, $parentId = null)
     {
-        $this->id = $id;
-        $this->resourceClass = $resourceClass;
+        $this->prefix = $prefix;
         $this->resourceName = $resourceName;
+        $this->resourceClass = $resourceClass;
         $this->templateNamespace = $templateNamespace;
         $this->parentId = $parentId;
     }
 
     public function getId()
     {
-        return $this->id;
+        return sprintf('%s_%s', $this->prefix, $this->resourceName);
+    }
+
+    public function getPrefix()
+    {
+        return $this->prefix;
     }
 
     public function getParentId()
@@ -79,27 +84,27 @@ class Configuration
 
     public function getRoute($action)
     {
-        return sprintf('%s_admin_%s', $this->id, $action);
+        return sprintf('%s_%s_admin_%s', $this->prefix, $this->resourceName, $action);
     }
 
     public function getFormType()
     {
-        return $this->id;
+        return sprintf('%s_%s', $this->prefix, $this->resourceName);
     }
 
     public function getTableType()
     {
-        return $this->id;
+        return sprintf('%s_%s', $this->prefix, $this->resourceName);
     }
 
     public function getServiceKey($service)
     {
-        return sprintf('%s.%s', $this->id, $service);
+        return sprintf('%s.%s.%s', $this->prefix, $this->resourceName, $service);
     }
-    
+
     public function getObjectIdentity()
     {
-        return new ObjectIdentity($this->id, $this->resourceClass);
+        return new ObjectIdentity(sprintf('%s_%s', $this->prefix, $this->resourceName), $this->resourceClass);
     }
 
     public function isRelevant($object)
