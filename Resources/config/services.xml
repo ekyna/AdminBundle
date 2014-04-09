@@ -14,6 +14,8 @@
         <parameter key="ekyna_admin.acl_editor.class">Ekyna\Bundle\AdminBundle\Acl\AclEditor</parameter>
         <parameter key="ekyna_admin.acl_manipulator.class">Ekyna\Bundle\AdminBundle\Acl\AclManipulator</parameter>
 
+        <parameter key="ekyna_admin.twig.admin_extension.class">Ekyna\Bundle\AdminBundle\Twig\AdminExtension</parameter>
+
         <parameter key="ekyna_admin.twig.show_extension.class">Ekyna\Bundle\AdminBundle\Twig\ShowExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.template">EkynaAdminBundle:Show:show_div_layout.html.twig</parameter>
     </parameters>
@@ -63,6 +65,10 @@
         </service>
 
         <!-- Twig Extensions -->
+	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
+	        <argument>%ekyna_admin.logo_path%</argument>
+	        <tag name="twig.extension" />
+	    </service>
 	    <service id="ekyna_admin.twig.show_extension" class="%ekyna_admin.twig.show_extension.class%">
 	        <argument>%ekyna_admin.twig.show_extension.template%</argument>
 	        <tag name="twig.extension" />

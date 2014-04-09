@@ -25,6 +25,8 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
 
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.xml');
+
+        $container->setParameter('ekyna_admin.logo_path', $config['logo_path']);
     }
 
     /**

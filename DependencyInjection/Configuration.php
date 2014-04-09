@@ -22,6 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
+                ->scalarNode('logo_path')->defaultValue('/bundles/ekynaadmin/img/logo.png')->end()
                 ->scalarNode('output_dir')->defaultValue('')->end()
             ->end()
         ;
