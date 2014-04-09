@@ -33,9 +33,9 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
     public function prepend(ContainerBuilder $container)
     {
         $bundles = $container->getParameter('kernel.bundles');
-        $config = array(
-            'bundles' => array('EkynaAdminBundle')
-        );
+        $configs = $container->getExtensionConfig($this->getAlias());
+        $config = $this->processConfiguration(new Configuration(), $configs);
+
         if (true === isset($bundles['AsseticBundle'])) {
             $this->configureAsseticBundle($container, $config);
         }
@@ -51,7 +51,14 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
     {
         foreach (array_keys($container->getExtensions()) as $name) {
             if ($name == 'assetic') {
-        	    $container->prependExtensionConfig($name, $config);
+                $asseticConfig = new AsseticConfiguration;
+                $container->prependExtensionConfig(
+                    $name,
+                    array(
+                        'bundles' => array('EkynaAdminBundle'),
+                        //'assets' => $asseticConfig->build($config),
+                    )
+                );
         	    break;
             }
         }

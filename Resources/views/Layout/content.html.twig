@@ -1,7 +1,5 @@
 {% extends 'EkynaAdminBundle::base.html.twig' %}
 
-{% import 'EkynaAdminBundle:Macros:misc.html.twig' as misc %}
-
 {% block body %}
     <!-- navbar -->
     <header class="navbar navbar-inverse" role="banner">
@@ -26,12 +24,10 @@
 
 	<!-- main container -->
     <div class="content">
-        {{ misc.breadcrumb() }}
+        {{ knp_menu_render('ekyna_admin.breadcrumb', {'template': 'EkynaAdminBundle:Layout:breadcrumb.html.twig'}) }}
         <div id="pad-wrapper">
-        {% include 'EkynaAdminBundle:Ui:flashes.html.twig' %}
-        
-        {% block content %}
-        {% endblock %}
+        {% include 'EkynaCoreBundle:Ui:flashes.html.twig' %}
+        {% block content %}{% endblock %}
         </div>
     </div>
     <!-- end main container -->

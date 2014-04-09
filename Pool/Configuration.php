@@ -67,6 +67,11 @@ class Configuration
         return $this->parentId;
     }
 
+    public function getParentControllerId()
+    {
+        return sprintf('%s.controller', $this->parentId);
+    }
+
     public function getResourceClass()
     {
         return $this->resourceClass;
@@ -75,6 +80,11 @@ class Configuration
     public function getResourceName()
     {
         return $this->resourceName;
+    }
+
+    public function getResourceLabel($plural = false)
+    {
+        return sprintf('%s.%s.label.%s', $this->prefix, $this->resourceName, $plural ? 'plural' : 'singular');
     }
 
     public function getTemplate($name)

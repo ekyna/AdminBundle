@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * ResourceController
@@ -15,39 +16,51 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class ResourceController extends Controller
 {
     /**
+     * Context
+     *
+     * @var Context
+     */
+    protected $context;
+
+    /**
+     * Parent resource controller
+     *
+     * @var ResourceController
+     */
+    protected $parent;
+
+    /**
      * @var Configuration
      */
-    protected $configuration;
+    protected $config;
 
-    public function __construct(Configuration $configuration)
+    public function __construct(Configuration $config)
     {
-        $this->configuration = $configuration;
+        $this->config = $config;
     }
 
     public function homeAction(Request $request)
     {
-        return $this->redirect($this->generateUrl($this->configuration->getRoute('list')));
+        return $this->redirect($this->generateUrl($this->config->getRoute('list')));
     }
 
     public function listAction(Request $request)
     {
         $this->isGranted('VIEW');
 
+        $context = $this->loadContext($request);
+
         $table = $this->get('table.factory')
-            ->createBuilder($this->configuration->getTableType())
-            ->getTable($this->configuration->getId());
+            ->createBuilder($this->config->getTableType())
+            ->getTable($this->config->getId());
 
         $resources = $this->get('table.generator')->generateView($table);
 
         return $this->render(
-            $this->configuration->getTemplate('list.html'),
-            array(
+            $this->config->getTemplate('list.html'),
+            $context->getTemplateVars(array(
                 $this->getResourcePluralName() => $resources
-            )
-        );
-        
-        return $this->render(
-	        $this->configuration->getTemplate('list.html')
+            ))
         );
     }
 
@@ -55,62 +68,84 @@ class ResourceController extends Controller
     {
         $this->isGranted('CREATE');
 
-        $resource = $this->createNew();
+        $context = $this->loadContext($request);
 
-        $resourceName = $this->getResourceName();
-        $form = $this->createForm($this->configuration->getFormType(), $resource);
+        $resource = $this->createNew($context);
+        $resourceName = $this->config->getResourceName();
 
-        $form->handleRequest($this->getRequest());
+        $form = $this->createForm($this->config->getFormType(), $resource);
+
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $this->persist($resource);
+
+            if ($request->isXmlHttpRequest()) {
+                return new JsonResponse(array(
+                    'id' => $resource->getId(),
+                    'name' => $resource,
+                ));
+                /*$serializer = $this->container->get('jms_serializer');
+                $response = new Response($serializer->serialize($resource, 'json'));
+                $response->headers->set('Content-Type', 'application/json');
+                return $response;*/
+            }
 
             $this->addFlash('La resource a été créé avec succès.', 'success');
 
             return $this->redirect(
                 $this->generateUrl(
-                    $this->configuration->getRoute('show'),
-                    array(
+                    $this->config->getRoute('show'),
+                    array_merge($context->getIdentifiers(), array(
                         sprintf('%sId', $resourceName) => $resource->getId()
-                    )
+                    ))
                 )
+            );
+        } elseif ($request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
+            return new JsonResponse(array('error' => $form->getErrors()));
+        }
+
+        $format = 'html';
+        if ($request->isXmlHttpRequest()) {
+            $format = 'xml';
+        } else {
+            $this->appendBreadcrumb(
+                sprintf('%s-new', $resourceName),
+            	'ekyna.admin.button.create'
             );
         }
 
         return $this->render(
-            $this->configuration->getTemplate('new.html'),
-            array(
-                $resourceName => $resource,
+            $this->config->getTemplate('new.' . $format),
+            $context->getTemplateVars(array(
                 'form' => $form->createView()
-            )
+            ))
         );
     }
 
     public function showAction(Request $request)
     {
-        $resource = $this->findResourceOrThrowException();
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
 
-        $this->isGranted('VIEW', $resource);
-
-        $resourceName = $this->getResourceName();
+        $this->isGranted('VIEW', $context->getResource($resourceName));
 
         return $this->render(
-            $this->configuration->getTemplate('show.html'),
-            array(
-                $resourceName => $resource
-            )
+            $this->config->getTemplate('show.html'),
+            $context->getTemplateVars()
         );
     }
 
     public function editAction(Request $request)
     {
-        $resource = $this->findResourceOrThrowException();
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
+        $resource = $context->getResource($resourceName);
 
         $this->isGranted('EDIT', $resource);
 
-        $resourceName = $this->getResourceName();
-        $form = $this->createForm($this->configuration->getFormType(), $resource);
+        $form = $this->createForm($this->config->getFormType(), $resource);
 
-        $form->handleRequest($this->getRequest());
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $this->persist($resource);
 
@@ -118,33 +153,36 @@ class ResourceController extends Controller
 
             return $this->redirect(
                 $this->generateUrl(
-                    $this->configuration->getRoute('show'),
-                    array(
-                        sprintf('%sId', $resourceName) => $resource->getId()
-                    )
+                    $this->config->getRoute('show'),
+                    $context->getIdentifiers(true)
                 )
             );
         }
 
+        $this->appendBreadcrumb(
+            sprintf('%s-edit', $resourceName),
+            'ekyna.admin.button.edit'
+        );
+
         return $this->render(
-            $this->configuration->getTemplate('edit.html'),
-            array(
-                $resourceName => $resource,
+            $this->config->getTemplate('edit.html'),
+            $context->getTemplateVars(array(
                 'form' => $form->createView()
-            )
+            ))
         );
     }
 
     public function removeAction(Request $request)
     {
-        $resource = $this->findResourceOrThrowException();
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
+        $resource = $context->getResource($resourceName);
 
         $this->isGranted('DELETE', $resource);
 
-        $resourceName = $this->getResourceName();
         $form = $this->createConfirmationForm();
 
-        $form->handleRequest($this->getRequest());
+        $form->handleRequest($request);
         if ($form->isValid()) {
             $this->remove($resource);
 
@@ -152,39 +190,138 @@ class ResourceController extends Controller
 
             return $this->redirect(
                 $this->generateUrl(
-                    $this->configuration->getRoute('list')
+                    $this->config->getRoute('list'),
+                    $context->getIdentifiers()
                 )
             );
         }
 
+        $this->appendBreadcrumb(
+            sprintf('%s-remove', $resourceName),
+            'ekyna.admin.button.remove'
+        );
+
         return $this->render(
-            $this->configuration->getTemplate('remove.html'),
-            array(
-                $resourceName => $resource,
+            $this->config->getTemplate('remove.html'),
+            $context->getTemplateVars(array(
                 'form' => $form->createView()
-            )
+            ))
         );
     }
 
-    protected function getResourceName()
+    /**
+     * Returns true if controller has a parent controller
+     *
+     * @return boolean
+     */
+    public function hasParent()
     {
-        return $this->configuration->getResourceName();
+        return (null !== $this->config->getParentId());
     }
 
-    protected function getResourcePluralName()
+    /**
+     * Returns the controller configuration
+     * 
+     * @return Configuration
+     */
+    public function getConfiguration()
     {
-        return Inflector::pluralize($this->configuration->getResourceName());
+        return $this->config;
     }
 
-    protected function findResourceOrThrowException($id = null)
+    /**
+     * Returns parent configuration
+     *
+     * @return ResourceController
+     * 
+     * @throws RuntimeException
+     */
+    public function getParent()
     {
-        if(null === $id) {
-            $id = $this->getRequest()->attributes->get(sprintf('%sId', $this->configuration->getResourceName()));
+        if (null === $this->parent && $this->hasParent()) {
+            $parentId = $this->config->getParentControllerId();
+            if (!$this->container->has($parentId)) {
+                throw new \RuntimeException('Parent resource controller &laquo; ' . $parentId . ' &raquo; does not exists.');
+            }
+            $this->parent = $this->container->get($parentId);
         }
-        if(null === $resource = $this->getRepository()->findOneBy(array('id' => $id))) {
+
+        return $this->parent;
+    }
+
+    /**
+     * Creates (or fill) the context for the given request
+     * 
+     * @param Request $request
+     * @param Context $context
+     * 
+     * @return Context
+     */
+    public function loadContext(Request $request, Context $context = null)
+    {
+        $resourceName = $this->config->getResourceName();
+        if (null === $context) {
+            $context = new Context($resourceName);
+        }
+
+        if ($this->hasParent()) {
+            $this->getParent()->loadContext($request, $context);
+        }
+
+        if (!$request->isXmlHttpRequest()) {
+            $listRoute = $this->config->getRoute('list');
+            if(null === $this->get('router')->getRouteCollection()->get($listRoute)) {
+                $listRoute = null;
+            }
+            $this->appendBreadcrumb(
+                sprintf('%s-list', $resourceName),
+                $this->config->getResourceLabel(true),
+                $listRoute,
+                $context->getIdentifiers()
+            );
+        }
+
+        if ($request->attributes->has($resourceName.'Id')) {
+            $resource = $this->findResourceOrThrowException(array('id' => $request->attributes->get($resourceName.'Id')));
+            $context->addResource($resourceName, $resource);
+            if (!$request->isXmlHttpRequest()) {
+                $this->appendBreadcrumb(
+                    sprintf('%s-%s', $resourceName, $resource->getId()),
+                    $resource,
+                    $this->config->getRoute('show'),
+                    $context->getIdentifiers(true)
+                );
+            }
+        }
+
+        return $context;
+    }
+
+    /**
+     * Finds a resource or throw a not found exception
+     * 
+     * @param array $criteria
+     * 
+     * @throws NotFoundHttpException
+     * 
+     * @return Object|NULL
+     */
+    protected function findResourceOrThrowException(array $criteria)
+    {
+        if (null === $resource = $this->getRepository()->findOneBy($criteria)) {
             throw new NotFoundHttpException('Resource introuvable');
         }
         return $resource;
+    }
+
+    /**
+     * Returns the resource plural name
+     * 
+     * @return string
+     */
+    protected function getResourcePluralName()
+    {
+        return Inflector::pluralize($this->config->getResourceName());
     }
 
     /**
@@ -200,7 +337,7 @@ class ResourceController extends Controller
     protected function isGranted($attributes, $object = null, $throwException = true)
     {
         if(is_null($object)) {
-            $object = $this->configuration->getObjectIdentity();
+            $object = $this->config->getObjectIdentity();
         }else{
             $object = $this->get('ekyna_admin.pool_registry')->getObjectIdentity($object);
         }
@@ -218,7 +355,7 @@ class ResourceController extends Controller
      */
     protected function getManager()
     {
-        return $this->get($this->configuration->getServiceKey('manager'));
+        return $this->get($this->config->getServiceKey('manager'));
     }
 
     /**
@@ -226,15 +363,39 @@ class ResourceController extends Controller
      */
     protected function getRepository()
     {
-        return $this->get($this->configuration->getServiceKey('repository'));
+        return $this->get($this->config->getServiceKey('repository'));
     }
 
-    protected function createNew()
+    /**
+     * Creates a new resource
+     * 
+     * @param Context $context
+     * 
+     * @return Object
+     */
+    protected function createNew(Context $context)
     {
-        $class = $this->configuration->getResourceClass();
-        return new $class;
+        $resource = $this->getRepository()->createNew();
+
+        if(null !== $context && $this->hasParent()) {
+            $parentResourceName = $this->getParent()->getConfiguration()->getResourceName();
+            $parent = $context->getResource($parentResourceName);
+            try {
+                // TODO: use ReflectionClass
+                $resource->{Inflector::camelize('set_'.$parentResourceName)}($parent);
+            } catch (\Exception $e) {
+                throw new \RuntimeException('Bad implementation of parent/child entity pattern.');
+            }
+        }
+
+        return $resource;
     }
 
+    /**
+     * Persists a resource
+     * 
+     * @param object $resource
+     */
     protected function persist($resource)
     {
         $em = $this->getManager();
@@ -242,6 +403,11 @@ class ResourceController extends Controller
         $em->flush();
     }
 
+    /**
+     * Removes a resource
+     * 
+     * @param object $resource
+     */
     protected function remove($resource)
     {
         $em = $this->getManager();
@@ -249,6 +415,13 @@ class ResourceController extends Controller
         $em->flush();
     }
 
+    /**
+     * Creates a confirmation form
+     * 
+     * @param string $message
+     * 
+     * @return \Symfony\Component\Form\Form
+     */
     protected function createConfirmationForm($message = null)
     {
         if(null === $message) {
@@ -265,8 +438,28 @@ class ResourceController extends Controller
         ;
     }
 
+    /**
+     * Adds a flash message
+     * 
+     * @param string $message
+     * @param string $type
+     */
     protected function addFlash($message, $type = 'info')
     {
         $this->get('session')->getFlashBag()->add($type, $message);
+    }
+
+    /**
+     * Appends a link or span to the admin breadcrumb
+     * 
+     * @param string $name
+     * @param string $label
+     * @param string $route
+     * 
+     * @param array $parameters
+     */
+    protected function appendBreadcrumb($name, $label, $route = null, array $parameters = array())
+    {
+        $this->container->get('ekyna_admin.menu.builder')->breadcrumbAppend($name, $label, $route, $parameters);
     }
 }

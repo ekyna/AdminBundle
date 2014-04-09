@@ -14,12 +14,8 @@
         <parameter key="ekyna_admin.acl_editor.class">Ekyna\Bundle\AdminBundle\Acl\AclEditor</parameter>
         <parameter key="ekyna_admin.acl_manipulator.class">Ekyna\Bundle\AdminBundle\Acl\AclManipulator</parameter>
 
-        <parameter key="ekyna_admin.twig.ui_extension.class">Ekyna\Bundle\AdminBundle\Twig\UiExtension</parameter>
-        <parameter key="ekyna_admin.twig.ui_extension.template">EkynaAdminBundle:Ui:controls.html.twig</parameter>
         <parameter key="ekyna_admin.twig.show_extension.class">Ekyna\Bundle\AdminBundle\Twig\ShowExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.template">EkynaAdminBundle:Show:show_div_layout.html.twig</parameter>
-
-        <parameter key="ekyna_admin.form_type_extension.class">Ekyna\Bundle\AdminBundle\Form\Extension\FormTypeExtension</parameter>
     </parameters>
 
     <services>
@@ -66,16 +62,7 @@
             <tag name="knp_menu.menu" alias="ekyna_admin.breadcrumb" />
         </service>
 
-        <!-- Form Extensions -->
-        <service id="ekyna_admin.form_type_extension" class="%ekyna_admin.form_type_extension.class%">
-            <tag name="form.type_extension" alias="form" />
-        </service>
-
         <!-- Twig Extensions -->
-	    <service id="ekyna_admin.twig.ui_extension" class="%ekyna_admin.twig.ui_extension.class%">
-	        <argument>%ekyna_admin.twig.ui_extension.template%</argument>
-	        <tag name="twig.extension" />
-	    </service>
 	    <service id="ekyna_admin.twig.show_extension" class="%ekyna_admin.twig.show_extension.class%">
 	        <argument>%ekyna_admin.twig.show_extension.template%</argument>
 	        <tag name="twig.extension" />
