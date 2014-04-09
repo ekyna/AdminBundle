@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * ResourceController
@@ -69,7 +70,6 @@ class ResourceController extends Controller
         $this->isGranted('CREATE');
 
         $context = $this->loadContext($request);
-
         $resource = $this->createNew($context);
         $resourceName = $this->config->getResourceName();
 
@@ -380,11 +380,13 @@ class ResourceController extends Controller
         if(null !== $context && $this->hasParent()) {
             $parentResourceName = $this->getParent()->getConfiguration()->getResourceName();
             $parent = $context->getResource($parentResourceName);
+
             try {
-                // TODO: use ReflectionClass
-                $resource->{Inflector::camelize('set_'.$parentResourceName)}($parent);
+                $propertyAcessor = PropertyAccess::createPropertyAccessor();
+                $propertyAcessor->setValue($resource, $parentResourceName, $parent);
+                //$resource->{Inflector::camelize('set_'.$parentResourceName)}($parent);
             } catch (\Exception $e) {
-                throw new \RuntimeException('Bad implementation of parent/child entity pattern.');
+                throw new \RuntimeException('Failed to set resource\'s parent.');
             }
         }
 

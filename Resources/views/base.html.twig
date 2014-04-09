@@ -10,14 +10,10 @@
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
     {% block stylesheets %}
-    {% stylesheets output='css/debug/admin.css' filter='cssrewrite, ?yui_css'
+    {#% stylesheets output='css/debug/admin.css' filter='cssrewrite, ?yui_css'
         'css/bootstrap.css'
         'css/fontawesome.css'
-
-        'bundles/ekynacore/css/lib/bootstrap.datepicker.css'
-        'bundles/ekynacore/css/lib/select2.css'
-        'bundles/ekynacore/css/form.css'
-        'bundles/ekynacore/css/modal-gallery.css'
+	    'css/core.css'
 
         'bundles/ekynaadmin/css/bootstrap-overrides.css'
         'bundles/ekynaadmin/css/lib/jquery-ui.css'
@@ -31,9 +27,9 @@
         'bundles/ekynacms/css/content-editor.css'
     %}
         <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
-    {% endstylesheets %}
+    {% endstylesheets %#}
 
-    {#<link href="{{ asset('css/admin.css') }}" rel="stylesheet" type="text/css" />#}
+    <link href="{{ asset('css/admin.css') }}" rel="stylesheet" type="text/css" />
 
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic" rel="stylesheet" type="text/css" />
@@ -49,18 +45,10 @@
     {% include 'EkynaCoreBundle:Ui:modal.html.twig' %}
 
     {% block javascripts %}
-    {% javascripts output='js/debug/admin.js' filter='?closure'
+    {#% javascripts output='js/debug/admin.js' filter='?closure'
         'js/jquery.js'
         'js/bootstrap.js'
-
-        '%kernel.root_dir%/../vendor/malsup/form/jquery.form.js'
-        'bundles/ekynacore/js/jquery.autosize.min.js'
-        'bundles/ekynacore/js/bootstrap.datepicker.js'
-        'bundles/ekynacore/js/select2.min.js'
-        'bundles/ekynacore/js/load-image.js'
-        'bundles/ekynacore/js/modal-gallery.js'
-        'bundles/ekynacore/js/string.prototypes.js'
-        'bundles/ekynacore/js/forms.js'
+	    'js/core.js'
 
         'bundles/ekynaadmin/js/jquery-ui.js'
         'bundles/ekynaadmin/js/jquery.uniform.min.js'
@@ -70,9 +58,9 @@
         'bundles/ekynacms/js/content-editor.js'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    {% endjavascripts %#}
 
-    {#<script src="{{ asset('js/admin.js') }}"></script>#}
+    <script src="{{ asset('js/admin.js') }}"></script>
 
     {{ tinymce_init() }}
     {% endblock %}

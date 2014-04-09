@@ -43,11 +43,7 @@ class AsseticConfiguration
         $inputs = array(
             '@bootstrap_css',
             '@fontawesome_css',
-
-            'bundles/ekynacore/css/lib/bootstrap.datepicker.css',
-            'bundles/ekynacore/css/lib/select2.css',
-            'bundles/ekynacore/css/form.css',
-            'bundles/ekynacore/css/modal-gallery.css',
+            '@core_css',
 
             'bundles/ekynaadmin/css/bootstrap-overrides.css',
             'bundles/ekynaadmin/css/lib/jquery-ui.css',
@@ -80,15 +76,7 @@ class AsseticConfiguration
         $inputs = array(
             '@jquery',
             '@bootstrap_js',
-
-            '%kernel.root_dir%/../vendor/malsup/form/jquery.form.js',
-            'bundles/ekynacore/js/jquery.autosize.min.js',
-            'bundles/ekynacore/js/bootstrap.datepicker.js',
-            'bundles/ekynacore/js/select2.min.js',
-            'bundles/ekynacore/js/load-image.js',
-            'bundles/ekynacore/js/modal-gallery.js',
-            'bundles/ekynacore/js/string.prototypes.js',
-            'bundles/ekynacore/js/forms.js',
+            '@core_js',
 
             'bundles/ekynaadmin/js/jquery-ui.js',
             'bundles/ekynaadmin/js/jquery.uniform.min.js',

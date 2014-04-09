@@ -16,17 +16,18 @@ trait TinymceTrait
         if(null === $field = $request->attributes->get('field')) {
             throw new AccessDeniedHttpException('Field parameter is mandatory.');
         }
-    
-        $resourceName = $this->getResourceName();
-        $resource = $this->findResourceOrThrowException();
-    
+
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
+        $resource = $context->getResource($resourceName);
+
         $this->isGranted('VIEW', $resource);
-    
+
         $propertyAcessor = PropertyAccess::createPropertyAccessor();
         $content = $propertyAcessor->getValue($resource, $field);
-    
+
         return $this->render(
-            'EkynaAdminBundle:Ui:tinymce.html.twig',
+            'EkynaCoreBundle:Ui:tinymce.html.twig',
             array(
                 'content' => $content
             )

@@ -56,7 +56,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
                     $name,
                     array(
                         'bundles' => array('EkynaAdminBundle'),
-                        //'assets' => $asseticConfig->build($config),
+                        'assets' => $asseticConfig->build($config),
                     )
                 );
         	    break;

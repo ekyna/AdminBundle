@@ -11,39 +11,50 @@ trait NestedTrait
 {
     public function moveUpAction(Request $request)
     {
-        $resource = $this->findResourceOrThrowException();
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
+        $resource = $context->getResource($resourceName);
 
         $this->isGranted('EDIT', $resource);
 
         $repo = $this->getRepository();
         $repo->moveUp($resource, 1);
 
-        return $this->redirect($this->generateUrl($this->configuration->getRoute('list')));
+        return $this->redirect($this->generateUrl(
+            $this->config->getRoute('list'),
+            $context->getIdentifiers()
+        ));
     }
 
     public function moveDownAction(Request $request)
     {
-        $resource = $this->findResourceOrThrowException();
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
+        $resource = $context->getResource($resourceName);
 
         $this->isGranted('EDIT', $resource);
 
         $repo = $this->getRepository();
         $repo->moveDown($resource, 1);
 
-        return $this->redirect($this->generateUrl($this->configuration->getRoute('list')));
+        return $this->redirect($this->generateUrl(
+            $this->config->getRoute('list'),
+            $context->getIdentifiers()
+        ));
     }
 
     public function newChildAction(Request $request)
     {
         $this->isGranted('CREATE');
 
-        $parent = $this->findResourceOrThrowException();
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
+        $resource = $context->getResource($resourceName);
 
-        $resourceName = $this->getResourceName();
-        $resource = $this->createNew();
-        $resource->setParent($parent);
+        $child = $this->createNew($context);
+        $child->setParent($resource);
 
-        $form = $this->createForm($this->configuration->getFormType(), $resource);
+        $form = $this->createForm($this->config->getFormType(), $child);
 
         $form->handleRequest($this->getRequest());
         if ($form->isValid()) {
@@ -51,28 +62,27 @@ trait NestedTrait
             $em = $this->getManager();
             $repo = $this->getRepository();
             
-            $repo->persistAsLastChildOf($resource, $parent);
+            $repo->persistAsLastChildOf($child, $resource);
             $em->flush();
 
             $this->addFlash('La resource a été créé avec succès.', 'success');
 
             return $this->redirect(
                 $this->generateUrl(
-                    $this->configuration->getRoute('show'),
-                    array(
-                        sprintf('%sId', $resourceName) => $resource->getId()
-                    )
+                    $this->config->getRoute('show'),
+                    array_merge($context->getIdentifiers(), array(
+                        sprintf('%sId', $resourceName) => $child->getId()
+                    ))
                 )
             );
         }
 
         return $this->render(
-            $this->configuration->getTemplate('new_child.html'),
-            array(
-                $resourceName => $resource,
-                'parent' => $parent,
+            $this->config->getTemplate('new_child.html'),
+            $context->getTemplateVars(array(
+                'child' => $child,
                 'form' => $form->createView()
-            )
+            ))
         );
     }
 }

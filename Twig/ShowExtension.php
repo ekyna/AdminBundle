@@ -139,8 +139,13 @@ class ShowExtension extends \Twig_Extension
 
     protected function renderTinymceWidget($content, array $options = array())
     {
+        $height = isset($options['height']) ? intval($options['height']) : 0;
+        if(0 >= $height) {
+            $height = 250;
+        }
         return $this->renderBlock('show_widget_tinymce', array(
-            'content' => $content
+            'height' => $height,
+            'route'  => $content
         ));
     }
 
