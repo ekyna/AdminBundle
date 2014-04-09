@@ -44,7 +44,7 @@ class BackendMenuBuilder extends MenuBuilder
                 'route' => 'ekyna_admin_dashboard',
                 'labelAttributes' => array('icon' => 'dashboard'),
             ))
-            ->setLabel('ekyna.admin.menu.dashboard')
+            ->setLabel('ekyna_admin.dashboard')
         ;
 
         $this->appendChilds($menu, $childOptions);
@@ -97,7 +97,7 @@ class BackendMenuBuilder extends MenuBuilder
                     'class' => 'breadcrumb hidden-xs'
                 )
             ));
-            $this->breadcrumb->addChild('dashboard', array('route' => 'ekyna_admin_dashboard'))->setLabel('Home');
+            $this->breadcrumb->addChild('dashboard', array('route' => 'ekyna_admin_dashboard'))->setLabel('ekyna_admin.dashboard');
         }
         return $this->breadcrumb;
     }

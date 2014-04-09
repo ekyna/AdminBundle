@@ -1,42 +1,10 @@
-ekyna:
-    admin:
-        login_header: Authentification
-        menu:
-            dashboard: Tableau de bord
-            homepage: Page d'accueil
-        button:
-            login: Connexion
-            manage: Gérer
-            back: Retour
-            back_to_show: Retour au détail
-            back_to_list: Retour à la liste
-            show: Detail
-            content: Contenu
-            create: Nouveau
-            edit: Modifier
-            remove: Supprimer
-            cancel: Annuler
-            save: Enregistrer
-        confirm:
-            delete: Êtes-vous sûr de vouloir supprimer cet élément ?
-        alert:
-            success: Succès
-            info: Information
-            warning: Attention
-            error: Erreur
-            no_image: Aucune image associé
-            no_item: Aucun élément configuré
-        gallery:
-            next: Suivante
-            previous: Précédente
-            slideshow: Diaporama
-        field:
-            title: Titre
-            subtitle: Sous-titre
-            description: Description
-            image: Image
-            images: Images
-            file: Fichier
-            login: Identifiant
-            password: Mot de passe
-            remember_me: Se souvenir de moi
+ekyna_admin:
+    title: Administration
+    login_header: Authentification
+    dashboard: Tableau de bord
+    homepage: Page d'accueil
+    confirm:
+        delete: Êtes-vous sûr de vouloir supprimer cet élément ?
+    acl:
+        title: Permissions
+        no_rules: Aucune permission répertoriée

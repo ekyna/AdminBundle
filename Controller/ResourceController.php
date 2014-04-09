@@ -110,7 +110,7 @@ class ResourceController extends Controller
         } else {
             $this->appendBreadcrumb(
                 sprintf('%s-new', $resourceName),
-            	'ekyna.admin.button.create'
+            	'ekyna_core.button.create'
             );
         }
 
@@ -161,7 +161,7 @@ class ResourceController extends Controller
 
         $this->appendBreadcrumb(
             sprintf('%s-edit', $resourceName),
-            'ekyna.admin.button.edit'
+            'ekyna_core.button.edit'
         );
 
         return $this->render(
@@ -198,7 +198,7 @@ class ResourceController extends Controller
 
         $this->appendBreadcrumb(
             sprintf('%s-remove', $resourceName),
-            'ekyna.admin.button.remove'
+            'ekyna_core.button.remove'
         );
 
         return $this->render(
