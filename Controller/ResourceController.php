@@ -82,7 +82,7 @@ class ResourceController extends Controller
             if ($request->isXmlHttpRequest()) {
                 return new JsonResponse(array(
                     'id' => $resource->getId(),
-                    'name' => $resource,
+                    'name' => (string) $resource,
                 ));
                 /*$serializer = $this->container->get('jms_serializer');
                 $response = new Response($serializer->serialize($resource, 'json'));
