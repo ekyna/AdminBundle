@@ -45,9 +45,8 @@ class AsseticConfiguration
             '@fontawesome_css',
             '@core_css',
 
-            'bundles/ekynaadmin/css/bootstrap-overrides.css',
             'bundles/ekynaadmin/css/lib/jquery-ui.css',
-            'bundles/ekynaadmin/css/lib/uniform.default.css',
+            'bundles/ekynaadmin/css/bootstrap-overrides.css',
             'bundles/ekynaadmin/css/layout.css',
             'bundles/ekynaadmin/css/elements.css',
             'bundles/ekynaadmin/css/ui-elements.css',
@@ -79,7 +78,6 @@ class AsseticConfiguration
             '@core_js',
 
             'bundles/ekynaadmin/js/jquery-ui.js',
-            'bundles/ekynaadmin/js/jquery.uniform.min.js',
             'bundles/ekynaadmin/js/theme.js',
             'bundles/ekynaadmin/js/ui.js',
 
