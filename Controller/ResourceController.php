@@ -77,7 +77,7 @@ class ResourceController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->persist($resource);
+            $this->persist($resource, true);
 
             if ($request->isXmlHttpRequest()) {
                 return new JsonResponse(array(
@@ -398,7 +398,7 @@ class ResourceController extends Controller
      * 
      * @param object $resource
      */
-    protected function persist($resource)
+    protected function persist($resource, $creation = false)
     {
         $em = $this->getManager();
         $em->persist($resource);
