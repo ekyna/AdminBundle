@@ -41,7 +41,7 @@ class AsseticConfiguration
     protected function buildCss(array $config)
     {
         $inputs = array(
-            '@bootstrap_css',
+            '%kernel.root_dir%/../vendor/twbs/bootstrap/dist/css/bootstrap.min.css',
             '@fontawesome_css',
             '@core_css',
 
