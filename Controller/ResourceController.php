@@ -73,7 +73,7 @@ class ResourceController extends Controller
         $resource = $this->createNew($context);
         $resourceName = $this->config->getResourceName();
 
-        $form = $this->createForm($this->config->getFormType(), $resource);
+        $form = $this->createForm($this->config->getFormType(), $resource, array('admin_mode' => true));
 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -143,7 +143,7 @@ class ResourceController extends Controller
 
         $this->isGranted('EDIT', $resource);
 
-        $form = $this->createForm($this->config->getFormType(), $resource);
+        $form = $this->createForm($this->config->getFormType(), $resource, array('admin_mode' => true));
 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -430,7 +430,7 @@ class ResourceController extends Controller
             $message = 'Confirmer la suppression ?';
         }
 
-        return $this->createFormBuilder()
+        return $this->createFormBuilder(null, array('admin_mode' => true))
             ->add('confirm', 'checkbox', array(
                 'label' => $message,
                 'attr' => array('align_with_widget' => true),

@@ -54,7 +54,7 @@ trait NestedTrait
         $child = $this->createNew($context);
         $child->setParent($resource);
 
-        $form = $this->createForm($this->config->getFormType(), $child);
+        $form = $this->createForm($this->config->getFormType(), $child, array('admin_mode' => true));
 
         $form->handleRequest($this->getRequest());
         if ($form->isValid()) {

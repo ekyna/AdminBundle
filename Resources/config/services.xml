@@ -16,6 +16,8 @@
 
         <parameter key="ekyna_admin.twig.admin_extension.class">Ekyna\Bundle\AdminBundle\Twig\AdminExtension</parameter>
 
+        <parameter key="ekyna_admin.form.admin_extension.class">Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension</parameter>
+
         <parameter key="ekyna_admin.twig.show_extension.class">Ekyna\Bundle\AdminBundle\Twig\ShowExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.template">EkynaAdminBundle:Show:show_div_layout.html.twig</parameter>
     </parameters>
@@ -63,6 +65,11 @@
             <argument type="service" id="request" />
             <tag name="knp_menu.menu" alias="ekyna_admin.breadcrumb" />
         </service>
+
+        <!-- Form Types Extensions -->
+        <service id="ekyna_admin.form.admin_extension" class="%ekyna_admin.form.admin_extension.class%">
+		    <tag name="form.type_extension" alias="form" />
+		</service>
 
         <!-- Twig Extensions -->
 	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
