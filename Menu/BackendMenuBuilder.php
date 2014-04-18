@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Main menu builder.
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class BackendMenuBuilder extends MenuBuilder
 {

@@ -6,6 +6,8 @@ use Doctrine\ORM\EntityRepository as BaseRepository;
 
 /**
  * ResourceRepository
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ResourceRepository extends BaseRepository
 {

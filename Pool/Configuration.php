@@ -6,6 +6,8 @@ use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 
 /**
  * Configuration
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class Configuration
 {

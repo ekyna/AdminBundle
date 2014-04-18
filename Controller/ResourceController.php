@@ -13,6 +13,8 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * ResourceController
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ResourceController extends Controller
 {

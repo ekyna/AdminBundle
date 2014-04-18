@@ -2,6 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
+/**
+ * MenuGroup
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
+ */
 class MenuGroup
 {
     /**

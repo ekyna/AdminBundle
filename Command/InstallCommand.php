@@ -8,9 +8,12 @@ use Ekyna\Bundle\UserBundle\Entity\Group;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Ekyna\Bundle\UserBundle\Entity\User;
+use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * InstallCommand
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class InstallCommand extends ContainerAwareCommand
 {
@@ -33,6 +36,26 @@ class InstallCommand extends ContainerAwareCommand
         $this
             ->setName('ekyna:admin:init')
             ->setDescription('Initialize administration.')
+            ->setDefinition(array(
+                new InputArgument('username', InputArgument::REQUIRED, 'The username'),
+                new InputArgument('email', InputArgument::REQUIRED, 'The email'),
+                new InputArgument('password', InputArgument::REQUIRED, 'The password'),
+            ))
+            ->setHelp(<<<EOT
+The <info>ekyna:admin:init</info> command has 4 steps:
+ - Creates the ACL tables.
+ - Creates user groups.
+ - Creates ACL rules (regarding to admin pool registered entities)
+ - Creates a super admin user
+
+This interactive shell will ask you for a username, an email and a password.
+
+You can alternatively specify username, email and password as arguments:
+
+  <info>php app/console ekyna:admin:init adminusername email@example.com mypassword</info>
+
+EOT
+            );
         ;
     }
 
@@ -56,52 +79,71 @@ class InstallCommand extends ContainerAwareCommand
         return 0;
     }
 
+    /**
+     * @see Command
+     */
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        $dialog = $this->getHelperSet()->get('dialog');
+
+        if (!$input->getArgument('username')) {
+            $username = $dialog->askAndValidate(
+                $output,
+                'Username: ',
+                function ($answer) {
+                    if (!(preg_match('#[a-zA-Z]+#', $answer) && strlen($answer) > 4)) {
+                        throw new \RunTimeException('Username should be composed of at least 5 letters.');
+                    }
+                    return $answer;
+                },
+                3
+            );
+            $input->setArgument('username', $username);
+        }
+
+        if (!$input->getArgument('email')) {
+            $email = $dialog->askAndValidate(
+                $output,
+                'Email address: ',
+                function ($answer) {
+                    if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
+                        throw new \RunTimeException('This is not a valid email address.');
+                    }
+                    return $answer;
+                },
+                3
+            );
+            $input->setArgument('email', $email);
+        }
+    
+        if (!$input->getArgument('password')) {
+            $password = $dialog->askAndValidate(
+                $output,
+                'Password: ',
+                function ($answer) {
+                    if (!(preg_match('#[a-zA-Z0-9]+#', $answer) && strlen($answer) > 5)) {
+                        throw new \RunTimeException('Password should be composed of at least 6 letters and numbers.');
+                    }
+                    return $answer;
+                },
+                3
+            );
+            $input->setArgument('password', $password);
+        }
+    }
+
     private function createSuperAdmin(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>Creating Super Admin.</info>');
-        
-        $dialog = $this->getHelperSet()->get('dialog');
-
-        $username = $dialog->askAndValidate(
-            $output,
-            'Username: ',
-            function ($answer) {
-                if (!(preg_match('#[a-zA-Z]+#', $answer) && strlen($answer) > 4)) {
-                    throw new \RunTimeException('Username should be composed of at least 5 letters.');
-                }
-                return $answer;
-            },
-            3
-        );
-
-        $email = $dialog->askAndValidate(
-            $output,
-            'Email address: ',
-            function ($answer) {
-                if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                    throw new \RunTimeException('This is not a valid email address.');
-                }
-                return $answer;
-            },
-            3
-        );
-
-        $password = $dialog->askAndValidate(
-            $output,
-            'Password: ',
-            function ($answer) {
-                if (!(preg_match('#[a-zA-Z0-9]+#', $answer) && strlen($answer) > 5)) {
-                    throw new \RunTimeException('Password should be composed of at least 6 letters and numbers.');
-                }
-                return $answer;
-            },
-            3
-        );
 
         $em = $this->getContainer()->get('ekyna_user.group.manager');
         $group = $this->getContainer()
             ->get('ekyna_user.group.repository')
             ->findOneBy(array('name' => array_keys($this->defaultGroups)[0]));
+
+        $username   = $input->getArgument('username');
+        $email      = $input->getArgument('email');
+        $password   = $input->getArgument('password');
 
         $user = new User();
         $user
@@ -115,9 +157,9 @@ class InstallCommand extends ContainerAwareCommand
         $em->persist($user);
         $em->flush();
 
-        $output->writeln('Super Admin have been successfully created.');
+        $output->writeln('Super Admin has been successfully created.');
     }
-    
+
     /**
      * Creates default groups entities
      *

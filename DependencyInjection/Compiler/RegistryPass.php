@@ -7,7 +7,11 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
+ * RegistryPass
+ * 
  * Adds all services with the tags "ekyna_admin.configuration"
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class RegistryPass implements CompilerPassInterface
 {

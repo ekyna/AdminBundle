@@ -8,6 +8,8 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * TinymceTrait
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 trait TinymceTrait
 {

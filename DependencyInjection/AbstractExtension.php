@@ -9,7 +9,9 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * ResourceExtension
+ * AbstractExtension
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 abstract class AbstractExtension extends Extension
 {

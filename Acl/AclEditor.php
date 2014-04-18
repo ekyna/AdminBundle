@@ -11,6 +11,8 @@ use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
 
 /**
  * AclEditor
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class AclEditor
 {

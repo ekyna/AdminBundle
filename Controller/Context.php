@@ -2,6 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
+/**
+ * Context
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
+ */
 class Context
 {    
     protected $ownerResourceName;

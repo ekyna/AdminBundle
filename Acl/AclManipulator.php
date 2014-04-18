@@ -10,6 +10,8 @@ use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
  * AclManipulator
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class AclManipulator
 {

@@ -4,6 +4,8 @@ namespace Ekyna\Bundle\AdminBundle\Pool;
 
 /**
  * ConfigurationRegistry
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ConfigurationRegistry
 {

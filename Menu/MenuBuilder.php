@@ -8,6 +8,8 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
  * Abstract menu builder.
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 abstract class MenuBuilder
 {

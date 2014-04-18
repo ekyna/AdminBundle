@@ -6,6 +6,8 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * NestedTrait
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 trait NestedTrait
 {

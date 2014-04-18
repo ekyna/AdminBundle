@@ -7,6 +7,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * PermissionType
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class PermissionType extends AbstractType
 {

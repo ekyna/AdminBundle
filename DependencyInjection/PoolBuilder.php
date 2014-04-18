@@ -9,6 +9,8 @@ use Symfony\Component\DependencyInjection\Alias;
 
 /**
  * PoolBuilder
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class PoolBuilder
 {

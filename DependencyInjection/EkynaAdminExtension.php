@@ -9,9 +9,9 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 
 /**
- * This is the class that loads and manages your bundle configuration
+ * EkynaAdminExtension
  *
- * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
+ * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class EkynaAdminExtension extends Extension implements PrependExtensionInterface
 {

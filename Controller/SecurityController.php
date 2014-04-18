@@ -6,6 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
+/**
+ * SecurityController
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
+ */
 class SecurityController extends Controller
 {
     public function loginAction(Request $request)

@@ -2,8 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
-use \RuntimeException;
-
+/**
+ * MenuPool
+ *
+ * @author Étienne Dauvergne <contact@ekyna.com>
+ */
 class MenuPool
 {
     /**
@@ -55,7 +58,7 @@ class MenuPool
             $entry = new MenuEntry($name, $route, $label, $domain);
             $group->addEntry($entry);
         }else{
-            throw new RuntimeException('Menu Group "'.$group_name.'" not found.');
+            throw new \RuntimeException('Menu Group "'.$group_name.'" not found.');
         }
     }
 
