@@ -29,6 +29,8 @@ class PoolBuilder
 
     public function build()
     {
+        $this->container->setParameter($this->getContainerKey('class'), $this->config['entity']);
+        
         $configurationKey = $this->getContainerKey('configuration');
         $this->container->setDefinition(
             $configurationKey,
