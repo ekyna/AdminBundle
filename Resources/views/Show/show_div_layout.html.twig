@@ -38,7 +38,9 @@
 {% block show_widget_entity %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">
-    {% if entities|length > 0 %}
+    {% if entities is sameas(null) -%}
+        Non défini
+    {%- elseif entities|length > 0 %}
     {% for entity in entities %}
         {% set route_params = [] %}
         {% for param, property in route_params_map %}

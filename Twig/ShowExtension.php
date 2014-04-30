@@ -111,7 +111,7 @@ class ShowExtension extends \Twig_Extension
             $options['route_params_map'] = array('id' => 'id');
         }
 
-        if (! ($entities instanceof Collection)) {
+        if (null !== $entities && !($entities instanceof Collection)) {
             $entities = new ArrayCollection(array(
                 $entities
             ));
