@@ -38,6 +38,7 @@
 {% block show_widget_entity %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">
+    {% if entities|length > 0 %}
     {% for entity in entities %}
         {% set route_params = [] %}
         {% for param, property in route_params_map %}
@@ -45,6 +46,9 @@
         {% endfor %}
         <a href="{{ path(route, route_params) }}" class="show-entity">{{ attribute(entity, field) }}</a>
     {% endfor %}
+    {% else %}
+    &nbsp;
+    {% endif %}
     </div>
 {% endspaceless %}
 {% endblock show_widget_entity %}
