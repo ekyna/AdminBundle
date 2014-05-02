@@ -9,4 +9,10 @@ TODO
 
 ## Configuration
 TODO
-- security.yml
+
+
+
+
+TODO:
+- hide menu entries and groups if View is not granted.
+- allow null config and overrides of menu group references.

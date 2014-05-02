@@ -21,7 +21,9 @@ trait TinymceTrait
 
         $context = $this->loadContext($request);
         $resourceName = $this->config->getResourceName();
-        $resource = $context->getResource($resourceName);
+        if(null === $resource = $context->getResource($resourceName)) {
+            throw new \RuntimeException('Resource not found.');
+        }
 
         $this->isGranted('VIEW', $resource);
 
