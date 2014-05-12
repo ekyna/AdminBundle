@@ -64,6 +64,8 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderEntityWidget($content, $options);
         } elseif ($type == 'url') {
             $content = $this->renderUrlWidget($content, $options);
+        } elseif ($type == 'datetime') {
+            $content = $this->renderDatetimeWidget($content, $options);
         } elseif ($type == 'tinymce') {
             $content = $this->renderTinymceWidget($content, $options);
         } elseif ($type == 'image') {
@@ -135,6 +137,20 @@ class ShowExtension extends \Twig_Extension
         );
 
         return $this->renderBlock('show_widget_url', $vars);
+    }
+
+    protected function renderDatetimeWidget($content, array $options = array())
+    {
+        if (! array_key_exists('time', $options)) {
+            $options['time'] = true;
+        }
+
+        $vars = array(
+            'content' => $content,
+            'time'    => $options['time'],
+        );
+
+        return $this->renderBlock('show_widget_datetime', $vars);
     }
 
     protected function renderTinymceWidget($content, array $options = array())

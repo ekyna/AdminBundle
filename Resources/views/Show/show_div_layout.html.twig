@@ -29,6 +29,18 @@
 {% endspaceless %}
 {% endblock show_widget_simple %}
 
+{% block show_widget_datetime %}
+{% spaceless %}
+    <div class="show-widget show-widget-simple">
+    {% if content is empty %}
+    <em>{{ 'ekyna_core.undefined'|trans }}</em>
+    {% else %}
+    {{ content|date(time ? 'd/m/Y H:i' : 'd/m/Y') }}
+    {% endif %}
+    </div>
+{% endspaceless %}
+{% endblock show_widget_datetime %}
+
 {% block show_widget_checkbox %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">{% if content is sameas(true) %}{{ 'ekyna_core.yes'|trans }}{% else %}{{ 'ekyna_core.no'|trans }}{% endif %}</div>
@@ -49,7 +61,7 @@
         <a href="{{ path(route, route_params) }}" class="show-entity">{{ attribute(entity, field) }}</a>
     {% endfor %}
     {% else %}
-    &nbsp;
+    <em>{{ 'ekyna_core.undefined'|trans }}</em>
     {% endif %}
     </div>
 {% endspaceless %}
