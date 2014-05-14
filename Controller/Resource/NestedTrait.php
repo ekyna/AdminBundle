@@ -56,7 +56,16 @@ trait NestedTrait
         $child = $this->createNew($context);
         $child->setParent($resource);
 
-        $form = $this->createForm($this->config->getFormType(), $child, array('admin_mode' => true));
+        $form = $this->createForm($this->config->getFormType(), $child, array(
+            'admin_mode' => true,
+            '_redirect_enabled' => true,
+            '_footer' => array(
+                'cancel_path' => $this->generateUrl(
+                    $this->config->getRoute('show'),
+                    $context->getIdentifiers(true)
+                ),
+            ),
+        ));
 
         $form->handleRequest($this->getRequest());
         if ($form->isValid()) {
@@ -68,6 +77,10 @@ trait NestedTrait
             $em->flush();
 
             $this->addFlash('La resource a été créé avec succès.', 'success');
+
+            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                return $this->redirect($redirectPath);
+            }
 
             return $this->redirect(
                 $this->generateUrl(

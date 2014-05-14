@@ -19,13 +19,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 class ResourceController extends Controller
 {
     /**
-     * Context
-     *
-     * @var Context
-     */
-    protected $context;
-
-    /**
      * Parent resource controller
      *
      * @var ResourceController
@@ -75,7 +68,13 @@ class ResourceController extends Controller
         $resource = $this->createNew($context);
         $resourceName = $this->config->getResourceName();
 
-        $form = $this->createForm($this->config->getFormType(), $resource, array('admin_mode' => true));
+        $form = $this->createForm($this->config->getFormType(), $resource, array(
+            'admin_mode' => true,
+            '_redirect_enabled' => true,
+            '_footer' => array(
+                'cancel_path' => $this->generateUrl($this->config->getRoute('list')),
+            ),
+        ));
 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -93,6 +92,10 @@ class ResourceController extends Controller
             }
 
             $this->addFlash('La resource a été créé avec succès.', 'success');
+
+            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                return $this->redirect($redirectPath);
+            }
 
             return $this->redirect(
                 $this->generateUrl(
@@ -145,13 +148,26 @@ class ResourceController extends Controller
 
         $this->isGranted('EDIT', $resource);
 
-        $form = $this->createForm($this->config->getFormType(), $resource, array('admin_mode' => true));
+        $form = $this->createForm($this->config->getFormType(), $resource, array(
+            'admin_mode' => true,
+            '_redirect_enabled' => true,
+            '_footer' => array(
+                'cancel_path' => $this->generateUrl(
+                    $this->config->getRoute('show'),
+                    $context->getIdentifiers(true)
+                ),
+            ),
+        ));
 
         $form->handleRequest($request);
         if ($form->isValid()) {
             $this->persist($resource);
 
             $this->addFlash('La resource a été modifiée avec succès.', 'success');
+
+            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                return $this->redirect($redirectPath);
+            }
 
             return $this->redirect(
                 $this->generateUrl(
@@ -182,7 +198,7 @@ class ResourceController extends Controller
 
         $this->isGranted('DELETE', $resource);
 
-        $form = $this->createConfirmationForm();
+        $form = $this->createConfirmationForm($context);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
@@ -422,17 +438,36 @@ class ResourceController extends Controller
     /**
      * Creates a confirmation form
      * 
+     * @param Context $context
      * @param string $message
      * 
      * @return \Symfony\Component\Form\Form
      */
-    protected function createConfirmationForm($message = null)
+    protected function createConfirmationForm(Context $context, $message = null)
     {
         if(null === $message) {
             $message = 'Confirmer la suppression ?';
         }
 
-        return $this->createFormBuilder(null, array('admin_mode' => true))
+        $builder = $this->createFormBuilder(null, array(
+            'admin_mode' => true,
+            '_redirect_enabled' => true,
+            '_footer' => array(
+                'cancel_path' => $this->generateUrl(
+                    $this->config->getRoute('show'),
+                    $context->getIdentifiers(true)
+                ),
+                'buttons' => array(
+            	    'submit' => array(
+            	        'theme' => 'danger',
+            	        'icon'  => 'trash',
+            	        'label' => 'ekyna_core.button.remove',
+                    )
+                )
+            ),
+        ));
+
+        return $builder
             ->add('confirm', 'checkbox', array(
                 'label' => $message,
                 'attr' => array('align_with_widget' => true),
