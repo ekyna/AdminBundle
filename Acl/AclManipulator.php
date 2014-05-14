@@ -46,12 +46,19 @@ class AclManipulator
 
     /**
      * {@inheritdoc}
+     * TODO: change to buildGroupForm(FormBuilder $builder)
      */
-    public function createGroupForm(GroupInterface $group)
+    public function createGroupForm(GroupInterface $group, $cancelPath = null)
     {
         $datas = $this->generateGroupFormDatas($group);
 
-        $formBuilder = $this->formFactory->createBuilder('form', $datas);
+        $formBuilder = $this->formFactory->createBuilder('form', $datas, array(
+            'admin_mode' => true,
+            '_redirect_enabled' => true,
+            '_footer' => array(
+                'cancel_path' => $cancelPath,
+            ),
+        ));
         foreach($this->registry->getConfigurations() as $config) {
             $formBuilder->add($config->getId(), new PermissionType($this->aclEditor->getPermissions()), array(
             	'label' => $config->getResourceName()

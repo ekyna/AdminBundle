@@ -68,11 +68,20 @@ class ResourceController extends Controller
         $resource = $this->createNew($context);
         $resourceName = $this->config->getResourceName();
 
+        if ($this->hasParent()) {
+            $cancelPath = $this->generateUrl(
+                $this->getParent()->getConfiguration()->getRoute('show'),
+                $context->getIdentifiers()
+            );
+        } else {
+            $cancelPath = $this->generateUrl($this->config->getRoute('list'));
+        }
+
         $form = $this->createForm($this->config->getFormType(), $resource, array(
             'admin_mode' => true,
             '_redirect_enabled' => true,
             '_footer' => array(
-                'cancel_path' => $this->generateUrl($this->config->getRoute('list')),
+                'cancel_path' => $cancelPath,
             ),
         ));
 
