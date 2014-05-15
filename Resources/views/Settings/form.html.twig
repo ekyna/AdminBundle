@@ -1,3 +1,22 @@
-{{ form_row(form.sitename) }}
-{{ form_row(form.adminname) }}
-{{ form_row(form.adminemail) }}
+{{ form_row(form.general.site_name) }}
+{{ form_row(form.general.admin_name) }}
+{{ form_row(form.general.admin_email) }}
+<hr>
+{{ form_row(form.general.site_address.street) }}
+{{ form_row(form.general.site_address.supplement) }}
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.general.site_address.postalCode, {'label_col': 4, 'widget_col': 8}) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.general.site_address.city, {'label_col': 4, 'widget_col': 8}) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {{ form_row(form.general.site_address.phone, {'label_col': 4, 'widget_col': 8}) }}
+    </div>
+    <div class="col-md-6">
+        {{ form_row(form.general.site_address.mobile, {'label_col': 4, 'widget_col': 8}) }}
+    </div>
+</div>

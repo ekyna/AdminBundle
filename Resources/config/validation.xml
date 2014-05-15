@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping
+    xmlns="http://symfony.com/schema/dic/constraint-mapping"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+                        http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="Ekyna\Bundle\AdminBundle\Model\SiteAddress">
+        <property name="street">
+            <constraint name="NotBlank" />
+            <constraint name="Length">
+                <option name="min">3</option>
+                <option name="max">255</option>
+            </constraint>
+        </property>
+        <property name="postalCode">
+            <constraint name="NotBlank" />
+            <constraint name="Length">
+                <option name="min">5</option>
+                <option name="max">5</option>
+            </constraint>
+        </property>
+        <property name="city">
+            <constraint name="NotBlank" />
+            <constraint name="Length">
+                <option name="min">3</option>
+                <option name="max">64</option>
+            </constraint>
+        </property>
+
+        <property name="phone">
+            <constraint name="NotBlank" />
+            <constraint name="Length">
+                <option name="min">2</option>
+                <option name="max">16</option>
+            </constraint>
+        </property>
+        <property name="mobile">
+            <constraint name="NotBlank" />
+            <constraint name="Length">
+                <option name="min">2</option>
+                <option name="max">16</option>
+            </constraint>
+        </property>
+    </class>
+</constraint-mapping>

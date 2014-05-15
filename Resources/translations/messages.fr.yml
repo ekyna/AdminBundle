@@ -8,3 +8,7 @@ ekyna_admin:
     acl:
         title: Permissions
         no_rules: Aucune permission répertoriée
+    setting:
+        sitename: Nom du site
+        adminname: Contact principal
+        adminemail: Email principale

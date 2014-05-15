@@ -5,6 +5,8 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
+        <parameter key="ekyna_admin.settings.class">Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema</parameter>
+
         <parameter key="ekyna_admin.menu.pool.class">Ekyna\Bundle\AdminBundle\Menu\MenuPool</parameter>
         <parameter key="ekyna_admin.menu.builder.class">Ekyna\Bundle\AdminBundle\Menu\BackendMenuBuilder</parameter>
 
@@ -23,6 +25,11 @@
     </parameters>
 
     <services>
+        <!-- Settings Schema -->
+        <service id="ekyna_admin.settings" class="%ekyna_admin.settings.class%">
+            <tag name="ekyna_setting.schema" namespace="general" position="0" />
+        </service>
+
         <!-- Pool Factory / Registry -->
         <service id="ekyna_admin.pool_factory" class="%ekyna_admin.pool_factory.class%"></service>
         <service id="ekyna_admin.pool_registry" class="%ekyna_admin.pool_registry.class%">

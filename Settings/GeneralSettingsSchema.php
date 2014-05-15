@@ -2,18 +2,20 @@
 
 namespace Ekyna\Bundle\AdminBundle\Settings;
 
-use Ekyna\Bundle\SettingBundle\Schema\SchemaInterface;
+use Ekyna\Bundle\AdminBundle\Form\Type\SiteAddressType;
+use Ekyna\Bundle\AdminBundle\Model\SiteAddress;
+use Ekyna\Bundle\SettingBundle\Schema\AbstractSchema;
 use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilderInterface;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * GeneralSettingsSchema.
  *
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class GeneralSettingsSchema implements SchemaInterface
+class GeneralSettingsSchema extends AbstractSchema
 {
     /**
      * @var array
@@ -35,14 +37,16 @@ class GeneralSettingsSchema implements SchemaInterface
     {
         $builder
             ->setDefaults(array_merge(array(
-                'sitename'   => 'Default website name',
-                'adminname'  => 'Default admin name',
-                'adminemail' => 'contact@example.org',
+                'site_name'    => 'Default website name',
+                'admin_name'   => 'Default admin name',
+                'admin_email'  => 'contact@example.org',
+                'site_address' => new SiteAddress(),
             ), $this->defaults))
             ->setAllowedTypes(array(
-                'sitename'   => array('string'),
-                'adminname'  => array('string'),
-                'adminemail' => array('string'),
+                'site_name'    => 'string',
+                'admin_name'   => 'string',
+                'admin_email'  => 'string',
+                'site_address' => 'Ekyna\Bundle\AdminBundle\Model\SiteAddress'
             ))
         ;
     }
@@ -50,27 +54,30 @@ class GeneralSettingsSchema implements SchemaInterface
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder)
+    public function buildForm(FormBuilderInterface $builder, array $options = array())
     {
         $builder
-            ->add('sitename', 'text', array(
-                'label'       => 'Site name',
+            ->add('site_name', 'text', array(
+                'label'       => 'ekyna_admin.setting.sitename',
                 'constraints' => array(
                     new NotBlank()
                 )
             ))
-            ->add('adminname', 'textarea', array(
-                'label'       => 'Admin name',
+            ->add('admin_name', 'text', array(
+                'label'       => 'ekyna_admin.setting.adminname',
                 'constraints' => array(
                     new NotBlank()
                 )
             ))
-            ->add('adminemail', 'locale', array(
-                'label'       => 'Admin email',
+            ->add('admin_email', 'text', array(
+                'label'       => 'ekyna_admin.setting.adminemail',
                 'constraints' => array(
                     new NotBlank(),
                     new Email(),
                 )
+            ))
+            ->add('site_address', new SiteAddressType(), array(
+                'label' => 'ekyna_admin.setting.siteaddress',
             ))
         ;
     }
@@ -97,5 +104,13 @@ class GeneralSettingsSchema implements SchemaInterface
     public function getFormTemplate()
     {
         return 'EkynaAdminBundle:Settings:form.html.twig';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+        return 'ekyna_general_settings';
     }
 }

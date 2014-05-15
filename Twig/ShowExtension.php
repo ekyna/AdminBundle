@@ -58,6 +58,8 @@ class ShowExtension extends \Twig_Extension
 
         if ($type == 'checkbox') {
             $content = $this->renderCheckboxWidget($content, $options);
+        } elseif ($type == 'number') {
+            $content = $this->renderNumberWidget($content, $options);
         } elseif ($type == 'textarea') {
             $content = $this->renderTextareaWidget($content, $options);
         } elseif ($type == 'entity') {
@@ -93,6 +95,18 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_checkbox', array(
             'content' => $content
+        ));
+    }
+
+    protected function renderNumberWidget($content, array $options = array())
+    {
+        $options = array_merge(array(
+        	'precision' => 2,
+            'append'    => '',
+        ), $options);
+
+        return $this->renderBlock('show_widget_simple', array(
+            'content' => trim(sprintf('%s %s', number_format($content, $options['precision'], ',', ' '), $options['append']))
         ));
     }
 
