@@ -3,60 +3,61 @@
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
 /**
- * MenuEntry
+ * MenuEntry.
  *
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class MenuEntry
 {
     /**
-     * Menu entrey name
-     * 
      * @var string
      */
     private $name;
 
     /**
-     * Menu entry route name
-     * 
      * @var string
      */
     private $route;
 
     /**
-     * Menu entry label
-     * 
      * @var string
      */
     private $label;
 
     /**
-     * Translation domain
-     * 
      * @var string
      */
     private $domain;
 
+    /**
+     * @var integer
+     */
+    private $position;
 
     /**
-     * Create a backend menu entry
-     *  
-     * @param string $name
-     * @param string $route
-     * @param string $label
-     * @param string $domain
+     * @var string
      */
-    public function __construct($name, $route, $label,  $domain = null)
+    private $resource;
+
+
+    /**
+     * Creates a backend menu entry.
+     *  
+     * @param array $options
+     */
+    public function __construct($options)
     {
         $this
-            ->setName($name)
-            ->setRoute($route)
-            ->setLabel($label, $domain)
+            ->setName($options['name'])
+            ->setRoute($options['route'])
+            ->setLabel($options['label'], $options['domain'])
+            ->setPosition($options['position'])
+            ->setResource($options['resource'])
         ;
     }
 
     /**
-     * Get name
+     * Returns the name.
      *
      * @return string
      */
@@ -66,19 +67,21 @@ class MenuEntry
     }
 
     /**
-     * Set name
+     * Sets the name.
      *
      * @param string $name
+     * 
      * @return MenuEntry
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get route name
+     * Returns the route name.
      * 
      * @return string
      */
@@ -88,19 +91,21 @@ class MenuEntry
     }
 
     /**
-     * Set route name
+     * Sets the route name.
      * 
      * @param string $route
+     * 
      * @return MenuEntry
      */
     public function setRoute($route)
     {
         $this->route = $route;
+
         return $this;
     }
 
     /**
-     * Get label
+     * Returns the label.
      * 
      * @return string
      */
@@ -110,21 +115,23 @@ class MenuEntry
     }
 
     /**
-     * Set label
+     * Sets the label.
      * 
      * @param string $label
      * @param string $domain
+     * 
      * @return MenuEntry
      */
     public function setLabel($label, $domain = null)
     {
         $this->label = $label;
         $this->setDomain($domain);
+
         return $this;
     }
 
     /**
-     * Get translation domain
+     * Returns the translation domain.
      * 
      * @return string
      */
@@ -134,15 +141,65 @@ class MenuEntry
     }
 
     /**
-     * Set translation domain
+     * Sets the translation domain.
      * 
      * @param string $domain
+     * 
      * @return MenuEntry
      */
     public function setDomain($domain)
     {
-        if (strlen($domain) > 0)
-            $this->domain = $domain;
+        $this->domain = $domain;
+
         return $this;
     }
+
+	/**
+	 * Returns the position.
+	 * 
+     * @return integer
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+	/**
+	 * Sets the position.
+	 * 
+     * @param integer $position
+     * 
+     * @return MenuEntry
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+	/**
+	 * Returns the resource.
+	 * 
+     * @return string
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+	/**
+	 * Sets the resource.
+	 * 
+     * @param string $resource
+     * 
+     * @return MenuEntry
+     */
+    public function setResource($resource)
+    {
+        $this->resource = $resource;
+
+        return $this;
+    }
+
 }

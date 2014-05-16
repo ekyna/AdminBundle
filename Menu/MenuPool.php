@@ -2,8 +2,10 @@
 
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
+use Symfony\Component\OptionsResolver\OptionsResolver;
+
 /**
- * MenuPool
+ * MenuPool.
  *
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
@@ -17,49 +19,108 @@ class MenuPool
 
     /**
      * Preparation flag
-     * 
      * @var boolean
      */
     private $prepared;
 
+    /**
+     * @var OptionsResolver
+     */
+    private $groupOptionsResolver;
+
+    /**
+     * @var OptionsResolver
+     */
+    private $entryOptionsResolver;
+    
     public function __construct()
     {
         $this->groups = array();
         $this->prepared = false;
+
+        $this->initResolvers();
+    }
+
+    private function initResolvers()
+    {
+        $this->groupOptionsResolver = new OptionsResolver();
+        $this->groupOptionsResolver
+            ->setDefaults(array(
+            	'name'     => null,
+            	'label'    => null,
+            	'icon'     => null,
+            	'position' => 1,
+            	'domain'   => null,
+            	'route'    => null,
+            ))
+            ->setAllowedTypes(array(
+            	'name'     => 'string',
+            	'label'    => 'string',
+            	'icon'     => 'string',
+            	'position' => 'int',
+            	'domain'   => array('string', 'null'),
+            	'route'    => array('string', 'null'),
+            ))
+        ;
+
+        $this->entryOptionsResolver = new OptionsResolver();
+        $this->entryOptionsResolver
+            ->setDefaults(array(
+            	'name'     => null,
+            	'label'    => null,
+            	'route'    => null,
+            	'position' => 1,
+            	'domain'   => null,
+            	'resource' => null,
+            ))
+            ->setAllowedTypes(array(
+            	'name'     => 'string',
+            	'label'    => 'string',
+            	'route'    => 'string',
+            	'position' => 'int',
+            	'domain'   => array('string', 'null'),
+            	'resource' => array('string', 'null'),
+            ))
+        ;
+        
     }
 
     /**
-     * Create a menu group
+     * Creates a menu group.
      * 
-     * @param string $name
-     * @param string $label
-     * @param string $icon
-     * @param string $domain
+     * @param array $options
+     * 
+     * @throws RuntimeException
      */
-    public function createGroupReference($name, $label, $icon, $domain = null, $order = 1, $route = null)
+    public function createGroup(array $options)
     {
-        $group = new MenuGroup($name, $label, $icon, $domain, $order, $route);
+        if ($this->prepared) {
+            throw new \RuntimeException('MenuPool has been prepared and can\'t receive new groups.');
+        }
+
+        $group = new MenuGroup($this->groupOptionsResolver->resolve($options));
+
         $this->addGroup($group);
     }
 
     /**
-     * Create a menu entry
+     * Creates a menu entry.
      * 
      * @param string $group_name
-     * @param string $route
-     * @param string $label
-     * @param string $domain
+     * @param array $options
+     * 
      * @throws RuntimeException
      */
-    public function createEntryReference($group_name, $name, $route, $label, $domain = null)
+    public function createEntry($group_name, array $options)
     {
-        if($this->hasGroup($group_name)) {
-            $group = $this->getGroup($group_name);
-            $entry = new MenuEntry($name, $route, $label, $domain);
-            $group->addEntry($entry);
-        }else{
+        if (! $this->hasGroup($group_name)) {
             throw new \RuntimeException('Menu Group "'.$group_name.'" not found.');
         }
+
+        $entry = new MenuEntry($this->entryOptionsResolver->resolve($options));
+
+        $group = $this->getGroup($group_name);
+        $group->addEntry($entry);
     }
 
     /**
@@ -69,7 +130,7 @@ class MenuPool
      */
     private function addGroup(MenuGroup $group)
     {
-        if(!$this->hasGroup($group->getName())) {
+        if (!$this->hasGroup($group->getName())) {
             $this->groups[$group->getName()] = $group;
         }
     }
@@ -78,31 +139,34 @@ class MenuPool
      * Check if menu group is allready defined
      * 
      * @param string $group_name
+     * 
      * @return boolean
      */
     private function hasGroup($group_name)
     {
-        return (bool) isset($this->groups[$group_name]);
+        return array_key_exists($group_name, $this->groups);
     }
 
     /**
      * Get a menu group by his name
      * 
      * @param string $group_name
+     * 
      * @return MenuGroup
      */
     private function getGroup($group_name)
     {
-        if($this->hasGroup($group_name))
+        if ($this->hasGroup($group_name)) {
             return $this->groups[$group_name];
+        }
 
         return false;
     }
 
     /**
-     * Get menu groups
+     * Returns the menu groups.
      * 
-     * @return multitype:MenuGroup
+     * @return MenuGroup[]
      */
     public function getGroups()
     {
@@ -110,15 +174,22 @@ class MenuPool
     }
 
     /**
-     * Prepare the pool for menu render
+     * Prepares the pool for rendering.
      */
     public function prepare()
     {
-        if($this->prepared) return;
+        if ($this->prepared) {
+            return;
+        }
         usort($this->groups, function(MenuGroup $a, MenuGroup $b) {
-            if($a->getOrder() == $b->getOrder()) return 0;
-            return $a->getOrder() > $b->getOrder() ? 1 : -1;
+            if ($a->getPosition() == $b->getPosition()) {
+                return 0;
+            }
+            return $a->getPosition() > $b->getPosition() ? 1 : -1;
         });
+        foreach ($this->groups as $group) {
+            $group->prepare();
+        }
         $this->prepared = true;
     }
 }

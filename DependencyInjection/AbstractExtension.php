@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * AbstractExtension
+ * AbstractExtension.
  *
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
@@ -21,16 +21,15 @@ abstract class AbstractExtension extends Extension
     );
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        //$this->configure($configs, new Configuration(), $container);
         throw new \Exception('AbstractExtension:load() has to be overridden.');
     }
 
     /**
-     * Configure the pool builder
+     * Configures the pool builder.
      * 
      * @param array                  $configs
      * @param string                 $prefix
@@ -46,16 +45,18 @@ abstract class AbstractExtension extends Extension
         $loader = new XmlFileLoader($container, new FileLocator($this->getConfigurationDirectory()));
         $this->loadConfigurationFile($this->configFiles, $loader);
 
-        foreach ($config['pools'] as $resourceName => $params) {
-            $builder = new PoolBuilder($container, $prefix, $resourceName, $params);
-            $builder->build();
+        if (array_key_exists('pools', $config)) {
+            foreach ($config['pools'] as $resourceName => $params) {
+                $builder = new PoolBuilder($container, $prefix, $resourceName, $params);
+                $builder->build();
+            }
         }
 
         return array($config, $loader);
     }
 
     /**
-     * Load bundle configuration files
+     * Loads bundle configuration files.
      * 
      * @param array         $config
      * @param XmlFileLoader $loader
@@ -70,9 +71,10 @@ abstract class AbstractExtension extends Extension
     }
 
     /**
-     * Get the configuration directory
+     * Returns the configuration directory.
      *
      * @return string
+     * 
      * @throws \Exception
      */
     protected function getConfigurationDirectory()

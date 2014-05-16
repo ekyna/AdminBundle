@@ -8,7 +8,7 @@
         <parameter key="ekyna_admin.settings.class">Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema</parameter>
 
         <parameter key="ekyna_admin.menu.pool.class">Ekyna\Bundle\AdminBundle\Menu\MenuPool</parameter>
-        <parameter key="ekyna_admin.menu.builder.class">Ekyna\Bundle\AdminBundle\Menu\BackendMenuBuilder</parameter>
+        <parameter key="ekyna_admin.menu.builder.class">Ekyna\Bundle\AdminBundle\Menu\MenuBuilder</parameter>
 
         <parameter key="ekyna_admin.pool_factory.class">Ekyna\Bundle\AdminBundle\Pool\ConfigurationFactory</parameter>
         <parameter key="ekyna_admin.pool_registry.class">Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry</parameter>
@@ -55,6 +55,7 @@
             <argument type="service" id="security.context" />
             <argument type="service" id="translator" />
             <argument type="service" id="ekyna_admin.menu.pool" />
+            <argument type="service" id="ekyna_admin.pool_registry" />
         </service>
         <service id="ekyna_admin.menu.side"
             class="Knp\Menu\MenuItem" 

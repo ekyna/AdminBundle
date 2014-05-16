@@ -3,83 +3,75 @@
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
 /**
- * MenuGroup
+ * MenuGroup.
  *
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class MenuGroup
 {
     /**
-     * Menu group name
-     * 
      * @var string
      */
     private $name;
 
     /**
-     * Menu group label
-     * 
      * @var string
      */
     private $label;
 
     /**
-     * Icon
-     *
      * @var string
      */
     private $icon;
 
     /**
-     * Translation domain
-     * 
      * @var string
      */
     private $domain;
 
     /**
-     * Menu group order
-     * 
      * @var integer
      */
-    private $order;
+    private $position;
 
     /**
-     * Menu group route
-     * 
      * @var string
      */
     private $route;
-    
+
     /**
-     * Menu group entries
-     * 
      * @var array
      */
     private $entries;
-    
+
     /**
-     * Create a backend menu group
-     * 
-     * @param string $name
-     * @param string $label
-     * @param string $icon
-     * @param integer $order
-     * @param string $domain
+     * Preparation flag
+     * @var boolean
      */
-    public function __construct($name, $label, $icon, $domain = null, $order = 1, $route = null)
+    private $prepared;
+
+
+    /**
+     * Creates a backend menu group.
+     * 
+     * @param array $options
+     */
+    public function __construct($options)
     {
+        $this->entries = array();
+        $this->prepared = false;
+
         $this
-            ->setName($name)
-            ->setLabel($label, $domain)
-            ->setIcon($icon)
-            ->setOrder($order)
-            ->setRoute($route)
+            ->setName($options['name'])
+            ->setLabel($options['label'], $options['domain'])
+            ->setIcon($options['icon'])
+            ->setPosition($options['position'])
+            ->setRoute($options['route'])
         ;
     }
-    
+
     /**
-     * Get name
+     * Returns the name.
      * 
      * @return string
      */
@@ -89,19 +81,21 @@ class MenuGroup
     }
 
     /**
-     * Set name
+     * Sets the name.
      * 
      * @param string $name
+     * 
      * @return MenuGroup
      */
     public function setName($name)
     {
         $this->name = $name;
+
         return $this;
     }
 
     /**
-     * Get label
+     * Returns the label.
      * 
      * @return string
      */
@@ -111,21 +105,23 @@ class MenuGroup
     }
 
     /**
-     * Set label
+     * Sets the label.
      * 
      * @param string $label
      * @param string $domain
+     * 
      * @return MenuGroup
      */
     public function setLabel($label, $domain = null)
     {
         $this->label = $label;
         $this->setDomain($domain);
+
         return $this;
     }
 
     /**
-     * Get entry icon
+     * Returns the icon.
      *
      * @return string
      */
@@ -133,20 +129,23 @@ class MenuGroup
     {
         return $this->icon;
     }
-    
+
     /**
-     * Set entry icon
+     * Sets the icon.
      *
      * @param string $icon
+     * 
+     * @return MenuGroup
      */
     public function setIcon($icon)
     {
         $this->icon = $icon;
+
         return $this;
     }
 
     /**
-     * Get translation domain
+     * Returns the translation domain.
      * 
      * @return string
      */
@@ -156,42 +155,45 @@ class MenuGroup
     }
 
     /**
-     * Set translation domain
+     * Sets the translation domain.
      * 
      * @param string $domain
+     * 
      * @return MenuGroup
      */
     public function setDomain($domain)
     {
-        if(strlen($domain) > 0) $this->domain = $domain;
+        $this->domain = $domain;
+
         return $this;
     }
 
     /**
-     * Get order
+     * Returns the position.
      *
      * @return integer
      */
-    public function getOrder()
+    public function getPosition()
     {
-        return $this->order;
+        return $this->position;
     }
-    
+
     /**
-     * Set order
+     * Sets the position.
      *
-     * @param integer $order
+     * @param integer $position
+     * 
      * @return MenuGroup
      */
-    public function setOrder($order)
+    public function setPosition($position)
     {
-        $this->order = $order;
+        $this->position = $position;
+
         return $this;
     }
-    
-    
+
     /**
-     * Get route name
+     * Returns the route name.
      *
      * @return string
      */
@@ -199,48 +201,72 @@ class MenuGroup
     {
         return $this->route;
     }
-    
+
     /**
-     * Set route name
+     * Sets the route name.
      *
      * @param string $route
+     * 
      * @return MenuGroup
      */
     public function setRoute($route)
     {
         $this->route = $route;
+
         return $this;
     }
 
     /**
-     * Get entries
+     * Returns the entries.
      * 
-     * @return multitype:MenuEntry
+     * @return MenuEntry[]
      */
     public function getEntries()
     {
         return $this->entries;
     }
-    
+
     /**
-     * Add entry
+     * Adds an entry.
      * 
      * @param MenuEntry $entry
+     * 
      * @return MenuGroup
      */
     public function addEntry(MenuEntry $entry)
     {
+        if ($this->prepared) {
+            throw new \RuntimeException('MenuGroup has been prepared and can\'t receive new entries.');
+        }
         $this->entries[] = $entry;
+
         return $this;
     }
 
     /**
-     * Has entries
+     * Returns whether the group has entries or not.
      * 
      * @return boolean
      */
     public function hasEntries()
     {
-        return (bool) count($this->entries) > 0;
+        return (bool) 0 < count($this->entries);
+    }
+
+    /**
+     * Prepares the group for rendering.
+     */
+    public function prepare()
+    {
+        if ($this->prepared) {
+            return;
+        }
+        usort($this->entries, function(MenuEntry $a, MenuEntry $b) {
+            if ($a->getPosition() == $b->getPosition()) {
+                return 0;
+            }
+            return $a->getPosition() > $b->getPosition() ? 1 : -1;
+        });
+        $this->prepared = true;
     }
 }

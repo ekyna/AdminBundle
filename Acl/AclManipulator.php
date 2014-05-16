@@ -59,7 +59,7 @@ class AclManipulator
                 'cancel_path' => $cancelPath,
             ),
         ));
-        foreach($this->registry->getConfigurations() as $config) {
+        foreach ($this->registry->getConfigurations() as $config) {
             $formBuilder->add($config->getId(), new PermissionType($this->aclEditor->getPermissions()), array(
             	'label' => $config->getResourceName()
             ));
@@ -77,12 +77,11 @@ class AclManipulator
         $rid = $group->getSecurityIdentity();
         $permissions = $this->aclEditor->getPermissions();
 
-        foreach($this->registry->getConfigurations() as $config) {
+        foreach ($this->registry->getConfigurations() as $config) {
             $mask = $this->aclEditor->getClassMask($config->getObjectIdentity(), $rid);
 
             $oidDatas = array();
-            foreach($permissions as $permission) {
-                // TODO: use mask builder ?
+            foreach ($permissions as $permission) {
                 $permissionMask = $this->aclEditor->getPermissionMasks(strtoupper($permission))[0];
                 $oidDatas[$permission] = $permissionMask === ($mask & $permissionMask);
             }
@@ -101,7 +100,7 @@ class AclManipulator
         $rid = $group->getSecurityIdentity();
         $permissions = $this->aclEditor->getPermissions();
 
-        foreach($this->registry->getConfigurations() as $config) {
+        foreach ($this->registry->getConfigurations() as $config) {
             $oidDatas = array();
             $acl = false;
             try {
@@ -110,17 +109,17 @@ class AclManipulator
                 $acl = false;
             }
 
-            if(false !== $acl) {
-                foreach($permissions as $permission) {
+            if (false !== $acl) {
+                foreach ($permissions as $permission) {
                     try {
                         $granted = $acl->isGranted($this->aclEditor->getPermissionMasks(strtoupper($permission)), array($rid));
                         $oidDatas[$permission] = $granted;
-                    }catch(\Exception $e) {
+                    } catch(\Exception $e) {
                         $oidDatas[$permission] = false;
                     }
                 }
-            }else{
-                foreach($permissions as $permission) {
+            } else {
+                foreach ($permissions as $permission) {
                     $oidDatas[$permission] = false;
                 }
             }
@@ -138,20 +137,20 @@ class AclManipulator
         $rid = $group->getSecurityIdentity();
         $maskBuilder = new MaskBuilder();
 
-        foreach($datas as $configName => $oidDatas) {
+        foreach ($datas as $configName => $oidDatas) {
             $config = $this->registry->get($configName);
 
             $retainedPermissions = array();
             $oidDatas = array_reverse($oidDatas);
-            foreach($oidDatas as $permission => $enabled) {
-                if($enabled) {
+            foreach ($oidDatas as $permission => $enabled) {
+                if ($enabled) {
                     $permission = strtoupper($permission);
-                    if(empty($retainedPermissions)) {
+                    if (empty($retainedPermissions)) {
                         $retainedPermissions[] = $permission;
-                    }else{
+                    } else {
                         $masks = $this->aclEditor->getPermissionMasks($permission);
                         $add = true;
-                        foreach($retainedPermissions as $p) {
+                        foreach ($retainedPermissions as $p) {
                             $maskBuilder->reset();
                             $maskBuilder->add($p);
                             $mask = $maskBuilder->get();
@@ -160,7 +159,7 @@ class AclManipulator
                                 break;
                             }
                         }
-                        if($add) {
+                        if ($add) {
                             $retainedPermissions[] = $permission;
                         }
                     }
@@ -168,7 +167,7 @@ class AclManipulator
             }
 
             $maskBuilder->reset();
-            foreach($retainedPermissions as $p) {
+            foreach ($retainedPermissions as $p) {
                 $maskBuilder->add($p);
             }
 
