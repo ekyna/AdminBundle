@@ -2,12 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface;
 
 /**
  * Menu builder.
@@ -22,11 +21,6 @@ class MenuBuilder
     private $factory;
 
     /**
-     * @var \Symfony\Component\Security\Core\SecurityContextInterface
-     */
-    private $securityContext;
-
-    /**
      * @var \Symfony\Component\Translation\TranslatorInterface
      */
     private $translator;
@@ -37,9 +31,9 @@ class MenuBuilder
     private $pool;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry
+     * @var \Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface
      */
-    private $registry;
+    private $voter;
 
     /**
      * @var \Knp\Menu\ItemInterface
@@ -50,24 +44,21 @@ class MenuBuilder
     /**
      * Constructor.
      *
-     * @param \Knp\Menu\FactoryInterface                                $factory
-     * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
-     * @param \Symfony\Component\Translation\TranslatorInterface        $translator
-     * @param \Ekyna\Bundle\AdminBundle\Menu\MenuPool                   $pool
-     * @param \Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry      $registry
+     * @param \Knp\Menu\FactoryInterface                                      $factory
+     * @param \Symfony\Component\Translation\TranslatorInterface              $translator
+     * @param \Ekyna\Bundle\AdminBundle\Menu\MenuPool                         $pool
+     * @param \Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface $voter
      */
     public function __construct(
-        FactoryInterface         $factory, 
-        SecurityContextInterface $securityContext, 
-        TranslatorInterface      $translator, 
-        MenuPool                 $pool,
-        ConfigurationRegistry    $registry
+        FactoryInterface             $factory,
+        TranslatorInterface          $translator, 
+        MenuPool                     $pool,
+        ResourceAccessVoterInterface $voter
     ) {
-        $this->factory         = $factory;
-        $this->securityContext = $securityContext;
-        $this->translator      = $translator;
-        $this->pool            = $pool;
-        $this->registry        = $registry;
+        $this->factory    = $factory;
+        $this->translator = $translator;
+        $this->pool       = $pool;
+        $this->voter      = $voter;
     }
 
     /**
@@ -115,8 +106,6 @@ class MenuBuilder
      */
     private function appendChilds(ItemInterface $menu, array $childOptions)
     {
-        $user = $this->securityContext->getToken()->getUser();
-        
         foreach ($this->pool->getGroups() as $group) {
 
             $groupOptions = array(
@@ -167,42 +156,12 @@ class MenuBuilder
     private function entrySecurityCheck(MenuEntry $entry)
     {
         if (null !== $resource = $entry->getResource()) {
-            $config = $this->registry->get($resource);
-            if (!$this->securityContext->isGranted('VIEW', $config->getObjectIdentity())) {
-                return false;
-            }
+            return $this->voter->isAccessGranted($resource, 'VIEW');
         }
 
         return true;
     }
-    
-    /*protected function appendChilds($menu, $childOptions)
-    {
-        foreach ($this->pool->getGroups() as $group) {
-    
-            $groupOptions = array(
-                'labelAttributes' => array('icon' => $group->getIcon()),
-                'childrenAttributes' => array('class' => 'submenu')
-            );
-            if ($group->hasEntries()) {
-                $groupOptions['labelAttributes']['class'] = 'dropdown-toggle';
-            } else {
-                $groupOptions['route'] = $group->getRoute();
-            }
-            $child = $menu
-            ->addChild($group->getName(), $groupOptions)
-            ->setLabel($this->translate($group->getLabel(), array(), $group->getDomain()))
-            ;
-            if ($group->hasEntries()) {
-                foreach ($group->getEntries() as $entry) {
-                    $child->addChild($entry->getName(), array(
-                        'route' => $entry->getRoute()
-                    ))->setLabel($this->translate($entry->getLabel(), array(), $entry->getDomain()));
-                }
-            }
-        }
-    }*/
-    
+
     /**
      * Appends a breadcrumb element.
      *

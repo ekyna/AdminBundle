@@ -12,7 +12,7 @@ class ConfigurationFactory
     /**
      * Creates and register a configuration
      * 
-     * @param string $id
+     * @param string $prefix
      * @param string $resourceName
      * @param string $resourceClass
      * @param string $templateNamespace
@@ -20,10 +20,10 @@ class ConfigurationFactory
      * 
      * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration
      */
-    public function createConfiguration($id, $resourceName, $resourceClass, $templateNamespace, $parentId = null)
+    public function createConfiguration($prefix, $resourceName, $resourceClass, $templateNamespace, $parentId = null)
     {
         return new Configuration(
-            $id,
+            $prefix,
             $resourceName,
             $resourceClass,
             $templateNamespace,

@@ -2,14 +2,14 @@
 
 namespace Ekyna\Bundle\AdminBundle\Acl;
 
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
 use Ekyna\Bundle\AdminBundle\Form\Type\PermissionType;
+use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
 use Ekyna\Bundle\UserBundle\Model\GroupInterface;
-use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 /**
- * AclManipulator
+ * AclManipulator.
  *
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
@@ -26,46 +26,27 @@ class AclManipulator
     protected $aclEditor;
 
     /**
-     * @var \Symfony\Component\Form\FormFactoryInterface
-     */
-    protected $formFactory;
-
-    /**
-     * Constructor
+     * Constructor.
      * 
      * @param ConfigurationRegistry $registry
      * @param AclEditor             $aclEditor
-     * @param FormBuilderInterface  $formFactory
      */
-    public function __construct(ConfigurationRegistry $registry, AclEditor $aclEditor, FormFactoryInterface $formFactory)
+    public function __construct(ConfigurationRegistry $registry, AclEditor $aclEditor)
     {
         $this->registry = $registry;
         $this->aclEditor = $aclEditor;
-        $this->formFactory = $formFactory;
     }
 
     /**
      * {@inheritdoc}
-     * TODO: change to buildGroupForm(FormBuilder $builder)
      */
-    public function createGroupForm(GroupInterface $group, $cancelPath = null)
+    public function buildGroupForm(FormBuilderInterface $builder)
     {
-        $datas = $this->generateGroupFormDatas($group);
-
-        $formBuilder = $this->formFactory->createBuilder('form', $datas, array(
-            'admin_mode' => true,
-            '_redirect_enabled' => true,
-            '_footer' => array(
-                'cancel_path' => $cancelPath,
-            ),
-        ));
         foreach ($this->registry->getConfigurations() as $config) {
-            $formBuilder->add($config->getId(), new PermissionType($this->aclEditor->getPermissions()), array(
+            $builder->add($config->getAlias(), new PermissionType($this->aclEditor->getPermissions()), array(
             	'label' => $config->getResourceName()
             ));
         }
-
-        return $formBuilder->getForm();
     }
 
     /**
@@ -85,7 +66,7 @@ class AclManipulator
                 $permissionMask = $this->aclEditor->getPermissionMasks(strtoupper($permission))[0];
                 $oidDatas[$permission] = $permissionMask === ($mask & $permissionMask);
             }
-            $datas[$config->getId()] = $oidDatas;
+            $datas[$config->getAlias()] = $oidDatas;
         }
 
         return $datas;

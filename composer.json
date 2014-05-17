@@ -26,6 +26,7 @@
         "ekyna/fontawesome-bundle" : "0.1.*@dev",
         "ekyna/core-bundle" : "0.1.*@dev",
         "ekyna/user-bundle" : "0.1.*@dev",
+        "ekyna/table-bundle" : "0.1.*@dev",
         "ekyna/setting-bundle" : "0.1.*@dev"
     },
     "autoload" : {

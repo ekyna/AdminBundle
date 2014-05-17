@@ -51,7 +51,8 @@ class AsseticConfiguration
             'bundles/ekynaadmin/css/elements.css',
             'bundles/ekynaadmin/css/ui-elements.css',
             'bundles/ekynaadmin/css/show.css',
-            'bundles/ekynaadmin/css/table.css',
+
+            'bundles/ekynatable/css/table.css',
 
             'bundles/ekynacms/css/content-editor.css',
         );
@@ -80,6 +81,8 @@ class AsseticConfiguration
             'bundles/ekynaadmin/js/jquery-ui.js',
             'bundles/ekynaadmin/js/theme.js',
             'bundles/ekynaadmin/js/ui.js',
+
+            'bundles/ekynatable/js/table.js',
 
             'bundles/ekynacms/js/content-editor.js',
         );

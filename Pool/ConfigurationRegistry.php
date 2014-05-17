@@ -2,6 +2,8 @@
 
 namespace Ekyna\Bundle\AdminBundle\Pool;
 
+use Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException;
+
 /**
  * ConfigurationRegistry
  *
@@ -22,6 +24,52 @@ class ConfigurationRegistry
     public function __construct(array $configurations)
     {
         $this->configurations = $configurations;
+    }
+
+    /**
+     * Finds a configuration for the given resource (object/class/id)
+     * 
+     * @param mixed $resource
+     * 
+     * @throws \Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException
+     * 
+     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration|NULL
+     */
+    public function findConfiguration($resource, $throwException = true)
+    {
+        // By object
+        if (is_object($resource)) {
+            foreach ($this->configurations as $config) {
+                if ($config->isRelevant($resource)) {
+                    return $config;
+                }
+            }
+        // By class
+        } elseif (class_exists($resource, false)) {
+            foreach ($this->configurations as $config) {
+                if ($resource == $config->getResourceClass()) {
+                    return $config;
+                }
+            }
+        // By configuration identifier
+        } elseif (is_string($resource)) {
+            // By Alias
+            if ($this->has($resource)) {
+                return $this->get($resource);
+            }
+            // By Id
+            foreach($this->configurations as $config) {
+                if ($resource == $config->getId()) {
+                    return $config;
+                }
+            }
+        }
+
+        if ($throwException) {
+            throw new NotFoundConfigurationException($resource);
+        }
+
+        return null;
     }
 
     /**
@@ -54,7 +102,7 @@ class ConfigurationRegistry
     /**
      * Returns the configurations.
      * 
-     * @return Configuration[]
+     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
      */
     public function getConfigurations()
     {
@@ -73,7 +121,7 @@ class ConfigurationRegistry
         foreach($this->configurations as $config) {
             if($config->isRelevant($object)) {
                 return $config->getObjectIdentity();
-            } 
+            }
         }
         return null;
     }

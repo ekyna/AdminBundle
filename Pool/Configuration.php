@@ -61,6 +61,16 @@ class Configuration
      */
     public function getId()
     {
+        return sprintf('%s.%s', $this->prefix, $this->resourceName);
+    }
+
+    /**
+     * Returns the configuration alias.
+     * 
+     * @return string
+     */
+    public function getAlias()
+    {
         return sprintf('%s_%s', $this->prefix, $this->resourceName);
     }
 

@@ -15,6 +15,7 @@
 
         <parameter key="ekyna_admin.acl_editor.class">Ekyna\Bundle\AdminBundle\Acl\AclEditor</parameter>
         <parameter key="ekyna_admin.acl_manipulator.class">Ekyna\Bundle\AdminBundle\Acl\AclManipulator</parameter>
+        <parameter key="ekyna_admin.resource_access_voter.class">Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoter</parameter>
 
         <parameter key="ekyna_admin.twig.admin_extension.class">Ekyna\Bundle\AdminBundle\Twig\AdminExtension</parameter>
 
@@ -37,7 +38,7 @@
             <argument type="collection" />
         </service>
 
-        <!-- ACL Editor / Manipulator -->
+        <!-- ACL Editor/Manipulator, ResourceAccessVoter-->
         <service id="ekyna_admin.acl_editor" class="%ekyna_admin.acl_editor.class%">
             <argument type="service" id="security.acl.provider" />
             <argument type="service" id="security.acl.permission.map" />
@@ -45,17 +46,20 @@
         <service id="ekyna_admin.acl_manipulator" class="%ekyna_admin.acl_manipulator.class%">
             <argument type="service" id="ekyna_admin.pool_registry" />
             <argument type="service" id="ekyna_admin.acl_editor" />
-            <argument type="service" id="form.factory" />
+        </service>
+        <service id="ekyna_admin.resource_access_voter" class="%ekyna_admin.resource_access_voter.class%">
+            <argument type="service" id="security.context" />
+            <argument type="service" id="ekyna_admin.pool_registry" />
+            <argument type="service" id="ekyna_admin.acl_editor" />
         </service>
 
         <!-- Admin Menus -->
         <service id="ekyna_admin.menu.pool" class="%ekyna_admin.menu.pool.class%"></service>
         <service id="ekyna_admin.menu.builder" class="%ekyna_admin.menu.builder.class%">
             <argument type="service" id="knp_menu.factory" />
-            <argument type="service" id="security.context" />
             <argument type="service" id="translator" />
             <argument type="service" id="ekyna_admin.menu.pool" />
-            <argument type="service" id="ekyna_admin.pool_registry" />
+            <argument type="service" id="ekyna_admin.resource_access_voter" />
         </service>
         <service id="ekyna_admin.menu.side"
             class="Knp\Menu\MenuItem" 
@@ -81,6 +85,10 @@
 
         <!-- Twig Extensions -->
 	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
+            <argument type="service" id="ekyna_admin.pool_registry" />
+            <argument type="service" id="ekyna_admin.resource_access_voter" />
+            <argument type="service" id="ekyna_core.router" />
+            <argument type="service" id="ekyna_core.twig.ui_extension" />
 	        <argument>%ekyna_admin.logo_path%</argument>
 	        <tag name="twig.extension" />
 	    </service>

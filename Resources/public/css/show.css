@@ -81,8 +81,16 @@
 .show-body .show-label {
     display: block;
     font-weight: 600;
-    line-height: 34px;
-    text-align: right;
+    line-height: 16px;
+    min-height: 34px;
+    padding-top: 9px;
+    text-align: left;
+}
+
+@media (min-width: 992px) {
+    .show-body .show-label {
+        text-align: right;
+    }
 }
 
 .show-body .show-widget {
