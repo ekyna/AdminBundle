@@ -2,11 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
+use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
-use Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface;
 
 /**
  * Menu builder.
@@ -31,9 +31,9 @@ class MenuBuilder
     private $pool;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface
+     * @var \Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface
      */
-    private $voter;
+    private $aclOperator;
 
     /**
      * @var \Knp\Menu\ItemInterface
@@ -44,21 +44,21 @@ class MenuBuilder
     /**
      * Constructor.
      *
-     * @param \Knp\Menu\FactoryInterface                                      $factory
-     * @param \Symfony\Component\Translation\TranslatorInterface              $translator
-     * @param \Ekyna\Bundle\AdminBundle\Menu\MenuPool                         $pool
-     * @param \Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface $voter
+     * @param \Knp\Menu\FactoryInterface                         $factory
+     * @param \Symfony\Component\Translation\TranslatorInterface $translator
+     * @param \Ekyna\Bundle\AdminBundle\Menu\MenuPool            $pool
+     * @param \Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface $aclOperator
      */
     public function __construct(
-        FactoryInterface             $factory,
-        TranslatorInterface          $translator, 
-        MenuPool                     $pool,
-        ResourceAccessVoterInterface $voter
+        FactoryInterface     $factory,
+        TranslatorInterface  $translator, 
+        MenuPool             $pool,
+        AclOperatorInterface $aclOperator
     ) {
-        $this->factory    = $factory;
-        $this->translator = $translator;
-        $this->pool       = $pool;
-        $this->voter      = $voter;
+        $this->factory     = $factory;
+        $this->translator  = $translator;
+        $this->pool        = $pool;
+        $this->aclOperator = $aclOperator;
     }
 
     /**
@@ -156,7 +156,7 @@ class MenuBuilder
     private function entrySecurityCheck(MenuEntry $entry)
     {
         if (null !== $resource = $entry->getResource()) {
-            return $this->voter->isAccessGranted($resource, 'VIEW');
+            return $this->aclOperator->isAccessGranted($resource, 'VIEW');
         }
 
         return true;

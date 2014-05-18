@@ -2,8 +2,8 @@
 
 namespace Ekyna\Bundle\AdminBundle\Twig;
 
+use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
-use Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface;
 use Ekyna\Bundle\CoreBundle\Twig\UiExtension;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -23,7 +23,7 @@ class AdminExtension extends \Twig_Extension
     /**
      * @var \Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface
      */
-    private $voter;
+    private $aclOperator;
 
     /**
      * @var \Symfony\Component\Routing\RouterInterface
@@ -43,24 +43,24 @@ class AdminExtension extends \Twig_Extension
     /**
      * Constructor.
      * 
-     * @param \Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry            $registry
-     * @param \Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoterInterface $voter
-     * @param \Symfony\Component\Routing\RouterInterface                      $router
-     * @param \Ekyna\Bundle\CoreBundle\Twig\UiExtension                       $ui
-     * @param string                                                          $logoPath
+     * @param \Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry $registry
+     * @param \Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface   $aclOperator
+     * @param \Symfony\Component\Routing\RouterInterface           $router
+     * @param \Ekyna\Bundle\CoreBundle\Twig\UiExtension            $ui
+     * @param string                                               $logoPath
      */
     public function __construct(
         ConfigurationRegistry $registry,
-        ResourceAccessVoterInterface $voter,
+        AclOperatorInterface $aclOperator,
         RouterInterface $router,
         UiExtension $ui,
         $logoPath
     ) {
-        $this->registry = $registry;
-        $this->voter    = $voter;
-        $this->router   = $router;
-        $this->ui       = $ui;
-        $this->logoPath = $logoPath;
+        $this->registry    = $registry;
+        $this->aclOperator = $aclOperator;
+        $this->router      = $router;
+        $this->ui          = $ui;
+        $this->logoPath    = $logoPath;
     }
 
     /**
@@ -129,7 +129,7 @@ class AdminExtension extends \Twig_Extension
 	 */
 	public function hasResourceAccess($resource, $action = 'view')
 	{
-	    return $this->voter->isAccessGranted($resource, $this->getPermission($action));
+	    return $this->aclOperator->isAccessGranted($resource, $this->getPermission($action));
 	}
 
 	/**

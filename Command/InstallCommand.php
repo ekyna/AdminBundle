@@ -205,7 +205,7 @@ EOT
         $output->writeln('<info>Creating Acl rules.</info>');
 
         $registry = $this->getContainer()->get('ekyna_admin.pool_registry');
-        $aclManipulator = $this->getContainer()->get('ekyna_admin.acl_manipulator');
+        $aclOperator = $this->getContainer()->get('ekyna_admin.acl_operator');
         $groups = $this->getContainer()->get('ekyna_user.group.repository')->findAll();
 
         foreach($groups as $group) {
@@ -218,7 +218,7 @@ EOT
             foreach($registry->getConfigurations() as $id => $config) {
                 $datas[$id] = array($permission => true);
             }
-            $aclManipulator->updateGroup($group, $datas);
+            $aclOperator->updateGroup($group, $datas);
         }
 
         $output->writeln('Acl rules have been successfully created.');

@@ -7,20 +7,20 @@
     <parameters>
         <parameter key="ekyna_admin.settings.class">Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema</parameter>
 
-        <parameter key="ekyna_admin.menu.pool.class">Ekyna\Bundle\AdminBundle\Menu\MenuPool</parameter>
-        <parameter key="ekyna_admin.menu.builder.class">Ekyna\Bundle\AdminBundle\Menu\MenuBuilder</parameter>
-
         <parameter key="ekyna_admin.pool_factory.class">Ekyna\Bundle\AdminBundle\Pool\ConfigurationFactory</parameter>
         <parameter key="ekyna_admin.pool_registry.class">Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry</parameter>
 
-        <parameter key="ekyna_admin.acl_editor.class">Ekyna\Bundle\AdminBundle\Acl\AclEditor</parameter>
-        <parameter key="ekyna_admin.acl_manipulator.class">Ekyna\Bundle\AdminBundle\Acl\AclManipulator</parameter>
-        <parameter key="ekyna_admin.resource_access_voter.class">Ekyna\Bundle\AdminBundle\Security\ResourceAccessVoter</parameter>
+        <parameter key="ekyna_admin.acl_operator.class">Ekyna\Bundle\AdminBundle\Acl\AclOperator</parameter>
 
-        <parameter key="ekyna_admin.twig.admin_extension.class">Ekyna\Bundle\AdminBundle\Twig\AdminExtension</parameter>
+        <parameter key="ekyna_admin.menu.pool.class">Ekyna\Bundle\AdminBundle\Menu\MenuPool</parameter>
+        <parameter key="ekyna_admin.menu.builder.class">Ekyna\Bundle\AdminBundle\Menu\MenuBuilder</parameter>
 
         <parameter key="ekyna_admin.form.admin_extension.class">Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension</parameter>
 
+        <parameter key="ekyna_admin.table.actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsType</parameter>
+        <parameter key="ekyna_admin.table.nested_actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\NestedActionsType</parameter>
+
+        <parameter key="ekyna_admin.twig.admin_extension.class">Ekyna\Bundle\AdminBundle\Twig\AdminExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.class">Ekyna\Bundle\AdminBundle\Twig\ShowExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.template">EkynaAdminBundle:Show:show_div_layout.html.twig</parameter>
     </parameters>
@@ -38,19 +38,12 @@
             <argument type="collection" />
         </service>
 
-        <!-- ACL Editor/Manipulator, ResourceAccessVoter-->
-        <service id="ekyna_admin.acl_editor" class="%ekyna_admin.acl_editor.class%">
+        <!-- Acl Operator -->
+        <service id="ekyna_admin.acl_operator" class="%ekyna_admin.acl_operator.class%">
             <argument type="service" id="security.acl.provider" />
             <argument type="service" id="security.acl.permission.map" />
-        </service>
-        <service id="ekyna_admin.acl_manipulator" class="%ekyna_admin.acl_manipulator.class%">
             <argument type="service" id="ekyna_admin.pool_registry" />
-            <argument type="service" id="ekyna_admin.acl_editor" />
-        </service>
-        <service id="ekyna_admin.resource_access_voter" class="%ekyna_admin.resource_access_voter.class%">
             <argument type="service" id="security.context" />
-            <argument type="service" id="ekyna_admin.pool_registry" />
-            <argument type="service" id="ekyna_admin.acl_editor" />
         </service>
 
         <!-- Admin Menus -->
@@ -59,7 +52,7 @@
             <argument type="service" id="knp_menu.factory" />
             <argument type="service" id="translator" />
             <argument type="service" id="ekyna_admin.menu.pool" />
-            <argument type="service" id="ekyna_admin.resource_access_voter" />
+            <argument type="service" id="ekyna_admin.acl_operator" />
         </service>
         <service id="ekyna_admin.menu.side"
             class="Knp\Menu\MenuItem" 
@@ -83,10 +76,20 @@
 		    <tag name="form.type_extension" alias="form" />
 		</service>
 
+        <!-- Table types -->
+        <service id="ekyna_admin.table.actions_column" class="%ekyna_admin.table.actions_column.class%">
+            <argument type="service" id="ekyna_admin.acl_operator" />
+            <tag name="table.column_type" alias="admin_actions" />
+        </service>
+        <service id="ekyna_admin.table.nested_actions_column" class="%ekyna_admin.table.nested_actions_column.class%">
+            <argument type="service" id="ekyna_admin.acl_operator" />
+            <tag name="table.column_type" alias="admin_nested_actions" />
+        </service>
+
         <!-- Twig Extensions -->
 	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
             <argument type="service" id="ekyna_admin.pool_registry" />
-            <argument type="service" id="ekyna_admin.resource_access_voter" />
+            <argument type="service" id="ekyna_admin.acl_operator" />
             <argument type="service" id="ekyna_core.router" />
             <argument type="service" id="ekyna_core.twig.ui_extension" />
 	        <argument>%ekyna_admin.logo_path%</argument>
