@@ -10,6 +10,9 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\HttpFoundation\Response;
+use JMS\Serializer\SerializationContext;
+use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 
 /**
  * ResourceController
@@ -30,16 +33,35 @@ class ResourceController extends Controller
      */
     protected $config;
 
+    /**
+     * Constructor.
+     * 
+     * @param Configuration $config
+     */
     public function __construct(Configuration $config)
     {
         $this->config = $config;
     }
 
+    /**
+     * Home action.
+     * 
+     * @param Request $request
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function homeAction(Request $request)
     {
         return $this->redirect($this->generateUrl($this->config->getRoute('list')));
     }
 
+    /**
+     * List action.
+     * 
+     * @param Request $request
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function listAction(Request $request)
     {
         $this->isGranted('VIEW');
@@ -60,6 +82,13 @@ class ResourceController extends Controller
         );
     }
 
+    /**
+     * New/Create action.
+     * 
+     * @param Request $request
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function newAction(Request $request)
     {
         $this->isGranted('CREATE');
@@ -100,7 +129,7 @@ class ResourceController extends Controller
                 return $response;*/
             }
 
-            $this->addFlash('La resource a été créé avec succès.', 'success');
+            $this->addFlash('La resource a été créée avec succès.', 'success');
 
             if (null !== $redirectPath = $form->get('_redirect')->getData()) {
                 return $this->redirect($redirectPath);
@@ -136,6 +165,13 @@ class ResourceController extends Controller
         );
     }
 
+    /**
+     * Show action.
+     * 
+     * @param Request $request
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function showAction(Request $request)
     {
         $context = $this->loadContext($request);
@@ -149,6 +185,13 @@ class ResourceController extends Controller
         );
     }
 
+    /**
+     * Edit/Update action.
+     * 
+     * @param Request $request
+     * 
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function editAction(Request $request)
     {
         $context = $this->loadContext($request);
@@ -199,6 +242,13 @@ class ResourceController extends Controller
         );
     }
 
+    /**
+     * Remove/Delete action.
+     * 
+     * @param Request $request
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function removeAction(Request $request)
     {
         $context = $this->loadContext($request);
@@ -234,6 +284,56 @@ class ResourceController extends Controller
                 'form' => $form->createView()
             ))
         );
+    }
+
+    /**
+     * Search action.
+     * 
+     * @param Request $request
+     * 
+     * @throws \RuntimeException
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function searchAction(Request $request)
+    {
+        $callback = $request->query->get('callback');
+        $limit    = intval($request->query->get('limit'));
+        $search   = trim($request->query->get('search'));
+
+        $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
+        if (! $repository instanceOf SearchRepositoryInterface) {
+            throw new \RuntimeException('Repository must implements "SearchRepositoryInterface".');
+        }
+        $results = $repository->defaultSearch($search);
+
+        $serializer = $this->container->get('jms_serializer');
+        $response = new Response(sprintf('%s(%s);', $callback, $serializer->serialize(array(
+            'results' => $results,
+            'total'   => count($results)
+        ), 'json', SerializationContext::create()->setGroups(array('Search')))));
+        $response->headers->set('Content-Type', 'text/javascript');
+
+        return $response;
+    }
+
+    /**
+     * Find action.
+     * 
+     * @param Request $request
+     * 
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function findAction(Request $request)
+    {
+        $id = intval($request->query->get('id'));
+
+        $resource = $this->findResourceOrThrowException(array('id' => $id));
+
+        return JsonResponse::create(array(
+            'id' => $resource->getId(),
+            'text' => $resource->getSearchText(),
+        ));
     }
 
     /**

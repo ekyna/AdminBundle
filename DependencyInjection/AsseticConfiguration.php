@@ -53,8 +53,6 @@ class AsseticConfiguration
             'bundles/ekynaadmin/css/show.css',
 
             'bundles/ekynatable/css/table.css',
-
-            'bundles/ekynacms/css/content-editor.css',
         );
 
         return array(
@@ -83,8 +81,6 @@ class AsseticConfiguration
             'bundles/ekynaadmin/js/ui.js',
 
             'bundles/ekynatable/js/table.js',
-
-            'bundles/ekynacms/js/content-editor.js',
         );
 
         return array(
