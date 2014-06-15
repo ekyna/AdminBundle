@@ -22,7 +22,6 @@
         "symfony/framework-bundle" : "~2.3",
         "twig/extensions" : "~1.0",
         "white-october/pagerfanta-bundle": "dev-master",
-        "infinite-networks/form-bundle": "dev-master",
         "ekyna/fontawesome-bundle" : "0.1.*@dev",
         "ekyna/core-bundle" : "0.1.*@dev",
         "ekyna/user-bundle" : "0.1.*@dev",
