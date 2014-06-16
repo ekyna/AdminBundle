@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Controller\Resource;
 
 use Symfony\Component\HttpFoundation\Request;
+use Ekyna\Bundle\AdminBundle\Controller\Context;
 
 /**
  * NestedTrait
@@ -11,6 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
  */
 trait NestedTrait
 {
+    /**
+     * Decrement the position.
+     * 
+     * @param Request $request
+     */
     public function moveUpAction(Request $request)
     {
         $context = $this->loadContext($request);
@@ -28,6 +34,11 @@ trait NestedTrait
         ));
     }
 
+    /**
+     * Increment the position.
+     * 
+     * @param Request $request
+     */
     public function moveDownAction(Request $request)
     {
         $context = $this->loadContext($request);
@@ -45,6 +56,11 @@ trait NestedTrait
         ));
     }
 
+    /**
+     * Creates a child resource.
+     * 
+     * @param Request $request
+     */
     public function newChildAction(Request $request)
     {
         $this->isGranted('CREATE');
@@ -53,8 +69,7 @@ trait NestedTrait
         $resourceName = $this->config->getResourceName();
         $resource = $context->getResource($resourceName);
 
-        $child = $this->createNew($context);
-        $child->setParent($resource);
+        $child = $this->createNewFromParent($context, $resource);
 
         $form = $this->createForm($this->config->getFormType(), $child, array(
             'admin_mode' => true,
@@ -99,5 +114,20 @@ trait NestedTrait
                 'form' => $form->createView()
             ))
         );
+    }
+
+    /**
+     * Creates a new resource and configure it regarding to the parent.
+     * 
+     * @param Context $resource
+     * @param object $parent
+     * 
+     * @return object
+     */
+    public function createNewFromParent(Context $context, $parent)
+    {
+        $resource = $this->createNew($context);
+        $resource->setParent($parent);
+        return $resource;
     }
 }
