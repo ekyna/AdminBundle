@@ -133,9 +133,11 @@ class AdminExtension extends \Twig_Extension
 	}
 
 	/**
-	 * Generates an admin path for the given resource and action
-	 * @param unknown $action
-	 * @param unknown $resource
+	 * Generates an admin path for the given resource and action.
+	 * 
+	 * @param object $resource
+	 * @param string $action
+	 * 
 	 * @return string
 	 */
 	private function generatePath($resource, $action)
@@ -145,7 +147,10 @@ class AdminExtension extends \Twig_Extension
 
 	    $accessor = PropertyAccess::createPropertyAccessor();
 	    $parameters = array();
-	    $requirements = $this->router->getRouteCollection()->get($routeName)->getRequirements();
+	    if (null === $route = $this->router->getRouteCollection()->get($routeName)) {
+	         return '';
+	    }
+	    $requirements = $route->getRequirements();
 	    $current = $resource;
 
 	    while (array_key_exists($config->getResourceName().'Id', $requirements)) {
@@ -157,7 +162,8 @@ class AdminExtension extends \Twig_Extension
 	            break;
 	        }
 	    }
-
+        
+	    // TODO:  try / catch
 	    return $this->router->generate($routeName, $parameters);
 	}
 

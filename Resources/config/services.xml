@@ -90,7 +90,7 @@
 	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
             <argument type="service" id="ekyna_admin.pool_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
-            <argument type="service" id="ekyna_core.router" />
+            <argument type="service" id="router" />
             <argument type="service" id="ekyna_core.twig.ui_extension" />
 	        <argument>%ekyna_admin.logo_path%</argument>
 	        <tag name="twig.extension" />
