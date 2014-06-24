@@ -9,6 +9,7 @@ use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilderInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Valid;
 
 /**
  * GeneralSettingsSchema.
@@ -78,6 +79,7 @@ class GeneralSettingsSchema extends AbstractSchema
             ))
             ->add('site_address', new SiteAddressType(), array(
                 'label' => 'ekyna_admin.setting.siteaddress',
+                'cascade_validation' => true
             ))
         ;
     }

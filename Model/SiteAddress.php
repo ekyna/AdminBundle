@@ -28,7 +28,7 @@ class SiteAddress extends AbstractAddress
      * @param string $phone
      * @return SiteAddress
      */
-    public function setPhone($phone)
+    public function setPhone($phone = null)
     {
         $this->phone = $phone;
 
@@ -51,7 +51,7 @@ class SiteAddress extends AbstractAddress
      * @param string $mobile
      * @return SiteAddress
      */
-    public function setMobile($mobile)
+    public function setMobile($mobile = null)
     {
         $this->mobile = $mobile;
 

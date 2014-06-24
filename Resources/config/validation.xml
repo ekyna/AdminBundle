@@ -29,14 +29,14 @@
         </property>
 
         <property name="phone">
-            <constraint name="NotBlank" />
+            <constraint name="Blank" />
             <constraint name="Length">
                 <option name="min">2</option>
                 <option name="max">16</option>
             </constraint>
         </property>
         <property name="mobile">
-            <constraint name="NotBlank" />
+            <constraint name="Blank" />
             <constraint name="Length">
                 <option name="min">2</option>
                 <option name="max">16</option>
