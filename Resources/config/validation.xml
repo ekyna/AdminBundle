@@ -27,20 +27,5 @@
                 <option name="max">64</option>
             </constraint>
         </property>
-
-        <property name="phone">
-            <constraint name="Blank" />
-            <constraint name="Length">
-                <option name="min">2</option>
-                <option name="max">16</option>
-            </constraint>
-        </property>
-        <property name="mobile">
-            <constraint name="Blank" />
-            <constraint name="Length">
-                <option name="min">2</option>
-                <option name="max">16</option>
-            </constraint>
-        </property>
     </class>
 </constraint-mapping>
