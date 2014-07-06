@@ -92,7 +92,7 @@ EOT
                 'Username: ',
                 function ($answer) {
                     if (!(preg_match('#[a-zA-Z]+#', $answer) && strlen($answer) > 4)) {
-                        throw new \RunTimeException('Username should be composed of at least 5 letters.');
+                        throw new \RuntimeException('Username should be composed of at least 5 letters.');
                     }
                     return $answer;
                 },
@@ -107,7 +107,7 @@ EOT
                 'Email address: ',
                 function ($answer) {
                     if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                        throw new \RunTimeException('This is not a valid email address.');
+                        throw new \RuntimeException('This is not a valid email address.');
                     }
                     return $answer;
                 },
@@ -122,7 +122,7 @@ EOT
                 'Password: ',
                 function ($answer) {
                     if (!(preg_match('#[a-zA-Z0-9]+#', $answer) && strlen($answer) > 5)) {
-                        throw new \RunTimeException('Password should be composed of at least 6 letters and numbers.');
+                        throw new \RuntimeException('Password should be composed of at least 6 letters and numbers.');
                     }
                     return $answer;
                 },
