@@ -100,6 +100,29 @@ class ConfigurationRegistry
     }
 
     /**
+     * Returns all the ancestors configuration.
+     *
+     * @param Configuration $configuration
+     * @param bool          $included
+     *
+     * @return array
+     */
+    public function getAncestors(Configuration $configuration, $included = false)
+    {
+        $ancestors = array();
+        if ($included) {
+            $ancestors[$configuration->getResourceName()] = $configuration;
+        }
+
+        while (null !== $configuration->getParentId()) {
+            $configuration = $this->registry->findConfiguration($configuration->getParentId());
+            $ancestors[$configuration->getResourceName()] = $configuration;
+        }
+
+        return array_reverse($ancestors);
+    }
+
+    /**
      * Returns the configurations.
      * 
      * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
