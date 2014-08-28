@@ -72,6 +72,7 @@ class AdminExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFunction('admin_resource_btn', array($this, 'renderResourceButton'), array('is_safe' => array('html'))),
             new \Twig_SimpleFunction('admin_resource_access', array($this, 'hasResourceAccess')),
+            new \Twig_SimpleFunction('admin_resource_path', array($this, 'generateResourcePath')),
         );
     }
 
@@ -106,7 +107,7 @@ class AdminExtension extends \Twig_Extension
             }
 
             if (!array_key_exists('path', $options)) {
-                $options['path'] = $this->generatePath($resource, $action);
+                $options['path'] = $this->generateResourcePath($resource, $action);
             }
             if (!array_key_exists('type', $options)) {
                 $options['type'] = 'link';
@@ -141,16 +142,18 @@ class AdminExtension extends \Twig_Extension
      * @param object $resource
      * @param string $action
      *
+     * @throws \RuntimeException
+     *
      * @return string
      */
-    private function generatePath($resource, $action)
+    public function generateResourcePath($resource, $action = 'show')
     {
         $configuration = $this->registry->findConfiguration($resource);
         $routeName = $configuration->getRoute($action);
 
         $accessor = PropertyAccess::createPropertyAccessor();
         if (null === $route = $this->router->getRouteCollection()->get($routeName)) {
-            return '';
+            throw new \RuntimeException(sprintf('Route "%s" not found.', $routeName));
         }
 
         $requirements = $route->getRequirements();

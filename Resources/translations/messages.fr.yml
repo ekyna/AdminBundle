@@ -2,6 +2,7 @@ ekyna_admin:
     title: Administration
     login_header: Authentification
     dashboard: Tableau de bord
+    configuration: Configuration
     homepage: Page d'accueil
     confirm:
         delete: Êtes-vous sûr de vouloir supprimer cet élément ?

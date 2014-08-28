@@ -172,7 +172,7 @@
 /**
  * ACL Table
  */
-.acl-table thead th,.acl-table tbody td {
+.acl-table thead th, .acl-table tbody td {
     text-align: center;
 }
 

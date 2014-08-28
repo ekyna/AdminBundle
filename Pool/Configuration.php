@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Pool;
 
+use Doctrine\Common\Inflector\Inflector;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 
 /**
@@ -119,9 +120,9 @@ class Configuration
      * 
      * @return string
      */
-    public function getResourceName()
+    public function getResourceName($plural = false)
     {
-        return $this->resourceName;
+        return $plural ? Inflector::pluralize($this->resourceName) : $this->resourceName;
     }
 
     /**

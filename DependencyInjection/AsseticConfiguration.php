@@ -13,7 +13,6 @@ class AsseticConfiguration
      * Builds the assetic configuration.
      *
      * @param array $config
-     * @param string $root_dir
      *
      * @return array
      */
@@ -34,7 +33,6 @@ class AsseticConfiguration
 
     /**
      * @param array $config
-     * @param string $root_dir
      *
      * @return array
      */
@@ -65,7 +63,6 @@ class AsseticConfiguration
 
     /**
      * @param array $config
-     * @param string $root_dir
      *
      * @return array
      */

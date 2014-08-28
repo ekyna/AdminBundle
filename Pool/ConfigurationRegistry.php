@@ -12,14 +12,14 @@ use Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException;
 class ConfigurationRegistry
 {
     /**
-     * @var array
+     * @var \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
      */
     protected $configurations;
 
     /**
      * Constructor.
      * 
-     * @param array $configurations
+     * @param \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
      */
     public function __construct(array $configurations)
     {
@@ -30,6 +30,7 @@ class ConfigurationRegistry
      * Finds a configuration for the given resource (object/class/id)
      * 
      * @param mixed $resource
+     * @param boolean $throwException
      * 
      * @throws \Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException
      * 
@@ -90,26 +91,30 @@ class ConfigurationRegistry
      * @param string $id
      * 
      * @throws \InvalidArgumentException
+     *
+     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration
      */
     public function get($id)
     {
         if(!$this->has($id)) {
             throw new \InvalidArgumentException(sprintf('Configuration "%s" not found.', $id));
         }
+
         return $this->configurations[$id];
     }
 
     /**
      * Returns all the ancestors configuration.
      *
-     * @param Configuration $configuration
-     * @param bool          $included
+     * @param \Ekyna\Bundle\AdminBundle\Pool\Configuration $configuration
+     * @param bool                                         $included
      *
-     * @return array
+     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
      */
     public function getAncestors(Configuration $configuration, $included = false)
     {
         $ancestors = array();
+
         if ($included) {
             $ancestors[$configuration->getResourceName()] = $configuration;
         }
@@ -120,6 +125,26 @@ class ConfigurationRegistry
         }
 
         return array_reverse($ancestors);
+    }
+
+    /**
+     * Returns all the children configuration.
+     *
+     * @param \Ekyna\Bundle\AdminBundle\Pool\Configuration $configuration
+     *
+     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
+     */
+    public function getChildren(Configuration $configuration)
+    {
+        $children = array();
+
+        foreach($this->configurations as $child) {
+            if ($child->getParentId() === $configuration->getId()) {
+                $children[$child->getResourceName()] = $child;
+            }
+        }
+
+        return $children;
     }
 
     /**
@@ -137,7 +162,7 @@ class ConfigurationRegistry
      * 
      * @param object $object
      * 
-     * @return Symfony\Component\Security\Acl\Domain\ObjectIdentity|NULL
+     * @return \Symfony\Component\Security\Acl\Domain\ObjectIdentity|NULL
      */
     public function getObjectIdentity($object)
     {
@@ -146,6 +171,7 @@ class ConfigurationRegistry
                 return $config->getObjectIdentity();
             }
         }
+
         return null;
     }
 }

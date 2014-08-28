@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
+use Doctrine\ORM\QueryBuilder;
 use Ekyna\Bundle\AdminBundle\Pool\Configuration;
 use Doctrine\Common\Inflector\Inflector;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -68,25 +69,25 @@ class ResourceController extends Controller
 
         $context = $this->loadContext($request);
 
-        $table = $this->get('table.factory')
+        $table = $this->getTableFactory()
             ->createBuilder($this->config->getTableType())
             ->getTable($this->config->getId());
 
-        $resources = $this->get('table.generator')->generateView($table);
+        $resources = $this->getTableGenerator()->generateView($table);
 
         return $this->render(
             $this->config->getTemplate('list.html'),
             $context->getTemplateVars(array(
-                $this->getResourcePluralName() => $resources
+                $this->config->getResourceName(true) => $resources
             ))
         );
     }
 
     /**
      * New/Create action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function newAction(Request $request)
@@ -127,9 +128,9 @@ class ResourceController extends Controller
                 $response = new Response($serializer->serialize($resource, 'json'));
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;*/
+            } else {
+                $this->addFlash('La resource a été créée avec succès.', 'success');
             }
-
-            $this->addFlash('La resource a été créée avec succès.', 'success');
 
             if (null !== $redirectPath = $form->get('_redirect')->getData()) {
                 return $this->redirect($redirectPath);
@@ -167,29 +168,47 @@ class ResourceController extends Controller
 
     /**
      * Show action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function showAction(Request $request)
     {
         $context = $this->loadContext($request);
         $resourceName = $this->config->getResourceName();
+        $resource = $context->getResource($resourceName);
 
-        $this->isGranted('VIEW', $context->getResource($resourceName));
+        $this->isGranted('VIEW', $resource);
+
+        $extrasDatas = array();
+
+        $childrenConfigurations = $this->get('ekyna_admin.pool_registry')->getChildren($this->config);
+        foreach($childrenConfigurations as $configuration) {
+            $table = $this->getTableFactory()
+                ->createBuilder($configuration->getTableType())
+                ->getTable($configuration->getId());
+
+            $table->setCustomizeQueryBuilder(function(QueryBuilder $qb) use ($resourceName, $resource) {
+                $qb
+                    ->where(sprintf('a.%s = :resource', $resourceName))
+                    ->setParameter('resource', $resource)
+                ;
+            });
+            $extrasDatas[$configuration->getResourceName(true)] = $this->getTableGenerator()->generateView($table);
+        }
 
         return $this->render(
             $this->config->getTemplate('show.html'),
-            $context->getTemplateVars()
+            $context->getTemplateVars($extrasDatas)
         );
     }
 
     /**
      * Edit/Update action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      */
     public function editAction(Request $request)
@@ -244,9 +263,9 @@ class ResourceController extends Controller
 
     /**
      * Remove/Delete action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function removeAction(Request $request)
@@ -288,17 +307,17 @@ class ResourceController extends Controller
 
     /**
      * Search action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @throws \RuntimeException
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function searchAction(Request $request)
     {
         $callback = $request->query->get('callback');
-        $limit    = intval($request->query->get('limit'));
+        //$limit    = intval($request->query->get('limit'));
         $search   = trim($request->query->get('search'));
 
         $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
@@ -319,9 +338,9 @@ class ResourceController extends Controller
 
     /**
      * Find action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function findAction(Request $request)
@@ -348,7 +367,7 @@ class ResourceController extends Controller
 
     /**
      * Returns the controller configuration
-     * 
+     *
      * @return Configuration
      */
     public function getConfiguration()
@@ -360,8 +379,8 @@ class ResourceController extends Controller
      * Returns parent configuration
      *
      * @return ResourceController
-     * 
-     * @throws RuntimeException
+     *
+     * @throws \RuntimeException
      */
     public function getParent()
     {
@@ -378,10 +397,10 @@ class ResourceController extends Controller
 
     /**
      * Creates (or fill) the context for the given request
-     * 
+     *
      * @param Request $request
      * @param Context $context
-     * 
+     *
      * @return Context
      */
     public function loadContext(Request $request, Context $context = null)
@@ -397,7 +416,7 @@ class ResourceController extends Controller
 
         if (!$request->isXmlHttpRequest()) {
             $listRoute = $this->config->getRoute('list');
-            if(null === $this->get('router')->getRouteCollection()->get($listRoute)) {
+            if(null === $this->getRouter()->getRouteCollection()->get($listRoute)) {
                 $listRoute = null;
             }
             $this->appendBreadcrumb(
@@ -426,29 +445,19 @@ class ResourceController extends Controller
 
     /**
      * Finds a resource or throw a not found exception
-     * 
+     *
      * @param array $criteria
-     * 
+     *
      * @throws NotFoundHttpException
-     * 
+     *
      * @return Object|NULL
      */
     protected function findResourceOrThrowException(array $criteria)
     {
         if (null === $resource = $this->getRepository()->findOneBy($criteria)) {
-            throw new NotFoundHttpException('Resource introuvable');
+            throw new NotFoundHttpException('Resource not found.');
         }
         return $resource;
-    }
-
-    /**
-     * Returns the resource plural name
-     * 
-     * @return string
-     */
-    protected function getResourcePluralName()
-    {
-        return Inflector::pluralize($this->config->getResourceName());
     }
 
     /**
@@ -456,8 +465,9 @@ class ResourceController extends Controller
      *
      * @param mixed      $attributes
      * @param mixed|null $object
-     * 
-     * @throws AuthenticationCredentialsNotFoundException when the security context has no authentication token.
+     * @param bool $throwException
+     *
+     * @throws AccessDeniedHttpException when the security context has no authentication token.
      *
      * @return Boolean
      */
@@ -478,6 +488,8 @@ class ResourceController extends Controller
     }
 
     /**
+     * Returns the current resource entity manager.
+     *
      * @return \Doctrine\ORM\EntityManager
      */
     protected function getManager()
@@ -486,6 +498,8 @@ class ResourceController extends Controller
     }
 
     /**
+     * Returns the current resource entity repository.
+     *
      * @return \Doctrine\ORM\EntityRepository
      */
     protected function getRepository()
@@ -494,9 +508,39 @@ class ResourceController extends Controller
     }
 
     /**
-     * Creates a new resource
+     * Returns the table factory.
+     *
+     * @return \Ekyna\Component\Table\TableFactory
+     */
+    protected function getTableFactory()
+    {
+        return $this->get('table.factory');
+    }
+
+    /**
+     * Returns the table generator.
+     *
+     * @return \Ekyna\Component\Table\TableGenerator
+     */
+    protected function getTableGenerator()
+    {
+        return $this->get('table.generator');
+    }
+
+    /**
+     * @return \Symfony\Component\Routing\RouterInterface;
+     */
+    protected function getRouter()
+    {
+        return $this->get('router');
+    }
+
+    /**
+     * Creates a new resource.
      * 
      * @param Context $context
+     *
+     * @throws \RuntimeException
      * 
      * @return Object
      */
@@ -509,9 +553,8 @@ class ResourceController extends Controller
             $parent = $context->getResource($parentResourceName);
 
             try {
-                $propertyAcessor = PropertyAccess::createPropertyAccessor();
-                $propertyAcessor->setValue($resource, $parentResourceName, $parent);
-                //$resource->{Inflector::camelize('set_'.$parentResourceName)}($parent);
+                $propertyAccessor = PropertyAccess::createPropertyAccessor();
+                $propertyAccessor->setValue($resource, $parentResourceName, $parent);
             } catch (\Exception $e) {
                 throw new \RuntimeException('Failed to set resource\'s parent.');
             }
@@ -524,6 +567,7 @@ class ResourceController extends Controller
      * Persists a resource
      * 
      * @param object $resource
+     * @param bool $creation
      */
     protected function persist($resource, $creation = false)
     {

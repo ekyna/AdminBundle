@@ -1,8 +1,8 @@
 AdminBundle
 ==========
 
-Provides support for backend creation, but not (yet ?) a backend generator.
-Inspired by some SyliusResourceBundle and SonataAdmin mechanics (which are awesome !).
+Provides support for backend creation, but not a backend generator.
+Inspired by some SyliusResourceBundle and SonataAdmin mechanics.
 
 ## Instation
 TODO
@@ -16,3 +16,4 @@ TODO
 TODO:
 - hide menu entries and groups if View is not granted.
 - allow null config and overrides of menu group references.
+- check that pool configurations classes exists.
