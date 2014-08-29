@@ -150,6 +150,8 @@ class MenuBuilder
 
     /**
      * Returns whether the user has access granted for the given entry.
+     *
+     * @param MenuEntry $entry
      * 
      * @return boolean
      */
@@ -204,6 +206,7 @@ class MenuBuilder
      *
      * @param string $label
      * @param array  $parameters
+     * @param string $domain
      *
      * @return string
      */

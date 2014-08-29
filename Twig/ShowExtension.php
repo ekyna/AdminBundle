@@ -20,7 +20,7 @@ class ShowExtension extends \Twig_Extension
 
     /**
      * Constructor
-     * 
+     *
      * @param string $template
      */
     public function __construct($template = 'EkynaAdminBundle:Show:show_div_layout.html.twig')
@@ -33,7 +33,7 @@ class ShowExtension extends \Twig_Extension
      */
     public function initRuntime(\Twig_Environment $environment)
     {
-        if (! $this->template instanceof \Twig_Template) {
+        if (!$this->template instanceof \Twig_Template) {
             $this->template = $environment->loadTemplate($this->template);
         }
     }
@@ -44,14 +44,20 @@ class ShowExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'show_row' => new \Twig_Function_Method($this, 'renderRow', array(
-                'is_safe' => array(
-                    'html'
-                )
-            ))
+            'show_row' => new \Twig_Function_Method($this, 'renderRow', array('is_safe' => array('html'))),
         );
     }
 
+    /**
+     * Renders a show row.
+     *
+     * @param mixed $content
+     * @param string $type
+     * @param string $label
+     * @param array $options
+     *
+     * @return string
+     */
     public function renderRow($content, $type = null, $label = null, array $options = array())
     {
         $compound = false;
@@ -91,6 +97,13 @@ class ShowExtension extends \Twig_Extension
         return $this->renderBlock('show_row', $vars);
     }
 
+    /**
+     * Renders a checkbox row.
+     *
+     * @param mixed $content
+     *
+     * @return string
+     */
     protected function renderCheckboxWidget($content)
     {
         return $this->renderBlock('show_widget_checkbox', array(
@@ -98,11 +111,19 @@ class ShowExtension extends \Twig_Extension
         ));
     }
 
+    /**
+     * Renders a number widget.
+     *
+     * @param mixed $content
+     * @param array $options
+     *
+     * @return string
+     */
     protected function renderNumberWidget($content, array $options = array())
     {
         $options = array_merge(array(
-        	'precision' => 2,
-            'append'    => '',
+            'precision' => 2,
+            'append' => '',
         ), $options);
 
         return $this->renderBlock('show_widget_simple', array(
@@ -110,6 +131,13 @@ class ShowExtension extends \Twig_Extension
         ));
     }
 
+    /**
+     * Renders a textarea widget.
+     *
+     * @param mixed $content
+     *
+     * @return string
+     */
     protected function renderTextareaWidget($content)
     {
         return $this->renderBlock('show_widget_textarea', array(
@@ -117,20 +145,28 @@ class ShowExtension extends \Twig_Extension
         ));
     }
 
+    /**
+     * Renders an entity widget.
+     *
+     * @param mixed $entities
+     * @param array $options
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
     protected function renderEntityWidget($entities, array $options = array())
     {
         // TODO: Test $entity
-        if (! (isset($options['route']) && isset($options['field']))) {
+        if (!(isset($options['route']) && isset($options['field']))) {
             throw new \RuntimeException('Missing option(s) for entity widget.');
         }
-        if (! isset($options['route_params_map'])) {
+        if (!isset($options['route_params_map'])) {
             $options['route_params_map'] = array('id' => 'id');
         }
 
         if (null !== $entities && !($entities instanceof Collection)) {
-            $entities = new ArrayCollection(array(
-                $entities
-            ));
+            $entities = new ArrayCollection(array($entities));
         }
 
         $vars = array(
@@ -143,6 +179,14 @@ class ShowExtension extends \Twig_Extension
         return $this->renderBlock('show_widget_entity', $vars);
     }
 
+    /**
+     * Renders an url widget.
+     *
+     * @param mixed $content
+     * @param array $options
+     *
+     * @return string
+     */
     protected function renderUrlWidget($content, array $options = array())
     {
         $vars = array(
@@ -153,32 +197,56 @@ class ShowExtension extends \Twig_Extension
         return $this->renderBlock('show_widget_url', $vars);
     }
 
+    /**
+     * Renders a datetime widget.
+     *
+     * @param mixed $content
+     * @param array $options
+     *
+     * @return string
+     */
     protected function renderDatetimeWidget($content, array $options = array())
     {
-        if (! array_key_exists('time', $options)) {
+        if (!array_key_exists('time', $options)) {
             $options['time'] = true;
         }
 
         $vars = array(
             'content' => $content,
-            'time'    => $options['time'],
+            'time' => $options['time'],
         );
 
         return $this->renderBlock('show_widget_datetime', $vars);
     }
 
+    /**
+     * Renders a tinymce widget.
+     *
+     * @param mixed $content
+     * @param array $options
+     *
+     * @return string
+     */
     protected function renderTinymceWidget($content, array $options = array())
     {
         $height = isset($options['height']) ? intval($options['height']) : 0;
-        if(0 >= $height) {
+        if (0 >= $height) {
             $height = 250;
         }
         return $this->renderBlock('show_widget_tinymce', array(
             'height' => $height,
-            'route'  => $content
+            'route' => $content
         ));
     }
 
+    /**
+     * Renders a simple widget.
+     *
+     * @param mixed $content
+     * @param array $options
+     *
+     * @return string
+     */
     protected function renderSimpleWidget($content, array $options = array())
     {
         return $this->renderBlock('show_widget_simple', array(
@@ -186,6 +254,14 @@ class ShowExtension extends \Twig_Extension
         ));
     }
 
+    /**
+     * Renders an image widget.
+     *
+     * @param ImageInterface $image
+     * @param array $options
+     *
+     * @return string
+     */
     protected function renderImageWidget(ImageInterface $image = null, array $options = array())
     {
         return $this->renderBlock('show_widget_image', array(
@@ -193,6 +269,14 @@ class ShowExtension extends \Twig_Extension
         ));
     }
 
+    /**
+     * Renders an image "gallery" widget.
+     *
+     * @param Collection $images
+     * @param array $options
+     *
+     * @return string
+     */
     protected function renderImagesWidget(Collection $images, array $options = array())
     {
         return $this->renderBlock('show_widget_images', array(
@@ -200,9 +284,19 @@ class ShowExtension extends \Twig_Extension
         ));
     }
 
+    /**
+     * Renders a block.
+     *
+     * @param string $name
+     * @param array $vars
+     *
+     * @return string
+     *
+     * @throws \RuntimeException
+     */
     protected function renderBlock($name, $vars)
     {
-        if (! $this->template->hasBlock($name)) {
+        if (!$this->template->hasBlock($name)) {
             throw new \RuntimeException('Block "' . $name . '" not found.');
         }
         return $this->template->renderBlock($name, $vars);

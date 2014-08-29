@@ -51,14 +51,14 @@
 {% spaceless %}
     <div class="show-widget show-widget-simple">
     {% if entities is sameas(null) -%}
-        Non défini
+        {{ 'ekyna_core.undefined'|trans }}
     {%- elseif entities|length > 0 %}
     {% for entity in entities %}
         {% set route_params = [] %}
-        {% for param, property in route_params_map %}
-            {% set route_params = route_params|merge({(param): attribute(entity, property)}) %}
+        {% for param, property_path in route_params_map %}
+            {% set route_params = route_params|merge({(param): get_property(entity, property_path)}) %}
         {% endfor %}
-        <a href="{{ path(route, route_params) }}" class="show-entity">{{ attribute(entity, field) }}</a>
+        <a href="{{ path(route, route_params) }}" class="show-entity">{{ get_property(entity, field) }}</a>
     {% endfor %}
     {% else %}
     <em>{{ 'ekyna_core.undefined'|trans }}</em>
