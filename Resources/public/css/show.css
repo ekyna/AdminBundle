@@ -147,7 +147,7 @@
     margin-right: 12px;
 }
 
-.show-body .show-entity:after {
+.show-body a.show-entity:after {
     position: relative;
     top: 1px;
     display: inline-block;
@@ -161,7 +161,7 @@
     content: "";
 }
 
-.show-body .show-entity:hover:after {
+.show-body a.show-entity:hover:after {
     content: "\e080";
 }
 

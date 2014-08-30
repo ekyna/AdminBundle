@@ -54,11 +54,15 @@
         {{ 'ekyna_core.undefined'|trans }}
     {%- elseif entities|length > 0 %}
     {% for entity in entities %}
+        {% if route is not sameas(null) %}
         {% set route_params = [] %}
         {% for param, property_path in route_params_map %}
             {% set route_params = route_params|merge({(param): get_property(entity, property_path)}) %}
         {% endfor %}
         <a href="{{ path(route, route_params) }}" class="show-entity">{{ get_property(entity, field) }}</a>
+        {% else %}
+        <span class="show-entity">{{ get_property(entity, field) }}</span>
+        {% endif %}
     {% endfor %}
     {% else %}
     <em>{{ 'ekyna_core.undefined'|trans }}</em>
