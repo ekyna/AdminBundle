@@ -1,0 +1,39 @@
+{% extends 'EkynaCoreBundle:Form:form_div_layout.html.twig' %}
+
+{% block ekyna_resource_widget %}
+{% if expanded %}
+    {{ block('choice_widget_expanded') }}
+{% else %}
+    {{ block('ekyna_resource_widget_collapsed') }}
+{% endif %}
+{% endblock ekyna_resource_widget %}
+
+{% block ekyna_resource_widget_collapsed %}
+{% spaceless %}
+{% if required and empty_value is none and not empty_value_in_choices %}
+    {% set required = false %}
+{% endif %}
+{% if not required %}
+    {% set attr = attr|merge({'data-allow-clear': 1}) %}
+{% endif %}
+{% if new_route is defined or list_route is defined %}
+<div class="input-group entity-widget">
+{% endif %}
+{{ block('choice_widget_collapsed') }}
+{% if new_route is defined or list_route is defined %}
+    <span class="input-group-btn">
+    {% if new_route is defined %}
+        <button class="btn btn-primary new-resource" type="button" data-path="{{ path(new_route, new_route_params) }}">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    {% endif %}
+    {% if list_route is defined %}
+        <button class="btn btn-primary list-resource" type="button" data-path="{{ path(list_route, list_route_params) }}">
+            <span class="glyphicon glyphicon-search"></span>
+        </button>
+    {% endif %}
+    </span>
+</div>
+{% endif %}
+{% endspaceless %}
+{% endblock ekyna_resource_widget_collapsed %}

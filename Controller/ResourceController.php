@@ -75,8 +75,13 @@ class ResourceController extends Controller
 
         $resources = $this->getTableGenerator()->generateView($table);
 
+        $format = 'html';
+        if ($request->isXmlHttpRequest()) {
+            $format = 'xml';
+        }
+
         return $this->render(
-            $this->config->getTemplate('list.html'),
+            $this->config->getTemplate('list.'.$format),
             $context->getTemplateVars(array(
                 $this->config->getResourceName(true) => $resources
             ))

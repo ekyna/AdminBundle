@@ -16,6 +16,7 @@
         <parameter key="ekyna_admin.menu.builder.class">Ekyna\Bundle\AdminBundle\Menu\MenuBuilder</parameter>
 
         <parameter key="ekyna_admin.form.admin_extension.class">Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension</parameter>
+        <parameter key="ekyna_admin.resource.form_type.class">Ekyna\Bundle\AdminBundle\Form\Type\ResourceType</parameter>
 
         <parameter key="ekyna_admin.table.actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsType</parameter>
         <parameter key="ekyna_admin.table.nested_actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\NestedActionsType</parameter>
@@ -75,6 +76,12 @@
         <service id="ekyna_admin.form.admin_extension" class="%ekyna_admin.form.admin_extension.class%">
 		    <tag name="form.type_extension" alias="form" />
 		</service>
+
+        <!-- Form Types -->
+        <service id="ekyna_admin.resource.form_type" class="%ekyna_admin.resource.form_type.class%">
+            <argument type="service" id="ekyna_admin.pool_registry" />
+            <tag name="form.type" alias="ekyna_resource" />
+        </service>
 
         <!-- Table types -->
         <service id="ekyna_admin.table.actions_column" class="%ekyna_admin.table.actions_column.class%">
