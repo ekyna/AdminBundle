@@ -67,23 +67,21 @@ class ResourceController extends Controller
     {
         $this->isGranted('VIEW');
 
+        $isXmlHttpRequest = $request->isXmlHttpRequest();
         $context = $this->loadContext($request);
 
         $table = $this->getTableFactory()
-            ->createBuilder($this->config->getTableType())
-            ->getTable($this->config->getId());
+            ->createBuilder($this->config->getTableType(), array(
+                'name' => $this->config->getId(),
+            ))
+            ->getTable();
 
-        $resources = $this->getTableGenerator()->generateView($table);
-
-        $format = 'html';
-        if ($request->isXmlHttpRequest()) {
-            $format = 'xml';
-        }
+        $format = $isXmlHttpRequest ? 'xml' : 'html';
 
         return $this->render(
             $this->config->getTemplate('list.'.$format),
             $context->getTemplateVars(array(
-                $this->config->getResourceName(true) => $resources
+                $this->config->getResourceName(true) => $table->createView($request)
             ))
         );
     }
@@ -194,13 +192,13 @@ class ResourceController extends Controller
                 ->createBuilder($configuration->getTableType())
                 ->getTable($configuration->getId());
 
-            $table->setCustomizeQueryBuilder(function(QueryBuilder $qb) use ($resourceName, $resource) {
+            $table->getConfig()->setCustomizeQb(function(QueryBuilder $qb) use ($resourceName, $resource) {
                 $qb
                     ->where(sprintf('a.%s = :resource', $resourceName))
                     ->setParameter('resource', $resource)
                 ;
             });
-            $extrasDatas[$configuration->getResourceName(true)] = $this->getTableGenerator()->generateView($table);
+            $extrasDatas[$configuration->getResourceName(true)] = $table->createView($request);
         }
 
         return $this->render(

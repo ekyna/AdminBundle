@@ -5,14 +5,15 @@ namespace Ekyna\Bundle\AdminBundle\Table\Type\Column;
 use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Component\Table\Extension\Core\Type\Column\ActionsType as BaseType;
 use Ekyna\Component\Table\Table;
+use Ekyna\Component\Table\TableConfig;
 use Ekyna\Component\Table\View\Cell;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
- * ActionsType.
- *
+ * Class ActionsType
+ * @package Ekyna\Bundle\AdminBundle\Table\Type\Column
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ActionsType extends BaseType
@@ -33,7 +34,7 @@ class ActionsType extends BaseType
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     protected function configureButtonOptions(OptionsResolverInterface $resolver)
     {
@@ -50,9 +51,9 @@ class ActionsType extends BaseType
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    protected function prepareButtons(Table $table, array $buttonsOptions)
+    protected function prepareButtons(TableConfig $config, array $buttonsOptions)
     {
         $buttonResolver = new OptionsResolver();
         $this->configureButtonOptions($buttonResolver);
@@ -60,7 +61,7 @@ class ActionsType extends BaseType
         $tmp = array();
         foreach($buttonsOptions as $buttonOptions) {
             $tmpButton = $buttonResolver->resolve($buttonOptions);
-            if (null !== $tmpButton['permission'] && !$this->aclOperator->isAccessGranted($table->getEntityClass(), $tmpButton['permission'])) {
+            if (null !== $tmpButton['permission'] && !$this->aclOperator->isAccessGranted($config->getDataClass(), $tmpButton['permission'])) {
                 continue;
             }
             $tmp[] = $tmpButton;
@@ -69,18 +70,19 @@ class ActionsType extends BaseType
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
-    public function buildViewCell(Cell $cell, PropertyAccessor $propertyAccessor, $entity, array $options)
+    public function buildViewCell(Cell $cell, Table $table, array $options)
     {
-        parent::buildViewCell($cell, $propertyAccessor, $entity, $options);
+        parent::buildViewCell($cell, $table, $options);
+
         $cell->setVars(array(
             'type' => 'actions',
         ));
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getName()
     {
