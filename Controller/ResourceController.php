@@ -73,15 +73,17 @@ class ResourceController extends Controller
         $table = $this->getTableFactory()
             ->createBuilder($this->config->getTableType(), array(
                 'name' => $this->config->getId(),
+                'selector' => (bool) $request->get('selector', false), // TODO use constants (single/multiple)
+                'multiple' => (bool) $request->get('multiple', false),
             ))
-            ->getTable();
+            ->getTable($request);
 
         $format = $isXmlHttpRequest ? 'xml' : 'html';
 
         return $this->render(
             $this->config->getTemplate('list.'.$format),
             $context->getTemplateVars(array(
-                $this->config->getResourceName(true) => $table->createView($request)
+                $this->config->getResourceName(true) => $table->createView()
             ))
         );
     }
@@ -189,8 +191,10 @@ class ResourceController extends Controller
         $childrenConfigurations = $this->get('ekyna_admin.pool_registry')->getChildren($this->config);
         foreach($childrenConfigurations as $configuration) {
             $table = $this->getTableFactory()
-                ->createBuilder($configuration->getTableType())
-                ->getTable($configuration->getId());
+                ->createBuilder($configuration->getTableType(), array(
+                    'name' => $configuration->getId(),
+                ))
+                ->getTable($request);
 
             $table->getConfig()->setCustomizeQb(function(QueryBuilder $qb) use ($resourceName, $resource) {
                 $qb
@@ -198,7 +202,7 @@ class ResourceController extends Controller
                     ->setParameter('resource', $resource)
                 ;
             });
-            $extrasDatas[$configuration->getResourceName(true)] = $table->createView($request);
+            $extrasDatas[$configuration->getResourceName(true)] = $table->createView();
         }
 
         return $this->render(

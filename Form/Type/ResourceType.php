@@ -43,7 +43,7 @@ class ResourceType extends AbstractType
         }
         if ($options['allow_list']) {
             $view->vars['list_route'] = $configuration->getRoute('list');
-            $view->vars['list_route_params'] = []; // TODO
+            $view->vars['list_route_params'] = array('selector' => 1, 'multiple' => $options['multiple']); // TODO
         }
     }
 

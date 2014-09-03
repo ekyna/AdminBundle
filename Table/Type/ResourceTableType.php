@@ -34,6 +34,10 @@ abstract class ResourceTableType extends AbstractTableType
 
         $resolver->setDefaults(array(
             'data_class' => $this->dataClass,
+            'selector_config' => array(
+                'property_path' => 'id',
+                'data_map' => array('id', 'name' => null),
+            )
         ));
     }
 }
