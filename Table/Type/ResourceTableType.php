@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 /**
  * Class ResourceTableType
  * @package Ekyna\Bundle\AdminBundle\Table\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author Ã‰tienne Dauvergne <contact@ekyna.com>
  */
 abstract class ResourceTableType extends AbstractTableType
 {
