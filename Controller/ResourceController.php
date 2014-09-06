@@ -2,18 +2,18 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\QueryBuilder;
 use Ekyna\Bundle\AdminBundle\Pool\Configuration;
-use Doctrine\Common\Inflector\Inflector;
+use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
+use JMS\Serializer\SerializationContext;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\PropertyAccess\PropertyAccess;
-use Symfony\Component\HttpFoundation\Response;
-use JMS\Serializer\SerializationContext;
-use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 
 /**
  * ResourceController
@@ -36,7 +36,7 @@ class ResourceController extends Controller
 
     /**
      * Constructor.
-     * 
+     *
      * @param Configuration $config
      */
     public function __construct(Configuration $config)
@@ -46,9 +46,9 @@ class ResourceController extends Controller
 
     /**
      * Home action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function homeAction(Request $request)
@@ -58,9 +58,9 @@ class ResourceController extends Controller
 
     /**
      * List action.
-     * 
+     *
      * @param Request $request
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function listAction(Request $request)
@@ -73,15 +73,15 @@ class ResourceController extends Controller
         $table = $this->getTableFactory()
             ->createBuilder($this->config->getTableType(), array(
                 'name' => $this->config->getId(),
-                'selector' => (bool) $request->get('selector', false), // TODO use constants (single/multiple)
-                'multiple' => (bool) $request->get('multiple', false),
+                'selector' => (bool)$request->get('selector', false), // TODO use constants (single/multiple)
+                'multiple' => (bool)$request->get('multiple', false),
             ))
             ->getTable($request);
 
         $format = $isXmlHttpRequest ? 'xml' : 'html';
 
         return $this->render(
-            $this->config->getTemplate('list.'.$format),
+            $this->config->getTemplate('list.' . $format),
             $context->getTemplateVars(array(
                 $this->config->getResourceName(true) => $table->createView()
             ))
@@ -109,7 +109,10 @@ class ResourceController extends Controller
                 $context->getIdentifiers()
             );
         } else {
-            $cancelPath = $this->generateUrl($this->config->getRoute('list'));
+            $cancelPath = $this->generateUrl(
+                $this->config->getRoute('list'),
+                $context->getIdentifiers()
+            );
         }
 
         $form = $this->createForm($this->config->getFormType(), $resource, array(
@@ -127,7 +130,7 @@ class ResourceController extends Controller
             if ($request->isXmlHttpRequest()) {
                 return new JsonResponse(array(
                     'id' => $resource->getId(),
-                    'name' => (string) $resource,
+                    'name' => (string)$resource,
                 ));
                 /*$serializer = $this->container->get('jms_serializer');
                 $response = new Response($serializer->serialize($resource, 'json'));
@@ -159,7 +162,7 @@ class ResourceController extends Controller
         } else {
             $this->appendBreadcrumb(
                 sprintf('%s-new', $resourceName),
-            	'ekyna_core.button.create'
+                'ekyna_core.button.create'
             );
         }
 
@@ -189,18 +192,17 @@ class ResourceController extends Controller
         $extrasDatas = array();
 
         $childrenConfigurations = $this->get('ekyna_admin.pool_registry')->getChildren($this->config);
-        foreach($childrenConfigurations as $configuration) {
+        foreach ($childrenConfigurations as $configuration) {
             $table = $this->getTableFactory()
                 ->createBuilder($configuration->getTableType(), array(
                     'name' => $configuration->getId(),
                 ))
                 ->getTable($request);
 
-            $table->getConfig()->setCustomizeQb(function(QueryBuilder $qb) use ($resourceName, $resource) {
+            $table->getConfig()->setCustomizeQb(function (QueryBuilder $qb) use ($resourceName, $resource) {
                 $qb
                     ->where(sprintf('a.%s = :resource', $resourceName))
-                    ->setParameter('resource', $resource)
-                ;
+                    ->setParameter('resource', $resource);
             });
             $extrasDatas[$configuration->getResourceName(true)] = $table->createView();
         }
@@ -226,14 +228,23 @@ class ResourceController extends Controller
 
         $this->isGranted('EDIT', $resource);
 
+        if ($this->hasParent()) {
+            $cancelPath = $this->generateUrl(
+                $this->getParent()->getConfiguration()->getRoute('show'),
+                $context->getIdentifiers()
+            );
+        } else {
+            $cancelPath = $this->generateUrl(
+                $this->config->getRoute('list'),
+                $context->getIdentifiers()
+            );
+        }
+
         $form = $this->createForm($this->config->getFormType(), $resource, array(
             'admin_mode' => true,
             '_redirect_enabled' => true,
             '_footer' => array(
-                'cancel_path' => $this->generateUrl(
-                    $this->config->getRoute('show'),
-                    $context->getIdentifiers(true)
-                ),
+                'cancel_path' => $cancelPath,
             ),
         ));
 
@@ -325,10 +336,10 @@ class ResourceController extends Controller
     {
         $callback = $request->query->get('callback');
         //$limit    = intval($request->query->get('limit'));
-        $search   = trim($request->query->get('search'));
+        $search = trim($request->query->get('search'));
 
         $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
-        if (! $repository instanceOf SearchRepositoryInterface) {
+        if (!$repository instanceOf SearchRepositoryInterface) {
             throw new \RuntimeException('Repository must implements "SearchRepositoryInterface".');
         }
         $results = $repository->defaultSearch($search);
@@ -336,7 +347,7 @@ class ResourceController extends Controller
         $serializer = $this->container->get('jms_serializer');
         $response = new Response(sprintf('%s(%s);', $callback, $serializer->serialize(array(
             'results' => $results,
-            'total'   => count($results)
+            'total' => count($results)
         ), 'json', SerializationContext::create()->setGroups(array('Search')))));
         $response->headers->set('Content-Type', 'text/javascript');
 
@@ -383,7 +394,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Returns parent configuration
+     * Returns the parent controller.
      *
      * @return ResourceController
      *
@@ -423,7 +434,7 @@ class ResourceController extends Controller
 
         if (!$request->isXmlHttpRequest()) {
             $listRoute = $this->config->getRoute('list');
-            if(null === $this->getRouter()->getRouteCollection()->get($listRoute)) {
+            if (null === $this->getRouter()->getRouteCollection()->get($listRoute)) {
                 $listRoute = null;
             }
             $this->appendBreadcrumb(
@@ -434,8 +445,8 @@ class ResourceController extends Controller
             );
         }
 
-        if ($request->attributes->has($resourceName.'Id')) {
-            $resource = $this->findResourceOrThrowException(array('id' => $request->attributes->get($resourceName.'Id')));
+        if ($request->attributes->has($resourceName . 'Id')) {
+            $resource = $this->findResourceOrThrowException(array('id' => $request->attributes->get($resourceName . 'Id')));
             $context->addResource($resourceName, $resource);
             if (!$request->isXmlHttpRequest()) {
                 $this->appendBreadcrumb(
@@ -470,7 +481,7 @@ class ResourceController extends Controller
     /**
      * Checks if the attributes are granted against the current token.
      *
-     * @param mixed      $attributes
+     * @param mixed $attributes
      * @param mixed|null $object
      * @param bool $throwException
      *
@@ -480,13 +491,13 @@ class ResourceController extends Controller
      */
     protected function isGranted($attributes, $object = null, $throwException = true)
     {
-        if(is_null($object)) {
+        if (is_null($object)) {
             $object = $this->config->getObjectIdentity();
-        }else{
+        } else {
             $object = $this->get('ekyna_admin.pool_registry')->getObjectIdentity($object);
         }
-        if(!$this->get('security.context')->isGranted($attributes, $object)) {
-            if($throwException) {
+        if (!$this->get('security.context')->isGranted($attributes, $object)) {
+            if ($throwException) {
                 throw new AccessDeniedHttpException('You are not allowed to view this resource.');
             }
             return false;
@@ -544,18 +555,18 @@ class ResourceController extends Controller
 
     /**
      * Creates a new resource.
-     * 
+     *
      * @param Context $context
      *
      * @throws \RuntimeException
-     * 
+     *
      * @return Object
      */
     protected function createNew(Context $context)
     {
         $resource = $this->getRepository()->createNew();
 
-        if(null !== $context && $this->hasParent()) {
+        if (null !== $context && $this->hasParent()) {
             $parentResourceName = $this->getParent()->getConfiguration()->getResourceName();
             $parent = $context->getResource($parentResourceName);
 
@@ -572,7 +583,7 @@ class ResourceController extends Controller
 
     /**
      * Persists a resource
-     * 
+     *
      * @param object $resource
      * @param bool $creation
      */
@@ -585,7 +596,7 @@ class ResourceController extends Controller
 
     /**
      * Removes a resource
-     * 
+     *
      * @param object $resource
      */
     protected function remove($resource)
@@ -597,31 +608,40 @@ class ResourceController extends Controller
 
     /**
      * Creates a confirmation form
-     * 
+     *
      * @param Context $context
      * @param string $message
-     * 
+     *
      * @return \Symfony\Component\Form\Form
      */
     protected function createConfirmationForm(Context $context, $message = null)
     {
-        if(null === $message) {
+        if (null === $message) {
             $message = 'Confirmer la suppression ?';
+        }
+
+        if ($this->hasParent()) {
+            $cancelPath = $this->generateUrl(
+                $this->getParent()->getConfiguration()->getRoute('show'),
+                $context->getIdentifiers()
+            );
+        } else {
+            $cancelPath = $this->generateUrl(
+                $this->config->getRoute('list'),
+                $context->getIdentifiers()
+            );
         }
 
         $builder = $this->createFormBuilder(null, array(
             'admin_mode' => true,
             '_redirect_enabled' => true,
             '_footer' => array(
-                'cancel_path' => $this->generateUrl(
-                    $this->config->getRoute('show'),
-                    $context->getIdentifiers(true)
-                ),
+                'cancel_path' => $cancelPath,
                 'buttons' => array(
-            	    'submit' => array(
-            	        'theme' => 'danger',
-            	        'icon'  => 'trash',
-            	        'label' => 'ekyna_core.button.remove',
+                    'submit' => array(
+                        'theme' => 'danger',
+                        'icon' => 'trash',
+                        'label' => 'ekyna_core.button.remove',
                     )
                 )
             ),
@@ -633,13 +653,12 @@ class ResourceController extends Controller
                 'attr' => array('align_with_widget' => true),
                 'required' => true
             ))
-            ->getForm()
-        ;
+            ->getForm();
     }
 
     /**
      * Adds a flash message
-     * 
+     *
      * @param string $message
      * @param string $type
      */
@@ -650,11 +669,11 @@ class ResourceController extends Controller
 
     /**
      * Appends a link or span to the admin breadcrumb
-     * 
+     *
      * @param string $name
      * @param string $label
      * @param string $route
-     * 
+     *
      * @param array $parameters
      */
     protected function appendBreadcrumb($name, $label, $route = null, array $parameters = array())
