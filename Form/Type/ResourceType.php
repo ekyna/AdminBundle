@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
+use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
@@ -21,13 +22,20 @@ class ResourceType extends AbstractType
     private $configurationRegistry;
 
     /**
+     * @var AclOperatorInterface
+     */
+    private $aclOperator;
+
+    /**
      * Constructor.
      *
      * @param ConfigurationRegistry $configurationRegistry
+     * @param AclOperatorInterface $aclOperator
      */
-    public function __construct(ConfigurationRegistry $configurationRegistry)
+    public function __construct(ConfigurationRegistry $configurationRegistry, AclOperatorInterface $aclOperator)
     {
         $this->configurationRegistry = $configurationRegistry;
+        $this->aclOperator = $aclOperator;
     }
 
     /**
@@ -37,11 +45,13 @@ class ResourceType extends AbstractType
     {
         $configuration = $this->configurationRegistry->findConfiguration($options['class']);
 
-        if ($options['allow_new']) {
+        // TODO Check ACL permissions
+
+        if ($options['allow_new'] && $this->aclOperator->isAccessGranted($options['class'], 'CREATE')) {
             $view->vars['new_route'] = $configuration->getRoute('new');
             $view->vars['new_route_params'] = []; // TODO
         }
-        if ($options['allow_list']) {
+        if ($options['allow_list'] && $this->aclOperator->isAccessGranted($options['class'], 'VIEW')) {
             $view->vars['list_route'] = $configuration->getRoute('list');
             $view->vars['list_route_params'] = array('selector' => 1, 'multiple' => $options['multiple']); // TODO
         }

@@ -80,6 +80,7 @@
         <!-- Form Types -->
         <service id="ekyna_admin.resource.form_type" class="%ekyna_admin.resource.form_type.class%">
             <argument type="service" id="ekyna_admin.pool_registry" />
+            <argument type="service" id="ekyna_admin.acl_operator" />
             <tag name="form.type" alias="ekyna_resource" />
         </service>
 

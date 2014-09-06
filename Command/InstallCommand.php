@@ -24,7 +24,7 @@ class InstallCommand extends ContainerAwareCommand
     protected $defaultGroups = array(
         'Super administrateur' => array(array('ROLE_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'), 'MASTER', false),
         'Administrateur'       => array(array('ROLE_ADMIN'), 'OPERATOR', false),
-        'Modérateur'           => array(array('ROLE_ADMIN'), 'OPERATOR', false),
+        'Modérateur'           => array(array('ROLE_ADMIN'), 'EDIT', false),
         'Utilisateur'          => array(array(), 'VIEW', true),
     );
 
