@@ -236,7 +236,7 @@ class ResourceController extends Controller
         } else {
             $cancelPath = $this->generateUrl(
                 $this->config->getRoute('show'),
-                $context->getIdentifiers()
+                $context->getIdentifiers(true)
             );
         }
 
@@ -631,8 +631,8 @@ class ResourceController extends Controller
             );
         } else {
             $cancelPath = $this->generateUrl(
-                $this->config->getRoute('list'),
-                $context->getIdentifiers()
+                $this->config->getRoute('show'),
+                $context->getIdentifiers(true)
             );
         }
 
