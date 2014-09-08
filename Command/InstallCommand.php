@@ -151,6 +151,9 @@ EOT
             ->setPlainPassword($password)
             ->setEmail($email)
             ->setGroup($group)
+            ->setGender('mr')
+            ->setFirstname('John')
+            ->setLastname('Doe')
             ->setEnabled(true)
         ;
 
