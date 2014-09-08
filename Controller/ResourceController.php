@@ -235,7 +235,7 @@ class ResourceController extends Controller
             );
         } else {
             $cancelPath = $this->generateUrl(
-                $this->config->getRoute('list'),
+                $this->config->getRoute('show'),
                 $context->getIdentifiers()
             );
         }
@@ -301,6 +301,10 @@ class ResourceController extends Controller
             $this->remove($resource);
 
             $this->addFlash('La resource a été supprimée avec succès.', 'success');
+
+            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                return $this->redirect($redirectPath);
+            }
 
             return $this->redirect(
                 $this->generateUrl(
