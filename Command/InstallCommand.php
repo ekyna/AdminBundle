@@ -11,8 +11,8 @@ use Ekyna\Bundle\UserBundle\Entity\User;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
- * InstallCommand
- *
+ * Class InstallCommand
+ * @package Ekyna\Bundle\AdminBundle\Command
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class InstallCommand extends ContainerAwareCommand

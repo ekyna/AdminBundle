@@ -11,6 +11,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  */
 class DashboardController extends Controller
 {
+    /**
+     * Dashboard index action.
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function indexAction()
     {
         return $this->render('EkynaAdminBundle:Dashboard:index.html.twig');

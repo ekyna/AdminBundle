@@ -3,8 +3,8 @@
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
 /**
- * MenuGroup.
- *
+ * Class MenuGroup
+ * @package Ekyna\Bundle\AdminBundle\Menu
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class MenuGroup

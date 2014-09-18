@@ -6,12 +6,15 @@ use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * AdminTypeExtension
- *
+ * Class AdminTypeExtension
+ * @package Ekyna\Bundle\AdminBundle\Form\Extension
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class AdminTypeExtension extends AbstractTypeExtension
 {
+    /**
+     * {@inheritdoc}
+     */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
@@ -19,6 +22,9 @@ class AdminTypeExtension extends AbstractTypeExtension
         ));
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getExtendedType()
     {
     	return 'form';

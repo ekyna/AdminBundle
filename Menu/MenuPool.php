@@ -5,15 +5,15 @@ namespace Ekyna\Bundle\AdminBundle\Menu;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * MenuPool.
- *
+ * Class MenuPool
+ * @package Ekyna\Bundle\AdminBundle\Menu
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class MenuPool
 {
     /**
      * Menu groups
-     * @var array
+     * @var \Ekyna\Bundle\AdminBundle\Menu\MenuGroup[]
      */
     private $groups;
 
@@ -90,7 +90,7 @@ class MenuPool
      * 
      * @param array $options
      * 
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function createGroup(array $options)
     {
@@ -109,7 +109,7 @@ class MenuPool
      * @param string $group_name
      * @param array $options
      * 
-     * @throws RuntimeException
+     * @throws \RuntimeException
      */
     public function createEntry($group_name, array $options)
     {

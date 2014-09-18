@@ -12,8 +12,16 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  */
 abstract class ResourceFormType extends AbstractType
 {
+    /**
+     * @var string
+     */
     protected $dataClass;
 
+    /**
+     * Constructor.
+     *
+     * @param $class
+     */
     public function __construct($class)
     {
         $this->dataClass = $class;

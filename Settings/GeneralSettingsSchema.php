@@ -11,8 +11,8 @@ use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
- * GeneralSettingsSchema.
- *
+ * Class GeneralSettingsSchema
+ * @package Ekyna\Bundle\AdminBundle\Settings
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class GeneralSettingsSchema extends AbstractSchema

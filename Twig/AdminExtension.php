@@ -9,8 +9,8 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
- * AdminExtension.
- *
+ * Class AdminExtension
+ * @package Ekyna\Bundle\AdminBundle\Twig
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class AdminExtension extends \Twig_Extension

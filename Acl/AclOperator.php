@@ -16,8 +16,8 @@ use Symfony\Component\Security\Acl\Permission\PermissionMapInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
- * AclOperator.
- *
+ * Class AclOperator
+ * @package Ekyna\Bundle\AdminBundle\Acl
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class AclOperator implements AclOperatorInterface

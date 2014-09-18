@@ -7,8 +7,8 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
- * SiteAddressType.
- *
+ * Class SiteAddressType
+ * @package Ekyna\Bundle\AdminBundle\Form\Type
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class SiteAddressType extends AbstractAddressType

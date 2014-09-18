@@ -5,8 +5,8 @@ namespace Ekyna\Bundle\AdminBundle\Model;
 use Ekyna\Bundle\CoreBundle\Model\AbstractAddress;
 
 /**
- * SiteAddress.
- *
+ * Class SiteAddress
+ * @package Ekyna\Bundle\AdminBundle\Model
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class SiteAddress extends AbstractAddress

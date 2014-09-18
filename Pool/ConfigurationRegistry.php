@@ -5,8 +5,8 @@ namespace Ekyna\Bundle\AdminBundle\Pool;
 use Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException;
 
 /**
- * ConfigurationRegistry
- *
+ * Class ConfigurationRegistry
+ * @package Ekyna\Bundle\AdminBundle\Pool
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ConfigurationRegistry
@@ -120,7 +120,7 @@ class ConfigurationRegistry
         }
 
         while (null !== $configuration->getParentId()) {
-            $configuration = $this->registry->findConfiguration($configuration->getParentId());
+            $configuration = $this->findConfiguration($configuration->getParentId());
             $ancestors[$configuration->getResourceName()] = $configuration;
         }
 

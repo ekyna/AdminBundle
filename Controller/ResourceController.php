@@ -16,8 +16,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * ResourceController
- *
+ * Class ResourceController
+ * @package Ekyna\Bundle\AdminBundle\Controller
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ResourceController extends Controller
@@ -522,7 +522,7 @@ class ResourceController extends Controller
     /**
      * Returns the current resource entity repository.
      *
-     * @return \Doctrine\ORM\EntityRepository
+     * @return \Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository
      */
     protected function getRepository()
     {
@@ -537,16 +537,6 @@ class ResourceController extends Controller
     protected function getTableFactory()
     {
         return $this->get('table.factory');
-    }
-
-    /**
-     * Returns the table generator.
-     *
-     * @return \Ekyna\Component\Table\TableGenerator
-     */
-    protected function getTableGenerator()
-    {
-        return $this->get('table.generator');
     }
 
     /**

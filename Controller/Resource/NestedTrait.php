@@ -6,8 +6,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Ekyna\Bundle\AdminBundle\Controller\Context;
 
 /**
- * NestedTrait
- *
+ * Class NestedTrait
+ * @package Ekyna\Bundle\AdminBundle\Controller\Resource
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 trait NestedTrait

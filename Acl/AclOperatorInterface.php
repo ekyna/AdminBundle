@@ -9,8 +9,8 @@ use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 use Symfony\Component\Security\Acl\Model\ObjectIdentityInterface;
 
 /**
- * AclOperatorInterface.
- *
+ * Interface AclOperatorInterface
+ * @package Ekyna\Bundle\AdminBundle\Acl
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 interface AclOperatorInterface

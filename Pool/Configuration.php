@@ -6,8 +6,8 @@ use Doctrine\Common\Inflector\Inflector;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 
 /**
- * Configuration.
- *
+ * Class Configuration
+ * @package Ekyna\Bundle\AdminBundle\Pool
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class Configuration
@@ -117,7 +117,8 @@ class Configuration
 
     /**
      * Returns the resource name.
-     * 
+     *
+     * @param boolean $plural
      * @return string
      */
     public function getResourceName($plural = false)

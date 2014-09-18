@@ -3,8 +3,8 @@
 namespace Ekyna\Bundle\AdminBundle\Search;
 
 /**
- * SearchRepositoryInterface.
- *
+ * Interface SearchRepositoryInterface
+ * @package Ekyna\Bundle\AdminBundle\Search
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 interface SearchRepositoryInterface

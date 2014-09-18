@@ -3,8 +3,8 @@
 namespace Ekyna\Bundle\AdminBundle\Exception;
 
 /**
- * NotFoundConfigurationException.
- *
+ * Class NotFoundConfigurationException
+ * @package Ekyna\Bundle\AdminBundle\Exception
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class NotFoundConfigurationException extends \InvalidArgumentException

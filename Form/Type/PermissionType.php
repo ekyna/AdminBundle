@@ -6,8 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * PermissionType
- *
+ * Class PermissionType
+ * @package Ekyna\Bundle\AdminBundle\Form\Type
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class PermissionType extends AbstractType
@@ -17,11 +17,19 @@ class PermissionType extends AbstractType
      */
     protected $permissions;
 
+    /**
+     * Constructor.
+     *
+     * @param array $permissions
+     */
     public function __construct(array $permissions)
     {
         $this->permissions = $permissions;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         foreach($this->permissions as $permission) {
@@ -34,6 +42,9 @@ class PermissionType extends AbstractType
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
     	return 'ekyna_admin_permission';

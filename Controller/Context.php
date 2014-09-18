@@ -3,23 +3,40 @@
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
 /**
- * Context
- *
+ * Class Context
+ * @package Ekyna\Bundle\AdminBundle\Controller
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class Context
-{    
+{
+    /**
+     * @var string
+     */
     protected $ownerResourceName;
-    protected $resources;
-    protected $identifiers;
 
+    /**
+     * @var array
+     */
+    protected $resources;
+
+    /**
+     * Constructor.
+     *
+     * @param string $ownerResourceName
+     */
     public function __construct($ownerResourceName)
     {
         $this->ownerResourceName = $ownerResourceName;
         $this->resources = array();
-        //$this->identifiers = array();
     }
 
+    /**
+     * Adds the resource.
+     *
+     * @param string $name
+     * @param object $resource
+     * @return Context
+     */
     public function addResource($name, $resource)
     {
         $this->resources[$name] = $resource;
@@ -27,6 +44,12 @@ class Context
         return $this;
     }
 
+    /**
+     * Returns a resource by name.
+     *
+     * @param $name
+     * @return object|null
+     */
     public function getResource($name)
     {
         if(isset($this->resources[$name])) {
@@ -35,6 +58,12 @@ class Context
         return null;
     }
 
+    /**
+     * Returns the identifiers.
+     *
+     * @param bool $with_current
+     * @return array
+     */
     public function getIdentifiers($with_current = false)
     {
         $identifiers = array();
@@ -46,6 +75,12 @@ class Context
         return $identifiers;
     }
 
+    /**
+     * Returns the template resources vars.
+     *
+     * @param array $extras
+     * @return array
+     */
     public function getTemplateVars(array $extras = array())
     {
         return array_merge($this->resources, array('identifiers' => $this->getIdentifiers()), $extras);

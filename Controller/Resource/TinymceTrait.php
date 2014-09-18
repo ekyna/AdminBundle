@@ -7,8 +7,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
- * TinymceTrait
- *
+ * Class TinymceTrait
+ * @package Ekyna\Bundle\AdminBundle\Controller\Resource
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 trait TinymceTrait

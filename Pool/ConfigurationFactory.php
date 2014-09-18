@@ -3,8 +3,8 @@
 namespace Ekyna\Bundle\AdminBundle\Pool;
 
 /**
- * ConfigurationFactory
- *
+ * Class ConfigurationFactory
+ * @package Ekyna\Bundle\AdminBundle\Pool
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ConfigurationFactory

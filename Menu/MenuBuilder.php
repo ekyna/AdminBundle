@@ -9,8 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
- * Menu builder.
- *
+ * Class MenuBuilder
+ * @package Ekyna\Bundle\AdminBundle\Menu
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class MenuBuilder
@@ -93,7 +93,7 @@ class MenuBuilder
             ->setLabel('ekyna_admin.dashboard')
         ;
 
-        $this->appendChilds($menu, $childOptions);
+        $this->appendChildren($menu, $childOptions);
 
         return $menu;
     }
@@ -104,7 +104,7 @@ class MenuBuilder
      * @param \Knp\Menu\ItemInterface $menu
      * @param array                   $childOptions
      */
-    private function appendChilds(ItemInterface $menu, array $childOptions)
+    private function appendChildren(ItemInterface $menu, array $childOptions)
     {
         foreach ($this->pool->getGroups() as $group) {
 

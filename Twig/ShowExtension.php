@@ -7,8 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Ekyna\Bundle\CoreBundle\Model\ImageInterface;
 
 /**
- * ShowExtension
- *
+ * Class ShowExtension
+ * @package Ekyna\Bundle\AdminBundle\Twig
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class ShowExtension extends \Twig_Extension
