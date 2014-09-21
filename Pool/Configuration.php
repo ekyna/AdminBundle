@@ -154,12 +154,22 @@ class Configuration
      * Returns a full qualified route name for the given action.
      * 
      * @param string $action
-     * 
      * @return string
      */
     public function getRoute($action)
     {
         return sprintf('%s_%s_admin_%s', $this->prefix, $this->resourceName, $action);
+    }
+
+    /**
+     * Returns the resource event name for the given action.
+     *
+     * @param $action
+     * @return string
+     */
+    public function getEventName($action)
+    {
+        return sprintf('%s.%s.%s', $this->prefix, $this->resourceName, $action);
     }
 
     /**

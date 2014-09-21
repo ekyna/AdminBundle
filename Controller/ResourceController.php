@@ -3,11 +3,14 @@
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Doctrine\Common\Inflector\Inflector;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\QueryBuilder;
+use Ekyna\Bundle\AdminBundle\Event\ResourceEvent;
+use Ekyna\Bundle\AdminBundle\Event\ResourceMessage;
 use Ekyna\Bundle\AdminBundle\Pool\Configuration;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
+use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use JMS\Serializer\SerializationContext;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,11 +50,9 @@ class ResourceController extends Controller
     /**
      * Home action.
      *
-     * @param Request $request
-     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function homeAction(Request $request)
+    public function homeAction()
     {
         return $this->redirect($this->generateUrl($this->config->getRoute('list')));
     }
@@ -125,9 +126,18 @@ class ResourceController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->persist($resource, true);
+            $event = $this->createResource($resource);
 
             if ($request->isXmlHttpRequest()) {
+                if($event->hasErrors()) {
+                    $errorMessages = $event->getErrors();
+                    $errors = [];
+                    foreach($errorMessages as $message) {
+                        $errors[] = $message->getMessage();
+                    }
+                    return new JsonResponse(array('error' => implode(', ', $errors)));
+                }
+
                 return new JsonResponse(array(
                     'id' => $resource->getId(),
                     'name' => (string)$resource,
@@ -136,22 +146,24 @@ class ResourceController extends Controller
                 $response = new Response($serializer->serialize($resource, 'json'));
                 $response->headers->set('Content-Type', 'application/json');
                 return $response;*/
-            } else {
-                $this->addFlash('La resource a été créée avec succès.', 'success');
             }
 
-            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
-                return $this->redirect($redirectPath);
-            }
+            $this->displayResourceEventMessages($event);
 
-            return $this->redirect(
-                $this->generateUrl(
-                    $this->config->getRoute('show'),
-                    array_merge($context->getIdentifiers(), array(
-                        sprintf('%sId', $resourceName) => $resource->getId()
-                    ))
-                )
-            );
+            if (!$event->hasErrors()) {
+                if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                    return $this->redirect($redirectPath);
+                }
+
+                return $this->redirect(
+                    $this->generateUrl(
+                        $this->config->getRoute('show'),
+                        array_merge($context->getIdentifiers(), array(
+                            sprintf('%sId', $resourceName) => $resource->getId()
+                        ))
+                    )
+                );
+            }
         } elseif ($request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
             return new JsonResponse(array('error' => $form->getErrors()));
         }
@@ -250,20 +262,21 @@ class ResourceController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->persist($resource);
+            $event = $this->updateResource($resource);
+            $this->displayResourceEventMessages($event);
 
-            $this->addFlash('La resource a été modifiée avec succès.', 'success');
+            if (!$event->hasErrors()) {
+                if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                    return $this->redirect($redirectPath);
+                }
 
-            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
-                return $this->redirect($redirectPath);
+                return $this->redirect(
+                    $this->generateUrl(
+                        $this->config->getRoute('show'),
+                        $context->getIdentifiers(true)
+                    )
+                );
             }
-
-            return $this->redirect(
-                $this->generateUrl(
-                    $this->config->getRoute('show'),
-                    $context->getIdentifiers(true)
-                )
-            );
         }
 
         $this->appendBreadcrumb(
@@ -298,20 +311,21 @@ class ResourceController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $this->remove($resource);
+            $event = $this->deleteResource($resource);
+            $this->displayResourceEventMessages($event);
 
-            $this->addFlash('La resource a été supprimée avec succès.', 'success');
+            if (!$event->hasErrors()) {
+                if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                    return $this->redirect($redirectPath);
+                }
 
-            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
-                return $this->redirect($redirectPath);
+                return $this->redirect(
+                    $this->generateUrl(
+                        $this->config->getRoute('list'),
+                        $context->getIdentifiers()
+                    )
+                );
             }
-
-            return $this->redirect(
-                $this->generateUrl(
-                    $this->config->getRoute('list'),
-                    $context->getIdentifiers()
-                )
-            );
         }
 
         $this->appendBreadcrumb(
@@ -375,6 +389,70 @@ class ResourceController extends Controller
             'id' => $resource->getId(),
             'text' => $resource->getSearchText(),
         ));
+    }
+
+    /**
+     * Creates a confirmation form
+     *
+     * @param Context $context
+     * @param string $message
+     *
+     * @return \Symfony\Component\Form\Form
+     */
+    protected function createConfirmationForm(Context $context, $message = null)
+    {
+        if (null === $message) {
+            $message = 'Confirmer la suppression ?';
+        }
+
+        if ($this->hasParent()) {
+            $cancelPath = $this->generateUrl(
+                $this->getParent()->getConfiguration()->getRoute('show'),
+                $context->getIdentifiers()
+            );
+        } else {
+            $cancelPath = $this->generateUrl(
+                $this->config->getRoute('show'),
+                $context->getIdentifiers(true)
+            );
+        }
+
+        $builder = $this->createFormBuilder(null, array(
+            'admin_mode' => true,
+            '_redirect_enabled' => true,
+            '_footer' => array(
+                'cancel_path' => $cancelPath,
+                'buttons' => array(
+                    'submit' => array(
+                        'theme' => 'danger',
+                        'icon' => 'trash',
+                        'label' => 'ekyna_core.button.remove',
+                    )
+                )
+            ),
+        ));
+
+        return $builder
+            ->add('confirm', 'checkbox', array(
+                'label' => $message,
+                'attr' => array('align_with_widget' => true),
+                'required' => true
+            ))
+            ->getForm();
+    }
+
+    /**
+     * Appends a link or span to the admin breadcrumb
+     *
+     * @param string $name
+     * @param string $label
+     * @param string $route
+     *
+     * @param array $parameters
+     */
+    protected function appendBreadcrumb($name, $label, $route = null, array $parameters = array())
+    {
+        $this->container->get('ekyna_admin.menu.builder')->breadcrumbAppend($name, $label, $route, $parameters);
     }
 
     /**
@@ -540,11 +618,15 @@ class ResourceController extends Controller
     }
 
     /**
-     * @return \Symfony\Component\Routing\RouterInterface;
+     * Converts a ResourceEvent into session flashes.
+     *
+     * @param ResourceEvent $event
      */
-    protected function getRouter()
+    protected function displayResourceEventMessages(ResourceEvent $event)
     {
-        return $this->get('router');
+        foreach($event->getMessages() as $message) {
+            $this->addFlash($message->getMessage(), $message->getType());
+        }
     }
 
     /**
@@ -576,102 +658,116 @@ class ResourceController extends Controller
     }
 
     /**
-     * Persists a resource
+     * Creates a resource.
      *
      * @param object $resource
-     * @param bool $creation
+     * @return ResourceEvent
      */
-    protected function persist($resource, $creation = false)
+    protected function createResource($resource)
     {
+        $event = new ResourceEvent();
+        $event->setResource($resource);
+        $this->getDispatcher()->dispatch($this->config->getEventName('create'), $event);
+        if (!$event->isPropagationStopped()) {
+            $this->persist($event);
+        }
+        return $event;
+    }
+
+    /**
+     * Updates a resource.
+     *
+     * @param $resource
+     * @return ResourceEvent
+     */
+    protected function updateResource($resource)
+    {
+        $event = new ResourceEvent();
+        $event->setResource($resource);
+        $this->getDispatcher()->dispatch($this->config->getEventName('update'), $event);
+        if (!$event->isPropagationStopped()) {
+            $this->persist($event);
+        }
+        return $event;
+    }
+
+    /**
+     * Deletes a resource.
+     *
+     * @param $resource
+     * @return ResourceEvent
+     */
+    protected function deleteResource($resource)
+    {
+        $event = new ResourceEvent();
+        $event->setResource($resource);
+        $this->getDispatcher()->dispatch($this->config->getEventName('delete'), $event);
+        if (!$event->isPropagationStopped()) {
+            $this->remove($event);
+        }
+        return $event;
+    }
+
+    /**
+     * Persists a resource.
+     *
+     * @param ResourceEvent $event
+     * @return ResourceEvent
+     */
+    protected function persist(ResourceEvent $event)
+    {
+        $resource = $event->getResource();
         $em = $this->getManager();
         $em->persist($resource);
-        $em->flush();
+
+        try {
+            $em->flush($resource);
+        } catch(DBALException $e) {
+            $event->addMessage(new ResourceMessage(
+                'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été sauvegardée.',
+                ResourceMessage::TYPE_DANGER
+            ));
+            return $event;
+        }
+
+        return $event->addMessage(new ResourceMessage(
+            'La ressource a été sauvegardée avec succès.',
+            ResourceMessage::TYPE_SUCCESS
+        ));
     }
 
     /**
-     * Removes a resource
+     * Removes a resource.
      *
-     * @param object $resource
+     * @param ResourceEvent $event
+     * @return ResourceEvent
      */
-    protected function remove($resource)
+    protected function remove(ResourceEvent $event)
     {
+        $resource = $event->getResource();
         $em = $this->getManager();
         $em->remove($resource);
-        $em->flush();
-    }
 
-    /**
-     * Creates a confirmation form
-     *
-     * @param Context $context
-     * @param string $message
-     *
-     * @return \Symfony\Component\Form\Form
-     */
-    protected function createConfirmationForm(Context $context, $message = null)
-    {
-        if (null === $message) {
-            $message = 'Confirmer la suppression ?';
+        try {
+            $em->flush($resource);
+        } catch(DBALException $e) {
+            if (null !== $previous = $e->getPrevious()) {
+                if ($previous instanceof \PDOException && $previous->getCode() == 23000) {
+                    return $event->addMessage(new ResourceMessage(
+                        'Cette ressource est liée à d\'autres ressources et ne peut pas être supprimée.',
+                        ResourceMessage::TYPE_DANGER
+                    ));
+                }
+            }
+            return $event->addMessage(new ResourceMessage(
+                'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été supprimée.',
+                ResourceMessage::TYPE_DANGER
+            ));
         }
 
-        if ($this->hasParent()) {
-            $cancelPath = $this->generateUrl(
-                $this->getParent()->getConfiguration()->getRoute('show'),
-                $context->getIdentifiers()
-            );
-        } else {
-            $cancelPath = $this->generateUrl(
-                $this->config->getRoute('show'),
-                $context->getIdentifiers(true)
-            );
-        }
-
-        $builder = $this->createFormBuilder(null, array(
-            'admin_mode' => true,
-            '_redirect_enabled' => true,
-            '_footer' => array(
-                'cancel_path' => $cancelPath,
-                'buttons' => array(
-                    'submit' => array(
-                        'theme' => 'danger',
-                        'icon' => 'trash',
-                        'label' => 'ekyna_core.button.remove',
-                    )
-                )
-            ),
+        return $event->addMessage(new ResourceMessage(
+            'La ressource a été supprimée avec succès.',
+            ResourceMessage::TYPE_SUCCESS
         ));
-
-        return $builder
-            ->add('confirm', 'checkbox', array(
-                'label' => $message,
-                'attr' => array('align_with_widget' => true),
-                'required' => true
-            ))
-            ->getForm();
-    }
-
-    /**
-     * Adds a flash message
-     *
-     * @param string $message
-     * @param string $type
-     */
-    protected function addFlash($message, $type = 'info')
-    {
-        $this->get('session')->getFlashBag()->add($type, $message);
-    }
-
-    /**
-     * Appends a link or span to the admin breadcrumb
-     *
-     * @param string $name
-     * @param string $label
-     * @param string $route
-     *
-     * @param array $parameters
-     */
-    protected function appendBreadcrumb($name, $label, $route = null, array $parameters = array())
-    {
-        $this->container->get('ekyna_admin.menu.builder')->breadcrumbAppend($name, $label, $route, $parameters);
     }
 }
