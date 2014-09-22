@@ -19,9 +19,7 @@
     ],
     "require" : {
         "php" : ">=5.3.3",
-        "symfony/framework-bundle" : "~2.3",
-        "twig/extensions" : "~1.0",
-        "white-october/pagerfanta-bundle": "dev-master",
+        "white-october/pagerfanta-bundle": "1.0.*",
         "ekyna/fontawesome-bundle" : "0.1.*@dev",
         "ekyna/core-bundle" : "0.1.*@dev",
         "ekyna/user-bundle" : "0.1.*@dev",
