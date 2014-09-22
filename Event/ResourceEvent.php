@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 
 /**
  * Class ResourceEvent
@@ -117,5 +118,17 @@ class ResourceEvent extends Event
     public function getResource()
     {
         return $this->resource;
+    }
+
+    /**
+     * Converts messages to flashes.
+     *
+     * @param FlashBagInterface $flashBag
+     */
+    public function toFlashes(FlashBagInterface $flashBag)
+    {
+        foreach($this->messages as $message) {
+            $flashBag->add($message->getType(), $message->getMessage());
+        }
     }
 }

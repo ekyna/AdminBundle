@@ -148,7 +148,7 @@ class ResourceController extends Controller
                 return $response;*/
             }
 
-            $this->displayResourceEventMessages($event);
+            $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
                 if (null !== $redirectPath = $form->get('_redirect')->getData()) {
@@ -263,7 +263,7 @@ class ResourceController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             $event = $this->updateResource($resource);
-            $this->displayResourceEventMessages($event);
+            $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
                 if (null !== $redirectPath = $form->get('_redirect')->getData()) {
@@ -312,7 +312,7 @@ class ResourceController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             $event = $this->deleteResource($resource);
-            $this->displayResourceEventMessages($event);
+            $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
                 if (null !== $redirectPath = $form->get('_redirect')->getData()) {
@@ -615,18 +615,6 @@ class ResourceController extends Controller
     protected function getTableFactory()
     {
         return $this->get('table.factory');
-    }
-
-    /**
-     * Converts a ResourceEvent into session flashes.
-     *
-     * @param ResourceEvent $event
-     */
-    protected function displayResourceEventMessages(ResourceEvent $event)
-    {
-        foreach($event->getMessages() as $message) {
-            $this->addFlash($message->getMessage(), $message->getType());
-        }
     }
 
     /**
