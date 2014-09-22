@@ -636,7 +636,7 @@ class ResourceController extends Controller
      *
      * @throws \RuntimeException
      *
-     * @return Object
+     * @return object
      */
     protected function createNew(Context $context)
     {
@@ -665,8 +665,7 @@ class ResourceController extends Controller
      */
     protected function createResource($resource)
     {
-        $event = new ResourceEvent();
-        $event->setResource($resource);
+        $event = $this->createResourceEvent($resource);
         $this->getDispatcher()->dispatch($this->config->getEventName('create'), $event);
         if (!$event->isPropagationStopped()) {
             $this->persist($event);
@@ -677,13 +676,12 @@ class ResourceController extends Controller
     /**
      * Updates a resource.
      *
-     * @param $resource
+     * @param object $resource
      * @return ResourceEvent
      */
     protected function updateResource($resource)
     {
-        $event = new ResourceEvent();
-        $event->setResource($resource);
+        $event = $this->createResourceEvent($resource);
         $this->getDispatcher()->dispatch($this->config->getEventName('update'), $event);
         if (!$event->isPropagationStopped()) {
             $this->persist($event);
@@ -694,17 +692,29 @@ class ResourceController extends Controller
     /**
      * Deletes a resource.
      *
-     * @param $resource
+     * @param object $resource
      * @return ResourceEvent
      */
     protected function deleteResource($resource)
     {
-        $event = new ResourceEvent();
-        $event->setResource($resource);
+        $event = $this->createResourceEvent($resource);
         $this->getDispatcher()->dispatch($this->config->getEventName('delete'), $event);
         if (!$event->isPropagationStopped()) {
             $this->remove($event);
         }
+        return $event;
+    }
+
+    /**
+     * Creates the resource event.
+     *
+     * @param object $resource
+     * @return ResourceEvent
+     */
+    protected function createResourceEvent($resource)
+    {
+        $event = new ResourceEvent();
+        $event->setResource($resource);
         return $event;
     }
 
