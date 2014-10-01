@@ -43,19 +43,19 @@ class AsseticConfiguration
             '@fontawesome_css',
             '@core_css',
 
-            'bundles/ekynaadmin/css/lib/jquery-ui.css',
-            'bundles/ekynaadmin/css/bootstrap-overrides.css',
-            'bundles/ekynaadmin/css/layout.css',
-            'bundles/ekynaadmin/css/elements.css',
-            'bundles/ekynaadmin/css/ui-elements.css',
-            'bundles/ekynaadmin/css/show.css',
+            '@EkynaAdminBundle/Resources/asset/css/lib/jquery-ui.css',
+            '@EkynaAdminBundle/Resources/asset/css/bootstrap-overrides.css',
+            '@EkynaAdminBundle/Resources/asset/css/layout.css',
+            '@EkynaAdminBundle/Resources/asset/css/elements.css',
+            '@EkynaAdminBundle/Resources/asset/css/ui-elements.css',
+            '@EkynaAdminBundle/Resources/asset/css/show.css',
 
-            'bundles/ekynatable/css/table.css',
+            '@EkynaTableBundle/Resources/asset/css/table.css',
         );
 
         return array(
             'inputs'  => $inputs,
-            'filters' => array('cssrewrite', 'yui_css'),
+            'filters' => array('yui_css'), // 'cssrewrite'
             'output'  => $config['output_dir'].'css/admin.css',
             'debug'   => false,
         );
@@ -73,16 +73,16 @@ class AsseticConfiguration
             '@bootstrap_js',
             '@core_js',
 
-            'bundles/ekynaadmin/js/jquery-ui.js',
-            'bundles/ekynaadmin/js/theme.js',
-            'bundles/ekynaadmin/js/ui.js',
+            '@EkynaAdminBundle/Resources/asset/js/jquery-ui.js',
+            '@EkynaAdminBundle/Resources/asset/js/theme.js',
+            '@EkynaAdminBundle/Resources/asset/js/ui.js',
 
-            'bundles/ekynatable/js/table.js',
+            '@EkynaTableBundle/Resources/asset/js/table.js',
         );
 
         return array(
             'inputs'  => $inputs,
-            'filters' => array('closure'),
+            'filters' => array('yui_js'),
             'output'  => $config['output_dir'].'js/admin.js',
             'debug'   => false,
         );

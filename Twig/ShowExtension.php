@@ -74,6 +74,8 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderUrlWidget($content, $options);
         } elseif ($type == 'datetime') {
             $content = $this->renderDatetimeWidget($content, $options);
+        } elseif ($type == 'color') {
+            $content = $this->renderColorWidget($content, $options);
         } elseif ($type == 'tinymce') {
             $content = $this->renderTinymceWidget($content, $options);
         } elseif ($type == 'image') {
@@ -219,6 +221,21 @@ class ShowExtension extends \Twig_Extension
         );
 
         return $this->renderBlock('show_widget_datetime', $vars);
+    }
+
+    /**
+     * Renders a color widget.
+     *
+     * @param mixed $content
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function renderColorWidget($content, array $options = array())
+    {
+        return $this->renderBlock('show_widget_color', array(
+            'content' => $content
+        ));
     }
 
     /**

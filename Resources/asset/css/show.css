@@ -169,6 +169,15 @@
     margin: 0 20px 20px 0;
 }
 
+.show-body .show-color {
+    border-radius: 2px;
+    display: inline-block;
+    width: 19px;
+    height: 19px;
+    margin-right: 8px;
+    vertical-align: baseline;
+}
+
 /**
  * ACL Table
  */
