@@ -711,6 +711,7 @@ class ResourceController extends Controller
      *
      * @param ResourceEvent $event
      * @return ResourceEvent
+     * @throws DBALException
      */
     protected function persist(ResourceEvent $event)
     {
@@ -721,6 +722,9 @@ class ResourceController extends Controller
         try {
             $em->flush($resource);
         } catch(DBALException $e) {
+            if ($this->get('kernel')->getEnvironment() === 'dev') {
+                throw $e;
+            }
             $event->addMessage(new ResourceMessage(
                 'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été sauvegardée.',
                 ResourceMessage::TYPE_DANGER
@@ -739,6 +743,7 @@ class ResourceController extends Controller
      *
      * @param ResourceEvent $event
      * @return ResourceEvent
+     * @throws DBALException
      */
     protected function remove(ResourceEvent $event)
     {
@@ -749,6 +754,9 @@ class ResourceController extends Controller
         try {
             $em->flush($resource);
         } catch(DBALException $e) {
+            if ($this->get('kernel')->getEnvironment() === 'dev') {
+                throw $e;
+            }
             if (null !== $previous = $e->getPrevious()) {
                 if ($previous instanceof \PDOException && $previous->getCode() == 23000) {
                     return $event->addMessage(new ResourceMessage(

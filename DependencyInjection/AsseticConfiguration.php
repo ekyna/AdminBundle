@@ -3,8 +3,8 @@
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
 /**
- * AsseticConfiguration
- *
+ * Class AsseticConfiguration
+ * @package Ekyna\Bundle\AdminBundle\DependencyInjection
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class AsseticConfiguration
