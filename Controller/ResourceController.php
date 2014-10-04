@@ -720,7 +720,7 @@ class ResourceController extends Controller
         $em->persist($resource);
 
         try {
-            $em->flush($resource);
+            $em->flush();
         } catch(DBALException $e) {
             if ($this->get('kernel')->getEnvironment() === 'dev') {
                 throw $e;
@@ -752,7 +752,7 @@ class ResourceController extends Controller
         $em->remove($resource);
 
         try {
-            $em->flush($resource);
+            $em->flush();
         } catch(DBALException $e) {
             if ($this->get('kernel')->getEnvironment() === 'dev') {
                 throw $e;
