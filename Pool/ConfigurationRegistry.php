@@ -29,7 +29,7 @@ class ConfigurationRegistry
     /**
      * Finds a configuration for the given resource (object/class/id)
      * 
-     * @param mixed $resource
+     * @param mixed $resource object, class or configuration identifier.
      * @param boolean $throwException
      * 
      * @throws \Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException

@@ -14,11 +14,34 @@ use Symfony\Component\DependencyInjection\Alias;
  */
 class PoolBuilder
 {
-    protected $container;
-    protected $prefix;
-    protected $resourceName;
-    protected $config;
+    /**
+     * @var ContainerBuilder
+     */
+    private $container;
 
+    /**
+     * @var string
+     */
+    private $prefix;
+
+    /**
+     * @var string
+     */
+    private $resourceName;
+
+    /**
+     * @var array
+     */
+    private $config;
+
+    /**
+     * Constructor.
+     *
+     * @param ContainerBuilder $container
+     * @param string $prefix
+     * @param string $resourceName
+     * @param array $config
+     */
     public function __construct(ContainerBuilder $container, $prefix, $resourceName, array $config)
     {
         $this->container = $container;
@@ -27,42 +50,55 @@ class PoolBuilder
         $this->config = $config;
     }
 
+    /**
+     * Builds the container.
+     */
     public function build()
     {
-        $this->container->setParameter($this->getContainerKey('class'), $this->config['entity']);
-        
-        $configurationKey = $this->getContainerKey('configuration');
+        $this->container->setParameter($this->getServiceId('class'), $this->config['entity']);
+
+        $configurationKey = $this->getServiceId('configuration');
         $this->container->setDefinition(
             $configurationKey,
             $this->getConfigurationDefinition()
         );
 
         $this->container->setDefinition(
-            $this->getContainerKey('controller'),
+            $this->getServiceId('controller'),
             $this->getControllerDefinition($configurationKey)
         );
 
+        if (!$this->container->hasDefinition($this->getServiceId('manager'))) {
+            $this->setManagerAlias();
+        }
+
         $this->container->setDefinition(
-            $this->getContainerKey('repository'),
-            $this->getRepositoryDefinition($this->getServiceClass('repository'))
+            $this->getServiceId('repository'),
+            $this->getRepositoryDefinition()
         );
 
-        if(!$this->container->hasDefinition($this->getContainerKey('form_type'))) {
+        $this->container->setDefinition(
+            $this->getServiceId('operator'),
+            $this->getOperatorDefinition()
+        );
+
+        if (!$this->container->hasDefinition($this->getServiceId('form_type'))) {
             $this->createFormDefinition();
         }
 
-        if(!$this->container->hasDefinition($this->getContainerKey('table_type'))) {
+        if (!$this->container->hasDefinition($this->getServiceId('table_type'))) {
             $this->createTableDefinition();
-        }
-
-        if(!$this->container->hasDefinition($this->getContainerKey('manager'))) {
-            $this->setManagerAlias();
         }
     }
 
-    protected function getConfigurationDefinition()
+    /**
+     * Returns the Configuration service definition.
+     *
+     * @return Definition
+     */
+    private function getConfigurationDefinition()
     {
-        $templates = isset($this->config['templates']) ? $this->config['templates'] : null; 
+        $templates = isset($this->config['templates']) ? $this->config['templates'] : null;
         $parentId = isset($this->config['parent']) ? $this->config['parent'] : null;
 
         $definition = new Definition('Ekyna\Bundle\AdminBundle\Pool\Configuration');
@@ -76,12 +112,21 @@ class PoolBuilder
                 $templates,
                 $parentId
             ))
-            ->addTag('ekyna_admin.configuration', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)))
-        ;
+            ->addTag('ekyna_admin.configuration', array(
+                'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName))
+            );
+
         return $definition;
     }
 
-    protected function getControllerDefinition($configurationKey)
+    /**
+     * Returns the Controller service definition.
+     *
+     * @param $configurationKey
+     *
+     * @return Definition
+     */
+    private function getControllerDefinition($configurationKey)
     {
         $default = 'Ekyna\Bundle\AdminBundle\Controller\ResourceController';
 
@@ -89,101 +134,172 @@ class PoolBuilder
 
         $definition
             ->setArguments(array(new Reference($configurationKey)))
-            ->addMethodCall('setContainer', array(new Reference('service_container')))
-        ;
+            ->addMethodCall('setContainer', array(new Reference('service_container')));
 
         return $definition;
     }
 
-    protected function getClassMetadataDefinition($entity)
+    /**
+     * Returns the ClassMetadata service definition.
+     *
+     * @param $entity
+     *
+     * @return Definition
+     */
+    private function getClassMetadataDefinition($entity)
     {
         $definition = new Definition($this->getClassMetadataClassname());
         $definition
-            ->setFactoryService($this->getManagerServiceKey())
+            ->setFactoryService($this->getManagerServiceId())
             ->setFactoryMethod('getClassMetadata')
             ->setArguments(array($entity))
-            ->setPublic(false)
-        ;
+            ->setPublic(false);
 
         return $definition;
     }
 
-    protected function getClassMetadataClassname()
+    /**
+     * Returns the ClassMetadata fqcn.
+     *
+     * @return string
+     */
+    private function getClassMetadataClassname()
     {
-        return 'Doctrine\\ORM\\Mapping\\ClassMetadata';
+        return 'Doctrine\ORM\Mapping\ClassMetadata';
     }
 
-    protected function getRepositoryDefinition()
+    /**
+     * Returns the operator service definition.
+     *
+     * @TODO Swap with ResourceManager when ready.
+     * @return Definition
+     */
+    private function getOperatorDefinition()
+    {
+        $default = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperator';
+
+        $definition = new Definition($this->getServiceClass('operator', $default));
+
+        $definition->setArguments(array(
+            new Reference($this->getManagerServiceId()),
+            new Reference($this->getEventDispatcherServiceId()),
+            new Reference($this->getServiceId('configuration')),
+        ));
+
+        return $definition;
+    }
+
+    /**
+     * Returns the Repository service definition.
+     *
+     * @return Definition
+     */
+    private function getRepositoryDefinition()
     {
         $default = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
 
         $definition = new Definition($this->getServiceClass('repository', $default));
 
         $definition->setArguments(array(
-            new Reference($this->getContainerKey('manager')),
+            new Reference($this->getServiceId('manager')),
             $this->getClassMetadataDefinition($this->config['entity'])
         ));
 
         return $definition;
     }
 
-    protected function createFormDefinition()
+    /**
+     * Creates the Form service definition.
+     */
+    private function createFormDefinition()
     {
-        if(null !== $class = $this->getServiceClass('form')) {
-            $key = $this->getContainerKey('form_type');
-            if(!$this->container->has($key)) {
+        if (null !== $class = $this->getServiceClass('form')) {
+            $key = $this->getServiceId('form_type');
+            if (!$this->container->has($key)) {
                 $definition = new Definition($class);
                 $definition
                     ->setArguments(array($this->config['entity']))
-                    ->addTag('form.type', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)))
-                ;
+                    ->addTag('form.type', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)));
                 $this->container->setDefinition($key, $definition);
             }
         }
     }
 
-    protected function createTableDefinition()
+    /**
+     * Creates the Table service definition.
+     */
+    private function createTableDefinition()
     {
-        if(null !== $class = $this->getServiceClass('table')) {
-            $key = $this->getContainerKey('table_type');
-            if(!$this->container->has($key)) {
+        if (null !== $class = $this->getServiceClass('table')) {
+            $key = $this->getServiceId('table_type');
+            if (!$this->container->has($key)) {
                 $definition = new Definition($class);
                 $definition
                     ->setArguments(array($this->config['entity']))
-                    ->addTag('table.type', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)))
-                ;
+                    ->addTag('table.type', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)));
                 $this->container->setDefinition($key, $definition);
             }
         }
     }
 
-    protected function setManagerAlias()
+    private function setManagerAlias()
     {
         $this->container->setAlias(
-            $this->getContainerKey('manager'),
-            new Alias($this->getManagerServiceKey())
+            $this->getServiceId('manager'),
+            new Alias($this->getManagerServiceId())
         );
     }
 
-    protected function getManagerServiceKey()
+    /**
+     * Returns the default entity manager service id.
+     *
+     * @return string
+     */
+    private function getManagerServiceId()
     {
         return 'doctrine.orm.entity_manager';
     }
 
-    protected function getContainerKey($service, $suffix = null)
+    /**
+     * Returns the event dispatcher service id.
+     *
+     * @return string
+     */
+    private function getEventDispatcherServiceId()
     {
-        return sprintf('%s.%s.%s%s', $this->prefix, $this->resourceName, $service, $suffix);
+        return 'event_dispatcher';
     }
 
-    protected function getServiceClass($service, $default = null)
+    /**
+     * Returns the service id for the given name.
+     *
+     * @param string $name
+     * @param string $suffix
+     *
+     * @return string
+     */
+    private function getServiceId($name, $suffix = null)
+    {
+        return sprintf('%s.%s.%s%s', $this->prefix, $this->resourceName, $name, $suffix);
+    }
+
+    /**
+     * Returns the service class for the given name.
+     *
+     * @param string $name
+     * @param string $default
+     *
+     * @return string|null
+     */
+    private function getServiceClass($name, $default = null)
     {
         $class = $default;
-        $parameter = $this->getContainerKey($service, '.class');
+        $parameter = $this->getServiceId($name, '.class');
         if ($this->container->hasParameter($parameter)) {
             $class = $this->container->getParameter($parameter);
         }
-        if(isset($this->config[$service])) {
-            $class = $this->config[$service];
+        if (isset($this->config[$name])) {
+            $class = $this->config[$name];
         }
         return $class;
     }

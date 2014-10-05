@@ -2,11 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
-use Doctrine\Common\Inflector\Inflector;
-use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\QueryBuilder;
-use Ekyna\Bundle\AdminBundle\Event\ResourceEvent;
-use Ekyna\Bundle\AdminBundle\Event\ResourceMessage;
 use Ekyna\Bundle\AdminBundle\Pool\Configuration;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
@@ -126,13 +122,16 @@ class ResourceController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $event = $this->createResource($resource);
+            // TODO use ResourceManager
+            //$event = $this->getManager()->create($resource);
+            $event = $this->getOperator()->create($resource);
+            //$event = $this->createResource($resource);
 
             if ($request->isXmlHttpRequest()) {
-                if($event->hasErrors()) {
+                if ($event->hasErrors()) {
                     $errorMessages = $event->getErrors();
                     $errors = [];
-                    foreach($errorMessages as $message) {
+                    foreach ($errorMessages as $message) {
                         $errors[] = $message->getMessage();
                     }
                     return new JsonResponse(array('error' => implode(', ', $errors)));
@@ -262,7 +261,10 @@ class ResourceController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $event = $this->updateResource($resource);
+            // TODO use ResourceManager
+            //$event = $this->getManager()->update($resource);
+            $event = $this->getOperator()->update($resource);
+            //$event = $this->updateResource($resource);
             $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
@@ -311,7 +313,10 @@ class ResourceController extends Controller
 
         $form->handleRequest($request);
         if ($form->isValid()) {
-            $event = $this->deleteResource($resource);
+            // TODO use ResourceManager
+            //$event = $this->getManager()->delete($resource);
+            $event = $this->getOperator()->delete($resource);
+            //$event = $this->deleteResource($resource);
             $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
@@ -590,11 +595,23 @@ class ResourceController extends Controller
     /**
      * Returns the current resource entity manager.
      *
-     * @return \Doctrine\ORM\EntityManager
+     * @return \Doctrine\ORM\EntityManagerInterface
      */
     protected function getManager()
     {
         return $this->get($this->config->getServiceKey('manager'));
+    }
+
+    /**
+     * Returns the current resource operator.
+     *
+     * @TODO Temporary solution until ResourceManager is available.
+     * @param mixed $name
+     * @return \Ekyna\Bundle\AdminBundle\Operator\ResourceOperatorInterface
+     */
+    protected function getOperator($name = null)
+    {
+        return $this->get($this->config->getServiceKey('operator'));
     }
 
     /**
@@ -643,137 +660,5 @@ class ResourceController extends Controller
         }
 
         return $resource;
-    }
-
-    /**
-     * Creates a resource.
-     *
-     * @param object $resource
-     * @return ResourceEvent
-     */
-    protected function createResource($resource)
-    {
-        $event = $this->createResourceEvent($resource);
-        $this->getDispatcher()->dispatch($this->config->getEventName('create'), $event);
-        if (!$event->isPropagationStopped()) {
-            $this->persist($event);
-        }
-        return $event;
-    }
-
-    /**
-     * Updates a resource.
-     *
-     * @param object $resource
-     * @return ResourceEvent
-     */
-    protected function updateResource($resource)
-    {
-        $event = $this->createResourceEvent($resource);
-        $this->getDispatcher()->dispatch($this->config->getEventName('update'), $event);
-        if (!$event->isPropagationStopped()) {
-            $this->persist($event);
-        }
-        return $event;
-    }
-
-    /**
-     * Deletes a resource.
-     *
-     * @param object $resource
-     * @return ResourceEvent
-     */
-    protected function deleteResource($resource)
-    {
-        $event = $this->createResourceEvent($resource);
-        $this->getDispatcher()->dispatch($this->config->getEventName('delete'), $event);
-        if (!$event->isPropagationStopped()) {
-            $this->remove($event);
-        }
-        return $event;
-    }
-
-    /**
-     * Creates the resource event.
-     *
-     * @param object $resource
-     * @return ResourceEvent
-     */
-    protected function createResourceEvent($resource)
-    {
-        $event = new ResourceEvent();
-        $event->setResource($resource);
-        return $event;
-    }
-
-    /**
-     * Persists a resource.
-     *
-     * @param ResourceEvent $event
-     * @return ResourceEvent
-     * @throws DBALException
-     */
-    protected function persist(ResourceEvent $event)
-    {
-        $resource = $event->getResource();
-        $em = $this->getManager();
-        $em->persist($resource);
-
-        try {
-            $em->flush();
-        } catch(DBALException $e) {
-            if ($this->get('kernel')->getEnvironment() === 'dev') {
-                throw $e;
-            }
-            $event->addMessage(new ResourceMessage(
-                'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été sauvegardée.',
-                ResourceMessage::TYPE_DANGER
-            ));
-            return $event;
-        }
-
-        return $event->addMessage(new ResourceMessage(
-            'La ressource a été sauvegardée avec succès.',
-            ResourceMessage::TYPE_SUCCESS
-        ));
-    }
-
-    /**
-     * Removes a resource.
-     *
-     * @param ResourceEvent $event
-     * @return ResourceEvent
-     * @throws DBALException
-     */
-    protected function remove(ResourceEvent $event)
-    {
-        $resource = $event->getResource();
-        $em = $this->getManager();
-        $em->remove($resource);
-
-        try {
-            $em->flush();
-        } catch(DBALException $e) {
-            if ($this->get('kernel')->getEnvironment() === 'dev') {
-                throw $e;
-            }
-            if (null !== $previous = $e->getPrevious()) {
-                if ($previous instanceof \PDOException && $previous->getCode() == 23000) {
-                    return $event->addMessage(new ResourceMessage(
-                        'Cette ressource est liée à d\'autres ressources et ne peut pas être supprimée.',
-                        ResourceMessage::TYPE_DANGER
-                    ));
-                }
-            }
-            return $event->addMessage(new ResourceMessage(
-                'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été supprimée.',
-                ResourceMessage::TYPE_DANGER
-            ));
-        }
-
-        return $event->addMessage(new ResourceMessage(
-            'La ressource a été supprimée avec succès.',
-            ResourceMessage::TYPE_SUCCESS
-        ));
     }
 }

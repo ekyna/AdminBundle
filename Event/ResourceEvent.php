@@ -30,7 +30,7 @@ class ResourceEvent extends Event
      */
     public function addMessage(ResourceMessage $message)
     {
-        if ($message->getType() === ResourceMessage::TYPE_DANGER) {
+        if ($message->getType() === ResourceMessage::TYPE_ERROR) {
             $this->stopPropagation();
         }
         array_push($this->messages, $message);
@@ -85,7 +85,7 @@ class ResourceEvent extends Event
      */
     public function hasErrors()
     {
-        return $this->hasMessages(ResourceMessage::TYPE_DANGER);
+        return $this->hasMessages(ResourceMessage::TYPE_ERROR);
     }
 
     /**
@@ -95,7 +95,7 @@ class ResourceEvent extends Event
      */
     public function getErrors()
     {
-        return $this->getMessages(ResourceMessage::TYPE_DANGER);
+        return $this->getMessages(ResourceMessage::TYPE_ERROR);
     }
 
     /**
