@@ -606,7 +606,7 @@ class ResourceController extends Controller
      * Returns the current resource operator.
      *
      * @TODO Temporary solution until ResourceManager is available.
-     * 
+     *
      * @return \Ekyna\Bundle\AdminBundle\Operator\ResourceOperatorInterface
      */
     protected function getOperator()

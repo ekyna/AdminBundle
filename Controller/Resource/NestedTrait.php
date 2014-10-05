@@ -119,7 +119,7 @@ trait NestedTrait
     /**
      * Creates a new resource and configure it regarding to the parent.
      * 
-     * @param Context $resource
+     * @param Context $context
      * @param object $parent
      * 
      * @return object
