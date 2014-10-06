@@ -35,7 +35,7 @@
     {% if content is empty %}
     <em>{{ 'ekyna_core.undefined'|trans }}</em>
     {% else %}
-    {{ content|date(time ? 'd/m/Y H:i' : 'd/m/Y') }}
+    {{ content|localizeddate(options['date_format'], options['time_format'], options['locale'], options['timezone'], options['format'])|capitalize }}
     {% endif %}
     </div>
 {% endspaceless %}

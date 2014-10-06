@@ -36,7 +36,7 @@ abstract class AbstractExtension extends Extension
      * @param ConfigurationInterface $configuration
      * @param ContainerBuilder       $container
      *
-     * @return array
+     * @return array(array, \Symfony\Component\DependencyInjection\Loader\FileLoader)
      */
     public function configure(array $configs, $prefix, ConfigurationInterface $configuration, ContainerBuilder $container)
     {

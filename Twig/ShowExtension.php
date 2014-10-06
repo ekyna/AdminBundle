@@ -72,7 +72,10 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderEntityWidget($content, $options);
         } elseif ($type == 'url') {
             $content = $this->renderUrlWidget($content, $options);
-        } elseif ($type == 'datetime') {
+        } elseif ($type == 'datetime' || $type == 'date') {
+            if ($type == 'date') {
+                $options['time'] = false;
+            }
             $content = $this->renderDatetimeWidget($content, $options);
         } elseif ($type == 'color') {
             $content = $this->renderColorWidget($content, $options);
@@ -214,10 +217,25 @@ class ShowExtension extends \Twig_Extension
         if (!array_key_exists('time', $options)) {
             $options['time'] = true;
         }
+        if (!array_key_exists('date_format', $options)) {
+            $options['date_format'] = 'medium';
+        }
+        if (!array_key_exists('time_format', $options)) {
+            $options['time_format'] = $options['time'] ? 'medium' : 'none';
+        }
+        if (!array_key_exists('locale', $options)) {
+            $options['locale'] = null;
+        }
+        if (!array_key_exists('timezone', $options)) {
+            $options['timezone'] = null;
+        }
+        if (!array_key_exists('format', $options)) {
+            $options['format'] = '';
+        }
 
         $vars = array(
             'content' => $content,
-            'time' => $options['time'],
+            'options' => $options,
         );
 
         return $this->renderBlock('show_widget_datetime', $vars);
