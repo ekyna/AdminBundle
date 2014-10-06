@@ -133,9 +133,7 @@
         {{ block('render_image') }}
         {% endfor %}
     {% else %}
-	    <span class="thumbnail">
-	        <img src="http://placehold.it/145x96/f7f7f7/6e829b&text=No+image" />
-	    </span>
+	    <span class="thumbnail">{{ ui_no_image() }}</span>
     {% endif %}
     </div>
 {% endspaceless %}
