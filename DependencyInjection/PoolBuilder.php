@@ -77,10 +77,12 @@ class PoolBuilder
             $this->getRepositoryDefinition()
         );
 
-        $this->container->setDefinition(
-            $this->getServiceId('operator'),
-            $this->getOperatorDefinition()
-        );
+        if (!$this->container->hasAlias($this->getServiceId('operator'))) {
+            $this->container->setDefinition(
+                $this->getServiceId('operator'),
+                $this->getOperatorDefinition()
+            );
+        }
 
         if (!$this->container->hasDefinition($this->getServiceId('form_type'))) {
             $this->createFormDefinition();
