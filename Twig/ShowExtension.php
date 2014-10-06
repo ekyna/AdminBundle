@@ -44,7 +44,7 @@ class ShowExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'show_row' => new \Twig_Function_Method($this, 'renderRow', array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('show_row', array($this, 'renderRow'), array('is_safe' => array('html'))),
         );
     }
 
