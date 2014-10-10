@@ -6,18 +6,31 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * PoolBuilder
- *
+ * Class PoolBuilder
+ * @package Ekyna\Bundle\AdminBundle\DependencyInjection
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class PoolBuilder
 {
+    const DEFAULT_CONTROLLER = 'Ekyna\Bundle\AdminBundle\Controller\ResourceController';
+    const DEFAULT_OPERATOR   = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperator';
+    const DEFAULT_REPOSITORY = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
+
+    const CONFIGURATION      = 'Ekyna\Bundle\AdminBundle\Pool\Configuration';
+    const CLASS_METADATA     = 'Doctrine\ORM\Mapping\ClassMetadata';
+
     /**
      * @var ContainerBuilder
      */
     private $container;
+
+    /**
+     * @var OptionsResolver
+     */
+    private $optionsResolver;
 
     /**
      * @var string
@@ -32,113 +45,231 @@ class PoolBuilder
     /**
      * @var array
      */
-    private $config;
+    private $options;
 
     /**
      * Constructor.
      *
      * @param ContainerBuilder $container
-     * @param string $prefix
-     * @param string $resourceName
-     * @param array $config
      */
-    public function __construct(ContainerBuilder $container, $prefix, $resourceName, array $config)
+    public function __construct(ContainerBuilder $container)
     {
         $this->container = $container;
+    }
+
+    /**
+     * Configures the pool builder.
+     *
+     * @param string $prefix
+     * @param string $resourceName
+     * @param array  $options
+     *
+     * @return PoolBuilder
+     */
+    public function configure($prefix, $resourceName, array $options)
+    {
         $this->prefix = $prefix;
         $this->resourceName = $resourceName;
-        $this->config = $config;
+        $this->options = $this->getOptionsResolver()->resolve($options);
+
+        return $this;
     }
 
     /**
      * Builds the container.
+     *
+     * @return PoolBuilder
      */
     public function build()
     {
-        $this->container->setParameter($this->getServiceId('class'), $this->config['entity']);
+        $this->createEntityClassParameter();
 
-        $configurationKey = $this->getServiceId('configuration');
-        $this->container->setDefinition(
-            $configurationKey,
-            $this->getConfigurationDefinition()
-        );
+        $this->createConfigurationDefinition();
 
-        $this->container->setDefinition(
-            $this->getServiceId('controller'),
-            $this->getControllerDefinition($configurationKey)
-        );
+        $this->createManagerDefinition();
+        $this->createRepositoryDefinition();
+        $this->createOperatorDefinition();
 
-        if (!$this->container->hasDefinition($this->getServiceId('manager'))) {
-            $this->setManagerAlias();
+        $this->createControllerDefinition();
+
+        $this->createFormDefinition();
+        $this->createTableDefinition();
+
+        return $this;
+    }
+
+    /**
+     * Returns the options resolver.
+     *
+     * @return OptionsResolver
+     */
+    private function getOptionsResolver()
+    {
+        if (null === $this->optionsResolver) {
+            $this->optionsResolver = new OptionsResolver();
+            $this->optionsResolver
+                ->setDefaults(array(
+                    'entity'     => null,
+                    'repository' => self::DEFAULT_REPOSITORY,
+                    'operator'   => self::DEFAULT_OPERATOR,
+                    'controller' => self::DEFAULT_CONTROLLER,
+                    'templates'  => null,
+                    'form'       => null,
+                    'table'      => null,
+                    'event'      => null,
+                    'parent'     => null,
+                ))
+                ->setAllowedTypes(array(
+                    'entity'     => 'string',
+                    'repository' => 'string',
+                    'operator'   => 'string',
+                    'controller' => 'string',
+                    'templates'  => 'string',
+                    'form'       => 'string',
+                    'table'      => 'string',
+                    'event'      => array('null', 'string'),
+                    'parent'     => array('null', 'string'),
+                ))
+            ;
         }
+        return $this->optionsResolver;
+    }
 
-        $this->container->setDefinition(
-            $this->getServiceId('repository'),
-            $this->getRepositoryDefinition()
-        );
-
-        if (!$this->container->hasAlias($this->getServiceId('operator'))) {
-            $this->container->setDefinition(
-                $this->getServiceId('operator'),
-                $this->getOperatorDefinition()
-            );
+    /**
+     * Creates the entity class parameter.
+     */
+    private function createEntityClassParameter()
+    {
+        $id = $this->getServiceId('class');
+        if ($this->container->has($id)) {
+            throw new \Exception(sprintf('The parameter "%s" is reserved. Please remove his definition.', $id));
         }
+        $this->container->setParameter($id, $this->options['entity']);
+    }
 
-        if (!$this->container->hasDefinition($this->getServiceId('form_type'))) {
-            $this->createFormDefinition();
-        }
-
-        if (!$this->container->hasDefinition($this->getServiceId('table_type'))) {
-            $this->createTableDefinition();
+    /**
+     * Creates the Configuration service definition.
+     */
+    private function createConfigurationDefinition()
+    {
+        $id = $this->getServiceId('configuration');
+        if (!$this->container->has($id)) {
+            $definition = new Definition(self::CONFIGURATION);
+            $definition
+                ->setFactoryService('ekyna_admin.pool_factory')
+                ->setFactoryMethod('createConfiguration')
+                ->setArguments(array(
+                    $this->prefix,
+                    $this->resourceName,
+                    $this->options['entity'],
+                    $this->options['templates'],
+                    $this->options['event'],
+                    $this->options['parent']
+                ))
+                ->addTag('ekyna_admin.configuration', array(
+                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName))
+                )
+            ;
+            $this->container->setDefinition($id, $definition);
         }
     }
 
     /**
-     * Returns the Configuration service definition.
-     *
-     * @return Definition
+     * Creates the manager definition.
      */
-    private function getConfigurationDefinition()
+    private function createManagerDefinition()
     {
-        $templates = isset($this->config['templates']) ? $this->config['templates'] : null;
-        $parentId = isset($this->config['parent']) ? $this->config['parent'] : null;
-
-        $definition = new Definition('Ekyna\Bundle\AdminBundle\Pool\Configuration');
-        $definition
-            ->setFactoryService('ekyna_admin.pool_factory')
-            ->setFactoryMethod('createConfiguration')
-            ->setArguments(array(
-                $this->prefix,
-                $this->resourceName,
-                $this->config['entity'],
-                $templates,
-                $parentId
-            ))
-            ->addTag('ekyna_admin.configuration', array(
-                'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName))
-            );
-
-        return $definition;
+        $id = $this->getServiceId('manager');
+        if (!$this->container->has($id)) {
+            $this->container->setAlias($id, new Alias($this->getManagerServiceId()));
+        }
     }
 
     /**
-     * Returns the Controller service definition.
-     *
-     * @param $configurationKey
-     *
-     * @return Definition
+     * Creates the Repository service definition.
      */
-    private function getControllerDefinition($configurationKey)
+    private function createRepositoryDefinition()
     {
-        $default = 'Ekyna\Bundle\AdminBundle\Controller\ResourceController';
+        $id = $this->getServiceId('repository');
+        if (!$this->container->has($id)) {
+            $definition = new Definition($this->getServiceClass('repository'));
+            $definition->setArguments(array(
+                new Reference($this->getServiceId('manager')),
+                $this->getClassMetadataDefinition($this->options['entity'])
+            ));
+            $this->container->setDefinition($id, $definition);
+        }
+    }
 
-        $definition = new Definition($this->getServiceClass('controller', $default));
+    /**
+     * Creates the operator service definition.
+     *
+     * @TODO Swap with ResourceManager when ready.
+     */
+    private function createOperatorDefinition()
+    {
+        $id = $this->getServiceId('operator');
+        if (!$this->container->has($id)) {
+            $definition = new Definition($this->getServiceClass('operator'));
+            $definition->setArguments(array(
+                new Reference($this->getManagerServiceId()),
+                new Reference($this->getEventDispatcherServiceId()),
+                new Reference($this->getServiceId('configuration')),
+            ));
+            $this->container->setDefinition($id, $definition);
+        }
+    }
 
-        $definition
-            ->setArguments(array(new Reference($configurationKey)))
-            ->addMethodCall('setContainer', array(new Reference('service_container')));
+    /**
+     * Creates the Controller service definition.
+     */
+    private function createControllerDefinition()
+    {
+        $id = $this->getServiceId('controller');
+        if (!$this->container->has($id)) {
+            $definition = new Definition($this->getServiceClass('controller'));
+            $definition
+                ->addMethodCall('setConfiguration', array(new Reference($this->getServiceId('configuration'))))
+                ->addMethodCall('setContainer', array(new Reference('service_container')))
+            ;
+            $this->container->setDefinition($id, $definition);
+        }
+    }
 
-        return $definition;
+    /**
+     * Creates the Form service definition.
+     */
+    private function createFormDefinition()
+    {
+        $id = $this->getServiceId('form_type');
+        if (!$this->container->has($id)) {
+            $definition = new Definition($this->getServiceClass('form'));
+            $definition
+                ->setArguments(array($this->options['entity']))
+                ->addTag('form.type', array(
+                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName))
+                )
+            ;
+            $this->container->setDefinition($id, $definition);
+        }
+    }
+
+    /**
+     * Creates the Table service definition.
+     */
+    private function createTableDefinition()
+    {
+        $id = $this->getServiceId('table_type');
+        if (!$this->container->has($id)) {
+            $definition = new Definition($this->getServiceClass('table'));
+            $definition
+                ->setArguments(array($this->options['entity']))
+                ->addTag('table.type', array(
+                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName))
+                )
+            ;
+            $this->container->setDefinition($id, $definition);
+        }
     }
 
     /**
@@ -150,106 +281,14 @@ class PoolBuilder
      */
     private function getClassMetadataDefinition($entity)
     {
-        $definition = new Definition($this->getClassMetadataClassname());
+        $definition = new Definition(self::CLASS_METADATA);
         $definition
             ->setFactoryService($this->getManagerServiceId())
             ->setFactoryMethod('getClassMetadata')
             ->setArguments(array($entity))
-            ->setPublic(false);
-
+            ->setPublic(false)
+        ;
         return $definition;
-    }
-
-    /**
-     * Returns the ClassMetadata fqcn.
-     *
-     * @return string
-     */
-    private function getClassMetadataClassname()
-    {
-        return 'Doctrine\ORM\Mapping\ClassMetadata';
-    }
-
-    /**
-     * Returns the operator service definition.
-     *
-     * @TODO Swap with ResourceManager when ready.
-     * @return Definition
-     */
-    private function getOperatorDefinition()
-    {
-        $default = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperator';
-
-        $definition = new Definition($this->getServiceClass('operator', $default));
-
-        $definition->setArguments(array(
-            new Reference($this->getManagerServiceId()),
-            new Reference($this->getEventDispatcherServiceId()),
-            new Reference($this->getServiceId('configuration')),
-        ));
-
-        return $definition;
-    }
-
-    /**
-     * Returns the Repository service definition.
-     *
-     * @return Definition
-     */
-    private function getRepositoryDefinition()
-    {
-        $default = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
-
-        $definition = new Definition($this->getServiceClass('repository', $default));
-
-        $definition->setArguments(array(
-            new Reference($this->getServiceId('manager')),
-            $this->getClassMetadataDefinition($this->config['entity'])
-        ));
-
-        return $definition;
-    }
-
-    /**
-     * Creates the Form service definition.
-     */
-    private function createFormDefinition()
-    {
-        if (null !== $class = $this->getServiceClass('form')) {
-            $key = $this->getServiceId('form_type');
-            if (!$this->container->has($key)) {
-                $definition = new Definition($class);
-                $definition
-                    ->setArguments(array($this->config['entity']))
-                    ->addTag('form.type', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)));
-                $this->container->setDefinition($key, $definition);
-            }
-        }
-    }
-
-    /**
-     * Creates the Table service definition.
-     */
-    private function createTableDefinition()
-    {
-        if (null !== $class = $this->getServiceClass('table')) {
-            $key = $this->getServiceId('table_type');
-            if (!$this->container->has($key)) {
-                $definition = new Definition($class);
-                $definition
-                    ->setArguments(array($this->config['entity']))
-                    ->addTag('table.type', array('alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)));
-                $this->container->setDefinition($key, $definition);
-            }
-        }
-    }
-
-    private function setManagerAlias()
-    {
-        $this->container->setAlias(
-            $this->getServiceId('manager'),
-            new Alias($this->getManagerServiceId())
-        );
     }
 
     /**
@@ -289,20 +328,15 @@ class PoolBuilder
      * Returns the service class for the given name.
      *
      * @param string $name
-     * @param string $default
      *
      * @return string|null
      */
-    private function getServiceClass($name, $default = null)
+    private function getServiceClass($name)
     {
-        $class = $default;
         $parameter = $this->getServiceId($name, '.class');
         if ($this->container->hasParameter($parameter)) {
-            $class = $this->container->getParameter($parameter);
+            return $this->container->getParameter($parameter);
         }
-        if (isset($this->config[$name])) {
-            $class = $this->config[$name];
-        }
-        return $class;
+        return $this->options[$name];
     }
 }

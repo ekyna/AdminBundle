@@ -34,11 +34,11 @@ class ResourceController extends Controller
     protected $config;
 
     /**
-     * Constructor.
+     * Sets the configuration.
      *
      * @param Configuration $config
      */
-    public function __construct(Configuration $config)
+    public function setConfiguration(Configuration $config)
     {
         $this->config = $config;
     }

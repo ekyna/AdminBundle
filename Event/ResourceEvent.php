@@ -23,6 +23,28 @@ class ResourceEvent extends Event
     protected $messages = [];
 
     /**
+     * Sets the resource.
+     *
+     * @param mixed $resource
+     * @return ResourceEvent|$this
+     */
+    public function setResource($resource)
+    {
+        $this->resource = $resource;
+        return $this;
+    }
+
+    /**
+     * Returns the resource.
+     *
+     * @return mixed
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+    /**
      * Adds the message.
      *
      * @param ResourceMessage $message
@@ -96,28 +118,6 @@ class ResourceEvent extends Event
     public function getErrors()
     {
         return $this->getMessages(ResourceMessage::TYPE_ERROR);
-    }
-
-    /**
-     * Sets the resource.
-     * 
-     * @param mixed $resource
-     * @return ResourceEvent|$this
-     */
-    public function setResource($resource)
-    {
-        $this->resource = $resource;
-        return $this;
-    }
-
-    /**
-     * Returns the resource.
-     * 
-     * @return mixed
-     */
-    public function getResource()
-    {
-        return $this->resource;
     }
 
     /**

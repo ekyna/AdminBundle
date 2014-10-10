@@ -46,9 +46,12 @@ abstract class AbstractExtension extends Extension
         $this->loadConfigurationFile($this->configFiles, $loader);
 
         if (array_key_exists('pools', $config)) {
+            $builder = new PoolBuilder($container);
             foreach ($config['pools'] as $resourceName => $params) {
-                $builder = new PoolBuilder($container, $prefix, $resourceName, $params);
-                $builder->build();
+                $builder
+                    ->configure($prefix, $resourceName, $params)
+                    ->build()
+                ;
             }
         }
 

@@ -89,22 +89,42 @@ trait NestedTrait
             $repo = $this->getRepository();
             
             $repo->persistAsLastChildOf($child, $resource);
-            $em->flush();
 
-            $this->addFlash('La resource a été créé avec succès.', 'success');
+            // TODO use ResourceManager
+            //$event = $this->getManager()->create($child);
+            $event = $this->getOperator()->create($child);
 
-            if (null !== $redirectPath = $form->get('_redirect')->getData()) {
-                return $this->redirect($redirectPath);
+            /*if ($request->isXmlHttpRequest()) {
+                if ($event->hasErrors()) {
+                    $errorMessages = $event->getErrors();
+                    $errors = [];
+                    foreach ($errorMessages as $message) {
+                        $errors[] = $message->getMessage();
+                    }
+                    return new JsonResponse(array('error' => implode(', ', $errors)));
+                }
+
+                return new JsonResponse(array(
+                    'id' => $resource->getId(),
+                    'name' => (string)$resource,
+                ));
+            }*/
+
+            $event->toFlashes($this->getFlashBag());
+
+            if (!$event->hasErrors()) {
+                if (null !== $redirectPath = $form->get('_redirect')->getData()) {
+                    return $this->redirect($redirectPath);
+                }
+                return $this->redirect(
+                    $this->generateUrl(
+                        $this->config->getRoute('show'),
+                        array_merge($context->getIdentifiers(), array(
+                            sprintf('%sId', $resourceName) => $child->getId()
+                        ))
+                    )
+                );
             }
-
-            return $this->redirect(
-                $this->generateUrl(
-                    $this->config->getRoute('show'),
-                    array_merge($context->getIdentifiers(), array(
-                        sprintf('%sId', $resourceName) => $child->getId()
-                    ))
-                )
-            );
         }
 
         return $this->render(

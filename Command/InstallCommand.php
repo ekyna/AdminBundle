@@ -152,8 +152,8 @@ EOT
             ->setEmail($email)
             ->setGroup($group)
             ->setGender('mr')
-            ->setFirstname('John')
-            ->setLastname('Doe')
+            ->setFirstName('John')
+            ->setLastName('Doe')
             ->setEnabled(true)
         ;
 

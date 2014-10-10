@@ -30,6 +30,11 @@ class Configuration
     /**
      * @var string
      */
+    protected $eventClass;
+
+    /**
+     * @var string
+     */
     protected $templateNamespace;
 
     /**
@@ -39,19 +44,23 @@ class Configuration
 
     /**
      * Constructor.
-     * 
+     *
      * @param string $prefix            The configuration prefix
      * @param string $resourceName      The resource name
      * @param string $resourceClass     The resource FQCN
      * @param string $templateNamespace The template namespace
+     * @param string $eventClass        The event FQCN
      * @param string $parentId          The parent configuration identifier
      */
-    public function __construct($prefix, $resourceName, $resourceClass, $templateNamespace = null, $parentId = null)
+    public function __construct($prefix, $resourceName, $resourceClass, $templateNamespace, $eventClass = null, $parentId = null)
     {
+        // Required
         $this->prefix = $prefix;
         $this->resourceName = $resourceName;
         $this->resourceClass = $resourceClass;
         $this->templateNamespace = $templateNamespace;
+        // Optional
+        $this->eventClass = $eventClass;
         $this->parentId = $parentId;
     }
 
@@ -113,6 +122,16 @@ class Configuration
     public function getResourceClass()
     {
         return $this->resourceClass;
+    }
+
+    /**
+     * Returns the eventClass.
+     *
+     * @return string
+     */
+    public function getEventClass()
+    {
+        return $this->eventClass;
     }
 
     /**

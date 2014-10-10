@@ -198,8 +198,12 @@ class ResourceOperator implements ResourceOperatorInterface
      */
     private function createResourceEvent($resource)
     {
-        $event = new ResourceEvent();
-        $event->setResource($resource);
+        if (null !== $eventClass = $this->config->getEventClass()) {
+            $event = new $eventClass($resource);
+        } else {
+            $event = new ResourceEvent();
+            $event->setResource($resource);
+        }
         return $event;
     }
 }
