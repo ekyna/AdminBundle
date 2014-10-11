@@ -7,8 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\SecurityContext;
 
 /**
- * SecurityController
- *
+ * Class SecurityController
+ * @package Ekyna\Bundle\AdminBundle\Controller
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class SecurityController extends Controller

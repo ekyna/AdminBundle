@@ -5,11 +5,11 @@ namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM;
 use Doctrine\ORM\EntityRepository as BaseRepository;
 
 /**
- * ResourceRepository
- *
+ * Class ResourceRepository
+ * @package Ekyna\Bundle\AdminBundle\Doctrine\ORM
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class ResourceRepository extends BaseRepository
+class ResourceRepository extends BaseRepository implements ResourceRepositoryInterface
 {
     /**
      * Creates a new resource.
@@ -18,6 +18,8 @@ class ResourceRepository extends BaseRepository
      */
     public function createNew()
     {
+        $this->getEntityManager();
+
         $class = $this->getClassName();
         return new $class;
     }

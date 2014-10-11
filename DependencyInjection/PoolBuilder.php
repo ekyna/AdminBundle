@@ -15,12 +15,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class PoolBuilder
 {
-    const DEFAULT_CONTROLLER = 'Ekyna\Bundle\AdminBundle\Controller\ResourceController';
-    const DEFAULT_OPERATOR   = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperator';
-    const DEFAULT_REPOSITORY = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
+    const DEFAULT_CONTROLLER   = 'Ekyna\Bundle\AdminBundle\Controller\ResourceController';
+    const CONTROLLER_INTERFACE = 'Ekyna\Bundle\AdminBundle\Controller\ResourceControllerInterface';
 
-    const CONFIGURATION      = 'Ekyna\Bundle\AdminBundle\Pool\Configuration';
-    const CLASS_METADATA     = 'Doctrine\ORM\Mapping\ClassMetadata';
+    const DEFAULT_OPERATOR     = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperator';
+    const OPERATOR_INTERFACE   = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperatorInterface';
+
+    const DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
+    const REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepositoryInterface';
+
+    const CONFIGURATION        = 'Ekyna\Bundle\AdminBundle\Pool\Configuration';
+    const CLASS_METADATA       = 'Doctrine\ORM\Mapping\ClassMetadata';
 
     /**
      * @var ContainerBuilder
@@ -192,7 +197,9 @@ class PoolBuilder
     {
         $id = $this->getServiceId('repository');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('repository'));
+            $class = $this->getServiceClass('repository');
+            $this->checkClass($class, self::REPOSITORY_INTERFACE);
+            $definition = new Definition($class);
             $definition->setArguments(array(
                 new Reference($this->getServiceId('manager')),
                 $this->getClassMetadataDefinition($this->options['entity'])
@@ -210,7 +217,9 @@ class PoolBuilder
     {
         $id = $this->getServiceId('operator');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('operator'));
+            $class = $this->getServiceClass('operator');
+            $this->checkClass($class, self::OPERATOR_INTERFACE);
+            $definition = new Definition($class);
             $definition->setArguments(array(
                 new Reference($this->getManagerServiceId()),
                 new Reference($this->getEventDispatcherServiceId()),
@@ -227,7 +236,9 @@ class PoolBuilder
     {
         $id = $this->getServiceId('controller');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('controller'));
+            $class = $this->getServiceClass('controller');
+            $this->checkClass($class, self::CONTROLLER_INTERFACE);
+            $definition = new Definition($class);
             $definition
                 ->addMethodCall('setConfiguration', array(new Reference($this->getServiceId('configuration'))))
                 ->addMethodCall('setContainer', array(new Reference('service_container')))
@@ -338,5 +349,24 @@ class PoolBuilder
             return $this->container->getParameter($parameter);
         }
         return $this->options[$name];
+    }
+
+    /**
+     * Checks that class exists and implements the given interface.
+     *
+     * @param string $class
+     * @param string $interface
+     * @throws \RuntimeException
+     */
+    private function checkClass($class, $interface = null)
+    {
+        if (!class_exists($class)) {
+            throw new \RuntimeException(sprintf('Class "%s" does not exists.', $class));
+        }
+        if (0 < strlen($interface)) {
+            if (!in_array($interface, class_implements($class))) {
+                throw new \RuntimeException(sprintf('Class "%s" must implement "%s" interface.', $class, $interface));
+            }
+        }
     }
 }

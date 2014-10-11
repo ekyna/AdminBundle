@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Doctrine\ORM\QueryBuilder;
-use Ekyna\Bundle\AdminBundle\Pool\Configuration;
+use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use JMS\Serializer\SerializationContext;
@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * @package Ekyna\Bundle\AdminBundle\Controller
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class ResourceController extends Controller
+class ResourceController extends Controller implements ResourceControllerInterface
 {
     /**
      * Parent resource controller
@@ -29,24 +29,20 @@ class ResourceController extends Controller
     protected $parent;
 
     /**
-     * @var Configuration
+     * @var ConfigurationInterface
      */
     protected $config;
 
     /**
-     * Sets the configuration.
-     *
-     * @param Configuration $config
+     * {@inheritdoc}
      */
-    public function setConfiguration(Configuration $config)
+    public function setConfiguration(ConfigurationInterface $config)
     {
         $this->config = $config;
     }
 
     /**
-     * Home action.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function homeAction()
     {
@@ -54,11 +50,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * List action.
-     *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function listAction(Request $request)
     {
@@ -86,11 +78,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * New/Create action.
-     *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function newAction(Request $request)
     {
@@ -123,9 +111,7 @@ class ResourceController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             // TODO use ResourceManager
-            //$event = $this->getManager()->create($resource);
             $event = $this->getOperator()->create($resource);
-            //$event = $this->createResource($resource);
 
             if ($request->isXmlHttpRequest()) {
                 if ($event->hasErrors()) {
@@ -186,11 +172,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Show action.
-     *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function showAction(Request $request)
     {
@@ -225,11 +207,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Edit/Update action.
-     *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function editAction(Request $request)
     {
@@ -262,9 +240,8 @@ class ResourceController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             // TODO use ResourceManager
-            //$event = $this->getManager()->update($resource);
             $event = $this->getOperator()->update($resource);
-            //$event = $this->updateResource($resource);
+
             $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
@@ -295,11 +272,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Remove/Delete action.
-     *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function removeAction(Request $request)
     {
@@ -314,9 +287,8 @@ class ResourceController extends Controller
         $form->handleRequest($request);
         if ($form->isValid()) {
             // TODO use ResourceManager
-            //$event = $this->getManager()->delete($resource);
             $event = $this->getOperator()->delete($resource);
-            //$event = $this->deleteResource($resource);
+
             $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
@@ -347,13 +319,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Search action.
-     *
-     * @param Request $request
-     *
-     * @throws \RuntimeException
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function searchAction(Request $request)
     {
@@ -378,11 +344,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Find action.
-     *
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * {@inheritdoc}
      */
     public function findAction(Request $request)
     {
@@ -461,9 +423,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Returns true if controller has a parent controller
-     *
-     * @return boolean
+     * {@inheritdoc}
      */
     public function hasParent()
     {
@@ -471,9 +431,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Returns the controller configuration
-     *
-     * @return Configuration
+     * {@inheritdoc}
      */
     public function getConfiguration()
     {
@@ -481,11 +439,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Returns the parent controller.
-     *
-     * @return ResourceController
-     *
-     * @throws \RuntimeException
+     * {@inheritdoc}
      */
     public function getParent()
     {
@@ -501,12 +455,7 @@ class ResourceController extends Controller
     }
 
     /**
-     * Creates (or fill) the context for the given request
-     *
-     * @param Request $request
-     * @param Context $context
-     *
-     * @return Context
+     * {@inheritdoc}
      */
     public function loadContext(Request $request, Context $context = null)
     {

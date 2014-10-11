@@ -10,7 +10,7 @@ use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
  * @package Ekyna\Bundle\AdminBundle\Pool
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class Configuration
+class Configuration implements ConfigurationInterface
 {
     /**
      * @var string
@@ -65,9 +65,7 @@ class Configuration
     }
 
     /**
-     * Returns the configuration identifier.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getId()
     {
@@ -75,9 +73,7 @@ class Configuration
     }
 
     /**
-     * Returns the configuration alias.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getAlias()
     {
@@ -85,9 +81,7 @@ class Configuration
     }
 
     /**
-     * Returns the prefix.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getPrefix()
     {
@@ -95,9 +89,7 @@ class Configuration
     }
 
     /**
-     * Returns the parent resource identifier.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getParentId()
     {
@@ -105,9 +97,7 @@ class Configuration
     }
 
     /**
-     * Returns the parent controller identifier.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getParentControllerId()
     {
@@ -115,9 +105,7 @@ class Configuration
     }
 
     /**
-     * Returns the resource FQCN.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getResourceClass()
     {
@@ -125,9 +113,7 @@ class Configuration
     }
 
     /**
-     * Returns the eventClass.
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getEventClass()
     {
@@ -135,10 +121,7 @@ class Configuration
     }
 
     /**
-     * Returns the resource name.
-     *
-     * @param boolean $plural
-     * @return string
+     * {@inheritdoc}
      */
     public function getResourceName($plural = false)
     {
@@ -146,11 +129,7 @@ class Configuration
     }
 
     /**
-     * Returns the resource label.
-     * 
-     * @param boolean $plural
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getResourceLabel($plural = false)
     {
@@ -158,11 +137,7 @@ class Configuration
     }
 
     /**
-     * Returns a full qualified template name.
-     *  
-     * @param string $name
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getTemplate($name)
     {
@@ -170,10 +145,7 @@ class Configuration
     }
 
     /**
-     * Returns a full qualified route name for the given action.
-     * 
-     * @param string $action
-     * @return string
+     * {@inheritdoc}
      */
     public function getRoute($action)
     {
@@ -181,10 +153,7 @@ class Configuration
     }
 
     /**
-     * Returns the resource event name for the given action.
-     *
-     * @param $action
-     * @return string
+     * {@inheritdoc}
      */
     public function getEventName($action)
     {
@@ -192,9 +161,7 @@ class Configuration
     }
 
     /**
-     * Returns the form type service identifier.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getFormType()
     {
@@ -202,9 +169,7 @@ class Configuration
     }
 
     /**
-     * Returns the table type service identifier.
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getTableType()
     {
@@ -212,11 +177,7 @@ class Configuration
     }
 
     /**
-     * Returns a service identifier.
-     * 
-     * @param string $service
-     * 
-     * @return string
+     * {@inheritdoc}
      */
     public function getServiceKey($service)
     {
@@ -224,9 +185,7 @@ class Configuration
     }
 
     /**
-     * Returns the object (resource) identify
-     * 
-     * @return \Symfony\Component\Security\Acl\Domain\ObjectIdentity
+     * {@inheritdoc}
      */
     public function getObjectIdentity()
     {
@@ -234,11 +193,7 @@ class Configuration
     }
 
     /**
-     * Returns whether this configuration is relevant for the given object.
-     * 
-     * @param object $object
-     * 
-     * @return boolean
+     * {@inheritdoc}
      */
     public function isRelevant($object)
     {

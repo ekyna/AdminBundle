@@ -1,12 +1,12 @@
 <?php
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
+use Ekyna\Bundle\CoreBundle\Controller\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
- * DashboardController
- *
+ * Class DashboardController
+ * @package Ekyna\Bundle\AdminBundle\Controller
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class DashboardController extends Controller

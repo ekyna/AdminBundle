@@ -5,7 +5,7 @@ namespace Ekyna\Bundle\AdminBundle\Operator;
 use Ekyna\Bundle\AdminBundle\Event\ResourceEvent;
 
 /**
- * Class ResourceOperatorInterface
+ * Interface ResourceOperatorInterface
  * @package Ekyna\Bundle\AdminBundle\Doctrine\ORM
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
