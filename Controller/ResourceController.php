@@ -461,7 +461,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         $resourceName = $this->config->getResourceName();
         if (null === $context) {
-            $context = new Context($resourceName);
+            $context = new Context($this->config);
         }
 
         if ($this->hasParent()) {

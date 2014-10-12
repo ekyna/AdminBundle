@@ -1,0 +1,8 @@
+{% extends 'EkynaAdminBundle::base.xml.twig' %}
+
+{% set resources = _context[resource_name|pluralize] %}
+
+{% block response %}
+<title>{{ (resource_id ~ '.header.list')|trans|raw }}</title>
+<list><![CDATA[{{ ekyna_table_render(resources) }}]]></list>
+{% endblock response %}

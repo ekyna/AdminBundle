@@ -24,8 +24,23 @@ class PoolBuilder
     const DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
     const REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepositoryInterface';
 
+    const DEFAULT_TEMPLATES    = 'EkynaAdminBundle:Entity/Default';
+
     const CONFIGURATION        = 'Ekyna\Bundle\AdminBundle\Pool\Configuration';
     const CLASS_METADATA       = 'Doctrine\ORM\Mapping\ClassMetadata';
+
+    /**
+     * The required templates (name => extensions[])[].
+     * @var array
+     */
+    private $templates = array(
+        '_form'  => array('html'),
+        'list'   => array('html', 'xml'),
+        'new'    => array('html', 'xml'),
+        'show'   => array('html'),
+        'edit'   => array('html'),
+        'remove' => array('html'),
+    );
 
     /**
      * @var ContainerBuilder
@@ -129,7 +144,7 @@ class PoolBuilder
                     'repository' => 'string',
                     'operator'   => 'string',
                     'controller' => 'string',
-                    'templates'  => 'string',
+                    'templates'  => array('null', 'string', 'array'),
                     'form'       => 'string',
                     'table'      => 'string',
                     'event'      => array('null', 'string'),
@@ -167,7 +182,7 @@ class PoolBuilder
                     $this->prefix,
                     $this->resourceName,
                     $this->options['entity'],
-                    $this->options['templates'],
+                    $this->buildTemplateList($this->options['templates']),
                     $this->options['event'],
                     $this->options['parent']
                 ))
@@ -177,6 +192,31 @@ class PoolBuilder
             ;
             $this->container->setDefinition($id, $definition);
         }
+    }
+
+    /**
+     * Builds the templates list.
+     *
+     * @param mixed $templatesConfig
+     * @return array
+     */
+    private function buildTemplateList($templatesConfig)
+    {
+        $templateNamespace = self::DEFAULT_TEMPLATES;
+        if (is_string($templatesConfig)) {
+            $templateNamespace = $templatesConfig;
+        }
+        $templatesList = [];
+        foreach ($this->templates as $name => $extensions) {
+            foreach ($extensions as $extension) {
+                $file = $name.'.'.$extension;
+                $templatesList[$file] = $templateNamespace.':'.$file;
+            }
+        }
+        if (is_array($templatesConfig)) {
+            $templatesList = array_merge($templatesList, $this->options['templates']);
+        }
+        return $templatesList;
     }
 
     /**

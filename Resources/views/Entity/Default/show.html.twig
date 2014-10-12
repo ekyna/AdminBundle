@@ -1,0 +1,34 @@
+{% extends "EkynaAdminBundle:Entity:sided.html.twig" %}
+
+{% set resource = _context[resource_name] %}
+
+{% block title %}
+<h1>{{ (resource_id ~ '.header.show')|trans({'%name%': resource})|raw }}</h1>
+{% endblock %}
+
+{% block actions %}
+{{ admin_resource_btn(resource, 'list') }}
+{{ admin_resource_btn(resource, 'new') }}
+{% endblock %}
+
+{% block main %}
+<div class="actions">
+    {{ admin_resource_btn(resource, 'edit') }}
+    {{ admin_resource_btn(resource, 'remove') }}
+</div>
+<div class="show show-with-tabs">
+    <ul class="nav nav-tabs">
+	    <li class="active"><a href="#{{ resource_name }}-general" data-toggle="tab">{{ 'ekyna_core.field.general'|trans }}</a></li>
+	</ul>
+	<div class="show-body">
+	    <div class="tab-content">
+		    <div class="tab-pane active" id="{{ resource_name }}-general">
+		      {{ show_row(resource, null, 'ekyna_core.field.name') }}
+		    </div>
+        </div>
+	</div>
+</div>
+{% endblock %}
+
+{% block side %}
+{% endblock %}

@@ -86,6 +86,13 @@ interface ConfigurationInterface
     public function getTemplate($name);
 
     /**
+     * Returns the route prefix.
+     *
+     * @return string
+     */
+    public function getRoutePrefix();
+
+    /**
      * Returns a full qualified route name for the given action.
      *
      * @param string $action

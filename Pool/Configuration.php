@@ -35,7 +35,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @var string
      */
-    protected $templateNamespace;
+    protected $templatesList;
 
     /**
      * @var string
@@ -48,17 +48,18 @@ class Configuration implements ConfigurationInterface
      * @param string $prefix            The configuration prefix
      * @param string $resourceName      The resource name
      * @param string $resourceClass     The resource FQCN
-     * @param string $templateNamespace The template namespace
+     * @param array  $templatesList     The templates list
      * @param string $eventClass        The event FQCN
      * @param string $parentId          The parent configuration identifier
      */
-    public function __construct($prefix, $resourceName, $resourceClass, $templateNamespace, $eventClass = null, $parentId = null)
+    public function __construct($prefix, $resourceName, $resourceClass, array $templatesList, $eventClass = null, $parentId = null)
     {
         // Required
         $this->prefix = $prefix;
         $this->resourceName = $resourceName;
         $this->resourceClass = $resourceClass;
-        $this->templateNamespace = $templateNamespace;
+        $this->templatesList = $templatesList;
+
         // Optional
         $this->eventClass = $eventClass;
         $this->parentId = $parentId;
@@ -141,7 +142,18 @@ class Configuration implements ConfigurationInterface
      */
     public function getTemplate($name)
     {
-        return sprintf('%s:%s.twig', $this->templateNamespace, $name);
+        if (array_key_exists($name, $this->templatesList)) {
+            return sprintf('%s.twig', $this->templatesList[$name]);
+        }
+        throw new \InvalidArgumentException(sprintf('Template "%s.twig" is not registered.', $name));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRoutePrefix()
+    {
+        return sprintf('%s_%s_admin', $this->prefix, $this->resourceName);
     }
 
     /**
@@ -149,7 +161,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getRoute($action)
     {
-        return sprintf('%s_%s_admin_%s', $this->prefix, $this->resourceName, $action);
+        return sprintf('%s_%s', $this->getRoutePrefix(), $action);
     }
 
     /**

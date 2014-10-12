@@ -45,8 +45,6 @@ class ResourceType extends AbstractType
     {
         $configuration = $this->configurationRegistry->findConfiguration($options['class']);
 
-        // TODO Check ACL permissions
-
         if ($options['allow_new'] && $this->aclOperator->isAccessGranted($options['class'], 'CREATE')) {
             $view->vars['new_route'] = $configuration->getRoute('new');
             $view->vars['new_route_params'] = []; // TODO

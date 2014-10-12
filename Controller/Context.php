@@ -1,6 +1,7 @@
 <?php
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
+use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
 
 /**
  * Class Context
@@ -10,9 +11,9 @@ namespace Ekyna\Bundle\AdminBundle\Controller;
 class Context
 {
     /**
-     * @var string
+     * @var ConfigurationInterface
      */
-    protected $ownerResourceName;
+    protected $config;
 
     /**
      * @var array
@@ -22,11 +23,11 @@ class Context
     /**
      * Constructor.
      *
-     * @param string $ownerResourceName
+     * @param ConfigurationInterface $config
      */
-    public function __construct($ownerResourceName)
+    public function __construct(ConfigurationInterface $config)
     {
-        $this->ownerResourceName = $ownerResourceName;
+        $this->config = $config;
         $this->resources = array();
     }
 
@@ -52,7 +53,7 @@ class Context
      */
     public function getResource($name)
     {
-        if(isset($this->resources[$name])) {
+        if (isset($this->resources[$name])) {
             return $this->resources[$name];
         }
         return null;
@@ -67,9 +68,9 @@ class Context
     public function getIdentifiers($with_current = false)
     {
         $identifiers = array();
-        foreach($this->resources as $name => $resource) {
-            if(!(!$with_current && $name === $this->ownerResourceName)) {
-                $identifiers[$name.'Id'] = $resource->getId();
+        foreach ($this->resources as $name => $resource) {
+            if (!(!$with_current && $name === $this->config->getResourceName())) {
+                $identifiers[$name . 'Id'] = $resource->getId();
             }
         }
         return $identifiers;
@@ -78,11 +79,32 @@ class Context
     /**
      * Returns the template resources vars.
      *
-     * @param array $extras
+     * @param array $extra
+     * @throws \RuntimeException
      * @return array
      */
-    public function getTemplateVars(array $extras = array())
+    public function getTemplateVars(array $extra = array())
     {
-        return array_merge($this->resources, array('identifiers' => $this->getIdentifiers()), $extras);
+        $extraKeys = array_keys($extra);
+        if (0 < count($extraKeys)) {
+            foreach (array_keys($this->resources) as $key) {
+                if (array_key_exists($key, $extraKeys)) {
+                    throw new \RuntimeException(sprintf('Key "%s" used in extra template vars overrides a resource key.', $key));
+                }
+            }
+            foreach (array('identifiers', 'resource_name', 'resource_id', 'route_prefix') as $key) {
+                if (array_key_exists($key, $extraKeys)) {
+                    throw new \RuntimeException(sprintf('Key "%s" is reserved and cannot be used in extra template vars.', $key));
+                }
+            }
+        }
+
+        return array_merge($this->resources, array(
+            'identifiers'   => $this->getIdentifiers(),
+            'resource_name' => $this->config->getResourceName(),
+            'resource_id'   => $this->config->getId(),
+            'route_prefix'  => $this->config->getRoutePrefix(),
+            'form_template' => $this->config->getTemplate('_form.html'),
+        ), $extra);
     }
 }

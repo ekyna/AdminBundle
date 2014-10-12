@@ -1,0 +1,15 @@
+{% extends "EkynaAdminBundle:Entity:layout.html.twig" %}
+
+{% set resources = _context[resource_name|pluralize] %}
+
+{% block title %}
+<h1>{{ (resource_id ~ '.header.list')|trans|raw }}</h1>
+{% endblock %}
+
+{% block actions %}
+{{ admin_resource_btn(resource_id, 'new') }}
+{% endblock %}
+
+{% block main %}
+{{ ekyna_table_render(resources) }}
+{% endblock %}

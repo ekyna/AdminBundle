@@ -175,7 +175,6 @@ class AdminExtension extends \Twig_Extension
             }
         }
 
-        // TODO:  try / catch
         return $this->router->generate($routeName, $parameters);
     }
 
