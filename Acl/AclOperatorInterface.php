@@ -16,6 +16,13 @@ use Symfony\Component\Security\Acl\Model\ObjectIdentityInterface;
 interface AclOperatorInterface
 {
     /**
+     * Loads all the registered objects identity Acls.
+     */
+    public function loadAcls();
+
+    /**
+     * Find acl.
+     *
      * @see \Symfony\Component\Security\Acl\Model\AclProviderInterface::findAcl
      */
     public function findAcl(ObjectIdentityInterface $oid, array $sids = array());

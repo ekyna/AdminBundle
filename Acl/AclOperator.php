@@ -70,6 +70,18 @@ class AclOperator implements AclOperatorInterface
     /**
      * {@inheritDoc}
      */
+    public function loadAcls()
+    {
+        $oids = [];
+        foreach ($this->registry->getConfigurations() as $config) {
+            $oids[] = $config->getObjectIdentity();
+        }
+        $this->aclProvider->findAcls($oids);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function findAcl(ObjectIdentityInterface $oid, array $sids = array())
     {
         return $this->aclProvider->findAcl($oid, $sids);

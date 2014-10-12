@@ -33,7 +33,7 @@
         </service>
 
         <!-- Pool Factory / Registry -->
-        <service id="ekyna_admin.pool_factory" class="%ekyna_admin.pool_factory.class%"></service>
+        <service id="ekyna_admin.pool_factory" class="%ekyna_admin.pool_factory.class%" />
         <service id="ekyna_admin.pool_registry" class="%ekyna_admin.pool_registry.class%">
             <!-- Services with "ekyna_admin.configuration" tag -->
             <argument type="collection" />
@@ -47,8 +47,14 @@
             <argument type="service" id="security.context" />
         </service>
 
+        <!-- Kernel controller event listener -->
+        <service id="demo.tokens.action_listener" class="Ekyna\Bundle\AdminBundle\EventListener\AdminListener">
+            <argument type="service" id="ekyna_admin.acl_operator" />
+            <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController" />
+        </service>
+
         <!-- Admin Menus -->
-        <service id="ekyna_admin.menu.pool" class="%ekyna_admin.menu.pool.class%"></service>
+        <service id="ekyna_admin.menu.pool" class="%ekyna_admin.menu.pool.class%" />
         <service id="ekyna_admin.menu.builder" class="%ekyna_admin.menu.builder.class%">
             <argument type="service" id="knp_menu.factory" />
             <argument type="service" id="translator" />
