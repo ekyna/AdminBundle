@@ -216,8 +216,9 @@ class PoolBuilder
                 $templatesList[$file] = $templateNamespace.':'.$file;
             }
         }
+        // TODO adds resources controller traits templates ? (like new_child.html)
         if (is_array($templatesConfig)) {
-            $templatesList = array_merge($templatesList, $this->options['templates']);
+            $templatesList = array_merge($templatesList, $templatesConfig);
         }
         return $templatesList;
     }

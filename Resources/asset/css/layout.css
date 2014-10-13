@@ -459,7 +459,7 @@ input.search {
     text-decoration: underline;
 }
 
-#sidebar-nav #dashboard-menu ul.submenu a.active {
+#sidebar-nav #dashboard-menu ul.submenu > li.active a {
     font-weight: bold;
     text-shadow: none;
 }
