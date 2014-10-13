@@ -211,6 +211,8 @@ EOT
         $aclOperator = $this->getContainer()->get('ekyna_admin.acl_operator');
         $groups = $this->getContainer()->get('ekyna_user.group.repository')->findAll();
 
+        // TODO disallow on ekyna_user.group for non super admin.
+
         foreach($groups as $group) {
             if(isset($this->defaultGroups[$group->getName()])) {
                 $permission = $this->defaultGroups[$group->getName()][1];

@@ -9,6 +9,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 use Symfony\Component\Security\Acl\Domain\RoleSecurityIdentity;
 use Symfony\Component\Security\Acl\Exception\AclNotFoundException;
+use Symfony\Component\Security\Acl\Exception\NotAllAclsFoundException;
 use Symfony\Component\Security\Acl\Model\MutableAclProviderInterface;
 use Symfony\Component\Security\Acl\Model\ObjectIdentityInterface;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
@@ -76,7 +77,12 @@ class AclOperator implements AclOperatorInterface
         foreach ($this->registry->getConfigurations() as $config) {
             $oids[] = $config->getObjectIdentity();
         }
-        $this->aclProvider->findAcls($oids);
+
+        try {
+            $this->aclProvider->findAcls($oids);
+        } catch(NotAllAclsFoundException $e) {
+            // If acls has not been updated yet.
+        }
     }
 
     /**

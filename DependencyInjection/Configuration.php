@@ -24,9 +24,79 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('logo_path')->defaultValue('/bundles/ekynaadmin/img/logo.png')->end()
                 ->scalarNode('output_dir')->defaultValue('')->end()
+                ->append($this->getResourcesSection())
+                ->append($this->getMenusSection())
             ->end()
         ;
 
         return $treeBuilder;
+    }
+
+    /**
+     * Returns the resources configuration definition.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
+    private function getResourcesSection()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('resources');
+
+        $node
+            ->useAttributeAsKey('prefix')
+            ->prototype('array')
+                ->useAttributeAsKey('name')
+                ->prototype('array')
+                    ->children()
+                        ->variableNode('templates')->end()
+                        ->scalarNode('entity')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('controller')->end()
+                        ->scalarNode('repository')->end()
+                        ->scalarNode('form')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('table')->isRequired()->cannotBeEmpty()->end()
+                        ->scalarNode('parent')->end()
+                        ->scalarNode('event')->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * Returns the menu configuration definition.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
+    private function getMenusSection()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('menus');
+
+        $node
+            ->useAttributeAsKey('name')
+            ->prototype('array')
+                ->children()
+                    ->scalarNode('label')->isRequired()->cannotBeEmpty()->end()
+                    ->scalarNode('icon')->isRequired()->cannotBeEmpty()->end()
+                    ->integerNode('position')->defaultValue(0)->end()
+                    ->arrayNode('entries')
+                        ->useAttributeAsKey('name')
+                        ->prototype('array')
+                            ->children()
+                                ->scalarNode('route')->isRequired()->cannotBeEmpty()->end()
+                                ->scalarNode('label')->isRequired()->cannotBeEmpty()->end()
+                                ->scalarNode('resource')->isRequired()->cannotBeEmpty()->end()
+                                ->integerNode('position')->defaultValue(0)->end()
+                                ->scalarNode('domain')->defaultNull()->end()
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
     }
 }

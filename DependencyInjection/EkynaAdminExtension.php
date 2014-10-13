@@ -27,6 +27,62 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
         $loader->load('services.xml');
 
         $container->setParameter('ekyna_admin.logo_path', $config['logo_path']);
+
+        $this->configureResources($config['resources'], $container);
+        $this->configureMenus($config['menus'], $container);
+    }
+
+    /**
+     * Configures the resources.
+     *
+     * @param array $resources
+     * @param ContainerBuilder $container
+     */
+    private function configureResources(array $resources, ContainerBuilder $container)
+    {
+        $builder = new PoolBuilder($container);
+        foreach($resources as $prefix => $config) {
+            foreach($config as $resourceName => $parameters) {
+                $builder
+                    ->configure($prefix, $resourceName, $parameters)
+                    ->build()
+                ;
+            }
+        }
+    }
+
+    /**
+     * Configures the menus.
+     *
+     * @param array $menus
+     * @param ContainerBuilder $container
+     */
+    private function configureMenus(array $menus, ContainerBuilder $container)
+    {
+        if (!$container->hasDefinition('ekyna_admin.menu.pool')) {
+            return;
+        }
+
+        $pool = $container->getDefinition('ekyna_admin.menu.pool');
+
+        foreach($menus as $groupName => $groupConfig) {
+            $pool->addMethodCall('createGroup', array(array(
+                'name'     => $groupName,
+                'label'    => $groupConfig['label'],
+                'icon'     => $groupConfig['icon'],
+                'position' => $groupConfig['position'],
+            )));
+            foreach($groupConfig['entries'] as $entryName => $entryConfig) {
+                $pool->addMethodCall('createEntry', array('content', array(
+                    'name'     => $entryName,
+                    'route'    => $entryConfig['route'],
+                    'label'    => $entryConfig['label'],
+                    'resource' => $entryConfig['resource'],
+                    'position' => $entryConfig['position'],
+                    'domain'   => $entryConfig['domain'],
+                )));
+            }
+        }
     }
 
     /**
@@ -51,7 +107,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
      *
      * @param ContainerBuilder $container
      */
-    protected function configureTwigBundle(ContainerBuilder $container)
+    private function configureTwigBundle(ContainerBuilder $container)
     {
         $container->prependExtensionConfig('twig', array(
             'form' => array('resources' => array('EkynaAdminBundle:Form:form_div_layout.html.twig')),
@@ -64,7 +120,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
      * @param ContainerBuilder $container
      * @param array            $config
      */
-    protected function configureAsseticBundle(ContainerBuilder $container, array $config)
+    private function configureAsseticBundle(ContainerBuilder $container, array $config)
     {
         $asseticConfig = new AsseticConfiguration;
         $container->prependExtensionConfig('assetic', array(

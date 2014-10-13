@@ -26,6 +26,9 @@ class PoolBuilder
 
     const DEFAULT_TEMPLATES    = 'EkynaAdminBundle:Entity/Default';
 
+    const FORM_INTERFACE       = 'Symfony\Component\Form\FormTypeInterface';
+    const TABLE_INTERFACE      = 'Ekyna\Component\Table\TableTypeInterface';
+
     const CONFIGURATION        = 'Ekyna\Bundle\AdminBundle\Pool\Configuration';
     const CLASS_METADATA       = 'Doctrine\ORM\Mapping\ClassMetadata';
 
@@ -237,9 +240,7 @@ class PoolBuilder
     {
         $id = $this->getServiceId('repository');
         if (!$this->container->has($id)) {
-            $class = $this->getServiceClass('repository');
-            $this->checkClass($class, self::REPOSITORY_INTERFACE);
-            $definition = new Definition($class);
+            $definition = new Definition($this->getServiceClass('repository', self::REPOSITORY_INTERFACE));
             $definition->setArguments(array(
                 new Reference($this->getServiceId('manager')),
                 $this->getClassMetadataDefinition($this->options['entity'])
@@ -257,9 +258,7 @@ class PoolBuilder
     {
         $id = $this->getServiceId('operator');
         if (!$this->container->has($id)) {
-            $class = $this->getServiceClass('operator');
-            $this->checkClass($class, self::OPERATOR_INTERFACE);
-            $definition = new Definition($class);
+            $definition = new Definition($this->getServiceClass('operator', self::OPERATOR_INTERFACE));
             $definition->setArguments(array(
                 new Reference($this->getManagerServiceId()),
                 new Reference($this->getEventDispatcherServiceId()),
@@ -276,9 +275,7 @@ class PoolBuilder
     {
         $id = $this->getServiceId('controller');
         if (!$this->container->has($id)) {
-            $class = $this->getServiceClass('controller');
-            $this->checkClass($class, self::CONTROLLER_INTERFACE);
-            $definition = new Definition($class);
+            $definition = new Definition($this->getServiceClass('controller', self::CONTROLLER_INTERFACE));
             $definition
                 ->addMethodCall('setConfiguration', array(new Reference($this->getServiceId('configuration'))))
                 ->addMethodCall('setContainer', array(new Reference('service_container')))
@@ -294,7 +291,7 @@ class PoolBuilder
     {
         $id = $this->getServiceId('form_type');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('form'));
+            $definition = new Definition($this->getServiceClass('form', self::FORM_INTERFACE));
             $definition
                 ->setArguments(array($this->options['entity']))
                 ->addTag('form.type', array(
@@ -312,7 +309,7 @@ class PoolBuilder
     {
         $id = $this->getServiceId('table_type');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('table'));
+            $definition = new Definition($this->getServiceClass('table', self::TABLE_INTERFACE));
             $definition
                 ->setArguments(array($this->options['entity']))
                 ->addTag('table.type', array(
@@ -379,34 +376,42 @@ class PoolBuilder
      * Returns the service class for the given name.
      *
      * @param string $name
+     * @param string $interface
+     *
+     * @throws \RuntimeException
      *
      * @return string|null
      */
-    private function getServiceClass($name)
+    private function getServiceClass($name, $interface = null)
     {
-        $parameter = $this->getServiceId($name, '.class');
-        if ($this->container->hasParameter($parameter)) {
-            return $this->container->getParameter($parameter);
+        $serviceId = $this->getServiceId($name);
+        $parameterId = $serviceId.'.class';
+        if ($this->container->hasParameter($parameterId)) {
+            $class = $this->container->getParameter($parameterId);
+        } elseif (array_key_exists($name, $this->options)) {
+            $class = $this->options[$name];
+        } else {
+            throw new \RuntimeException(sprintf('Undefined "%s" service class.', $name));
         }
-        return $this->options[$name];
-    }
-
-    /**
-     * Checks that class exists and implements the given interface.
-     *
-     * @param string $class
-     * @param string $interface
-     * @throws \RuntimeException
-     */
-    private function checkClass($class, $interface = null)
-    {
         if (!class_exists($class)) {
-            throw new \RuntimeException(sprintf('Class "%s" does not exists.', $class));
+            throw new \RuntimeException(sprintf(
+                '%s service (%s) class "%s" does not exists.',
+                ucfirst($name),
+                $serviceId,
+                $class
+            ));
         }
         if (0 < strlen($interface)) {
             if (!in_array($interface, class_implements($class))) {
-                throw new \RuntimeException(sprintf('Class "%s" must implement "%s" interface.', $class, $interface));
+                throw new \RuntimeException(sprintf(
+                    '%s service (%s) class "%s" must implement "%s" interface.',
+                    ucfirst($name),
+                    $serviceId,
+                    $class,
+                    $interface
+                ));
             }
         }
+        return $class;
     }
 }

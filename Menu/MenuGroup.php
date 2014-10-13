@@ -230,7 +230,7 @@ class MenuGroup
      * Adds an entry.
      * 
      * @param MenuEntry $entry
-     * 
+     * @throws \RuntimeException
      * @return MenuGroup
      */
     public function addEntry(MenuEntry $entry)
