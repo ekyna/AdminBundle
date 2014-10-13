@@ -192,9 +192,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 ))
                 ->getTable($request);
 
-            $table->getConfig()->setCustomizeQb(function (QueryBuilder $qb) use ($resourceName, $resource) {
+            $table->getConfig()->setCustomizeQb(function (QueryBuilder $qb, $alias) use ($resourceName, $resource) {
                 $qb
-                    ->where(sprintf('a.%s = :resource', $resourceName))
+                    ->where(sprintf($alias.'.%s = :resource', $resourceName))
                     ->setParameter('resource', $resource);
             });
             $extrasDatas[$configuration->getResourceName(true)] = $table->createView();
