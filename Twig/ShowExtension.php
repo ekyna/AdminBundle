@@ -4,6 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Ekyna\Bundle\CmsBundle\Model\SeoInterface;
 use Ekyna\Bundle\CoreBundle\Model\ImageInterface;
 
 /**
@@ -49,7 +50,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders a show row.
+     * Renders the show row.
      *
      * @param mixed $content
      * @param string $type
@@ -85,6 +86,8 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderImageWidget($content, $options);
         } elseif ($type == 'images') {
             $content = $this->renderImagesWidget($content, $options);
+        } elseif ($type == 'seo') {
+            $content = $this->renderSeoWidget($content, $options);
         } else {
             $content = $this->renderSimpleWidget($content, $options);
         }
@@ -103,7 +106,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders a checkbox row.
+     * Renders the checkbox row.
      *
      * @param mixed $content
      *
@@ -117,7 +120,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders a number widget.
+     * Renders the number widget.
      *
      * @param mixed $content
      * @param array $options
@@ -137,7 +140,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders a textarea widget.
+     * Renders the textarea widget.
      *
      * @param mixed $content
      *
@@ -151,7 +154,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders an entity widget.
+     * Renders the entity widget.
      *
      * @param mixed $entities
      * @param array $options
@@ -187,7 +190,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders an url widget.
+     * Renders the url widget.
      *
      * @param mixed $content
      * @param array $options
@@ -197,7 +200,7 @@ class ShowExtension extends \Twig_Extension
     protected function renderUrlWidget($content, array $options = array())
     {
         $vars = array(
-            'target' => isset($options['show_widget_url']) ? $options['show_widget_url'] : '_blank',
+            'target' => isset($options['target']) ? $options['target'] : '_blank',
             'content' => $content
         );
 
@@ -205,7 +208,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders a datetime widget.
+     * Renders the datetime widget.
      *
      * @param mixed $content
      * @param array $options
@@ -242,7 +245,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders a color widget.
+     * Renders the color widget.
      *
      * @param mixed $content
      * @param array $options
@@ -277,7 +280,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders a simple widget.
+     * Renders the simple widget.
      *
      * @param mixed $content
      * @param array $options
@@ -292,7 +295,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders an image widget.
+     * Renders the image widget.
      *
      * @param ImageInterface $image
      * @param array $options
@@ -307,7 +310,7 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders an image "gallery" widget.
+     * Renders the image "gallery" widget.
      *
      * @param Collection $images
      * @param array $options
@@ -318,6 +321,21 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_images', array(
             'images' => $images
+        ));
+    }
+
+    /**
+     * Renders the seo widget.
+     *
+     * @param SeoInterface $seo
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function renderSeoWidget(SeoInterface $seo, array $options = array())
+    {
+        return $this->renderBlock('show_widget_seo', array(
+            'seo' => $seo
         ));
     }
 

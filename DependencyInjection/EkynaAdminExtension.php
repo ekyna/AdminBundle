@@ -94,11 +94,11 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
         $configs = $container->getExtensionConfig($this->getAlias());
         $config = $this->processConfiguration(new Configuration(), $configs);
 
-        if (array_key_exists('AsseticBundle', $bundles)) {
-            $this->configureAsseticBundle($container, $config);
-        }
         if (array_key_exists('TwigBundle', $bundles)) {
             $this->configureTwigBundle($container);
+        }
+        if (array_key_exists('AsseticBundle', $bundles)) {
+            $this->configureAsseticBundle($container, $config);
         }
     }
 

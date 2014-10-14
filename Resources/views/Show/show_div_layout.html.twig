@@ -44,7 +44,7 @@
 {% block show_widget_color %}
 <div class="show-widget show-widget-simple">
     {% if content is empty %}
-        {{ 'ekyna_core.undefined'|trans }}
+        <em>{{ 'ekyna_core.undefined'|trans }}</em>
     {% else %}
         <span class="show-color" style="background-color: {{ content }};"></span> {{ content }}
     {% endif %}
@@ -61,7 +61,7 @@
 {% spaceless %}
     <div class="show-widget show-widget-simple">
     {% if entities is sameas(null) -%}
-        {{ 'ekyna_core.undefined'|trans }}
+        <em>{{ 'ekyna_core.undefined'|trans }}</em>
     {%- elseif entities|length > 0 %}
     {% for entity in entities %}
         {% if route is not sameas(null) %}
@@ -74,9 +74,9 @@
         <span class="show-entity">{{ get_property(entity, field) }}</span>
         {% endif %}
     {% endfor %}
-    {% else %}
-    <em>{{ 'ekyna_core.undefined'|trans }}</em>
-    {% endif %}
+    {%- else %}
+        <em>{{ 'ekyna_core.undefined'|trans }}</em>
+    {% endif -%}
     </div>
 {% endspaceless %}
 {% endblock show_widget_entity %}
@@ -84,7 +84,11 @@
 {% block show_widget_url %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">
+    {% if content is empty %}
+        <em>{{ 'ekyna_core.undefined'|trans }}</em>
+    {% else %}
         <a href="{{ content }}" target="{{ target }}">{{ content }}</a>
+    {% endif %}
     </div>
 {% endspaceless %}
 {% endblock show_widget_url %}
@@ -138,3 +142,27 @@
     </div>
 {% endspaceless %}
 {% endblock show_widget_images %}
+
+{% block show_widget_seo %}
+{% spaceless %}
+    {{ show_row(seo.title, 'text', 'ekyna_core.field.title') }}
+    {{ show_row(seo.description, 'text', 'ekyna_core.field.description') }}
+    <div class="row">
+        <div class="col-md-6">
+            {{ show_row(seo.changefreq, 'text', 'ekyna_core.field.changefreq', {'label_nb_col': 4}) }}
+        </div>
+        <div class="col-md-6">
+            {{ show_row(seo.priority, 'text', 'ekyna_core.field.priority', {'label_nb_col': 4}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{ show_row(seo.follow, 'checkbox', 'ekyna_core.field.follow', {'label_nb_col': 4}) }}
+        </div>
+        <div class="col-md-6">
+            {{ show_row(seo.index, 'checkbox', 'ekyna_core.field.index', {'label_nb_col': 4}) }}
+        </div>
+    </div>
+    {{ show_row(seo.canonical, 'url', 'ekyna_core.field.canonical_url') }}
+{% endspaceless %}
+{% endblock show_widget_seo %}
