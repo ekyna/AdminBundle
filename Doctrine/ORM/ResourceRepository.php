@@ -18,8 +18,6 @@ class ResourceRepository extends BaseRepository implements ResourceRepositoryInt
      */
     public function createNew()
     {
-        $this->getEntityManager();
-
         $class = $this->getClassName();
         return new $class;
     }
