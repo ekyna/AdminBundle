@@ -51,6 +51,42 @@ class ResourceOperator implements ResourceOperatorInterface
     /**
      * {@inheritdoc}
      */
+    public function persist($resourceOrEvent)
+    {
+        $resource = $resourceOrEvent instanceof ResourceEvent ? $resourceOrEvent->getResource() : $resourceOrEvent;
+        if (0 < $resource->getId()) {
+            return $this->update($resourceOrEvent);
+        }
+        return $this->create($resourceOrEvent);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function detach($resource)
+    {
+        $this->manager->detach($resource);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function merge($resource)
+    {
+        $this->manager->merge($resource);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function clear()
+    {
+        $this->manager->clear($this->config->getResourceClass());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function create($resourceOrEvent)
     {
         $event = $resourceOrEvent instanceof ResourceEvent ? $resourceOrEvent : $this->createResourceEvent($resourceOrEvent);

@@ -12,6 +12,34 @@ use Ekyna\Bundle\AdminBundle\Event\ResourceEvent;
 interface ResourceOperatorInterface
 {
     /**
+     * Persists the resource.
+     *
+     * @param object|ResourceEvent $resourceOrEvent
+     *
+     * @return ResourceEvent
+     */
+    public function persist($resourceOrEvent);
+
+    /**
+     * Detaches the resource from the manager.
+     *
+     * @param $resource
+     */
+    public function detach($resource);
+
+    /**
+     * Merges the resource in the manager.
+     *
+     * @param $resource
+     */
+    public function merge($resource);
+
+    /**
+     * Clears the manager.
+     */
+    public function clear();
+
+    /**
      * Creates the resource.
      *
      * @param object|ResourceEvent $resourceOrEvent
