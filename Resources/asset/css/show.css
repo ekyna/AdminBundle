@@ -117,6 +117,16 @@
     border-radius: 0 0 4px 4px;
 }
 
+.show-body .show-widget-textarea {
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -o-hyphens: auto;
+    hyphens: auto;
+    overflow: hidden;
+}
+
 .show-body .show-widget-textarea:before {
     content: "";
     position: absolute;
