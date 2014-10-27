@@ -48,7 +48,7 @@ class Configuration implements ConfigurationInterface
                 ->useAttributeAsKey('name')
                 ->prototype('array')
                     ->children()
-                        ->variableNode('templates')->end()
+                        ->variableNode('templates')->end() // TODO normalization ?
                         ->scalarNode('entity')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('controller')->end()
                         ->scalarNode('repository')->end()

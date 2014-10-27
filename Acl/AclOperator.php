@@ -242,7 +242,7 @@ class AclOperator implements AclOperatorInterface
                     $oidDatas[$permission] = false;
                 }
             }
-            $datas[$config->getResourceName()] = $oidDatas;
+            $datas[$config->getAlias()] = $oidDatas;
         }
 
         return $datas;

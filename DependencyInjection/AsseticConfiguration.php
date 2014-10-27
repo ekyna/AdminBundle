@@ -73,6 +73,9 @@ class AsseticConfiguration
             '@bootstrap_js',
             '@core_js',
 
+            'bundles/fosjsrouting/js/router.js',
+            'js/fos_js_routes.js',
+
             '@EkynaAdminBundle/Resources/asset/js/jquery-ui.js',
             '@EkynaAdminBundle/Resources/asset/js/theme.js',
             '@EkynaAdminBundle/Resources/asset/js/ui.js',

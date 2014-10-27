@@ -67,14 +67,24 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             ))
             ->getTable($request);
 
-        $format = $isXmlHttpRequest ? 'xml' : 'html';
+        $response = new Response();
 
-        return $this->render(
+        $format = 'html';
+        if ($isXmlHttpRequest) {
+            $format = 'xml';
+            $response->headers->add(array(
+                'Content-Type' => 'application/xml; charset=' . strtolower($this->get('kernel')->getCharset())
+            ));
+        }
+
+        $response->setContent($this->renderView(
             $this->config->getTemplate('list.' . $format),
             $context->getTemplateVars(array(
                 $this->config->getResourceName(true) => $table->createView()
             ))
-        );
+        ));
+
+        return $response;
     }
 
     /**
@@ -159,19 +169,26 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             return new JsonResponse(array('error' => $form->getErrors()));
         }
 
+        $response = new Response();
+
         $format = 'html';
         if ($request->isXmlHttpRequest()) {
             $format = 'xml';
+            $response->headers->add(array(
+                'Content-Type' => 'application/xml; charset='.strtolower($this->get('kernel')->getCharset())
+            ));
         } else {
             $this->appendBreadcrumb(sprintf('%s-new', $resourceName), 'ekyna_core.button.create');
         }
 
-        return $this->render(
+        $response->setContent($this->renderView(
             $this->config->getTemplate('new.' . $format),
             $context->getTemplateVars(array(
                 'form' => $form->createView()
             ))
-        );
+        ));
+
+        return $response;
     }
 
     /**
