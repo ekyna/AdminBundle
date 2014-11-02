@@ -33,7 +33,7 @@
 {% spaceless %}
     <div class="show-widget show-widget-simple">
     {% if content is empty %}
-    <em>{{ 'ekyna_core.undefined'|trans }}</em>
+    <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
     {{ content|localizeddate(options['date_format'], options['time_format'], options['locale'], options['timezone'], options['format'])|capitalize }}
     {% endif %}
@@ -44,7 +44,7 @@
 {% block show_widget_color %}
 <div class="show-widget show-widget-simple">
     {% if content is empty %}
-        <em>{{ 'ekyna_core.undefined'|trans }}</em>
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
         <span class="show-color" style="background-color: {{ content }};"></span> {{ content }}
     {% endif %}
@@ -53,7 +53,7 @@
 
 {% block show_widget_checkbox %}
 {% spaceless %}
-    <div class="show-widget show-widget-simple">{% if content is sameas(true) %}{{ 'ekyna_core.yes'|trans }}{% else %}{{ 'ekyna_core.no'|trans }}{% endif %}</div>
+    <div class="show-widget show-widget-simple">{% if content is sameas(true) %}{{ 'ekyna_core.value.yes'|trans }}{% else %}{{ 'ekyna_core.value.no'|trans }}{% endif %}</div>
 {% endspaceless %}
 {% endblock show_widget_checkbox %}
 
@@ -61,7 +61,7 @@
 {% spaceless %}
     <div class="show-widget show-widget-simple">
     {% if entities is sameas(null) -%}
-        <em>{{ 'ekyna_core.undefined'|trans }}</em>
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {%- elseif entities|length > 0 %}
     {% for entity in entities %}
         {% if route is not sameas(null) %}
@@ -75,7 +75,7 @@
         {% endif %}
     {% endfor %}
     {%- else %}
-        <em>{{ 'ekyna_core.undefined'|trans }}</em>
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% endif -%}
     </div>
 {% endspaceless %}
@@ -85,7 +85,7 @@
 {% spaceless %}
     <div class="show-widget show-widget-simple">
     {% if content is empty %}
-        <em>{{ 'ekyna_core.undefined'|trans }}</em>
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
         <a href="{{ content }}" target="{{ target }}">{{ content }}</a>
     {% endif %}
