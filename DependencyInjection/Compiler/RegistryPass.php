@@ -10,8 +10,6 @@ use Symfony\Component\DependencyInjection\Reference;
  * Class RegistryPass
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler
  * @author Étienne Dauvergne <contact@ekyna.com>
- *
- * Register all services with the tags "ekyna_admin.configuration"
  */
 class RegistryPass implements CompilerPassInterface
 {

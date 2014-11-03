@@ -11,7 +11,7 @@
 <tbody> 
 {% for object, permissions in acl_datas %}
     <tr>
-        <th>{{ object|capitalize }}</th>
+        <th>{{ object|trans }}</th>
         {% for permission, enabled in permissions %}
         <td><span class="glyphicon glyphicon-{{ enabled ? 'ok' : 'remove' }}"></span></td>
         {% endfor %}

@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Acl;
 
-use Ekyna\Bundle\AdminBundle\Form\Type\PermissionType;
+use Ekyna\Bundle\AdminBundle\Form\Type\PermissionsType;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
 use Ekyna\Bundle\UserBundle\Model\GroupInterface;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -99,7 +99,9 @@ class AclOperator implements AclOperatorInterface
     public function getClassMask(ObjectIdentity $oid, RoleSecurityIdentity $rid)
     {
         try {
+            /** @var \Symfony\Component\Security\Acl\Domain\Acl $acl */
             $acl = $this->aclProvider->findAcl($oid);
+            /** @var \Symfony\Component\Security\Acl\Model\EntryInterface $entry */
             foreach($acl->getClassAces() as $index => $entry) {
                 if($entry->getSecurityIdentity()->equals($rid)) {
                     return $entry->getMask();
@@ -116,8 +118,10 @@ class AclOperator implements AclOperatorInterface
     public function setClassMask(ObjectIdentity $oid, RoleSecurityIdentity $rid, $mask = 0)
     {
         try {
-            // Try updating existing Ace 
+            // Try updating existing Ace
+            /** @var \Symfony\Component\Security\Acl\Domain\Acl $acl */
             $acl = $this->aclProvider->findAcl($oid);
+            /** @var \Symfony\Component\Security\Acl\Model\EntryInterface $entry */
             foreach($acl->getClassAces() as $index => $entry) {
                 if($entry->getSecurityIdentity()->equals($rid)) {
                     if($entry->getMask() != $mask) {
@@ -180,11 +184,9 @@ class AclOperator implements AclOperatorInterface
      */
     public function buildGroupForm(FormBuilderInterface $builder)
     {
-        foreach ($this->registry->getConfigurations() as $config) {
-            $builder->add($config->getAlias(), new PermissionType($this->getPermissions()), array(
-                'label' => $config->getResourceName()
-            ));
-        }
+        $builder->add('acls', new PermissionsType($this->registry, $this->permissions), array(
+            'label' => false,
+        ));
     }
 
     /**
@@ -221,7 +223,6 @@ class AclOperator implements AclOperatorInterface
 
         foreach ($this->registry->getConfigurations() as $config) {
             $oidDatas = array();
-            $acl = false;
             try {
                 $acl = $this->findAcl($config->getObjectIdentity());
             }catch(\Exception $e) {
@@ -242,7 +243,7 @@ class AclOperator implements AclOperatorInterface
                     $oidDatas[$permission] = false;
                 }
             }
-            $datas[$config->getAlias()] = $oidDatas;
+            $datas[$config->getResourceLabel(true)] = $oidDatas;
         }
 
         return $datas;

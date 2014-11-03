@@ -9,8 +9,8 @@ use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
- * AbstractExtension.
- *
+ * Class AbstractExtension
+ * @package Ekyna\Bundle\AdminBundle\DependencyInjection
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 abstract class AbstractExtension extends Extension
@@ -55,7 +55,7 @@ abstract class AbstractExtension extends Extension
             }
         }
 
-        return array($config, $loader);
+        return $config;
     }
 
     /**

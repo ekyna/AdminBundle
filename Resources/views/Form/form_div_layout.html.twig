@@ -37,3 +37,12 @@
 {% endif %}
 {% endspaceless %}
 {% endblock ekyna_resource_widget_collapsed %}
+
+{% block form_widget_simple %}
+{% spaceless %}
+{% if admin_helper is defined and admin_helper is not empty %}
+    {% set attr = attr|merge({ 'data-helper': admin_helper }) %}
+{% endif %}
+{{ parent() }}
+{% endspaceless %}
+{% endblock form_widget_simple %}

@@ -11,24 +11,23 @@
 
     {% block stylesheets %}
     {#% stylesheets output='css/debug/admin.css' filter='cssrewrite, ?yui_css'
-        'css/bootstrap.css'
-        'css/fontawesome.css'
-	    'css/core.css'
+        '%kernel.root_dir%/../vendor/twbs/bootstrap/dist/css/bootstrap.min.css'
+        '@fontawesome_css'
+        '@core_css'
 
-        'bundles/ekynaadmin/css/lib/jquery-ui.css'
-        'bundles/ekynaadmin/css/bootstrap-overrides.css'
-        'bundles/ekynaadmin/css/layout.css'
-        'bundles/ekynaadmin/css/elements.css'
-        'bundles/ekynaadmin/css/ui-elements.css'
-        'bundles/ekynaadmin/css/show.css'
-        'bundles/ekynaadmin/css/table.css'
+        '@EkynaAdminBundle/Resources/asset/css/lib/jquery-ui.css'
+        '@EkynaAdminBundle/Resources/asset/css/bootstrap-overrides.css'
+        '@EkynaAdminBundle/Resources/asset/css/layout.css'
+        '@EkynaAdminBundle/Resources/asset/css/elements.css'
+        '@EkynaAdminBundle/Resources/asset/css/ui-elements.css'
+        '@EkynaAdminBundle/Resources/asset/css/show.css'
 
-        'bundles/ekynacms/css/content-editor.css'
+        '@EkynaTableBundle/Resources/asset/css/table.css'
     %}
         <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
     {% endstylesheets %#}
 
-    <link href="{{ asset('css/admin.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/admin-main.css') }}" rel="stylesheet" type="text/css" />
 
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic" rel="stylesheet" type="text/css" />
@@ -44,22 +43,24 @@
     {% include 'EkynaCoreBundle:Ui:modal.html.twig' %}
 
     {% block javascripts %}
-    {#% javascripts output='js/debug/admin.js' filter='?yui_js'
+    {% javascripts output='js/debug/admin.js' filter='?yui_js'
         'js/jquery.js'
         'js/bootstrap.js'
 	    'js/core.js'
 
-        'bundles/ekynaadmin/js/jquery-ui.js'
-        'bundles/ekynaadmin/js/theme.js'
-        'bundles/ekynaadmin/js/ui.js'
+        'bundles/fosjsrouting/js/router.js'
+        'js/fos_js_routes.js'
 
-        'bundles/ekynacms/js/content-editor.js'
+        '@EkynaAdminBundle/Resources/asset/js/jquery-ui.js'
+        '@EkynaAdminBundle/Resources/asset/js/theme.js'
+        '@EkynaAdminBundle/Resources/asset/js/ui.js'
+
+        '@EkynaTableBundle/Resources/asset/js/table.js'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %#}
+    {% endjavascripts %}
 
-    <script src="{{ asset('js/admin.js') }}"></script>
-    {#<script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>#}
+    {#<script src="{{ asset('js/admin-main.js') }}"></script>#}
     {{ tinymce_init() }}
     {% endblock %}
 </body>

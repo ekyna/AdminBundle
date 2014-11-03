@@ -56,7 +56,7 @@ class AsseticConfiguration
         return array(
             'inputs'  => $inputs,
             'filters' => array('yui_css'), // 'cssrewrite'
-            'output'  => $config['output_dir'].'css/admin.css',
+            'output'  => $config['output_dir'].'css/admin-main.css',
             'debug'   => false,
         );
     }
@@ -86,7 +86,7 @@ class AsseticConfiguration
         return array(
             'inputs'  => $inputs,
             'filters' => array('yui_js'),
-            'output'  => $config['output_dir'].'js/admin.js',
+            'output'  => $config['output_dir'].'js/admin-main.js',
             'debug'   => false,
         );
     }

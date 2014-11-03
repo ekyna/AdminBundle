@@ -9,8 +9,8 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 
 /**
- * EkynaAdminExtension
- *
+ * Class EkynaAdminExtension
+ * @package Ekyna\Bundle\AdminBundle\DependencyInjection
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
 class EkynaAdminExtension extends Extension implements PrependExtensionInterface
