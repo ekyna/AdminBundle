@@ -18,6 +18,11 @@ class ResourceEvent extends Event
     protected $resource;
 
     /**
+     * @var array
+     */
+    protected $datas = [];
+
+    /**
      * @var array|ResourceMessage[]
      */
     protected $messages = [];
@@ -45,6 +50,46 @@ class ResourceEvent extends Event
     }
 
     /**
+     * Adds the data.
+     *
+     * @param string $key
+     * @param mixed $value
+     * @return ResourceEvent|$this
+     */
+    public function addData($key, $value)
+    {
+        $this->datas[$key] = $value;
+
+        return $this;
+    }
+
+    /**
+     * Returns whether there is a data for the given key or not.
+     *
+     * @param $key
+     * @return bool
+     */
+    public function hasData($key)
+    {
+        return array_key_exists($key, $this->datas);
+    }
+
+    /**
+     * Returns the data by key.
+     *
+     * @param string $key
+     * @return mixed
+     * @throws \InvalidArgumentException
+     */
+    public function getData($key)
+    {
+        if ($this->hasData($key)) {
+            return $this->datas[$key];
+        }
+        throw new \InvalidArgumentException(sprintf('Undefined "%s" data.', $key));
+    }
+
+    /**
      * Adds the message.
      *
      * @param ResourceMessage $message
@@ -56,6 +101,7 @@ class ResourceEvent extends Event
             $this->stopPropagation();
         }
         array_push($this->messages, $message);
+
         return $this;
     }
 

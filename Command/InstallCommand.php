@@ -184,8 +184,8 @@ EOT
             }
             $group = new Group($name);
             $group
-                ->setRoles($options[0])
                 ->setDefault($options[2])
+                ->setRoles($options[0])
             ;
             $em->persist($group);
         }

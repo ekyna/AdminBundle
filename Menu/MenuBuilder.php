@@ -117,21 +117,16 @@ class MenuBuilder
                 $groupOptions['labelAttributes']['class'] = 'dropdown-toggle';
 
                 $groupEntries = array();
-                //$count = 0;
                 foreach ($group->getEntries() as $entry) {
                     if (!$this->entrySecurityCheck($entry)) {
                         continue;
                     }
 
-                    /*if ($count == 0) {
-                        $groupOptions['route'] = $entry->getRoute();
-                    }*/
                     $groupEntry = $this->factory->createItem($entry->getName(), array(
                         'route' => $entry->getRoute()
                     ));
                     $groupEntry->setLabel($this->translate($entry->getLabel(), array(), $entry->getDomain()));
                     $groupEntries[] = $groupEntry;
-                    //$count++;
                 }
 
                 if (0 < count($groupEntries)) {

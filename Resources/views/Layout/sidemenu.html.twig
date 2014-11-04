@@ -27,6 +27,6 @@
 {% block spanElement %}
 {% spaceless %}
     {% import 'knp_menu.html.twig' as knp_menu %}
-    <a class="dropdown-toggle" {{ knp_menu.attributes(item.labelAttributes) }} href="#">{{ block('label') }}</a>
+    <a class="dropdown-toggle" {{ knp_menu.attributes(item.labelAttributes) }} href="javascript:void(0)">{{ block('label') }}</a>
 {% endspaceless %}
 {% endblock %}

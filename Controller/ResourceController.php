@@ -541,7 +541,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @throws AccessDeniedHttpException when the security context has no authentication token.
      *
-     * @return Boolean
+     * @return bool
      */
     protected function isGranted($attributes, $object = null, $throwException = true)
     {

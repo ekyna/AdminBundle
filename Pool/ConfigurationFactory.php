@@ -15,19 +15,19 @@ class ConfigurationFactory
      * @param string $prefix
      * @param string $resourceName
      * @param string $resourceClass
-     * @param string $templateNamespace
+     * @param array  $templateList
      * @param string $eventClass
      * @param string $parentId
      * 
      * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration
      */
-    public function createConfiguration($prefix, $resourceName, $resourceClass, $templateNamespace, $eventClass = null, $parentId = null)
+    public function createConfiguration($prefix, $resourceName, $resourceClass, array $templateList, $eventClass = null, $parentId = null)
     {
         return new Configuration(
             $prefix,
             $resourceName,
             $resourceClass,
-            $templateNamespace,
+            $templateList,
             $eventClass,
             $parentId
         );
