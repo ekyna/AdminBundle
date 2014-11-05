@@ -35,7 +35,7 @@ trait ToggleableTrait
             $event->toFlashes($this->getFlashBag());
         }
 
-        return $this->redirect($this->generateUrl(
+        return $this->redirectToReferer($this->generateUrl(
             $this->config->getRoute('list'),
             $context->getIdentifiers()
         ));

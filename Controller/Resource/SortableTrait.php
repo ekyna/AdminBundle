@@ -26,7 +26,7 @@ trait SortableTrait
 
         $this->move($resource, -1);
 
-        return $this->redirect($this->generateUrl(
+        return $this->redirectToReferer($this->generateUrl(
             $this->config->getRoute('list'),
             $context->getIdentifiers()
         ));
@@ -47,7 +47,7 @@ trait SortableTrait
 
         $this->move($resource, 1);
 
-        return $this->redirect($this->generateUrl(
+        return $this->redirectToReferer($this->generateUrl(
             $this->config->getRoute('list'),
             $context->getIdentifiers()
         ));

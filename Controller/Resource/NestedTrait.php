@@ -28,7 +28,7 @@ trait NestedTrait
         $repo = $this->getRepository();
         $repo->moveUp($resource, 1);
 
-        return $this->redirect($this->generateUrl(
+        return $this->redirectToReferer($this->generateUrl(
             $this->config->getRoute('list'),
             $context->getIdentifiers()
         ));
@@ -50,7 +50,7 @@ trait NestedTrait
         $repo = $this->getRepository();
         $repo->moveDown($resource, 1);
 
-        return $this->redirect($this->generateUrl(
+        return $this->redirectToReferer($this->generateUrl(
             $this->config->getRoute('list'),
             $context->getIdentifiers()
         ));
