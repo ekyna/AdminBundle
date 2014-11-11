@@ -16,6 +16,7 @@ trait NestedTrait
      * Decrement the position.
      * 
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function moveUpAction(Request $request)
     {
@@ -38,6 +39,7 @@ trait NestedTrait
      * Increment the position.
      * 
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function moveDownAction(Request $request)
     {
@@ -60,6 +62,7 @@ trait NestedTrait
      * Creates a child resource.
      * 
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function newChildAction(Request $request)
     {

@@ -13,6 +13,12 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 trait TinymceTrait
 {
+    /**
+     * Display the "tinymce" content.
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function tinymceAction(Request $request)
     {
         if(null === $field = $request->attributes->get('field')) {

@@ -15,6 +15,7 @@ trait SortableTrait
      * Move up the resource.
      *
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function moveUpAction(Request $request)
     {
@@ -36,6 +37,7 @@ trait SortableTrait
      * Move down the resource.
      *
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function moveDownAction(Request $request)
     {

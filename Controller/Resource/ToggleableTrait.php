@@ -16,6 +16,7 @@ trait ToggleableTrait
      * Toggle the resource "enabled" (boolean) field.
      *
      * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function toggleAction(Request $request)
     {
