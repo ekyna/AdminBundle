@@ -98,7 +98,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $this->isGranted('VIEW', $resource);
 
-        $extrasDatas = array();
+        $data = $this->buildShowData($resource);
 
         $childrenConfigurations = $this->get('ekyna_admin.pool_registry')->getChildren($this->config);
         foreach ($childrenConfigurations as $configuration) {
@@ -113,13 +113,24 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     ->where(sprintf($alias.'.%s = :resource', $resourceName))
                     ->setParameter('resource', $resource);
             });
-            $extrasDatas[$configuration->getResourceName(true)] = $table->createView();
+            $data[$configuration->getResourceName(true)] = $table->createView();
         }
 
         return $this->render(
             $this->config->getTemplate('show.html'),
-            $context->getTemplateVars($extrasDatas)
+            $context->getTemplateVars($data)
         );
+    }
+
+    /**
+     * Builds the show view data.
+     *
+     * @param object $resource
+     * @return array
+     */
+    protected function buildShowData($resource)
+    {
+        return array();
     }
 
     /**
