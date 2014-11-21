@@ -35,17 +35,24 @@ class ResourceOperator implements ResourceOperatorInterface
     private $config;
 
     /**
+     * @var bool
+     */
+    private $debug;
+
+    /**
      * Constructor.
      *
      * @param EntityManagerInterface $manager
      * @param EventDispatcherInterface $dispatcher
      * @param Configuration $config
+     * @param bool $debug
      */
-    public function __construct(EntityManagerInterface $manager, EventDispatcherInterface $dispatcher, Configuration $config)
+    public function __construct(EntityManagerInterface $manager, EventDispatcherInterface $dispatcher, Configuration $config, $debug = false)
     {
         $this->manager = $manager;
         $this->dispatcher = $dispatcher;
         $this->config = $config;
+        $this->debug = $debug;
     }
 
     /**
@@ -158,8 +165,9 @@ class ResourceOperator implements ResourceOperatorInterface
      * Persists a resource.
      *
      * @param ResourceEvent $event
-     *
-     * @return ResourceEvent
+     * @return $this|ResourceEvent
+     * @throws DBALException
+     * @throws \Exception
      */
     private function persistResource(ResourceEvent $event)
     {
@@ -171,9 +179,9 @@ class ResourceOperator implements ResourceOperatorInterface
             $this->manager->persist($resource);
             $this->manager->flush();
         } catch(DBALException $e) {
-            /*if ($this->get('kernel')->getEnvironment() === 'dev') {
+            if ($this->debug) {
                 throw $e;
-            }*/
+            }
             $event->addMessage(new ResourceMessage(
                 'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été sauvegardée.',
                 ResourceMessage::TYPE_ERROR
@@ -191,8 +199,9 @@ class ResourceOperator implements ResourceOperatorInterface
      * Removes a resource.
      *
      * @param ResourceEvent $event
-     *
      * @return ResourceEvent
+     * @throws DBALException
+     * @throws \Exception
      */
     private function removeResource(ResourceEvent $event)
     {
@@ -202,9 +211,9 @@ class ResourceOperator implements ResourceOperatorInterface
             $this->manager->remove($resource);
             $this->manager->flush();
         } catch(DBALException $e) {
-            /*if ($this->get('kernel')->getEnvironment() === 'dev') {
+            if ($this->debug) {
                 throw $e;
-            }*/
+            }
             if (null !== $previous = $e->getPrevious()) {
                 if ($previous instanceof \PDOException && $previous->getCode() == 23000) {
                     return $event->addMessage(new ResourceMessage(

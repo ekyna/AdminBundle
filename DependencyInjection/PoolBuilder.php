@@ -264,6 +264,7 @@ class PoolBuilder
                 new Reference($this->getManagerServiceId()),
                 new Reference($this->getEventDispatcherServiceId()),
                 new Reference($this->getServiceId('configuration')),
+                $this->container->getParameter('kernel.debug')
             ));
             $this->container->setDefinition($id, $definition);
         }
