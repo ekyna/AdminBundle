@@ -2,14 +2,14 @@
 
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM;
 
-use Doctrine\ORM\EntityRepository as BaseRepository;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * Class ResourceRepository
  * @package Ekyna\Bundle\AdminBundle\Doctrine\ORM
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class ResourceRepository extends BaseRepository implements ResourceRepositoryInterface
+class ResourceRepository extends EntityRepository implements ResourceRepositoryInterface
 {
     /**
      * Creates a new resource.

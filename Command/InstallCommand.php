@@ -136,7 +136,6 @@ EOT
     {
         $output->writeln('<info>Creating Super Admin.</info>');
 
-        $em = $this->getContainer()->get('ekyna_user.group.manager');
         $group = $this->getContainer()
             ->get('ekyna_user.group.repository')
             ->findOneBy(array('name' => array_keys($this->defaultGroups)[0]));
@@ -145,20 +144,20 @@ EOT
         $email      = $input->getArgument('email');
         $password   = $input->getArgument('password');
 
-        $user = new User();
+        $userManager = $this->getContainer()->get('fos_user.user_manager');
+        /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $user */
+        $user = $userManager->createUser();
         $user
-            ->setUsername($username)
-            ->setPlainPassword($password)
-            ->setEmail($email)
             ->setGroup($group)
             ->setGender('mr')
             ->setFirstName('John')
             ->setLastName('Doe')
+            ->setUsername($username)
+            ->setPlainPassword($password)
+            ->setEmail($email)
             ->setEnabled(true)
         ;
-
-        $em->persist($user);
-        $em->flush();
+        $userManager->updateUser($user);
 
         $output->writeln('Super Admin has been successfully created.');
     }
