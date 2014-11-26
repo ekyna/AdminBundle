@@ -325,9 +325,15 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     return $this->redirect($redirectPath);
                 }
 
+                if ($this->hasParent()) {
+                    $returnRoute = $this->getParent()->getConfiguration()->getRoute('show');
+                } else {
+                    $returnRoute = $this->config->getRoute('list');
+                }
+
                 return $this->redirect(
                     $this->generateUrl(
-                        $this->config->getRoute('list'),
+                        $returnRoute,
                         $context->getIdentifiers()
                     )
                 );
