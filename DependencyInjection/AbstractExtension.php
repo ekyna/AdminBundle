@@ -29,14 +29,14 @@ abstract class AbstractExtension extends Extension
     }
 
     /**
-     * Configures the pool builder.
+     * Configures the pool builder and returns the bundle processed configuration.
      * 
      * @param array                  $configs
      * @param string                 $prefix
      * @param ConfigurationInterface $configuration
      * @param ContainerBuilder       $container
      *
-     * @return array(array, \Symfony\Component\DependencyInjection\Loader\FileLoader)
+     * @return array
      */
     public function configure(array $configs, $prefix, ConfigurationInterface $configuration, ContainerBuilder $container)
     {
