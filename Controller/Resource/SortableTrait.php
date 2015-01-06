@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller\Resource;
 
+use Ekyna\Bundle\AdminBundle\Controller\Context;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -20,8 +21,8 @@ trait SortableTrait
     public function moveUpAction(Request $request)
     {
         $context = $this->loadContext($request);
-        $resourceName = $this->config->getResourceName();
-        $resource = $context->getResource($resourceName);
+
+        $resource = $context->getResource();
 
         $this->isGranted('EDIT', $resource);
 
@@ -42,8 +43,8 @@ trait SortableTrait
     public function moveDownAction(Request $request)
     {
         $context = $this->loadContext($request);
-        $resourceName = $this->config->getResourceName();
-        $resource = $context->getResource($resourceName);
+
+        $resource = $context->getResource();
 
         $this->isGranted('EDIT', $resource);
 

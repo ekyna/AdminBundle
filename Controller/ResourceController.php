@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
@@ -56,7 +57,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         $this->isGranted('VIEW');
 
-        $isXmlHttpRequest = $request->isXmlHttpRequest();
         $context = $this->loadContext($request);
 
         $table = $this->getTableFactory()
@@ -70,7 +70,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $response = new Response();
 
         $format = 'html';
-        if ($isXmlHttpRequest) {
+        if ($request->isXmlHttpRequest()) {
             $format = 'xml';
             $response->headers->add(array(
                 'Content-Type' => 'application/xml; charset=' . strtolower($this->get('kernel')->getCharset())
@@ -93,28 +93,19 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     public function showAction(Request $request)
     {
         $context = $this->loadContext($request);
+
         $resourceName = $this->config->getResourceName();
         $resource = $context->getResource($resourceName);
 
         $this->isGranted('VIEW', $resource);
 
-        $data = $this->buildShowData($resource);
-
-        $childrenConfigurations = $this->get('ekyna_admin.pool_registry')->getChildren($this->config);
-        foreach ($childrenConfigurations as $configuration) {
-            $table = $this->getTableFactory()
-                ->createBuilder($configuration->getTableType(), array(
-                    'name' => $configuration->getId(),
-                ))
-                ->getTable($request);
-
-            $table->getConfig()->setCustomizeQb(function (QueryBuilder $qb, $alias) use ($resourceName, $resource) {
-                $qb
-                    ->where(sprintf($alias.'.%s = :resource', $resourceName))
-                    ->setParameter('resource', $resource);
-            });
-            $data[$configuration->getResourceName(true)] = $table->createView();
+        $data = [];
+        $response = $this->buildShowData($data, $context);
+        if ($response instanceof Response) {
+            return $response;
         }
+
+        $this->fetchChildrenResources($data, $context);
 
         return $this->render(
             $this->config->getTemplate('show.html'),
@@ -125,12 +116,80 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Builds the show view data.
      *
-     * @param object $resource
-     * @return array
+     * @param array $data
+     * @param Context $context
+     * @return Response|null
      */
-    protected function buildShowData($resource)
+    protected function buildShowData(array &$data, Context $context)
     {
-        return array();
+        return null;
+    }
+
+    /**
+     * Fetches children resources.
+     *
+     * @param array $data
+     * @param Context $context
+     * @throws \Doctrine\ORM\Mapping\MappingException
+     */
+    private function fetchChildrenResources(array &$data, Context $context)
+    {
+        $resourceName = $this->config->getResourceName();
+        //$resourceNamePlural = $this->config->getResourceName(true);
+
+        $resource = $context->getResource($resourceName);
+
+        $childrenConfigurations = $this->get('ekyna_admin.pool_registry')->getChildren($this->config);
+        foreach ($childrenConfigurations as $childConfig) {
+            $childResourceName = $childConfig->getResourceName(true);
+            if (!array_key_exists($childResourceName, $data)) {
+
+                $customizeQb = null;
+
+                /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata */
+                $metadata = $this->get($childConfig->getServiceKey('metadata'));
+
+                // Look for many to one
+                if ($metadata->hasAssociation($resourceName)) {
+                    $mapping = $metadata->getAssociationMapping($resourceName);
+                    if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
+                        $customizeQb = function (QueryBuilder $qb, $alias) use ($resourceName, $resource) {
+                            $qb
+                                ->where(sprintf($alias . '.%s = :resource', $resourceName))
+                                ->setParameter('resource', $resource);
+                        };
+                    } else {
+                        throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $childResourceName));
+                    }
+                // Look for many to many
+                } /*elseif ($metadata->hasAssociation($resourceNamePlural)) {
+                    $mapping = $metadata->getAssociationMapping($resourceNamePlural);
+                    if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY) {
+                        $customizeQb = function (QueryBuilder $qb, $alias) use ($resourceNamePlural, $resource) {
+                            $qb
+                                ->join($alias.'.'.$resourceNamePlural, 'parent')
+                                ->where('parent.id = :resource')
+                                ->setParameter('resource', $resource);
+                        };
+                    } else {
+                        throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $childResourceName));
+                    }
+                }*/ else {
+                    throw new \RuntimeException(sprintf('Association "%s" not found.', $childResourceName));
+                }
+
+                $table = $this->getTableFactory()
+                    ->createBuilder($childConfig->getTableType(), array(
+                        'name' => $childConfig->getId(),
+                        'customize_qb' => $customizeQb,
+                    ))
+                    ->getTable($context->getRequest());
+
+                //$table->getConfig()->setCustomizeQb($customizeQb);
+
+                $data[$childResourceName] = $table->createView();
+            }
+        }
     }
 
     /**
@@ -141,6 +200,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $this->isGranted('CREATE');
 
         $context = $this->loadContext($request);
+
         $resource = $this->createNew($context);
         $resourceName = $this->config->getResourceName();
         $context->addResource($resourceName, $resource);
@@ -216,7 +276,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $cancelRoute = $this->config->getRoute('list');
         }
 
-        $resource = $context->getResource($this->config->getResourceName());
+        $resource = $context->getResource();
         $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
 
         return $this->createForm($this->config->getFormType(), $resource, array(
@@ -289,7 +349,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             );
         }
 
-        $resource = $context->getResource($this->config->getResourceName());
+        $resource = $context->getResource();
 
         return $this->createForm($this->config->getFormType(), $resource, array(
             'admin_mode' => true,
@@ -306,6 +366,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     public function removeAction(Request $request)
     {
         $context = $this->loadContext($request);
+
         $resourceName = $this->config->getResourceName();
         $resource = $context->getResource($resourceName);
 
@@ -439,7 +500,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         return JsonResponse::create(array(
             'id' => $resource->getId(),
-            'text' => $resource->getSearchText(),
+            'text' => (string) $resource,
         ));
     }
 
@@ -492,15 +553,15 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * {@inheritdoc}
      */
-    public function loadContext(Request $request, Context $context = null)
+    public function loadContext(Request $request)
     {
+        $context = new Context($this->config, $request);
+
         $resourceName = $this->config->getResourceName();
-        if (null === $context) {
-            $context = new Context($this->config);
-        }
+        $request = $context->getRequest();
 
         if ($this->hasParent()) {
-            $this->getParent()->loadContext($request, $context);
+            $this->getParent()->loadContext($context);
         }
 
         if (!$request->isXmlHttpRequest()) {
@@ -619,6 +680,16 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
+     * Returns the resource helper.
+     *
+     * @return \Ekyna\Bundle\AdminBundle\Helper\ResourceHelper
+     */
+    protected function getResourceHelper()
+    {
+        return $this->get('ekyna_admin.helper.resource_helper');
+    }
+
+    /**
      * Creates a new resource.
      *
      * @param Context $context
@@ -632,14 +703,41 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $resource = $this->getRepository()->createNew();
 
         if (null !== $context && $this->hasParent()) {
-            $parentResourceName = $this->getParent()->getConfiguration()->getResourceName();
+            $parentConfig = $this->getParent()->getConfiguration();
+            $parentResourceName = $parentConfig->getResourceName();
+            //$parentResourceNamePlural = $parentConfig->getResourceName(true);
             $parent = $context->getResource($parentResourceName);
 
-            try {
-                $propertyAccessor = PropertyAccess::createPropertyAccessor();
-                $propertyAccessor->setValue($resource, $parentResourceName, $parent);
-            } catch (\Exception $e) {
-                throw new \RuntimeException('Failed to set resource\'s parent.');
+            /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata */
+            $metadata = $this->get($this->config->getServiceKey('metadata'));
+
+            // Look for many to one
+            if ($metadata->hasAssociation($parentResourceName)) {
+                $mapping = $metadata->getAssociationMapping($parentResourceName);
+                if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
+                    try {
+                        $propertyAccessor = PropertyAccess::createPropertyAccessor();
+                        $propertyAccessor->setValue($resource, $parentResourceName, $parent);
+                    } catch (\Exception $e) {
+                        throw new \RuntimeException('Failed to set resource\'s parent.');
+                    }
+                } else {
+                    throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $parentResourceName));
+                }
+                // Look for many to many
+            } /*elseif ($metadata->hasAssociation($parentResourceNamePlural)) {
+                $mapping = $metadata->getAssociationMapping($parentResourceNamePlural);
+                if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY) {
+                    try {
+                        call_user_func(array($resource, 'add'.ucfirst($parentResourceName)), $parent);
+                    } catch (\Exception $e) {
+                        throw new \RuntimeException('Failed to associate resource with his parent.');
+                    }
+                } else {
+                    throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $parentResourceNamePlural));
+                }
+            }*/ else {
+                throw new \RuntimeException(sprintf('Association "%s" not found.', $parentResourceName));
             }
         }
 

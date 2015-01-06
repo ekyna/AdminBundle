@@ -22,6 +22,8 @@
         <parameter key="ekyna_admin.table.actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsType</parameter>
         <parameter key="ekyna_admin.table.nested_actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\NestedActionsType</parameter>
 
+        <parameter key="ekyna_admin.helper.resource_helper.class">Ekyna\Bundle\AdminBundle\Helper\ResourceHelper</parameter>
+
         <parameter key="ekyna_admin.twig.admin_extension.class">Ekyna\Bundle\AdminBundle\Twig\AdminExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.class">Ekyna\Bundle\AdminBundle\Twig\ShowExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.template">EkynaAdminBundle:Show:show_div_layout.html.twig</parameter>
@@ -101,11 +103,16 @@
             <tag name="table.column_type" alias="admin_nested_actions" />
         </service>
 
-        <!-- Twig Extensions -->
-	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
+        <!-- Resource Helper -->
+        <service id="ekyna_admin.helper.resource_helper" class="%ekyna_admin.helper.resource_helper.class%">
             <argument type="service" id="ekyna_admin.pool_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
             <argument type="service" id="router" />
+        </service>
+
+        <!-- Twig Extensions -->
+	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
+            <argument type="service" id="ekyna_admin.helper.resource_helper" />
             <argument type="service" id="ekyna_core.twig.ui_extension" />
 	        <argument>%ekyna_admin.logo_path%</argument>
 	        <tag name="twig.extension" />

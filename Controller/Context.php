@@ -1,7 +1,9 @@
 <?php
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
+
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class Context
@@ -16,6 +18,11 @@ class Context
     protected $config;
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * @var array
      */
     protected $resources;
@@ -24,11 +31,34 @@ class Context
      * Constructor.
      *
      * @param ConfigurationInterface $config
+     * @param Request                $request
      */
-    public function __construct(ConfigurationInterface $config)
+    public function __construct(ConfigurationInterface $config, Request $request)
     {
         $this->config = $config;
+        $this->request = $request;
+
         $this->resources = array();
+    }
+
+    /**
+     * Returns the configuration.
+     *
+     * @return ConfigurationInterface
+     */
+    public function getConfiguration()
+    {
+        return $this->config;
+    }
+
+    /**
+     * Returns the request.
+     *
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
     }
 
     /**
@@ -48,11 +78,14 @@ class Context
     /**
      * Returns a resource by name.
      *
-     * @param $name
+     * @param string $name
      * @return object|null
      */
-    public function getResource($name)
+    public function getResource($name = null)
     {
+        if (null === $name) {
+            $name = $this->config->getResourceName();
+        }
         if (isset($this->resources[$name])) {
             return $this->resources[$name];
         }

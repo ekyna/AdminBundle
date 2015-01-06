@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller\Resource;
 
+use Ekyna\Bundle\AdminBundle\Controller\Context;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -26,8 +27,8 @@ trait TinymceTrait
         }
 
         $context = $this->loadContext($request);
-        $resourceName = $this->config->getResourceName();
-        if(null === $resource = $context->getResource($resourceName)) {
+
+        if(null === $resource = $context->getResource()) {
             throw new \RuntimeException('Resource not found.');
         }
 

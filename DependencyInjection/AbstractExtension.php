@@ -6,14 +6,17 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Class AbstractExtension
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-abstract class AbstractExtension extends Extension
+abstract class AbstractExtension extends Extension implements PrependExtensionInterface
 {
     protected $configDirectory = '/../Resources/config';
     protected $configFiles = array(
@@ -26,6 +29,28 @@ abstract class AbstractExtension extends Extension
     public function load(array $configs, ContainerBuilder $container)
     {
         throw new \Exception('AbstractExtension:load() has to be overridden.');
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        if (is_dir($dir = $this->getConfigurationDirectory().'/prepend')) {
+            $bundles = $container->getParameter('kernel.bundles');
+            $finder = new Finder();
+
+            /** @var \Symfony\Component\Finder\SplFileInfo $file */
+            foreach ($finder->in($this->getConfigurationDirectory() . '/prepend')->files()->name('*.yml') as $file) {
+                $bundle = $file->getBasename('.yml');
+                if (array_key_exists($bundle, $bundles)) {
+                    $configs = Yaml::parse($file->getRealPath());
+                    foreach ($configs as $key => $config) {
+                        $container->prependExtensionConfig($key, $config);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -77,7 +102,6 @@ abstract class AbstractExtension extends Extension
      * Returns the configuration directory.
      *
      * @return string
-     * 
      * @throws \Exception
      */
     protected function getConfigurationDirectory()
@@ -85,7 +109,7 @@ abstract class AbstractExtension extends Extension
         $reflector = new \ReflectionClass($this);
         $fileName = $reflector->getFileName();
     
-        if (!is_dir($directory = dirname($fileName) . $this->configDirectory)) {
+        if (!is_dir($directory = realpath(dirname($fileName) . $this->configDirectory))) {
             throw new \Exception(sprintf('The configuration directory "%s" does not exists.', $directory));
         }
     

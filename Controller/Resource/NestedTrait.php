@@ -21,8 +21,8 @@ trait NestedTrait
     public function moveUpAction(Request $request)
     {
         $context = $this->loadContext($request);
-        $resourceName = $this->config->getResourceName();
-        $resource = $context->getResource($resourceName);
+
+        $resource = $context->getResource();
 
         $this->isGranted('EDIT', $resource);
 
@@ -44,8 +44,8 @@ trait NestedTrait
     public function moveDownAction(Request $request)
     {
         $context = $this->loadContext($request);
-        $resourceName = $this->config->getResourceName();
-        $resource = $context->getResource($resourceName);
+
+        $resource = $context->getResource();
 
         $this->isGranted('EDIT', $resource);
 
@@ -69,6 +69,7 @@ trait NestedTrait
         $this->isGranted('CREATE');
 
         $context = $this->loadContext($request);
+
         $resourceName = $this->config->getResourceName();
         $resource = $context->getResource($resourceName);
 

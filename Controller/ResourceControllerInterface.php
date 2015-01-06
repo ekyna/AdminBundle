@@ -114,9 +114,7 @@ interface ResourceControllerInterface
      * Creates (or fill) the context for the given request
      *
      * @param Request $request
-     * @param Context $context
-     *
      * @return Context
      */
-    public function loadContext(Request $request, Context $context = null);
+    public function loadContext(Request $request);
 }

@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
 /**
- * Class MenuEntry
+ * Class MenuItem
  * @package Ekyna\Bundle\AdminBundle\Menu
  * @author Étienne Dauvergne <contact@ekyna.com>
  */

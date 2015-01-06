@@ -12,14 +12,14 @@ use Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException;
 class ConfigurationRegistry
 {
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
+     * @var array|ConfigurationInterface[]
      */
     protected $configurations;
 
     /**
      * Constructor.
      * 
-     * @param \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
+     * @param array|ConfigurationInterface[]
      */
     public function __construct(array $configurations)
     {
@@ -32,9 +32,9 @@ class ConfigurationRegistry
      * @param mixed $resource object, class or configuration identifier.
      * @param boolean $throwException
      * 
-     * @throws \Ekyna\Bundle\AdminBundle\Exception\NotFoundConfigurationException
+     * @throws NotFoundConfigurationException
      * 
-     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration|NULL
+     * @return Configuration|NULL
      */
     public function findConfiguration($resource, $throwException = true)
     {
@@ -92,7 +92,7 @@ class ConfigurationRegistry
      * 
      * @throws \InvalidArgumentException
      *
-     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration
+     * @return ConfigurationInterface
      */
     public function get($id)
     {
@@ -106,12 +106,12 @@ class ConfigurationRegistry
     /**
      * Returns all the ancestors configuration.
      *
-     * @param \Ekyna\Bundle\AdminBundle\Pool\Configuration $configuration
-     * @param bool                                         $included
+     * @param ConfigurationInterface $configuration
+     * @param bool                   $included
      *
-     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
+     * @return ConfigurationInterface[]
      */
-    public function getAncestors(Configuration $configuration, $included = false)
+    public function getAncestors(ConfigurationInterface $configuration, $included = false)
     {
         $ancestors = array();
 
@@ -130,11 +130,11 @@ class ConfigurationRegistry
     /**
      * Returns all the children configuration.
      *
-     * @param \Ekyna\Bundle\AdminBundle\Pool\Configuration $configuration
+     * @param ConfigurationInterface $configuration
      *
-     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
+     * @return ConfigurationInterface[]
      */
-    public function getChildren(Configuration $configuration)
+    public function getChildren(ConfigurationInterface $configuration)
     {
         $children = array();
 
@@ -150,7 +150,7 @@ class ConfigurationRegistry
     /**
      * Returns the configurations.
      * 
-     * @return \Ekyna\Bundle\AdminBundle\Pool\Configuration[]
+     * @return ConfigurationInterface[]
      */
     public function getConfigurations()
     {
@@ -162,7 +162,7 @@ class ConfigurationRegistry
      * 
      * @param object $object
      * 
-     * @return \Symfony\Component\Security\Acl\Domain\ObjectIdentity|NULL
+     * @return \Symfony\Component\Security\Acl\Domain\ObjectIdentity|null
      */
     public function getObjectIdentity($object)
     {

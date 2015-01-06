@@ -109,6 +109,7 @@ class PoolBuilder
 
         $this->createConfigurationDefinition();
 
+        $this->createMetadataDefinition();
         $this->createManagerDefinition();
         $this->createRepositoryDefinition();
         $this->createOperatorDefinition();
@@ -216,11 +217,30 @@ class PoolBuilder
                 $templatesList[$file] = $templateNamespace.':'.$file;
             }
         }
-        // TODO adds resources controller traits templates ? (like new_child.html)
+        // TODO add resources controller traits templates ? (like new_child.html)
         if (is_array($templatesConfig)) {
             $templatesList = array_merge($templatesList, $templatesConfig);
         }
         return $templatesList;
+    }
+
+    /**
+     * Creates the Table service definition.
+     */
+    private function createMetadataDefinition()
+    {
+        $id = $this->getServiceId('metadata');
+        if (!$this->container->has($id)) {
+            $definition = new Definition(self::CLASS_METADATA);
+            $definition
+                ->setFactoryService($this->getManagerServiceId())
+                ->setFactoryMethod('getClassMetadata')
+                ->setArguments(array(
+                    $this->container->getParameter($this->getServiceId('class'))
+                ))//->setPublic(false)
+            ;
+            $this->container->setDefinition($id, $definition);
+        }
     }
 
     /**
@@ -239,12 +259,13 @@ class PoolBuilder
      */
     private function createRepositoryDefinition()
     {
+        // TODO repository class parameter (check, set, use)
         $id = $this->getServiceId('repository');
         if (!$this->container->has($id)) {
             $definition = new Definition($this->getServiceClass('repository', self::REPOSITORY_INTERFACE));
             $definition->setArguments(array(
                 new Reference($this->getServiceId('manager')),
-                $this->getClassMetadataDefinition($this->options['entity'])
+                new Reference($this->getServiceId('metadata'))
             ));
             $this->container->setDefinition($id, $definition);
         }
@@ -257,6 +278,7 @@ class PoolBuilder
      */
     private function createOperatorDefinition()
     {
+        // TODO operator class parameter (check, set, use)
         $id = $this->getServiceId('operator');
         if (!$this->container->has($id)) {
             $definition = new Definition($this->getServiceClass('operator', self::OPERATOR_INTERFACE));
@@ -275,6 +297,7 @@ class PoolBuilder
      */
     private function createControllerDefinition()
     {
+        // TODO controller class parameter (check, set, use)
         $id = $this->getServiceId('controller');
         if (!$this->container->has($id)) {
             $definition = new Definition($this->getServiceClass('controller', self::CONTROLLER_INTERFACE));
@@ -291,6 +314,7 @@ class PoolBuilder
      */
     private function createFormDefinition()
     {
+        // TODO form_type class parameter (check, set, use)
         $id = $this->getServiceId('form_type');
         if (!$this->container->has($id)) {
             $definition = new Definition($this->getServiceClass('form', self::FORM_INTERFACE));
@@ -309,6 +333,7 @@ class PoolBuilder
      */
     private function createTableDefinition()
     {
+        // TODO table type class parameter (check, set, use)
         $id = $this->getServiceId('table_type');
         if (!$this->container->has($id)) {
             $definition = new Definition($this->getServiceClass('table', self::TABLE_INTERFACE));
@@ -320,25 +345,6 @@ class PoolBuilder
             ;
             $this->container->setDefinition($id, $definition);
         }
-    }
-
-    /**
-     * Returns the ClassMetadata service definition.
-     *
-     * @param $entity
-     *
-     * @return Definition
-     */
-    private function getClassMetadataDefinition($entity)
-    {
-        $definition = new Definition(self::CLASS_METADATA);
-        $definition
-            ->setFactoryService($this->getManagerServiceId())
-            ->setFactoryMethod('getClassMetadata')
-            ->setArguments(array($entity))
-            ->setPublic(false)
-        ;
-        return $definition;
     }
 
     /**
