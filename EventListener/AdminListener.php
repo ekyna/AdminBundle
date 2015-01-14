@@ -19,11 +19,21 @@ class AdminListener
      */
     private $aclOperator;
 
+    /**
+     * Constructor.
+     *
+     * @param AclOperatorInterface $aclOperator
+     */
     public function __construct(AclOperatorInterface $aclOperator)
     {
         $this->aclOperator = $aclOperator;
     }
 
+    /**
+     * Kernel controller event handler.
+     *
+     * @param FilterControllerEvent $event
+     */
     public function onKernelController(FilterControllerEvent $event)
     {
         $controller = $event->getController();
