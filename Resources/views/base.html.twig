@@ -43,7 +43,7 @@
     {% include 'EkynaCoreBundle:Ui:modal.html.twig' %}
 
     {% block javascripts %}
-    {% javascripts output='js/debug/admin.js' filter='?yui_js'
+    {#% javascripts output='js/debug/admin.js' filter='?yui_js'
         'js/jquery.js'
         'js/bootstrap.js'
 	    'js/core.js'
@@ -58,9 +58,9 @@
         '@EkynaTableBundle/Resources/asset/js/table.js'
     %}
         <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %}
+    {% endjavascripts %#}
 
-    {#<script src="{{ asset('js/admin-main.js') }}"></script>#}
+    <script src="{{ asset('js/admin-main.js') }}"></script>
     {{ tinymce_init() }}
     {% endblock %}
 </body>
