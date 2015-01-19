@@ -52,21 +52,21 @@ class AdminExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFunction('admin_resource_btn', array($this, 'renderResourceButton'), array('is_safe' => array('html'))),
             new \Twig_SimpleFunction('admin_resource_access', array($this, 'hasResourceAccess')),
-            new \Twig_SimpleFunction('admin_resource_path', array($this, 'generateResourcePath')),
+            //new \Twig_SimpleFunction('admin_resource_path', array($this, 'generateResourcePath')),
         );
     }
 
     /**
      * Renders a resource action button.
      *
-     * @param object $resource
+     * @param mixed $resource
      * @param string $action
      * @param array  $options
      * @param array  $attributes
      *
      * @return string
      */
-    public function renderResourceButton($resource, $action, array $options = array(), array $attributes = array())
+    public function renderResourceButton($resource, $action = 'view', array $options = array(), array $attributes = array())
     {
         if ($this->helper->isGranted($resource, $action)) {
             $options = array_merge($this->getButtonOptions($action), $options);
@@ -101,6 +101,19 @@ class AdminExtension extends \Twig_Extension
         }
 
         return '';
+    }
+
+    /**
+     * Returns whether the user has access granted or not on the given resource for the given action.
+     *
+     * @param mixed $resource
+     * @param string $action
+     *
+     * @return bool
+     */
+    public function hasResourceAccess($resource, $action = 'view')
+    {
+        return $this->helper->isGranted($resource, $action);
     }
 
     /**

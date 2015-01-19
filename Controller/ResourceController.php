@@ -553,15 +553,15 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * {@inheritdoc}
      */
-    public function loadContext(Request $request)
+    public function loadContext(Request $request, Context $context = null)
     {
-        $context = new Context($this->config, $request);
-
+        if (null === $context) {
+            $context = new Context($this->config, $request);
+        }
         $resourceName = $this->config->getResourceName();
-        $request = $context->getRequest();
 
         if ($this->hasParent()) {
-            $this->getParent()->loadContext($context);
+            $this->getParent()->loadContext($request, $context);
         }
 
         if (!$request->isXmlHttpRequest()) {
