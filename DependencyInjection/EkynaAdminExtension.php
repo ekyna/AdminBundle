@@ -2,11 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class EkynaAdminExtension
@@ -23,7 +23,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
         $container->setParameter('ekyna_admin.logo_path', $config['logo_path']);
@@ -41,12 +41,11 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
     private function configureResources(array $resources, ContainerBuilder $container)
     {
         $builder = new PoolBuilder($container);
-        foreach($resources as $prefix => $config) {
-            foreach($config as $resourceName => $parameters) {
+        foreach ($resources as $prefix => $config) {
+            foreach ($config as $resourceName => $parameters) {
                 $builder
                     ->configure($prefix, $resourceName, $parameters)
-                    ->build()
-                ;
+                    ->build();
             }
         }
     }
@@ -65,21 +64,21 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
 
         $pool = $container->getDefinition('ekyna_admin.menu.pool');
 
-        foreach($menus as $groupName => $groupConfig) {
+        foreach ($menus as $groupName => $groupConfig) {
             $pool->addMethodCall('createGroup', array(array(
-                'name'     => $groupName,
-                'label'    => $groupConfig['label'],
-                'icon'     => $groupConfig['icon'],
+                'name' => $groupName,
+                'label' => $groupConfig['label'],
+                'icon' => $groupConfig['icon'],
                 'position' => $groupConfig['position'],
             )));
-            foreach($groupConfig['entries'] as $entryName => $entryConfig) {
-                $pool->addMethodCall('createEntry', array('content', array(
-                    'name'     => $entryName,
-                    'route'    => $entryConfig['route'],
-                    'label'    => $entryConfig['label'],
+            foreach ($groupConfig['entries'] as $entryName => $entryConfig) {
+                $pool->addMethodCall('createEntry', array($groupName, array(
+                    'name' => $entryName,
+                    'route' => $entryConfig['route'],
+                    'label' => $entryConfig['label'],
                     'resource' => $entryConfig['resource'],
                     'position' => $entryConfig['position'],
-                    'domain'   => $entryConfig['domain'],
+                    'domain' => $entryConfig['domain'],
                 )));
             }
         }
@@ -118,7 +117,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
      * Configures the AsseticBundle.
      *
      * @param ContainerBuilder $container
-     * @param array            $config
+     * @param array $config
      */
     private function configureAsseticBundle(ContainerBuilder $container, array $config)
     {
