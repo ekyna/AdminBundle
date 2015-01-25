@@ -24,7 +24,7 @@ abstract class WebTestCase extends BaseTestCase
     public function setUp()
     {
         $this->client = static::createClient(array(), array(
-            'PHP_AUTH_USER' => 'admin',
+            'PHP_AUTH_USER' => 'admin@example.org',
             'PHP_AUTH_PW'   => 'admin',
         ));
     }

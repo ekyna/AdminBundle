@@ -40,9 +40,11 @@ class AdminInstaller implements OrderedInstallerInterface
         $this->createAclRules($container, $output);
         $output->writeln('');
 
-        $output->writeln('<info>[Admin] Creating Super Admin:</info>');
-        $this->createSuperAdmin($container, $command, $output);
-        $output->writeln('');
+        if (!$input->getOption('no-interaction')) {
+            $output->writeln('<info>[Admin] Creating Super Admin:</info>');
+            $this->createSuperAdmin($container, $command, $output);
+            $output->writeln('');
+        }
     }
 
     /**

@@ -88,6 +88,7 @@
                             .off('shown.bs.modal')
                             .on('shown.bs.modal', function () {
                                 $list.ekynaTable({
+                                    ajax: true,
                                     onSelection: function (elements) {
                                         params.onSelection(elements);
                                         $modal.modal('hide');
@@ -104,5 +105,7 @@
 
         return this;
     };
+
+
 
 })(window.jQuery);

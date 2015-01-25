@@ -6,44 +6,24 @@
                         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="ekyna_admin.settings.class">Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema</parameter>
-
-        <parameter key="ekyna_admin.pool_factory.class">Ekyna\Bundle\AdminBundle\Pool\ConfigurationFactory</parameter>
-        <parameter key="ekyna_admin.pool_registry.class">Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry</parameter>
-
-        <parameter key="ekyna_admin.acl_operator.class">Ekyna\Bundle\AdminBundle\Acl\AclOperator</parameter>
-
-        <parameter key="ekyna_admin.menu.pool.class">Ekyna\Bundle\AdminBundle\Menu\MenuPool</parameter>
-        <parameter key="ekyna_admin.menu.builder.class">Ekyna\Bundle\AdminBundle\Menu\MenuBuilder</parameter>
-
-        <parameter key="ekyna_admin.form.admin_extension.class">Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension</parameter>
-        <parameter key="ekyna_admin.resource.form_type.class">Ekyna\Bundle\AdminBundle\Form\Type\ResourceType</parameter>
-
-        <parameter key="ekyna_admin.table.actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsType</parameter>
-        <parameter key="ekyna_admin.table.nested_actions_column.class">Ekyna\Bundle\AdminBundle\Table\Type\Column\NestedActionsType</parameter>
-
-        <parameter key="ekyna_admin.helper.resource_helper.class">Ekyna\Bundle\AdminBundle\Helper\ResourceHelper</parameter>
-
-        <parameter key="ekyna_admin.twig.admin_extension.class">Ekyna\Bundle\AdminBundle\Twig\AdminExtension</parameter>
-        <parameter key="ekyna_admin.twig.show_extension.class">Ekyna\Bundle\AdminBundle\Twig\ShowExtension</parameter>
         <parameter key="ekyna_admin.twig.show_extension.template">EkynaAdminBundle:Show:show_div_layout.html.twig</parameter>
     </parameters>
 
     <services>
         <!-- Settings Schema -->
-        <service id="ekyna_admin.settings" class="%ekyna_admin.settings.class%">
+        <service id="ekyna_admin.settings" class="Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema">
             <tag name="ekyna_setting.schema" namespace="general" position="0" />
         </service>
 
         <!-- Pool Factory / Registry -->
-        <service id="ekyna_admin.pool_factory" class="%ekyna_admin.pool_factory.class%" />
-        <service id="ekyna_admin.pool_registry" class="%ekyna_admin.pool_registry.class%">
+        <service id="ekyna_admin.pool_factory" class="Ekyna\Bundle\AdminBundle\Pool\ConfigurationFactory" />
+        <service id="ekyna_admin.pool_registry" class="Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry">
             <!-- Services with "ekyna_admin.configuration" tag -->
             <argument type="collection" />
         </service>
 
         <!-- Acl Operator -->
-        <service id="ekyna_admin.acl_operator" class="%ekyna_admin.acl_operator.class%">
+        <service id="ekyna_admin.acl_operator" class="Ekyna\Bundle\AdminBundle\Acl\AclOperator">
             <argument type="service" id="security.acl.provider" />
             <argument type="service" id="security.acl.permission.map" />
             <argument type="service" id="ekyna_admin.pool_registry" />
@@ -51,14 +31,14 @@
         </service>
 
         <!-- Kernel controller event listener -->
-        <service id="demo.tokens.action_listener" class="Ekyna\Bundle\AdminBundle\EventListener\AdminListener">
+        <service id="ekyna_admin.admin_listener" class="Ekyna\Bundle\AdminBundle\EventListener\AdminListener">
             <argument type="service" id="ekyna_admin.acl_operator" />
             <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController" />
         </service>
 
         <!-- Admin Menus -->
-        <service id="ekyna_admin.menu.pool" class="%ekyna_admin.menu.pool.class%" />
-        <service id="ekyna_admin.menu.builder" class="%ekyna_admin.menu.builder.class%">
+        <service id="ekyna_admin.menu.pool" class="Ekyna\Bundle\AdminBundle\Menu\MenuPool" />
+        <service id="ekyna_admin.menu.builder" class="Ekyna\Bundle\AdminBundle\Menu\MenuBuilder">
             <argument type="service" id="knp_menu.factory" />
             <argument type="service" id="translator" />
             <argument type="service" id="ekyna_admin.menu.pool" />
@@ -82,42 +62,42 @@
         </service>
 
         <!-- Form Types Extensions -->
-        <service id="ekyna_admin.form.admin_extension" class="%ekyna_admin.form.admin_extension.class%">
+        <service id="ekyna_admin.form.admin_extension" class="Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension">
 		    <tag name="form.type_extension" alias="form" />
 		</service>
 
         <!-- Form Types -->
-        <service id="ekyna_admin.resource.form_type" class="%ekyna_admin.resource.form_type.class%">
+        <service id="ekyna_admin.resource.form_type" class="Ekyna\Bundle\AdminBundle\Form\Type\ResourceType">
             <argument type="service" id="ekyna_admin.pool_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
             <tag name="form.type" alias="ekyna_resource" />
         </service>
 
         <!-- Table types -->
-        <service id="ekyna_admin.table.actions_column" class="%ekyna_admin.table.actions_column.class%">
+        <service id="ekyna_admin.table.actions_column" class="Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsType">
             <argument type="service" id="ekyna_admin.acl_operator" />
             <tag name="table.column_type" alias="admin_actions" />
         </service>
-        <service id="ekyna_admin.table.nested_actions_column" class="%ekyna_admin.table.nested_actions_column.class%">
+        <service id="ekyna_admin.table.nested_actions_column" class="Ekyna\Bundle\AdminBundle\Table\Type\Column\NestedActionsType">
             <argument type="service" id="ekyna_admin.acl_operator" />
             <tag name="table.column_type" alias="admin_nested_actions" />
         </service>
 
         <!-- Resource Helper -->
-        <service id="ekyna_admin.helper.resource_helper" class="%ekyna_admin.helper.resource_helper.class%">
+        <service id="ekyna_admin.helper.resource_helper" class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper">
             <argument type="service" id="ekyna_admin.pool_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
             <argument type="service" id="router" />
         </service>
 
         <!-- Twig Extensions -->
-	    <service id="ekyna_admin.twig.admin_extension" class="%ekyna_admin.twig.admin_extension.class%">
+	    <service id="ekyna_admin.twig.admin_extension" class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
             <argument type="service" id="ekyna_admin.helper.resource_helper" />
             <argument type="service" id="ekyna_core.twig.ui_extension" />
 	        <argument>%ekyna_admin.logo_path%</argument>
 	        <tag name="twig.extension" />
 	    </service>
-	    <service id="ekyna_admin.twig.show_extension" class="%ekyna_admin.twig.show_extension.class%">
+	    <service id="ekyna_admin.twig.show_extension" class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
 	        <argument>%ekyna_admin.twig.show_extension.template%</argument>
 	        <tag name="twig.extension" />
 	    </service>
