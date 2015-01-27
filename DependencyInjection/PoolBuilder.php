@@ -165,10 +165,13 @@ class PoolBuilder
     private function createEntityClassParameter()
     {
         $id = $this->getServiceId('class');
+        /* TODO useless ?
         if ($this->container->has($id)) {
             throw new \Exception(sprintf('The parameter "%s" is reserved. Please remove his definition.', $id));
+        }*/
+        if (!$this->container->hasParameter($id)) {
+            $this->container->setParameter($id, $this->options['entity']);
         }
-        $this->container->setParameter($id, $this->options['entity']);
     }
 
     /**
