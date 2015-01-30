@@ -67,9 +67,9 @@
         {% for param, property_path in route_params_map %}
             {% set route_params = route_params|merge({(param): get_property(entity, property_path)}) %}
         {% endfor %}
-        <a href="{{ path(route, route_params) }}" class="show-entity">{{ get_property(entity, field) }}</a>
+        <a href="{{ path(route, route_params) }}" class="show-entity">{{ block('show_widget_entity_value') }}</a>
         {% else %}
-        <span class="show-entity">{{ get_property(entity, field) }}</span>
+        <span class="show-entity">{{ block('show_widget_entity_value') }}</span>
         {% endif %}
     {% endfor %}
     {%- else %}
@@ -78,6 +78,14 @@
     </div>
 {% endspaceless %}
 {% endblock show_widget_entity %}
+
+{% block show_widget_entity_value %}
+{%- if field -%}
+    {{ get_property(entity, field) }}
+{%- else -%}
+    {{ entity }}
+{%- endif -%}
+{% endblock show_widget_entity_value %}
 
 {% block show_widget_url %}
 {% spaceless %}

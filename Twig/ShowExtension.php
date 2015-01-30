@@ -165,13 +165,14 @@ class ShowExtension extends \Twig_Extension
      */
     protected function renderEntityWidget($entities, array $options = array())
     {
-        if (!isset($options['field'])) {
-            throw new \InvalidArgumentException('Missing "filed" option for entity widget.');
+        if (!array_key_exists('field', $options)) {
+            // throw new \InvalidArgumentException('Missing "field" option for entity widget.');
+            $options['field'] = null;
         }
-        if (!isset($options['route'])) {
+        if (!array_key_exists('route', $options)) {
             $options['route'] = null;
         }
-        if (!isset($options['route_params_map'])) {
+        if (!array_key_exists('route_params_map', $options)) {
             $options['route_params_map'] = array('id' => 'id');
         }
 
