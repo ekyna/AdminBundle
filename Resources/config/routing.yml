@@ -1,8 +1,8 @@
 ekyna_admin:
     pattern: /
     defaults:
-        _controller: FrameworkBundle:Redirect:urlRedirect
-        path: /admin/dashboard
+        _controller: FrameworkBundle:Redirect:redirect
+        route: ekyna_admin_dashboard
         permanent: true
 
 ekyna_admin_dashboard:
@@ -21,7 +21,7 @@ ekyna_admin_security_check:
     pattern: /login-check
     methods: [POST]
     defaults: 
-        _controller: EkynaAdminBundle:Security:checkAction
+        _controller: EkynaAdminBundle:Security:check
 
 ekyna_admin_security_logout:
     pattern: /logout
