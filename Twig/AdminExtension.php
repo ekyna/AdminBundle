@@ -50,9 +50,9 @@ class AdminExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('admin_resource_btn', array($this, 'renderResourceButton'), array('is_safe' => array('html'))),
+            new \Twig_SimpleFunction('admin_resource_btn',    array($this, 'renderResourceButton'), array('is_safe' => array('html'))),
             new \Twig_SimpleFunction('admin_resource_access', array($this, 'hasResourceAccess')),
-            //new \Twig_SimpleFunction('admin_resource_path', array($this, 'generateResourcePath')),
+            new \Twig_SimpleFunction('admin_resource_path',   array($this, 'generateResourcePath')),
         );
     }
 
@@ -114,6 +114,19 @@ class AdminExtension extends \Twig_Extension
     public function hasResourceAccess($resource, $action = 'view')
     {
         return $this->helper->isGranted($resource, $action);
+    }
+
+    /**
+     * Returns the resource path.
+     *
+     * @param mixed $resource
+     * @param string $action
+     *
+     * @return string
+     */
+    public function generateResourcePath($resource, $action = 'view')
+    {
+        return $this->helper->generateResourcePath($resource, $action);
     }
 
     /**
