@@ -1,5 +1,5 @@
 ekyna_admin:
-    pattern: /
+    pattern: ""
     defaults:
         _controller: FrameworkBundle:Redirect:redirect
         route: ekyna_admin_dashboard
