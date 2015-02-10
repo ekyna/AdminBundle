@@ -116,7 +116,7 @@ class ResourceEvent extends Event
         if (null !== $type) {
             ResourceMessage::validateType($type);
             $messages = [];
-            foreach($this->messages as $message) {
+            foreach ($this->messages as $message) {
                 if ($message->getType() === $type) {
                     $messages[] = $message;
                 }
@@ -136,7 +136,7 @@ class ResourceEvent extends Event
     {
         if (null !== $type) {
             ResourceMessage::validateType($type);
-            foreach($this->messages as $message) {
+            foreach ($this->messages as $message) {
                 if ($message->getType() === $type) {
                     return true;
                 }
@@ -173,7 +173,7 @@ class ResourceEvent extends Event
      */
     public function toFlashes(FlashBagInterface $flashBag)
     {
-        foreach($this->messages as $message) {
+        foreach ($this->messages as $message) {
             $flashBag->add($message->getType(), $message->getMessage());
         }
     }

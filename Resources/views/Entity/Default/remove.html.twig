@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block main %}
-<form action="{{ path(route_prefix ~ '_remove', {(resource_name ~ 'Id'): resource.id}) }}" method="post" class="form-horizontal">
+<form action="{{ path(route_prefix ~ '_remove', {(resource_name ~ 'Id'): resource.id}) }}" method="post" {{ form_enctype(form) }} class="form-horizontal">
     <div class="form-body">
 	    {{ bootstrap_set_style('horizontal') }}
 		{{ form_widget(form) }}
