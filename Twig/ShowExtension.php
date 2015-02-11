@@ -4,6 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Ekyna\Bundle\CmsBundle\Entity\Gallery;
 use Ekyna\Bundle\CmsBundle\Model\SeoInterface;
 use Ekyna\Bundle\CoreBundle\Model\ImageInterface;
 
@@ -84,6 +85,8 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderTinymceWidget($content, $options);
         } elseif ($type == 'image') {
             $content = $this->renderImageWidget($content, $options);
+        } elseif ($type == 'gallery') {
+            $content = $this->renderGalleryWidget($content, $options);
         } elseif ($type == 'images') {
             $content = $this->renderImagesWidget($content, $options);
         } elseif ($type == 'seo') {
@@ -307,6 +310,21 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_image', array(
             'image' => $image
+        ));
+    }
+
+    /**
+     * Renders the cms gallery widget.
+     *
+     * @param Gallery $gallery
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function renderGalleryWidget(Gallery $gallery = null, array $options = array())
+    {
+        return $this->renderBlock('show_widget_images', array(
+            'images' => null !== $gallery ? $gallery->getImages() : [],
         ));
     }
 
