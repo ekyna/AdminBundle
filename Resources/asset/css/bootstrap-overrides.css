@@ -144,24 +144,26 @@ input[disabled], textarea[disabled], input[readonly], textarea[readonly] {
 }
 /* native placeholders */
 input:-moz-placeholder,
-textarea:-moz-placeholder {
+textarea:-moz-placeholder,
+input::-moz-placeholder,
+textarea::-moz-placeholder {
   color: #9ba0a5;
   font-family: "Open Sans", Arial;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
   color: #9ba0a5;
   font-family: "Open Sans", Arial;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
   color: #9ba0a5;
   font-family: "Open Sans", Arial;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 
