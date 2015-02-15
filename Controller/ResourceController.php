@@ -155,7 +155,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
                         $customizeQb = function (QueryBuilder $qb, $alias) use ($resourceName, $resource) {
                             $qb
-                                ->where(sprintf($alias . '.%s = :resource', $resourceName))
+                                ->andWhere(sprintf($alias . '.%s = :resource', $resourceName))
                                 ->setParameter('resource', $resource);
                         };
                     } else {
