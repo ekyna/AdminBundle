@@ -175,6 +175,9 @@ class ShowExtension extends \Twig_Extension
         if (!array_key_exists('route', $options)) {
             $options['route'] = null;
         }
+        if (!array_key_exists('route_params', $options)) {
+            $options['route_params'] = array();
+        }
         if (!array_key_exists('route_params_map', $options)) {
             $options['route_params_map'] = array('id' => 'id');
         }
@@ -186,6 +189,7 @@ class ShowExtension extends \Twig_Extension
         $vars = array(
             'route' => $options['route'],
             'field' => $options['field'],
+            'route_params'     => $options['route_params'],
             'route_params_map' => $options['route_params_map'],
             'entities' => $entities
         );

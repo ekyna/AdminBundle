@@ -63,11 +63,11 @@
     {%- elseif entities|length > 0 %}
     {% for entity in entities %}
         {% if route is not sameas(null) %}
-        {% set route_params = [] %}
+        {% set params = route_params %}
         {% for param, property_path in route_params_map %}
-            {% set route_params = route_params|merge({(param): get_property(entity, property_path)}) %}
+            {% set params = params|merge({(param): get_property(entity, property_path)}) %}
         {% endfor %}
-        <a href="{{ path(route, route_params) }}" class="show-entity">{{ block('show_widget_entity_value') }}</a>
+        <a href="{{ path(route, params) }}" class="show-entity">{{ block('show_widget_entity_value') }}</a>
         {% else %}
         <span class="show-entity">{{ block('show_widget_entity_value') }}</span>
         {% endif %}
