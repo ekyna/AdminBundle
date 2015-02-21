@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Validator\Constraints;
 
 /**
  * Class ResourceController
@@ -459,7 +460,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             ->add('confirm', 'checkbox', array(
                 'label' => $message,
                 'attr' => array('align_with_widget' => true),
-                'required' => true
+                'required' => true,
+                'constraints' => array(
+                    new Constraints\True(),
+                )
             ))
             ->getForm();
     }
@@ -523,7 +527,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     public function hasParent()
     {
-        return (null !== $this->config->getParentId());
+        return 0 < strlen($this->config->getParentId());
     }
 
     /**
@@ -565,16 +569,23 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         if (!$request->isXmlHttpRequest()) {
-            $listRoute = $this->config->getRoute('list');
-            if (null === $this->getRouter()->getRouteCollection()->get($listRoute)) {
-                $listRoute = null;
+            if ($this->hasParent()) {
+                $this->appendBreadcrumb(
+                    sprintf('%s-list', $resourceName),
+                    $this->config->getResourceLabel(true)
+                );
+            } else {
+                $listRoute = $this->config->getRoute('list');
+                if (null === $this->getRouter()->getRouteCollection()->get($listRoute)) {
+                    $listRoute = null;
+                }
+                $this->appendBreadcrumb(
+                    sprintf('%s-list', $resourceName),
+                    $this->config->getResourceLabel(true),
+                    $listRoute,
+                    $context->getIdentifiers()
+                );
             }
-            $this->appendBreadcrumb(
-                sprintf('%s-list', $resourceName),
-                $this->config->getResourceLabel(true),
-                $listRoute,
-                $context->getIdentifiers()
-            );
         }
 
         if ($request->attributes->has($resourceName . 'Id')) {
