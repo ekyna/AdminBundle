@@ -5,8 +5,8 @@ namespace Ekyna\Bundle\AdminBundle\Install;
 use Ekyna\Bundle\InstallBundle\Install\OrderedInstallerInterface;
 use Ekyna\Bundle\UserBundle\Entity\Group;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -51,7 +51,7 @@ class AdminInstaller implements OrderedInstallerInterface
      * Creates default groups entities
      *
      * @param ContainerInterface $container
-     * @param OutputInterface    $output
+     * @param OutputInterface $output
      */
     private function createGroups(ContainerInterface $container, OutputInterface $output)
     {
@@ -83,7 +83,7 @@ class AdminInstaller implements OrderedInstallerInterface
      * Creates default groups permissions for each admin pool configurations (if available)
      *
      * @param ContainerInterface $container
-     * @param OutputInterface    $output
+     * @param OutputInterface $output
      *
      * @return number
      */
@@ -96,14 +96,14 @@ class AdminInstaller implements OrderedInstallerInterface
         // TODO disallow on ekyna_user.group for non super admin.
 
         /** @var \Ekyna\Bundle\UserBundle\Entity\Group $group */
-        foreach($groups as $group) {
-            if(isset($this->defaultGroups[$group->getName()])) {
+        foreach ($groups as $group) {
+            if (isset($this->defaultGroups[$group->getName()])) {
                 $permission = $this->defaultGroups[$group->getName()][1];
-            }else{
+            } else {
                 continue;
             }
             $datas = array();
-            foreach($registry->getConfigurations() as $id => $config) {
+            foreach ($registry->getConfigurations() as $id => $config) {
                 $datas[$id] = array($permission => true);
             }
             $aclOperator->updateGroup($group, $datas);
@@ -116,8 +116,8 @@ class AdminInstaller implements OrderedInstallerInterface
      * Creates the super admin user.
      *
      * @param ContainerInterface $container
-     * @param Command            $command
-     * @param OutputInterface    $output
+     * @param Command $command
+     * @param OutputInterface $output
      */
     private function createSuperAdmin(ContainerInterface $container, Command $command, OutputInterface $output)
     {
@@ -178,8 +178,7 @@ class AdminInstaller implements OrderedInstallerInterface
             ->setLastName($lastName)
             ->setPlainPassword($password)
             ->setEmail($email)
-            ->setEnabled(true)
-        ;
+            ->setEnabled(true);
         $userManager->updateUser($user);
 
         $output->writeln('Super Admin has been successfully created.');

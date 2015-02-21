@@ -11,8 +11,11 @@
 
     <services>
         <!-- Settings Schema -->
-        <service id="ekyna_admin.settings" class="Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema">
+        <service id="ekyna_admin.settings.general" class="Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema">
             <tag name="ekyna_setting.schema" namespace="general" position="0" />
+        </service>
+        <service id="ekyna_admin.settings.notification" class="Ekyna\Bundle\AdminBundle\Settings\NotificationSettingsSchema">
+            <tag name="ekyna_setting.schema" namespace="notification" position="1" />
         </service>
 
         <!-- Pool Factory / Registry -->

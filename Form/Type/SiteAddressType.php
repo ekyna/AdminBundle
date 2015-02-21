@@ -49,6 +49,6 @@ class SiteAddressType extends AbstractAddressType
      */
     public function getName()
     {
-    	return 'ekyna_admin_siteaddress';
+    	return 'ekyna_admin_site_address';
     }
 }

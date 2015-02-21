@@ -9,7 +9,15 @@ ekyna_admin:
     acl:
         title: Permissions
         no_rules: Aucune permission répertoriée
-    setting:
-        sitename: Nom du site
-        adminname: Contact principal
-        adminemail: Email principale
+    settings:
+        general:
+            label: Général
+            site_name: Nom du site
+            site_address: Addresse de votre entreprise
+            admin_name: Nom du contact principal
+            admin_email: Email du contact principal
+        notification:
+            label: Notifications
+            from_name: Nom de l'expéditeur
+            from_email: Email de l'expéditeur
+            to_emails: Emais des destinataires
