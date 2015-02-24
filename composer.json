@@ -18,8 +18,7 @@
         "MIT"
     ],
     "require" : {
-        "php" : ">=5.3.3",
-        "white-october/pagerfanta-bundle": "1.0.*",
+        "php" : ">=5.4.0",
         "ekyna/fontawesome-bundle" : "0.1.*@dev",
         "ekyna/core-bundle" : "0.1.*@dev",
         "ekyna/user-bundle" : "0.1.*@dev",
