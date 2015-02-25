@@ -2,9 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Tests;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseTestCase;
-//use Symfony\Component\BrowserKit\Cookie;
-//use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Ekyna\Bundle\CoreBundle\Tests\WebTestCase as BaseTestCase;
 
 /**
  * Class WebTestCase
@@ -14,36 +12,26 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseTestCase;
 abstract class WebTestCase extends BaseTestCase
 {
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\Client
-     */
-    protected $client = null;
-
-    /**
      * {@inheritdoc}
      */
     public function setUp()
     {
-        $this->client = static::createClient(array(), array(
-            'PHP_AUTH_USER' => 'admin@example.org',
-            'PHP_AUTH_PW'   => 'admin',
-        ));
+        parent::setUp();
+
+        $this->logIn();
     }
 
-    /**
-     * Logs in as super administrator.
-     *
-     * @see http://symfony.com/fr/doc/current/cookbook/testing/simulating_authentication.html
-     */
-    /*protected function logInAsSuperAdmin()
+    protected function logIn()
     {
-        $session = $this->client->getContainer()->get('session');
+        // TODO https://gist.github.com/deltaepsilon/6391565 ?
+        $crawler = $this->client->request('GET', $this->generatePath('ekyna_admin_security_login'));
 
-        $firewall = 'admin';
-        $token = new UsernamePasswordToken('admin', 'admin', $firewall, array());
-        $session->set('_security_'.$firewall, serialize($token));
-        $session->save();
+        $form = $crawler->selectButton('_submit')->form(array(
+            '_username'  => 'admin@example.org',
+            '_password'  => 'admin',
+        ));
 
-        $cookie = new Cookie($session->getName(), $session->getId());
-        $this->client->getCookieJar()->set($cookie);
-    }*/
+        $this->client->submit($form);
+        $this->client->followRedirect();
+    }
 }

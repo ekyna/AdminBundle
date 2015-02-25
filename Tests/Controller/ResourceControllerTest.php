@@ -30,7 +30,9 @@ abstract class ResourceControllerTest extends WebTestCase
     {
         parent::setUp();
 
-        $this->config = $this->client->getContainer()->get($this->configurationId);
+        if (null === $this->config = $this->client->getContainer()->get($this->configurationId)) {
+            throw new \RuntimeException(sprintf('Failed to get resource configuration "%s".', $this->configurationId));
+        }
     }
 
     /**
@@ -46,7 +48,7 @@ abstract class ResourceControllerTest extends WebTestCase
      * @param array $params
      * @return string
      */
-    protected function generatePath($action, $params = array())
+    protected function generateResourcePath($action, $params = array())
     {
         return $this->getRouter()->generate(
             $this->config->getRoute($action),
@@ -69,7 +71,7 @@ abstract class ResourceControllerTest extends WebTestCase
      */
     public function testListAction()
     {
-        $crawler = $this->client->request('GET', $this->generatePath('list'));
+        $crawler = $this->client->request('GET', $this->generateResourcePath('list'));
 
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Failed to reach the "list" page.');
 
@@ -89,7 +91,7 @@ abstract class ResourceControllerTest extends WebTestCase
      */
     public function testNewAction()
     {
-        $crawler = $this->client->request('GET', $this->generatePath('new'));
+        $crawler = $this->client->request('GET', $this->generateResourcePath('new'));
 
         // Asserts that this the "new" page
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Failed to reach the "new" page.');
@@ -135,7 +137,7 @@ abstract class ResourceControllerTest extends WebTestCase
     {
         $params = array($this->config->getResourceName().'Id' => 1);
 
-        $crawler = $this->client->request('GET', $this->generatePath('show', $params));
+        $crawler = $this->client->request('GET', $this->generateResourcePath('show', $params));
 
         // Asserts that this is the "show" page.
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Failed to reach the "show" page.');
@@ -157,7 +159,7 @@ abstract class ResourceControllerTest extends WebTestCase
     public function testEditAction()
     {
         $params = array($this->config->getResourceName().'Id' => 1);
-        $crawler = $this->client->request('GET', $this->generatePath('edit', $params));
+        $crawler = $this->client->request('GET', $this->generateResourcePath('edit', $params));
 
         // Asserts that this the "edit" page
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Failed to reach the "edit" page.');
@@ -202,7 +204,7 @@ abstract class ResourceControllerTest extends WebTestCase
     public function testRemoveAction()
     {
         $params = array($this->config->getResourceName().'Id' => 1);
-        $crawler = $this->client->request('GET', $this->generatePath('remove', $params));
+        $crawler = $this->client->request('GET', $this->generateResourcePath('remove', $params));
 
         // Asserts that this the "remove" page
         $this->assertTrue($this->client->getResponse()->isSuccessful(), 'Failed to reach the "remove" page.');

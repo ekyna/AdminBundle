@@ -16,6 +16,8 @@ class DashboardControllerTest extends WebTestCase
      */
     public function testIndexAction()
     {
+//        $this->logInAsSuperAdmin();
+
         $crawler = $this->client->request('GET', '/admin/dashboard');
 
         $this->assertTrue($this->client->getResponse()->isSuccessful());
