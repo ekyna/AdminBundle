@@ -27,6 +27,18 @@
 {% endspaceless %}
 {% endblock show_widget_simple %}
 
+{% block show_widget_tel %}
+{% spaceless %}
+    <div class="show-widget show-widget-simple">
+    {%- if content|length > 0 -%}
+        {{ phone_number_format(content, 'NATIONAL') }}
+    {%- else -%}
+        &nbsp;
+    {%- endif -%}
+    </div>
+{% endspaceless %}
+{% endblock show_widget_tel %}
+
 {% block show_widget_datetime %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">

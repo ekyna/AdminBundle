@@ -79,6 +79,8 @@ class ShowExtension extends \Twig_Extension
                 $options['time'] = false;
             }
             $content = $this->renderDatetimeWidget($content, $options);
+        } elseif ($type == 'tel') {
+            $content = $this->renderTelWidget($content, $options);
         } elseif ($type == 'color') {
             $content = $this->renderColorWidget($content, $options);
         } elseif ($type == 'tinymce') {
@@ -298,6 +300,21 @@ class ShowExtension extends \Twig_Extension
     protected function renderSimpleWidget($content, array $options = array())
     {
         return $this->renderBlock('show_widget_simple', array(
+            'content' => $content
+        ));
+    }
+
+    /**
+     * Renders the tel (phoneNumber) widget.
+     *
+     * @param mixed $content
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function renderTelWidget($content, array $options = array())
+    {
+        return $this->renderBlock('show_widget_tel', array(
             'content' => $content
         ));
     }
