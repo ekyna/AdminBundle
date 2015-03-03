@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Ekyna\Bundle\AdminBundle\Event\ResourceEvent;
 use Ekyna\Bundle\AdminBundle\Event\ResourceMessage;
 use Ekyna\Bundle\AdminBundle\Pool\Configuration;
+use Gedmo\SoftDeleteable\SoftDeleteableListener;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -22,22 +23,22 @@ class ResourceOperator implements ResourceOperatorInterface
     /**
      * @var EntityManagerInterface
      */
-    private $manager;
+    protected $manager;
 
     /**
      * @var EventDispatcherInterface
      */
-    private $dispatcher;
+    protected $dispatcher;
 
     /**
      * @var Configuration
      */
-    private $config;
+    protected $config;
 
     /**
      * @var bool
      */
-    private $debug;
+    protected $debug;
 
     /**
      * Constructor.
@@ -139,7 +140,7 @@ class ResourceOperator implements ResourceOperatorInterface
             if ($hard) {
                 foreach ($eventManager->getListeners() as $eventName => $listeners) {
                     foreach ($listeners as $listener) {
-                        if ($listener instanceof \Gedmo\SoftDeleteable\SoftDeleteableListener) {
+                        if ($listener instanceof SoftDeleteableListener) {
                             $eventManager->removeEventListener($eventName, $listener);
                             $disabledListeners[$eventName] = $listener;
                         }
@@ -169,7 +170,7 @@ class ResourceOperator implements ResourceOperatorInterface
      * @throws DBALException
      * @throws \Exception
      */
-    private function persistResource(ResourceEvent $event)
+    protected function persistResource(ResourceEvent $event)
     {
         $resource = $event->getResource();
 
@@ -203,7 +204,7 @@ class ResourceOperator implements ResourceOperatorInterface
      * @throws DBALException
      * @throws \Exception
      */
-    private function removeResource(ResourceEvent $event)
+    protected function removeResource(ResourceEvent $event)
     {
         $resource = $event->getResource();
 
@@ -241,7 +242,7 @@ class ResourceOperator implements ResourceOperatorInterface
      *
      * @return ResourceEvent
      */
-    private function createResourceEvent($resource)
+    protected function createResourceEvent($resource)
     {
         if (null !== $eventClass = $this->config->getEventClass()) {
             $event = new $eventClass($resource);
