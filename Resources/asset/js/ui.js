@@ -1,12 +1,13 @@
 (function(doc, $, router) {
 
 	$(doc).ready(function() {
+
         var $helperContent = $('#helper-content:visible');
         var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');
+
         if ($helperContent.length == 1) {
-            $('.form-body').on('focus', '*[data-helper]', function(e) {
+            function loadHelper(reference) {
                 $helperContent.empty();
-                var reference = $(this).data('helper');
                 if (reference) {
                     $helperContent.append($helperLoading);
                     $.ajax({
@@ -28,8 +29,15 @@
                         $helperLoading.remove();
                     });
                 }
+            }
+
+            var defaultReference = $helperContent.data('helper') || null;
+            loadHelper(defaultReference);
+
+            $('.form-body').on('focus', '*[data-helper]', function(e) {
+                loadHelper($(this).data('helper'));
             }).on('blur', '*[data-helper]', function(e) {
-                $helperContent.empty();
+                loadHelper(defaultReference);
             });
         }
 	});
