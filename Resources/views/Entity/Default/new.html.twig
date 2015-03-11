@@ -2,15 +2,15 @@
 
 {% block title %}
 <h1>{{ (resource_id ~ '.header.new')|trans|raw }}</h1>
-{% endblock %}
+{% endblock title %}
 
 {% block actions %}
 {{ admin_resource_btn(resource_id, 'list') }}
-{% endblock %}
+{% endblock actions %}
 
 {% block main %}
 <form action="{{ path(route_prefix ~ '_new') }}" {{ form_enctype(form) }} method="post" class="form-horizontal form-with-tabs">
     {% include form_template %}
     {{ ui_form_footer(form) }}
 </form>
-{% endblock %}
+{% endblock main %}

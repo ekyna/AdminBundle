@@ -4,12 +4,12 @@
 
 {% block title %}
 <h1>{{ (resource_id ~ '.header.list')|trans|raw }}</h1>
-{% endblock %}
+{% endblock title %}
 
 {% block actions %}
 {{ admin_resource_btn(resource_id, 'new') }}
-{% endblock %}
+{% endblock actions %}
 
 {% block main %}
 {{ ekyna_table_render(resources) }}
-{% endblock %}
+{% endblock main %}

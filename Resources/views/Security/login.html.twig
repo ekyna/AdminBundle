@@ -1,14 +1,12 @@
 {% extends 'EkynaAdminBundle::base.html.twig' %}
 
-{% block title %}{{ parent() }} - {{ 'ekyna_admin.login_header'|trans }}{% endblock %}
-
 {% block stylesheets %}
 {{ parent() }}
 {% stylesheets output='css/admin-login.css' filter='cssrewrite, ?yui_css' debug=false
     '@EkynaAdminBundle/Resources/asset/css/login.css' %}
     <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
 {% endstylesheets %}
-{% endblock %}
+{% endblock stylesheets %}
 
 {% block body %}
     <div class="login-wrapper">
@@ -31,4 +29,4 @@
             </form>
         </div>
     </div>
-{% endblock %}
+{% endblock body %}

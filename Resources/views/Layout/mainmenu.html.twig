@@ -1,4 +1,4 @@
-{% extends 'EkynaAdminBundle::sidemenu.html.twig' %}
+{% extends 'EkynaAdminBundle:Layout:sidemenu.html.twig' %}
 
 {% macro attributes(attributes) -%}
 {% spaceless %}
@@ -14,4 +14,4 @@
 {% spaceless %}
     <a{{ _self.attributes(item.labelAttributes) }}>{{ block('label') }}{% if item.hasChildren %} <b class="caret">{% endif %}</b></a>
 {% endspaceless %}
-{%- endblock %}
+{%- endblock spanElement %}

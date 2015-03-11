@@ -4,12 +4,12 @@
 
 {% block title %}
 <h1>{{ (resource_id ~ '.header.remove')|trans({'%name%': resource})|raw }}</h1>
-{% endblock %}
+{% endblock title %}
 
 {% block actions %}
 {{ admin_resource_btn(resource, 'list') }}
 {{ admin_resource_btn(resource, 'new') }}
-{% endblock %}
+{% endblock actions %}
 
 {% block main %}
 <form action="{{ path(route_prefix ~ '_remove', {(resource_name ~ 'Id'): resource.id}) }}" method="post" {{ form_enctype(form) }} class="form-horizontal">
@@ -19,4 +19,4 @@
     </div>
     {{ ui_form_footer(form) }}
 </form>
-{% endblock %}
+{% endblock main %}

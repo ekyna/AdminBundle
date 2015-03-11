@@ -97,6 +97,14 @@
     box-shadow: inset 0px 3px 4px -1px #fafafa;
 }
 
+/* Don't override bootstrap datetimepicker css */
+#pad-wrapper form .separator {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+    box-shadow: none;
+}
+
 #pad-wrapper .section.dialogs h4 {
     margin-bottom: 30px;
 }

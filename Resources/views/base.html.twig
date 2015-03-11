@@ -2,7 +2,7 @@
 <html lang="{{ app.request.locale }}">
 <head>
 	<title>
-        {% block page_title %}{{ 'ekyna_admin.title'|trans }}{% endblock %}
+        {% block page_title %}{{ 'ekyna_admin.title'|trans }}{% endblock page_title %}
     </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,13 +31,12 @@
 
     <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css" />
     <link href="http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic" rel="stylesheet" type="text/css" />
-    {% endblock %}
+    {% endblock stylesheets %}
 
     {% include 'BraincraftedBootstrapBundle::ie8-support.html.twig' %}
 </head>
 <body>
-    {% block body %}
-    {% endblock %}
+    {% block body %}{% endblock body%}
 
     {% include 'EkynaCoreBundle:Ui:modal-gallery.html.twig' %}
     {% include 'EkynaCoreBundle:Ui:modal.html.twig' %}
@@ -59,6 +58,6 @@
 
     <script src="{{ asset('js/admin-main.js') }}"></script>
     {{ tinymce_init() }}
-    {% endblock %}
+    {% endblock javascripts %}
 </body>
 </html>

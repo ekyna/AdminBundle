@@ -4,12 +4,12 @@
 
 {% block title %}
 <h1>{{ (resource_id ~ '.header.show')|trans({'%name%': resource})|raw }}</h1>
-{% endblock %}
+{% endblock title %}
 
 {% block actions %}
 {{ admin_resource_btn(resource, 'list') }}
 {{ admin_resource_btn(resource, 'new') }}
-{% endblock %}
+{% endblock actions %}
 
 {% block main %}
 <div class="actions">
@@ -28,4 +28,4 @@
         </div>
 	</div>
 </div>
-{% endblock %}
+{% endblock main %}

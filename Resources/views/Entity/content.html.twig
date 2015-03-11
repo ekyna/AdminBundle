@@ -4,19 +4,19 @@
 <div class="page-header">
 	<div class="row">
 	    <div class="col-md-12 col-lg-8">
-	    {% block title %}{% endblock %}
+	    {% block title %}{% endblock title %}
 	    </div>
 	    <div class="col-md-12 col-lg-4 actions">
-	    {% block actions %}{% endblock %}
+	    {% block actions %}{% endblock actions %}
 	    </div>
 	</div>
 </div>
 <div class="row">
     <div class="col-md-12 col-lg-10">
-    {% block main %}{% endblock %}
+    {% block main %}{% endblock main %}
     </div>
     <div class="col-md-12 col-lg-2">
-    {% block side %}{% endblock %}
+    {% block side %}{% endblock side %}
     </div>
 </div>
-{% endblock %}
+{% endblock content %}
