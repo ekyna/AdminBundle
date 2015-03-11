@@ -23,13 +23,13 @@
 {% if new_route is defined or list_route is defined %}
     <span class="input-group-btn">
     {% if new_route is defined %}
-        <button class="btn btn-primary new-resource" type="button" data-path="{{ path(new_route, new_route_params) }}">
-            <span class="glyphicon glyphicon-plus"></span>
+        <button class="btn btn-default new-resource" type="button" data-path="{{ path(new_route, new_route_params) }}">
+            <span class="fa fa-plus"></span>
         </button>
     {% endif %}
     {% if list_route is defined %}
-        <button class="btn btn-primary list-resource" type="button" data-path="{{ path(list_route, list_route_params) }}">
-            <span class="glyphicon glyphicon-search"></span>
+        <button class="btn btn-default list-resource" type="button" data-path="{{ path(list_route, list_route_params) }}">
+            <span class="fa fa-search"></span>
         </button>
     {% endif %}
     </span>
