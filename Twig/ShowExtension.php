@@ -93,6 +93,8 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderImagesWidget($content, $options);
         } elseif ($type == 'seo') {
             $content = $this->renderSeoWidget($content, $options);
+        } elseif ($type == 'key_value_collection') {
+            $content = $this->renderKeyValueCollectionWidget($content, $options);
         } else {
             $content = $this->renderSimpleWidget($content, $options);
         }
@@ -376,6 +378,21 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_seo', array(
             'seo' => $seo
+        ));
+    }
+
+    /**
+     * Renders the key value collection widget.
+     *
+     * @param array $content
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function renderKeyValueCollectionWidget(array $content, array $options = array())
+    {
+        return $this->renderBlock('show_widget_key_value_collection', array(
+            'content' => $content
         ));
     }
 

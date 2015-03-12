@@ -114,7 +114,11 @@
 {% block show_widget_textarea %}
 {% spaceless %}
     <div class="show-widget show-widget-textarea">
+    {% if content is empty %}
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+    {% else %}
         {{ content|raw }}
+    {% endif %}
     </div>
 {% endspaceless %}
 {% endblock show_widget_textarea %}
@@ -184,3 +188,20 @@
     {{ show_row(seo.canonical, 'url', 'ekyna_core.field.canonical_url') }}
 {% endspaceless %}
 {% endblock show_widget_seo %}
+
+{% block show_widget_key_value_collection %}
+{% spaceless %}
+    <div class="show-widget show-widget-textarea">
+    {% if content is empty %}
+        <em>{{ 'ekyna_core.value.none'|trans }}</em>
+    {% else %}
+        <dl class="dl-horizontal">
+        {% for key, value in content %}
+            <dt>{{ key }}</dt>
+            <dd>{{ value }}</dd>
+        {% endfor %}
+        </dl>
+    {% endif %}
+    </div>
+{% endspaceless %}
+{% endblock show_widget_key_value_collection %}
