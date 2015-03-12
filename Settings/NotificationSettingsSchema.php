@@ -65,17 +65,15 @@ class NotificationSettingsSchema extends AbstractSchema
                     new Constraints\Email(),
                 )
             ))
-            ->add('to_emails', 'bootstrap_collection', array(
-                'label' => 'ekyna_admin.settings.notification.to_emails',
-                'type'               => 'text',
-                'allow_add'          => true,
-                'allow_delete'       => true,
-                'add_button_text'    => 'ekyna_core.button.add',
-                'delete_button_text' => 'ekyna_core.button.remove',
-                'sub_widget_col'     => 10,
-                'button_col'         => 2,
-                'error_bubbling'     => false,
-                'constraints' => array(
+            ->add('to_emails', 'ekyna_core_collection', array(
+                'label'           => 'ekyna_admin.settings.notification.to_emails',
+                'type'            => 'text',
+                'allow_add'       => true,
+                'allow_delete'    => true,
+                'add_button_text' => 'ekyna_core.button.add',
+                'sub_widget_col'  => 10,
+                'button_col'      => 2,
+                'constraints'     => array(
                     new Constraints\All(array(
                         'constraints' => array(
                             new Constraints\NotBlank(),
