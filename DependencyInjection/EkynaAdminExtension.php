@@ -2,18 +2,17 @@
 
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
+use Ekyna\Bundle\CoreBundle\DependencyInjection\Extension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * Class EkynaAdminExtension
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class EkynaAdminExtension extends Extension implements PrependExtensionInterface
+class EkynaAdminExtension extends Extension
 {
     /**
      * {@inheritDoc}
@@ -89,6 +88,8 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
      */
     public function prepend(ContainerBuilder $container)
     {
+        parent::prepend($container);
+
         $bundles = $container->getParameter('kernel.bundles');
         $configs = $container->getExtensionConfig($this->getAlias());
         $config = $this->processConfiguration(new Configuration(), $configs);
