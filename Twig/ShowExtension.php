@@ -233,10 +233,10 @@ class ShowExtension extends \Twig_Extension
             $options['time'] = true;
         }
         if (!array_key_exists('date_format', $options)) {
-            $options['date_format'] = 'medium';
+            $options['date_format'] = 'short';
         }
         if (!array_key_exists('time_format', $options)) {
-            $options['time_format'] = $options['time'] ? 'medium' : 'none';
+            $options['time_format'] = $options['time'] ? 'short' : 'none';
         }
         if (!array_key_exists('locale', $options)) {
             $options['locale'] = null;
