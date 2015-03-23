@@ -165,13 +165,21 @@ class PoolBuilder
     private function createEntityClassParameter()
     {
         $id = $this->getServiceId('class');
-        /* TODO useless ?
-        if ($this->container->has($id)) {
-            throw new \Exception(sprintf('The parameter "%s" is reserved. Please remove his definition.', $id));
-        }*/
         if (!$this->container->hasParameter($id)) {
             $this->container->setParameter($id, $this->options['entity']);
         }
+
+        $coreEntities = array(
+            $this->prefix.'.'.$this->resourceName => array(
+                'class'      => $this->options['entity'],
+                'repository' => $this->options['repository'],
+            ),
+        );
+
+        if ($this->container->hasParameter('ekyna_core.entities')) {
+            $coreEntities = array_merge($coreEntities, $this->container->getParameter('ekyna_core.entities'));
+        }
+        $this->container->setParameter('ekyna_core.entities', $coreEntities);
     }
 
     /**

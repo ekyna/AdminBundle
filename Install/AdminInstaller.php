@@ -3,7 +3,6 @@
 namespace Ekyna\Bundle\AdminBundle\Install;
 
 use Ekyna\Bundle\InstallBundle\Install\OrderedInstallerInterface;
-use Ekyna\Bundle\UserBundle\Entity\Group;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -68,9 +67,11 @@ class AdminInstaller implements OrderedInstallerInterface
                 $output->writeln('already exists.');
                 continue;
             }
-            $group = new Group($name);
+            /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
+            $group = $repository->createNew();
             $group
                 ->setDefault($options[2])
+                ->setName($name)
                 ->setRoles($options[0])
             ;
             $em->persist($group);
