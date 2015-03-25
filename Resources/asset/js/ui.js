@@ -11,7 +11,7 @@
                 if (reference) {
                     $helperContent.append($helperLoading);
                     $.ajax({
-                        url: router.generate('ekyna_setting_helper_fetch'),
+                        url: router.generate('ekyna_setting_api_helper_fetch'),
                         data: {reference: reference},
                         type: 'GET',
                         dataType: 'xml'
