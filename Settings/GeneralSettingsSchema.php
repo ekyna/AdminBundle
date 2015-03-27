@@ -17,19 +17,6 @@ use Symfony\Component\Validator\Constraints;
 class GeneralSettingsSchema extends AbstractSchema
 {
     /**
-     * @var array
-     */
-    protected $defaults;
-
-    /**
-     * @param array $defaults
-     */
-    public function __construct(array $defaults = array())
-    {
-        $this->defaults = $defaults;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function buildSettings(SettingsBuilderInterface $builder)
@@ -87,7 +74,7 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getLabel()
     {
-        return 'ekyna_admin.settings.general.label';
+        return 'ekyna_contact.settings.contact.label';
     }
 
     /**
@@ -95,7 +82,7 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getShowTemplate()
     {
-        return 'EkynaAdminBundle:Settings/General:show.html.twig';
+        return 'EkynaContactBundle:Settings:show.html.twig';
     }
 
     /**
@@ -103,7 +90,7 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getFormTemplate()
     {
-        return 'EkynaAdminBundle:Settings/General:form.html.twig';
+        return 'EkynaContactBundle:Settings:form.html.twig';
     }
 
     /**
@@ -111,6 +98,6 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getName()
     {
-        return 'ekyna_admin_settings_general';
+        return 'ekyna_contact_settings_contact';
     }
 }
