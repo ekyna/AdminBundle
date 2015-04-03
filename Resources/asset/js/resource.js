@@ -22,10 +22,10 @@
                     /* TODO CDATA title */
                     var $title = $(xmldata).find('title');
                     var $form = $(xmldata).find('form');
-                    if($title.length == 1) {
+                    if ($title.length == 1) {
                         $modal.find('.modal-title').html($title.html());
                     }
-                    if($form.length == 1) {
+                    if ($form.length == 1) {
                         $form = $($form.text());
                         $form.find('.form-footer a.form-cancel-btn').click(function(e) {
                             e.preventDefault();

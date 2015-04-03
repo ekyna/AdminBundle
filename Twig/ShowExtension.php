@@ -6,6 +6,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Ekyna\Bundle\CmsBundle\Entity\Gallery;
 use Ekyna\Bundle\CmsBundle\Model\SeoInterface;
+use Ekyna\Bundle\CoreBundle\Model\FileInterface;
 use Ekyna\Bundle\CoreBundle\Model\ImageInterface;
 
 /**
@@ -318,6 +319,21 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_tel', array(
             'content' => $content
+        ));
+    }
+
+    /**
+     * Renders the file widget.
+     *
+     * @param FileInterface $file
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function renderFileWidget(FileInterface $file = null, array $options = array())
+    {
+        return $this->renderBlock('show_widget_image', array(
+            'file' => $file
         ));
     }
 

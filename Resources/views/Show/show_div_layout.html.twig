@@ -30,7 +30,7 @@
 {% block show_widget_tel %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">
-    {%- if content|length > 0 -%}
+    {%- if content is not empty -%}
         {{ phone_number_format(content, 'NATIONAL') }}
     {%- else -%}
         &nbsp;
@@ -138,6 +138,16 @@
 </a>
 {% endspaceless %}
 {% endblock render_image%}
+
+{% block show_widget_file %}
+{% spaceless %}
+    {% if file is sameas(null) %}
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+    {% else %}
+	    {{ file.path }}
+    {% endif %}
+{% endspaceless %}
+{% endblock show_widget_file %}
 
 {% block show_widget_image %}
 {% spaceless %}
