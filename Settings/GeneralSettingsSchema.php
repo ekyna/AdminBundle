@@ -98,6 +98,6 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getName()
     {
-        return 'ekyna_contact_settings_contact';
+        return 'ekyna_admin_settings_general';
     }
 }
