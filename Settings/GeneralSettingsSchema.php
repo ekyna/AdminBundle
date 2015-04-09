@@ -74,7 +74,7 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getLabel()
     {
-        return 'ekyna_contact.settings.contact.label';
+        return 'ekyna_admin.settings.general.label';
     }
 
     /**
@@ -82,7 +82,7 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getShowTemplate()
     {
-        return 'EkynaContactBundle:Settings:show.html.twig';
+        return 'EkynaAdminBundle:Settings/General:show.html.twig';
     }
 
     /**
@@ -90,7 +90,7 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getFormTemplate()
     {
-        return 'EkynaContactBundle:Settings:form.html.twig';
+        return 'EkynaAdminBundle:Settings/General:form.html.twig';
     }
 
     /**
