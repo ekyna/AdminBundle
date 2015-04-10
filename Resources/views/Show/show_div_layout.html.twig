@@ -117,7 +117,7 @@
     {% if content is empty %}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
-        {{ content|raw }}
+        {{ content|nl2br|raw }}
     {% endif %}
     </div>
 {% endspaceless %}
