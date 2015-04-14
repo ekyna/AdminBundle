@@ -75,7 +75,7 @@ class ResourceType extends AbstractType
                 'new_route'         => null,
                 'new_route_params'  => array(),
                 'list_route'        => null,
-                'list_route_params' => null,
+                'list_route_params' => array(),
                 'allow_new'         => false,
                 'allow_list'        => false,
             ))
