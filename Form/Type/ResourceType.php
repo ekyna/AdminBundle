@@ -45,13 +45,23 @@ class ResourceType extends AbstractType
     {
         $configuration = $this->configurationRegistry->findConfiguration($options['class']);
 
-        if ($options['allow_new'] && $this->aclOperator->isAccessGranted($options['class'], 'CREATE')) {
+        if ($options['new_route']) {
+            $view->vars['new_route'] = $options['new_route'];
+            $view->vars['new_route_params'] = $options['new_route_params'];
+        } elseif ($options['allow_new'] && $this->aclOperator->isAccessGranted($options['class'], 'CREATE')) {
             $view->vars['new_route'] = $configuration->getRoute('new');
-            $view->vars['new_route_params'] = []; // TODO
+            $view->vars['new_route_params'] = $options['new_route_params']; // TODO
         }
-        if ($options['allow_list'] && $this->aclOperator->isAccessGranted($options['class'], 'VIEW')) {
+
+        if ($options['new_route']) {
+            $view->vars['list_route'] = $options['list_route'];
+            $view->vars['list_route_params'] = $options['list_route_params'];
+        } elseif ($options['allow_list'] && $this->aclOperator->isAccessGranted($options['class'], 'VIEW')) {
             $view->vars['list_route'] = $configuration->getRoute('list');
-            $view->vars['list_route_params'] = array('selector' => 1, 'multiple' => $options['multiple']); // TODO
+            $view->vars['list_route_params'] = array_merge(
+                $options['list_route_params'],
+                array('selector' => 1, 'multiple' => $options['multiple']) // TODO
+            );
         }
     }
 
@@ -62,12 +72,20 @@ class ResourceType extends AbstractType
     {
         $resolver
             ->setDefaults(array(
-                'allow_new'  => false,
-                'allow_list' => false,
+                'new_route'         => null,
+                'new_route_params'  => array(),
+                'list_route'        => null,
+                'list_route_params' => null,
+                'allow_new'         => false,
+                'allow_list'        => false,
             ))
             ->setAllowedTypes(array(
-                'allow_new'  => 'bool',
-                'allow_list' => 'bool',
+                'new_route'         => array('null', 'string'),
+                'new_route_params'  => 'array',
+                'list_route'        => array('null', 'string'),
+                'list_route_params' => 'array',
+                'allow_new'         => 'bool',
+                'allow_list'        => 'bool',
             ))
         ;
     }

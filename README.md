@@ -19,3 +19,4 @@ TODO:
 - check that pool configurations classes exists.
 - resource context / request scope service.
 - resource not found exceptions.
+- no script alert.
