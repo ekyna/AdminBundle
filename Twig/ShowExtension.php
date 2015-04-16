@@ -86,6 +86,8 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderColorWidget($content, $options);
         } elseif ($type == 'tinymce') {
             $content = $this->renderTinymceWidget($content, $options);
+        } elseif ($type == 'file') {
+            $content = $this->renderFileWidget($content, $options);
         } elseif ($type == 'image') {
             $content = $this->renderImageWidget($content, $options);
         } elseif ($type == 'gallery') {
@@ -332,7 +334,7 @@ class ShowExtension extends \Twig_Extension
      */
     protected function renderFileWidget(FileInterface $file = null, array $options = array())
     {
-        return $this->renderBlock('show_widget_image', array(
+        return $this->renderBlock('show_widget_file', array(
             'file' => $file
         ));
     }

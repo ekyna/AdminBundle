@@ -133,19 +133,21 @@
 
 {% block render_image %}
 {% spaceless %}
-<a class="thumbnail" href="{{ image.path|imagine_filter('admin_modal') }}" title="{{ image.alt }}">
-    <img alt="{{ image.alt }}" src="{{ image.path|imagine_filter('admin_thumb') }}" />
-</a>
+    <a class="thumbnail" href="{{ image.path|imagine_filter('admin_modal') }}" title="{{ image.alt }}">
+        <img alt="{{ image.alt }}" src="{{ image.path|imagine_filter('admin_thumb') }}" />
+    </a>
 {% endspaceless %}
 {% endblock render_image%}
 
 {% block show_widget_file %}
 {% spaceless %}
+    <div class="show-widget show-widget-simple">
     {% if file is sameas(null) %}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
-	    {{ file.path }}
+	    <a href="{{ path('ekyna_cms_file', {'key': file.path}) }}">{{ file.path }}</a>
     {% endif %}
+    </div>
 {% endspaceless %}
 {% endblock show_widget_file %}
 
