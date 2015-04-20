@@ -145,7 +145,7 @@
     {% if file is sameas(null) %}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
-	    <a href="{{ path('ekyna_cms_file', {'key': file.path}) }}">{{ file.path }}</a>
+	    <a href="{{ path('ekyna_cms_file', {'key': file.path}) }}">{{ file.guessFilename }}</a>
     {% endif %}
     </div>
 {% endspaceless %}
