@@ -177,7 +177,7 @@ class PoolBuilder
         );
 
         if ($this->container->hasParameter('ekyna_core.entities')) {
-            $coreEntities = array_merge($coreEntities, $this->container->getParameter('ekyna_core.entities'));
+            $coreEntities = array_merge($this->container->getParameter('ekyna_core.entities'), $coreEntities);
         }
         $this->container->setParameter('ekyna_core.entities', $coreEntities);
     }
