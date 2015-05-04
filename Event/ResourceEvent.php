@@ -90,6 +90,21 @@ class ResourceEvent extends Event
     }
 
     /**
+     * Adds the messages.
+     *
+     * @param array $messages
+     * @return ResourceEvent|$this
+     */
+    public function addMessages(array $messages)
+    {
+        foreach ($messages as $message) {
+            $this->addMessage($message);
+        }
+
+        return $this;
+    }
+
+    /**
      * Adds the message.
      *
      * @param ResourceMessage $message
