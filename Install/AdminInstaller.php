@@ -6,6 +6,7 @@ use Ekyna\Bundle\InstallBundle\Install\OrderedInstallerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -13,8 +14,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @package Ekyna\Bundle\AdminBundle\Install
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class AdminInstaller implements OrderedInstallerInterface
+class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterface
 {
+    /**
+     * @var ContainerInterface
+     */
+    private $container;
+
+    /**
+     * Sets the container.
+     *
+     * @param ContainerInterface $container
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
+    }
+
     /**
      * Default groups :
      * [name => [[roles], permission, default]]
@@ -29,19 +45,19 @@ class AdminInstaller implements OrderedInstallerInterface
     /**
      * {@inheritdoc}
      */
-    public function install(ContainerInterface $container, Command $command, InputInterface $input, OutputInterface $output)
+    public function install(Command $command, InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>[Admin] Creating users groups:</info>');
-        $this->createGroups($container, $output);
+        $this->createGroups($output);
         $output->writeln('');
 
         $output->writeln('<info>[Admin] Generating Acl rules:</info>');
-        $this->createAclRules($container, $output);
+        $this->createAclRules($output);
         $output->writeln('');
 
         if (!$input->getOption('no-interaction')) {
             $output->writeln('<info>[Admin] Creating Super Admin:</info>');
-            $this->createSuperAdmin($container, $command, $output);
+            $this->createSuperAdmin($command, $output);
             $output->writeln('');
         }
     }
@@ -49,13 +65,12 @@ class AdminInstaller implements OrderedInstallerInterface
     /**
      * Creates default groups entities
      *
-     * @param ContainerInterface $container
      * @param OutputInterface $output
      */
-    private function createGroups(ContainerInterface $container, OutputInterface $output)
+    private function createGroups(OutputInterface $output)
     {
-        $em = $container->get('ekyna_user.group.manager');
-        $repository = $container->get('ekyna_user.group.repository');
+        $em = $this->container->get('ekyna_user.group.manager');
+        $repository = $this->container->get('ekyna_user.group.repository');
 
         foreach ($this->defaultGroups as $name => $options) {
             $output->write(sprintf(
@@ -83,16 +98,15 @@ class AdminInstaller implements OrderedInstallerInterface
     /**
      * Creates default groups permissions for each admin pool configurations (if available)
      *
-     * @param ContainerInterface $container
      * @param OutputInterface $output
      *
      * @return number
      */
-    private function createAclRules(ContainerInterface $container, OutputInterface $output)
+    private function createAclRules(OutputInterface $output)
     {
-        $registry = $container->get('ekyna_admin.pool_registry');
-        $aclOperator = $container->get('ekyna_admin.acl_operator');
-        $groups = $container->get('ekyna_user.group.repository')->findAll();
+        $registry = $this->container->get('ekyna_admin.pool_registry');
+        $aclOperator = $this->container->get('ekyna_admin.acl_operator');
+        $groups = $this->container->get('ekyna_user.group.repository')->findAll();
 
         // TODO disallow on ekyna_user.group for non super admin.
 
@@ -116,14 +130,13 @@ class AdminInstaller implements OrderedInstallerInterface
     /**
      * Creates the super admin user.
      *
-     * @param ContainerInterface $container
      * @param Command $command
      * @param OutputInterface $output
      */
-    private function createSuperAdmin(ContainerInterface $container, Command $command, OutputInterface $output)
+    private function createSuperAdmin(Command $command, OutputInterface $output)
     {
-        $groupRepository = $container->get('ekyna_user.group.repository');
-        $userRepository = $container->get('ekyna_user.user.repository');
+        $groupRepository = $this->container->get('ekyna_user.group.repository');
+        $userRepository = $this->container->get('ekyna_user.user.repository');
 
         /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
         if (null === $group = $groupRepository->findOneBy(array('name' => array_keys($this->defaultGroups)[0]))) {
@@ -169,7 +182,7 @@ class AdminInstaller implements OrderedInstallerInterface
         $firstName = $dialog->askAndValidate($output, 'First name: ', $notBlankValidator, 3);
         $lastName = $dialog->askAndValidate($output, 'Last name: ', $notBlankValidator, 3);
 
-        $userManager = $container->get('fos_user.user_manager');
+        $userManager = $this->container->get('fos_user.user_manager');
         /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $user */
         $user = $userManager->createUser();
         $user

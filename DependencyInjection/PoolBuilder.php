@@ -114,6 +114,8 @@ class PoolBuilder
         $this->createRepositoryDefinition();
         $this->createOperatorDefinition();
 
+        // TODO search repository service
+
         $this->createControllerDefinition();
 
         $this->createFormDefinition();
