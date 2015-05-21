@@ -70,7 +70,7 @@ class AsseticConfiguration
     {        
         $inputs = array(
             '@jquery',
-            '@bootstrap_js',
+            '%kernel.root_dir%/../vendor/twbs/bootstrap/dist/js/bootstrap.min.js',
             '@core_js',
 
             '@EkynaAdminBundle/Resources/asset/js/jquery-ui.js',
