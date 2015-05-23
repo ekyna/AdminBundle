@@ -209,6 +209,7 @@ class Configuration implements ConfigurationInterface
      */
     public function isRelevant($object)
     {
-        return $object instanceOf $this->resourceClass;
+        $class = $this->resourceClass;
+        return $object instanceOf $class;
     }
 }
