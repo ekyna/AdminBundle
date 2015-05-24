@@ -93,6 +93,22 @@
             <argument type="service" id="router" />
         </service>
 
+        <!-- Translation -->
+        <service id="ekyna_admin.locale_provider.request" class="Ekyna\Bundle\AdminBundle\Provider\RequestLocaleProvider">
+            <argument>%locale%</argument>
+            <tag name="kernel.event_subscriber" priority="98" />
+        </service>
+        <service id="ekyna_admin.translatable_listener.doctrine.orm" class="Ekyna\Bundle\AdminBundle\EventListener\ORMTranslatableListener">
+            <argument type="service" id="ekyna_admin.locale_provider.request" />
+            <argument>%ekyna_admin.translation_mapping%</argument>
+            <tag name="doctrine.event_subscriber" connection="default" priority="99" />
+        </service>
+        <!--<service id="sylius.translation.translatable_listener.doctrine.mongodb_odm" class="Ekyna\Bundle\AdminBundle\EventListener\ODMTranslatableListener">
+            <argument type="service" id="sylius.translation.locale_provider" />
+            <argument>%sylius.translation.mapping%</argument>
+            <tag name="doctrine_mongodb.odm.event_subscriber" connection="default" priority="99" />
+        </service>-->
+
         <!-- Twig Extensions -->
 	    <service id="ekyna_admin.twig.admin_extension" class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
             <argument type="service" id="ekyna_admin.helper.resource_helper" />

@@ -29,6 +29,10 @@ class EkynaAdminExtension extends Extension
 
         $this->configureResources($config['resources'], $container);
         $this->configureMenus($config['menus'], $container);
+
+        if (!$container->hasParameter('ekyna_admin.translation_mapping')) {
+            $container->setParameter('ekyna_admin.translation_mapping', array());
+        }
     }
 
     /**

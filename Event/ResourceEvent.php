@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
  * @package Ekyna\Bundle\AdminBundle\Event
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class ResourceEvent extends Event
+class ResourceEvent extends Event implements ResourceEventInterface
 {
     /**
      * @var mixed
@@ -28,10 +28,7 @@ class ResourceEvent extends Event
     protected $messages = [];
 
     /**
-     * Sets the resource.
-     *
-     * @param mixed $resource
-     * @return ResourceEvent|$this
+     * {@inheritdoc}
      */
     public function setResource($resource)
     {
@@ -40,9 +37,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Returns the resource.
-     *
-     * @return mixed
+     * {@inheritdoc}
      */
     public function getResource()
     {
@@ -50,11 +45,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Adds the data.
-     *
-     * @param string $key
-     * @param mixed $value
-     * @return ResourceEvent|$this
+     * {@inheritdoc}
      */
     public function addData($key, $value)
     {
@@ -64,10 +55,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Returns whether there is a data for the given key or not.
-     *
-     * @param $key
-     * @return bool
+     * {@inheritdoc}
      */
     public function hasData($key)
     {
@@ -75,11 +63,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Returns the data by key.
-     *
-     * @param string $key
-     * @return mixed
-     * @throws \InvalidArgumentException
+     * {@inheritdoc}
      */
     public function getData($key)
     {
@@ -90,10 +74,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Adds the messages.
-     *
-     * @param array $messages
-     * @return ResourceEvent|$this
+     * {@inheritdoc}
      */
     public function addMessages(array $messages)
     {
@@ -105,10 +86,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Adds the message.
-     *
-     * @param ResourceMessage $message
-     * @return ResourceEvent|$this
+     * {@inheritdoc}
      */
     public function addMessage(ResourceMessage $message)
     {
@@ -121,10 +99,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Returns the messages, optionally filtered by type.
-     *
-     * @param string $type
-     * @return array|ResourceMessage[]
+     * {@inheritdoc}
      */
     public function getMessages($type = null)
     {
@@ -142,10 +117,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Returns whether the event has messages or not, optionally filtered by type.
-     *
-     * @param string $type
-     * @return bool
+     * {@inheritdoc}
      */
     public function hasMessages($type = null)
     {
@@ -162,9 +134,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Returns whether the event has errors or not.
-     *
-     * @return bool
+     * {@inheritdoc}
      */
     public function hasErrors()
     {
@@ -172,9 +142,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Returns the error messages.
-     *
-     * @return array|ResourceMessage[]
+     * {@inheritdoc}
      */
     public function getErrors()
     {
@@ -182,9 +150,7 @@ class ResourceEvent extends Event
     }
 
     /**
-     * Converts messages to flashes.
-     *
-     * @param FlashBagInterface $flashBag
+     * {@inheritdoc}
      */
     public function toFlashes(FlashBagInterface $flashBag)
     {

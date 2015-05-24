@@ -6,6 +6,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -24,19 +25,28 @@ class PoolBuilder
     const DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
     const REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepositoryInterface';
 
+    const TRANS_DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepository';
+    const TRANS_REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepositoryInterface';
+
     const DEFAULT_TEMPLATES    = 'EkynaAdminBundle:Entity/Default';
 
     const FORM_INTERFACE       = 'Symfony\Component\Form\FormTypeInterface';
     const TABLE_INTERFACE      = 'Ekyna\Component\Table\TableTypeInterface';
+    const EVENT_INTERFACE      = 'Ekyna\Bundle\AdminBundle\Event\ResourceEventInterface';
 
     const CONFIGURATION        = 'Ekyna\Bundle\AdminBundle\Pool\Configuration';
     const CLASS_METADATA       = 'Doctrine\ORM\Mapping\ClassMetadata';
 
     /**
+     * @var OptionsResolver
+     */
+    static private $optionsResolver;
+
+    /**
      * The required templates (name => extensions[])[].
      * @var array
      */
-    private $templates = array(
+    static private $templates = array(
         '_form'  => array('html'),
         'list'   => array('html', 'xml'),
         'new'    => array('html', 'xml'),
@@ -49,11 +59,6 @@ class PoolBuilder
      * @var ContainerBuilder
      */
     private $container;
-
-    /**
-     * @var OptionsResolver
-     */
-    private $optionsResolver;
 
     /**
      * @var string
@@ -121,6 +126,8 @@ class PoolBuilder
         $this->createFormDefinition();
         $this->createTableDefinition();
 
+        $this->configureTranslations();
+
         return $this;
     }
 
@@ -131,34 +138,99 @@ class PoolBuilder
      */
     private function getOptionsResolver()
     {
-        if (null === $this->optionsResolver) {
-            $this->optionsResolver = new OptionsResolver();
-            $this->optionsResolver
+        if (null === self::$optionsResolver) {
+            $classExists = function ($class) {
+                if (!class_exists($class)) {
+                    throw new InvalidOptionsException(sprintf('Class %s does not exists.', $class));
+                }
+                return true;
+            };
+            $classExistsAndImplements = function($class, $interface) use ($classExists) {
+                $classExists($class);
+                if (!in_array($interface, class_implements($class))) {
+                    throw new InvalidOptionsException(sprintf('Class %s must implement %s.', $class, $interface));
+                }
+                return true;
+            };
+            $validRepository = function ($class) use ($classExistsAndImplements) {
+                return $classExistsAndImplements($class, self::REPOSITORY_INTERFACE);
+            };
+            $validOperator = function ($class) use ($classExistsAndImplements) {
+                return $classExistsAndImplements($class, self::OPERATOR_INTERFACE);
+            };
+            $validController = function ($class) use ($classExistsAndImplements) {
+                return $classExistsAndImplements($class, self::CONTROLLER_INTERFACE);
+            };
+            $validForm = function ($class) use ($classExistsAndImplements) {
+                return $classExistsAndImplements($class, self::FORM_INTERFACE);
+            };
+            $validTable = function ($class) use ($classExistsAndImplements) {
+                return $classExistsAndImplements($class, self::TABLE_INTERFACE);
+            };
+            $validEvent = function ($class) use ($classExistsAndImplements) {
+                if (null === $class) {
+                    return true;
+                }
+                return $classExistsAndImplements($class, self::EVENT_INTERFACE);
+            };
+
+            self::$optionsResolver = new OptionsResolver();
+            self::$optionsResolver
                 ->setDefaults(array(
-                    'entity'     => null,
-                    'repository' => self::DEFAULT_REPOSITORY,
-                    'operator'   => self::DEFAULT_OPERATOR,
-                    'controller' => self::DEFAULT_CONTROLLER,
-                    'templates'  => null,
-                    'form'       => null,
-                    'table'      => null,
-                    'event'      => null,
-                    'parent'     => null,
+                    'entity'      => null,
+                    'repository'  => self::DEFAULT_REPOSITORY,
+                    'operator'    => self::DEFAULT_OPERATOR,
+                    'controller'  => self::DEFAULT_CONTROLLER,
+                    'templates'   => null,
+                    'form'        => null,
+                    'table'       => null,
+                    'event'       => null,
+                    'parent'      => null,
+                    'translation' => null,
                 ))
                 ->setAllowedTypes(array(
-                    'entity'     => 'string',
-                    'repository' => 'string',
-                    'operator'   => 'string',
-                    'controller' => 'string',
-                    'templates'  => array('null', 'string', 'array'),
-                    'form'       => 'string',
-                    'table'      => 'string',
-                    'event'      => array('null', 'string'),
-                    'parent'     => array('null', 'string'),
+                    'entity'      => 'string',
+                    'repository'  => 'string',
+                    'operator'    => 'string',
+                    'controller'  => 'string',
+                    'templates'   => array('null', 'string', 'array'),
+                    'form'        => 'string',
+                    'table'       => 'string',
+                    'event'       => array('null', 'string'),
+                    'parent'      => array('null', 'string'),
+                    'translation' => array('null', 'string', 'array'),
+                ))
+                ->setAllowedValues(array(
+                    'entity'      => $classExists,
+                    'repository'  => $validRepository,
+                    'operator'    => $validOperator,
+                    'controller'  => $validController,
+                    'form'        => $validForm,
+                    'table'       => $validTable,
+                    'event'       => $validEvent,
+                ))
+                ->setNormalizers(array(
+                    'translation' => function ($options, $value) use ($classExistsAndImplements) {
+                        if (null !== $value) {
+                            if (is_string($value)) {
+                                $value = array('entity' => $value);
+                            } elseif (is_array($value) && !array_key_exists('entity', $value)) {
+                                throw new InvalidOptionsException('translation.entity must be defined.');
+                            }
+                            // TODO check translatable / translation interfaces
+                            if (!array_key_exists('repository', $value)) {
+                                $value['repository'] = self::TRANS_DEFAULT_REPOSITORY;
+                            } else {
+                                $classExistsAndImplements($value['repository'], self::TRANS_REPOSITORY_INTERFACE);
+                            }
+                        }
+                        return $value;
+                    },
+                    // TODO templates normalization ?
                 ))
             ;
         }
-        return $this->optionsResolver;
+        return self::$optionsResolver;
     }
 
     /**
@@ -171,17 +243,11 @@ class PoolBuilder
             $this->container->setParameter($id, $this->options['entity']);
         }
 
-        $coreEntities = array(
-            $this->prefix.'.'.$this->resourceName => array(
-                'class'      => $this->options['entity'],
-                'repository' => $this->options['repository'],
-            ),
+        $this->configureInheritanceMapping(
+            $this->prefix.'.'.$this->resourceName,
+            $this->options['entity'],
+            $this->options['repository']
         );
-
-        if ($this->container->hasParameter('ekyna_core.entities')) {
-            $coreEntities = array_merge($this->container->getParameter('ekyna_core.entities'), $coreEntities);
-        }
-        $this->container->setParameter('ekyna_core.entities', $coreEntities);
     }
 
     /**
@@ -224,7 +290,7 @@ class PoolBuilder
             $templateNamespace = $templatesConfig;
         }
         $templatesList = [];
-        foreach ($this->templates as $name => $extensions) {
+        foreach (self::$templates as $name => $extensions) {
             foreach ($extensions as $extension) {
                 $file = $name.'.'.$extension;
                 $templatesList[$file] = $templateNamespace.':'.$file;
@@ -272,10 +338,9 @@ class PoolBuilder
      */
     private function createRepositoryDefinition()
     {
-        // TODO repository class parameter (check, set, use)
         $id = $this->getServiceId('repository');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('repository', self::REPOSITORY_INTERFACE));
+            $definition = new Definition($this->getServiceClass('repository'));
             $definition->setArguments(array(
                 new Reference($this->getServiceId('manager')),
                 new Reference($this->getServiceId('metadata'))
@@ -291,10 +356,9 @@ class PoolBuilder
      */
     private function createOperatorDefinition()
     {
-        // TODO operator class parameter (check, set, use)
         $id = $this->getServiceId('operator');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('operator', self::OPERATOR_INTERFACE));
+            $definition = new Definition($this->getServiceClass('operator'));
             $definition->setArguments(array(
                 new Reference($this->getManagerServiceId()),
                 new Reference($this->getEventDispatcherServiceId()),
@@ -310,10 +374,9 @@ class PoolBuilder
      */
     private function createControllerDefinition()
     {
-        // TODO controller class parameter (check, set, use)
         $id = $this->getServiceId('controller');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('controller', self::CONTROLLER_INTERFACE));
+            $definition = new Definition($this->getServiceClass('controller'));
             $definition
                 ->addMethodCall('setConfiguration', array(new Reference($this->getServiceId('configuration'))))
                 ->addMethodCall('setContainer', array(new Reference('service_container')))
@@ -327,10 +390,9 @@ class PoolBuilder
      */
     private function createFormDefinition()
     {
-        // TODO form_type class parameter (check, set, use)
         $id = $this->getServiceId('form_type');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('form', self::FORM_INTERFACE));
+            $definition = new Definition($this->getServiceClass('form'));
             $definition
                 ->setArguments(array($this->options['entity']))
                 ->addTag('form.type', array(
@@ -346,10 +408,9 @@ class PoolBuilder
      */
     private function createTableDefinition()
     {
-        // TODO table type class parameter (check, set, use)
         $id = $this->getServiceId('table_type');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('table', self::TABLE_INTERFACE));
+            $definition = new Definition($this->getServiceClass('table'));
             $definition
                 ->setArguments(array($this->options['entity']))
                 ->addTag('table.type', array(
@@ -358,6 +419,59 @@ class PoolBuilder
             ;
             $this->container->setDefinition($id, $definition);
         }
+    }
+
+    /**
+     * Configure the translation
+     */
+    private function configureTranslations()
+    {
+        if (null !== array_key_exists('translation', $this->options) && is_array($this->options['translation'])) {
+            $translatable = $this->options['entity'];
+            $translation = $this->options['translation']['entity'];
+
+            $id = sprintf('%s.%s_translation', $this->prefix, $this->resourceName);
+
+            // Load metadata event mapping
+            $mapping = array(
+                $translatable => $translation,
+                $translation  => $translatable,
+            );
+            if ($this->container->hasParameter('ekyna_admin.translation_mapping')) {
+                $mapping = array_merge($this->container->getParameter('ekyna_admin.translation_mapping'), $mapping);
+            }
+            $this->container->setParameter('ekyna_admin.translation_mapping', $mapping);
+
+            // Translation class parameter
+            if (!$this->container->hasParameter($id.'.class')) {
+                $this->container->setParameter($id.'.class', $translation);
+            }
+
+            // Inheritance mapping
+            $this->configureInheritanceMapping($id, $translation, $this->options['translation']['repository']);
+        }
+    }
+
+    /**
+     * Configures mapping inheritance.
+     *
+     * @param string $id
+     * @param string $entity
+     * @param string $repository
+     */
+    private function configureInheritanceMapping($id, $entity, $repository)
+    {
+        $entities = array(
+            $id => array(
+                'class'      => $entity,
+                'repository' => $repository,
+            ),
+        );
+
+        if ($this->container->hasParameter('ekyna_core.entities')) {
+            $entities = array_merge($this->container->getParameter('ekyna_core.entities'), $entities);
+        }
+        $this->container->setParameter('ekyna_core.entities', $entities);
     }
 
     /**
@@ -384,26 +498,24 @@ class PoolBuilder
      * Returns the service id for the given name.
      *
      * @param string $name
-     * @param string $suffix
      *
      * @return string
      */
-    private function getServiceId($name, $suffix = null)
+    private function getServiceId($name)
     {
-        return sprintf('%s.%s.%s%s', $this->prefix, $this->resourceName, $name, $suffix);
+        return sprintf('%s.%s.%s', $this->prefix, $this->resourceName, $name);
     }
 
     /**
      * Returns the service class for the given name.
      *
      * @param string $name
-     * @param string $interface
      *
      * @throws \RuntimeException
      *
      * @return string|null
      */
-    private function getServiceClass($name, $interface = null)
+    private function getServiceClass($name)
     {
         $serviceId = $this->getServiceId($name);
         $parameterId = $serviceId.'.class';
@@ -413,25 +525,6 @@ class PoolBuilder
             $class = $this->options[$name];
         } else {
             throw new \RuntimeException(sprintf('Undefined "%s" service class.', $name));
-        }
-        if (!class_exists($class)) {
-            throw new \RuntimeException(sprintf(
-                '%s service (%s) class "%s" does not exists.',
-                ucfirst($name),
-                $serviceId,
-                $class
-            ));
-        }
-        if (0 < strlen($interface)) {
-            if (!in_array($interface, class_implements($class))) {
-                throw new \RuntimeException(sprintf(
-                    '%s service (%s) class "%s" must implement "%s" interface.',
-                    ucfirst($name),
-                    $serviceId,
-                    $class,
-                    $interface
-                ));
-            }
         }
         return $class;
     }
