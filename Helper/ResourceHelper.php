@@ -25,7 +25,7 @@ class ResourceHelper
     private $aclOperator;
 
     /**
-     * @var \Symfony\Component\Routing\RouterInterface
+     * @var RouterInterface|\JMS\I18nRoutingBundle\Router\I18nRouter
      */
     private $router;
 
@@ -104,12 +104,10 @@ class ResourceHelper
         $configuration = $this->registry->findConfiguration($resource);
         $routeName = $configuration->getRoute($action);
 
-        $accessor = PropertyAccess::createPropertyAccessor();
-        if (null === $route = $this->router->getRouteCollection()->get($routeName)) {
-            throw new \RuntimeException(sprintf('Route "%s" not found.', $routeName));
-        }
-
+        $route = $this->findRoute($routeName);
         $requirements = $route->getRequirements();
+
+        $accessor = PropertyAccess::createPropertyAccessor();
 
         $entities = array();
         if (is_object($resource)) {
@@ -154,5 +152,25 @@ class ResourceHelper
             return 'DELETE';
         }
         return $action;
+    }
+
+    /**
+     * Finds the route definition.
+     *
+     * @param string $routeName
+     * @return null|\Symfony\Component\Routing\Route
+     */
+    private function findRoute($routeName)
+    {
+        $i18nRouterClass = 'JMS\I18nRoutingBundle\Router\I18nRouterInterface';
+        if (interface_exists($i18nRouterClass) && $this->router instanceof $i18nRouterClass) {
+            $route = $this->router->getOriginalRouteCollection()->get($routeName);
+        } else {
+            $route = $this->router->getRouteCollection()->get($routeName);
+        }
+        if (null === $route) {
+            throw new \RuntimeException(sprintf('Route "%s" not found.', $routeName));
+        }
+        return $route;
     }
 }

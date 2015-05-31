@@ -576,6 +576,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 );
             } else {
                 $listRoute = $this->config->getRoute('list');
+                // TODO use ResourceHelper (because of i18n router getOriginalRouteCollection)
                 if (null === $this->getRouter()->getRouteCollection()->get($listRoute)) {
                     $listRoute = null;
                 }

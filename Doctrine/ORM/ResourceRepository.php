@@ -3,6 +3,8 @@
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
+use Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util\ResourceRepositoryTrait;
 
 /**
  * Class ResourceRepository
@@ -11,14 +13,5 @@ use Doctrine\ORM\EntityRepository;
  */
 class ResourceRepository extends EntityRepository implements ResourceRepositoryInterface
 {
-    /**
-     * Creates a new resource.
-     *
-     * @return mixed
-     */
-    public function createNew()
-    {
-        $class = $this->getClassName();
-        return new $class;
-    }
+    use ResourceRepositoryTrait;
 }

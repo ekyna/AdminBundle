@@ -25,8 +25,8 @@ class PoolBuilder
     const DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
     const REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepositoryInterface';
 
-    const TRANS_DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepository';
-    const TRANS_REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepositoryInterface';
+    const TRANSLATABLE_DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepository';
+    const TRANSLATABLE_REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepositoryInterface';
 
     const DEFAULT_TEMPLATES    = 'EkynaAdminBundle:Entity/Default';
 
@@ -152,9 +152,6 @@ class PoolBuilder
                 }
                 return true;
             };
-            $validRepository = function ($class) use ($classExistsAndImplements) {
-                return $classExistsAndImplements($class, self::REPOSITORY_INTERFACE);
-            };
             $validOperator = function ($class) use ($classExistsAndImplements) {
                 return $classExistsAndImplements($class, self::OPERATOR_INTERFACE);
             };
@@ -178,7 +175,7 @@ class PoolBuilder
             self::$optionsResolver
                 ->setDefaults(array(
                     'entity'      => null,
-                    'repository'  => self::DEFAULT_REPOSITORY,
+                    'repository'  => null,
                     'operator'    => self::DEFAULT_OPERATOR,
                     'controller'  => self::DEFAULT_CONTROLLER,
                     'templates'   => null,
@@ -198,11 +195,10 @@ class PoolBuilder
                     'table'       => 'string',
                     'event'       => array('null', 'string'),
                     'parent'      => array('null', 'string'),
-                    'translation' => array('null', 'string', 'array'),
+                    'translation' => array('null', 'array'),
                 ))
                 ->setAllowedValues(array(
                     'entity'      => $classExists,
-                    'repository'  => $validRepository,
                     'operator'    => $validOperator,
                     'controller'  => $validController,
                     'form'        => $validForm,
@@ -210,19 +206,34 @@ class PoolBuilder
                     'event'       => $validEvent,
                 ))
                 ->setNormalizers(array(
+                    'repository' => function($options, $value) use ($classExistsAndImplements) {
+                        $translatable = is_array($options['translation']);
+                        $interface = $translatable ? self::TRANSLATABLE_REPOSITORY_INTERFACE : self::REPOSITORY_INTERFACE;
+                        if (null === $value) {
+                            if ($translatable) {
+                                $value = self::TRANSLATABLE_DEFAULT_REPOSITORY;
+                            } else {
+                                $value = self::DEFAULT_REPOSITORY;
+                            }
+                        }
+                        $classExistsAndImplements($value, $interface);
+                        return $value;
+                    },
                     'translation' => function ($options, $value) use ($classExistsAndImplements) {
-                        if (null !== $value) {
-                            if (is_string($value)) {
-                                $value = array('entity' => $value);
-                            } elseif (is_array($value) && !array_key_exists('entity', $value)) {
+                        if (is_array($value)) {
+                            if (!array_key_exists('entity', $value)) {
                                 throw new InvalidOptionsException('translation.entity must be defined.');
                             }
-                            // TODO check translatable / translation interfaces
-                            if (!array_key_exists('repository', $value)) {
-                                $value['repository'] = self::TRANS_DEFAULT_REPOSITORY;
-                            } else {
-                                $classExistsAndImplements($value['repository'], self::TRANS_REPOSITORY_INTERFACE);
+                            if (!array_key_exists('fields', $value)) {
+                                throw new InvalidOptionsException('translation.fields must be defined.');
                             }
+                            if (!is_array($value['fields']) || empty($value['fields'])) {
+                                throw new InvalidOptionsException('translation.fields can\'t be empty.');
+                            }
+                            if (!array_key_exists('repository', $value)) {
+                                $value['repository'] = self::DEFAULT_REPOSITORY;
+                            }
+                            $classExistsAndImplements($value['repository'], self::REPOSITORY_INTERFACE);
                         }
                         return $value;
                     },
@@ -340,11 +351,17 @@ class PoolBuilder
     {
         $id = $this->getServiceId('repository');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('repository'));
+            $definition = new Definition($class = $this->getServiceClass('repository'));
             $definition->setArguments(array(
                 new Reference($this->getServiceId('manager')),
                 new Reference($this->getServiceId('metadata'))
             ));
+            if (is_array($this->options['translation'])) {
+                $definition
+                    ->addMethodCall('setLocaleProvider', array(new Reference('ekyna_admin.locale_provider.request'))) // TODO configurable ?
+                    ->addMethodCall('setTranslatableFields', array($this->options['translation']['fields']))
+                ;
+            }
             $this->container->setDefinition($id, $definition);
         }
     }
