@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app.request.locale }}">
+<html lang="{{ app.request.locale }}" data-fos-routes="{{ path('fos_js_routing_js', {'_format': 'json'}) }}">
 <head>
 	<title>
         {% block page_title %}{{ 'ekyna_admin.title'|trans }}{% endblock page_title %}
