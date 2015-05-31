@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\EventListener;
 
-use Ekyna\Bundle\AdminBundle\Provider\LocaleProviderInterface;
+use Ekyna\Bundle\CoreBundle\Locale\LocaleProviderInterface;
 
 /**
  * Class AbstractTranslatableListener

@@ -1,7 +1,8 @@
 <?php
 
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util;
-use Ekyna\Bundle\AdminBundle\Provider\LocaleProviderInterface;
+
+use Ekyna\Bundle\CoreBundle\Locale\LocaleProviderInterface;
 use Ekyna\Bundle\AdminBundle\Model\TranslatableInterface;
 
 /**

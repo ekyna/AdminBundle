@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM;
 
-use Ekyna\Bundle\AdminBundle\Provider\LocaleProviderInterface;
+use Ekyna\Bundle\CoreBundle\Locale\LocaleProviderInterface;
 
 /**
  * Interface TranslatableResourceRepositoryInterface

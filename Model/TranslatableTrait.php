@@ -120,7 +120,7 @@ trait TranslatableTrait
     /**
      * {@inheritdoc}
      */
-    public function translate($locale = null)
+    public function translate($locale = null, $create = false)
     {
         $locale = $locale ?: $this->currentLocale;
         if (null === $locale) {
@@ -132,11 +132,7 @@ trait TranslatableTrait
         }
 
         if (!$translation = $this->translations->get($locale)) {
-            if (null === $this->fallbackLocale) {
-                throw new \RuntimeException('No fallback locale has been set.');
-            }
-
-            if (!$fallbackTranslation = $this->translations->get($this->getFallbackLocale())) {
+            if ($create) {
                 $className = $this->getTranslationClass();
 
                 /** @var TranslationInterface $translation */
@@ -145,7 +141,21 @@ trait TranslatableTrait
 
                 $this->addTranslation($translation);
             } else {
-                $translation = clone $fallbackTranslation;
+                if (null === $this->fallbackLocale) {
+                    throw new \RuntimeException('No fallback locale has been set.');
+                }
+
+                if (!$fallbackTranslation = $this->translations->get($this->getFallbackLocale())) {
+                    $className = $this->getTranslationClass();
+
+                    /** @var TranslationInterface $translation */
+                    $translation = new $className();
+                    $translation->setLocale($locale);
+
+                    $this->addTranslation($translation);
+                } else {
+                    $translation = clone $fallbackTranslation;
+                }
             }
         }
 

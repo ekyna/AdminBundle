@@ -13,12 +13,13 @@ interface TranslatableInterface
      * Translation helper method.
      *
      * @param string $locale
+     * @param bool   $create
      *
      * @return TranslationInterface
      *
      * @throws \RuntimeException
      */
-    public function translate($locale = null);
+    public function translate($locale = null, $create = false);
 
     /**
      * Set current locale.

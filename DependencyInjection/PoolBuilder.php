@@ -358,7 +358,7 @@ class PoolBuilder
             ));
             if (is_array($this->options['translation'])) {
                 $definition
-                    ->addMethodCall('setLocaleProvider', array(new Reference('ekyna_admin.locale_provider.request'))) // TODO configurable ?
+                    ->addMethodCall('setLocaleProvider', array(new Reference('ekyna_core.locale_provider.request'))) // TODO configurable ?
                     ->addMethodCall('setTranslatableFields', array($this->options['translation']['fields']))
                 ;
             }

@@ -94,12 +94,8 @@
         </service>
 
         <!-- Translation -->
-        <service id="ekyna_admin.locale_provider.request" class="Ekyna\Bundle\AdminBundle\Provider\RequestLocaleProvider">
-            <argument>%locale%</argument>
-            <tag name="kernel.event_subscriber" priority="98" />
-        </service>
         <service id="ekyna_admin.translatable_listener.doctrine.orm" class="Ekyna\Bundle\AdminBundle\EventListener\ORMTranslatableListener">
-            <argument type="service" id="ekyna_admin.locale_provider.request" />
+            <argument type="service" id="ekyna_core.locale_provider.request" />
             <argument>%ekyna_admin.translation_mapping%</argument>
             <tag name="doctrine.event_subscriber" connection="default" priority="99" />
         </service>
