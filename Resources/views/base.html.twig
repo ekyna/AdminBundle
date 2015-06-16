@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ app.request.locale }}" data-fos-routes="{{ path('fos_js_routing_js', {'_format': 'json'}) }}">
+<html lang="{{ app.request.locale }}">
 <head>
 	<title>
         {% block page_title %}{{ 'ekyna_admin.title'|trans }}{% endblock page_title %}
@@ -34,30 +34,19 @@
     {% endblock stylesheets %}
 
     {% include 'BraincraftedBootstrapBundle::ie8-support.html.twig' %}
+
+    {{ require_js(not app.debug) }}
 </head>
 <body>
     {% block body %}{% endblock body%}
 
-    {% include 'EkynaCoreBundle:Ui:modal-gallery.html.twig' %}
-    {% include 'EkynaCoreBundle:Ui:modal.html.twig' %}
+    {#{% include 'EkynaCoreBundle:Ui:modal-gallery.html.twig' %}
+    {% include 'EkynaCoreBundle:Ui:modal.html.twig' %}#}
 
     {% block javascripts %}
-    {#% javascripts output='js/debug/admin.js' filter='?yui_js'
-        'js/jquery.js'
-        'js/bootstrap.js'
-	    'js/core.js'
-
-        '@EkynaAdminBundle/Resources/asset/js/jquery-ui.js'
-        '@EkynaAdminBundle/Resources/asset/js/theme.js'
-        '@EkynaAdminBundle/Resources/asset/js/ui.js'
-
-        '@EkynaTableBundle/Resources/asset/js/table.js'
-    %}
-        <script type="text/javascript" src="{{ asset_url }}"></script>
-    {% endjavascripts %#}
-
-    <script src="{{ asset('js/admin-main.js') }}"></script>
-    {{ tinymce_init() }}
+    <script type="text/javascript">
+        require(['bundles/ekynaadmin/js/main']);
+    </script>
     {% endblock javascripts %}
 </body>
 </html>

@@ -4,10 +4,10 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Ekyna\Bundle\CmsBundle\Entity\Gallery;
 use Ekyna\Bundle\CmsBundle\Model\SeoInterface;
-use Ekyna\Bundle\CoreBundle\Model\FileInterface;
-use Ekyna\Bundle\CoreBundle\Model\ImageInterface;
+use Ekyna\Bundle\CoreBundle\Model\UploadableInterface;
+use Ekyna\Bundle\MediaBundle\Model\GalleryInterface;
+use Ekyna\Bundle\MediaBundle\Model\MediaInterface;
 
 /**
  * Class ShowExtension
@@ -86,14 +86,14 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderColorWidget($content, $options);
         } elseif ($type == 'tinymce') {
             $content = $this->renderTinymceWidget($content, $options);
-        } elseif ($type == 'file') {
-            $content = $this->renderFileWidget($content, $options);
-        } elseif ($type == 'image') {
-            $content = $this->renderImageWidget($content, $options);
+        } elseif ($type == 'uploadable') {
+            $content = $this->renderUploadWidget($content, $options);
+        } elseif ($type == 'media') {
+            $content = $this->renderMediaWidget($content, $options);
         } elseif ($type == 'gallery') {
             $content = $this->renderGalleryWidget($content, $options);
-        } elseif ($type == 'images') {
-            $content = $this->renderImagesWidget($content, $options);
+        } elseif ($type == 'medias') {
+            $content = $this->renderMediasWidget($content, $options);
         } elseif ($type == 'seo') {
             $content = $this->renderSeoWidget($content, $options);
         } elseif ($type == 'key_value_collection') {
@@ -325,62 +325,62 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders the file widget.
+     * Renders the uploadable widget.
      *
-     * @param FileInterface $file
+     * @param UploadableInterface $uploadable
      * @param array $options
      *
      * @return string
      */
-    protected function renderFileWidget(FileInterface $file = null, array $options = array())
+    protected function renderUploadWidget(UploadableInterface $uploadable = null, array $options = array())
     {
-        return $this->renderBlock('show_widget_file', array(
-            'file' => $file
+        return $this->renderBlock('show_widget_uploadable', array(
+            'uploadable' => $uploadable
         ));
     }
 
     /**
-     * Renders the image widget.
+     * Renders the media widget.
      *
-     * @param ImageInterface $image
+     * @param MediaInterface $media
      * @param array $options
      *
      * @return string
      */
-    protected function renderImageWidget(ImageInterface $image = null, array $options = array())
+    protected function renderMediaWidget(MediaInterface $media = null, array $options = array())
     {
-        return $this->renderBlock('show_widget_image', array(
-            'image' => $image
+        return $this->renderBlock('show_widget_media', array(
+            'media' => $media
         ));
     }
 
     /**
      * Renders the cms gallery widget.
      *
-     * @param Gallery $gallery
+     * @param GalleryInterface $gallery
      * @param array $options
      *
      * @return string
      */
-    protected function renderGalleryWidget(Gallery $gallery = null, array $options = array())
+    protected function renderGalleryWidget(GalleryInterface $gallery = null, array $options = array())
     {
-        return $this->renderBlock('show_widget_images', array(
-            'images' => null !== $gallery ? $gallery->getImages() : [],
+        return $this->renderBlock('show_widget_medias', array(
+            'medias' => null !== $gallery ? $gallery->getMedias() : [],
         ));
     }
 
     /**
-     * Renders the image "gallery" widget.
+     * Renders the medias widget.
      *
-     * @param Collection $images
+     * @param Collection $medias
      * @param array $options
      *
      * @return string
      */
-    protected function renderImagesWidget(Collection $images, array $options = array())
+    protected function renderMediasWidget(Collection $medias, array $options = array())
     {
-        return $this->renderBlock('show_widget_images', array(
-            'images' => $images
+        return $this->renderBlock('show_widget_medias', array(
+            'medias' => $medias
         ));
     }
 

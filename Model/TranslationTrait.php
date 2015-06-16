@@ -10,29 +10,21 @@ namespace Ekyna\Bundle\AdminBundle\Model;
 trait TranslationTrait
 {
     /**
-     * Locale.
-     *
      * @var string
      */
     protected $locale;
 
     /**
-     * Translatable object.
-     *
      * @var TranslatableInterface
      */
     protected $translatable;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getTranslatable()
-    {
-        return $this->translatable;
-    }
 
     /**
-     * {@inheritdoc}
+     * Sets the translatable.
+     *
+     * @param TranslatableInterface $translatable
+     * @return TranslationInterface|$this
      */
     public function setTranslatable(TranslatableInterface $translatable = null)
     {
@@ -55,20 +47,35 @@ trait TranslationTrait
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the translatable.
+     *
+     * @return TranslatableInterface
      */
-    public function getLocale()
+    public function getTranslatable()
     {
-        return $this->locale;
+        return $this->translatable;
     }
 
     /**
-     * {@inheritdoc}
+     * Sets the locale.
+     *
+     * @param string $locale
+     * @return TranslatableInterface|$this
      */
     public function setLocale($locale)
     {
         $this->locale = $locale;
 
         return $this;
+    }
+
+    /**
+     * Returns the locale.
+     *
+     * @return string
+     */
+    public function getLocale()
+    {
+        return $this->locale;
     }
 }

@@ -52,7 +52,7 @@ class NotificationSettingsSchema extends AbstractSchema
                     new Constraints\Email(),
                 )
             ))
-            ->add('to_emails', 'ekyna_core_collection', array(
+            ->add('to_emails', 'ekyna_collection', array(
                 'label'           => 'ekyna_admin.settings.notification.to_emails',
                 'type'            => 'text',
                 'allow_add'       => true,

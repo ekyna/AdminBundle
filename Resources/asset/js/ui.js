@@ -1,6 +1,6 @@
-(function($, Router) {
+;define(['jquery', 'routing'], function($, router) {
 
-    $(document).on('fos_js_routing_loaded', function() {
+    $(function() {
 
         var $helperContent = $('#helper-content:visible');
         var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');
@@ -11,7 +11,7 @@
                 if (reference) {
                     $helperContent.append($helperLoading);
                     $.ajax({
-                        url: Router.generate('ekyna_setting_api_helper_fetch'),
+                        url: router.generate('ekyna_setting_api_helper_fetch'),
                         data: {reference: reference},
                         type: 'GET',
                         dataType: 'xml'
@@ -42,4 +42,4 @@
         }
 	});
 
-})(jQuery, Routing);
+});

@@ -26,7 +26,6 @@ class AsseticConfiguration
         }
 
         $output['admin_css'] = $this->buildCss($config);
-        $output['admin_js'] = $this->buildJs($config);
 
         return $output;
     }
@@ -38,52 +37,29 @@ class AsseticConfiguration
      */
     protected function buildCss(array $config)
     {
-        $inputs = array(
-            '%kernel.root_dir%/../vendor/twbs/bootstrap/dist/css/bootstrap.min.css',
-            '@fontawesome_css',
-            '@core_css',
+        $inputs = array_merge(array(
+            'assets/bootstrap/css/bootstrap.min.css',
+            'assets/bootstrap-dialog/dist/css/bootstrap-dialog.min.css',
+            'assets/jquery-ui/themes/base/jquery-ui.min.css',
+            'assets/jquery-ui/themes/smoothness/jquery-ui.min.css',
 
-            '@EkynaAdminBundle/Resources/asset/css/lib/jquery-ui.css',
+            '@fontawesome_css',
+            '@form_css',
+
             '@EkynaAdminBundle/Resources/asset/css/bootstrap-overrides.css',
             '@EkynaAdminBundle/Resources/asset/css/layout.css',
             '@EkynaAdminBundle/Resources/asset/css/elements.css',
             '@EkynaAdminBundle/Resources/asset/css/ui-elements.css',
             '@EkynaAdminBundle/Resources/asset/css/show.css',
 
-            '@EkynaTableBundle/Resources/asset/css/table.css',
-        );
+            // TODO prepend in TableBundle
+            '@EkynaTableBundle/Resources/public/css/table.css',
+        ), $config['css_inputs']);
 
         return array(
             'inputs'  => $inputs,
-            'filters' => array('yui_css'), // 'cssrewrite'
+            'filters' => array('yui_css', 'cssrewrite'), // 'cssrewrite'
             'output'  => $config['output_dir'].'css/admin-main.css',
-            'debug'   => false,
-        );
-    }
-
-    /**
-     * @param array $config
-     *
-     * @return array
-     */
-    protected function buildJs(array $config)
-    {        
-        $inputs = array(
-            '@jquery',
-            '%kernel.root_dir%/../vendor/twbs/bootstrap/dist/js/bootstrap.min.js',
-            '@core_js',
-
-            '@EkynaAdminBundle/Resources/asset/js/jquery-ui.js',
-            '@EkynaAdminBundle/Resources/asset/js/theme.js',
-            '@EkynaAdminBundle/Resources/asset/js/ui.js',
-
-            '@EkynaTableBundle/Resources/asset/js/table.js',
-        );
-
-        return array(
-            'inputs'  => $inputs,
-            'filters' => array('yui_js'),
-            'output'  => $config['output_dir'].'js/admin-main.js',
             'debug'   => false,
         );
     }

@@ -1,4 +1,4 @@
-;(function($) {
+;define(['jquery'], function($) {
 
 	// navbar notification popups
 	$(".notification-dropdown").each(function(index, el) {
@@ -144,11 +144,11 @@
 	if ($("#sidebar-nav").height() > $(".content").height()) {
 		$("html").addClass("small");
 	}
-	
+
 	/* Tabs */
 	$(document).on('click', '.nav-tabs a', function (e) {
 		e.preventDefault();
 		$(this).tab('show');
 	});
 
-})(window.jQuery);
+});

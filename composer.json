@@ -19,12 +19,10 @@
     ],
     "require" : {
         "php" : ">=5.4.0",
-        "ekyna/fontawesome-bundle" : "0.1.*@dev",
-        "ekyna/core-bundle" : "0.2.*@dev",
-        "ekyna/user-bundle" : "0.2.*@dev",
-        "ekyna/table-bundle" : "0.1.*@dev",
-        "ekyna/setting-bundle" : "0.1.*@dev",
-        "ekyna/install-bundle" : "0.1.*@dev"
+        "ekyna/core-bundle" : "0.3.*@dev",
+        "ekyna/user-bundle" : "0.3.*@dev",
+        "ekyna/setting-bundle" : "0.3.*@dev",
+        "ekyna/install-bundle" : "0.3.*@dev"
     },
     "autoload" : {
         "psr-0" : {
@@ -34,7 +32,7 @@
     "target-dir" : "Ekyna/Bundle/AdminBundle",
     "extra" : {
         "branch-alias" : {
-            "dev-master" : "0.2.x-dev"
+            "dev-master" : "0.3.x-dev"
         }
     }
 }

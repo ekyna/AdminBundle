@@ -139,43 +139,32 @@
 {% endspaceless %}
 {% endblock render_image%}
 
-{% block show_widget_file %}
+{% block show_widget_uploadable %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">
-    {% if file is sameas(null) %}
+    {#{% if file is sameas(null) %}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
-	    <a href="{{ path('ekyna_cms_file', {'key': file.path}) }}">{{ file.guessFilename }}</a>
-    {% endif %}
+	    <a href="{{ path('ekyna_media_file', {'key': file.path}) }}">{{ file.guessFilename }}</a>
+    {% endif %}#}
+        <em>Not yet implemented.</em>
     </div>
 {% endspaceless %}
-{% endblock show_widget_file %}
+{% endblock show_widget_uploadable %}
 
-{% block show_widget_image %}
+{% block show_widget_media %}
 {% spaceless %}
-    <div class="modal-gallery">
-    {% if image is not sameas(null) %}
-        {{ block('render_image') }}
-    {% else %}
-	    <span class="thumbnail">{{ ui_no_image() }}</span>
-    {% endif %}
-    </div>
+    {{ render_media_thumb(media) }}
 {% endspaceless %}
-{% endblock show_widget_image %}
+{% endblock show_widget_media %}
 
-{% block show_widget_images %}
+{% block show_widget_medias %}
 {% spaceless %}
-    <div class="modal-gallery">
-    {% if images|length > 0 %}
-        {% for image in images %}
-        {{ block('render_image') }}
-        {% endfor %}
-    {% else %}
-	    <span class="thumbnail">{{ ui_no_image() }}</span>
-    {% endif %}
-    </div>
+    {% for media in medias %}
+        {{ render_media_thumb(media) }}
+    {% endfor %}
 {% endspaceless %}
-{% endblock show_widget_images %}
+{% endblock show_widget_medias %}
 
 {% block show_widget_seo %}
 {% spaceless %}

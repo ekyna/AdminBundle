@@ -1,6 +1,7 @@
 <?php
 
 namespace Ekyna\Bundle\AdminBundle\Model;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Interface TranslatableInterface
@@ -10,57 +11,73 @@ namespace Ekyna\Bundle\AdminBundle\Model;
 interface TranslatableInterface
 {
     /**
-     * Translation helper method.
+     * Returns the translation regarding to the current or fallback locale.
      *
      * @param string $locale
      * @param bool   $create
-     *
      * @return TranslationInterface
-     *
      * @throws \RuntimeException
      */
     public function translate($locale = null, $create = false);
 
     /**
-     * Set current locale.
+     * Sets the current locale.
      *
      * @param string $locale
-     *
-     * @return self
+     * @return TranslatableInterface|$this
      */
     public function setCurrentLocale($locale);
 
     /**
-     * Set fallback locale.
+     * Returns the current locale.
+     *
+     * @return string
+     */
+    public function getCurrentLocale();
+
+    /**
+     * Sets the fallback locale.
      *
      * @param string $locale
-     *
-     * @return self
+     * @return TranslatableInterface|$this
      */
     public function setFallbackLocale($locale);
 
     /**
-     * Get all translations.
+     * Returns the fallback locale.
      *
-     * @return TranslationInterface[]
+     * @return string
      */
-    public function getTranslations();
+    public function getFallbackLocale();
 
     /**
-     * Add a new translation.
+     * Adds the translation.
      *
      * @param TranslationInterface $translation
-     *
-     * @return self
+     * @return TranslatableInterface|$this
      */
     public function addTranslation(TranslationInterface $translation);
 
     /**
-     * Remove a translation.
+     * Removes the translation.
      *
      * @param TranslationInterface $translation
-     *
-     * @return self
+     * @return TranslatableInterface|$this
      */
     public function removeTranslation(TranslationInterface $translation);
+
+    /**
+     * Returns whether the translatable has the given translation.
+     *
+     * @param TranslationInterface $translation
+     * @return bool
+     */
+    public function hasTranslation(TranslationInterface $translation);
+
+    /**
+     * Returns the translations.
+     *
+     * @return ArrayCollection|TranslationInterface[]
+     */
+    public function getTranslations();
 }

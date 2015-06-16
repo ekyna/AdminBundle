@@ -7,6 +7,7 @@ use Doctrine\ORM\QueryBuilder;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
+use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,24 +69,18 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             ))
             ->getTable($request);
 
-        $response = new Response();
-
-        $format = 'html';
         if ($request->isXmlHttpRequest()) {
-            $format = 'xml';
-            $response->headers->add(array(
-                'Content-Type' => 'application/xml; charset=' . strtolower($this->get('kernel')->getCharset())
-            ));
+            $modal = $this->createModal('list');
+            $modal->setContent($table->createView());
+            return $this->get('ekyna_core.modal')->render($modal);
         }
 
-        $response->setContent($this->renderView(
-            $this->config->getTemplate('list.' . $format),
+        return $this->render(
+            $this->config->getTemplate('list.html'),
             $context->getTemplateVars(array(
                 $this->config->getResourceName(true) => $table->createView()
             ))
-        ));
-
-        return $response;
+        );
     }
 
     /**
@@ -107,6 +102,12 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         $this->fetchChildrenResources($data, $context);
+
+        /* TODO if ($request->isXmlHttpRequest()) {
+            $modal = $this->createModal('show');
+            $modal->setVars($context->getTemplateVars($data));
+            return $this->get('ekyna_core.modal')->render($modal);
+        }*/
 
         return $this->render(
             $this->config->getTemplate('show.html'),
@@ -200,93 +201,98 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         $this->isGranted('CREATE');
 
+        $isXhr = $request->isXmlHttpRequest();
         $context = $this->loadContext($request);
 
         $resource = $this->createNew($context);
         $resourceName = $this->config->getResourceName();
         $context->addResource($resourceName, $resource);
 
-        $form = $this->createNewResourceForm($context);
+        $form = $this->createNewResourceForm($context, !$isXhr);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
             // TODO use ResourceManager
             $event = $this->getOperator()->create($resource);
-
-            if ($request->isXmlHttpRequest()) {
-                if ($event->hasErrors()) {
-                    $errorMessages = $event->getErrors();
-                    $errors = [];
-                    foreach ($errorMessages as $message) {
-                        $errors[] = $message->getMessage();
-                    }
-                    return new JsonResponse(array('error' => implode(', ', $errors)));
-                }
-
-                return new JsonResponse(array(
-                    'id' => $resource->getId(),
-                    'name' => (string)$resource,
-                ));
+            if (!$isXhr) {
+                $event->toFlashes($this->getFlashBag());
             }
 
-            $event->toFlashes($this->getFlashBag());
-
             if (!$event->hasErrors()) {
+                if ($isXhr) {
+                    $modal = $this->createModal('new');
+                    $modal->setContent(array(
+                        'id' => $resource->getId(),
+                        'name' => (string) $resource,
+                    ));
+                    return $this->get('ekyna_core.modal')->render($modal);
+                }
+
                 if (null === $redirectPath = $form->get('_redirect')->getData()) {
-                    $redirectPath = $this->generateUrl($this->config->getRoute('show'), $context->getIdentifiers(true));
+                    $redirectPath = $this->generateUrl(
+                        $this->config->getRoute('show'),
+                        $context->getIdentifiers(true)
+                    );
                 }
                 return $this->redirect($redirectPath);
             }
-        } elseif ($request->getMethod() === 'POST' && $request->isXmlHttpRequest()) {
-            return new JsonResponse(array('error' => $form->getErrors()));
         }
 
-        $response = new Response();
-
-        $format = 'html';
-        if ($request->isXmlHttpRequest()) {
-            $format = 'xml';
-            $response->headers->add(array(
-                'Content-Type' => 'application/xml; charset='.strtolower($this->get('kernel')->getCharset())
-            ));
-        } else {
-            $this->appendBreadcrumb(sprintf('%s-new', $resourceName), 'ekyna_core.button.create');
+        if ($isXhr) {
+            $modal = $this->createModal('new');
+            $modal
+                ->setContent($form->createView())
+                ->setVars($context->getTemplateVars())
+            ;
+            return $this->get('ekyna_core.modal')->render($modal);
         }
 
-        $response->setContent($this->renderView(
-            $this->config->getTemplate('new.' . $format),
+        $this->appendBreadcrumb(sprintf('%s-new', $resourceName), 'ekyna_core.button.create');
+
+        return $this->render(
+            $this->config->getTemplate('new.html'),
             $context->getTemplateVars(array(
                 'form' => $form->createView()
             ))
-        ));
-
-        return $response;
+        );
     }
 
     /**
      * Creates the new resource form.
      *
      * @param Context $context
+     * @param bool    $footer
      * @return \Symfony\Component\Form\Form
      */
-    protected function createNewResourceForm(Context $context)
+    protected function createNewResourceForm(Context $context, $footer = true)
     {
-        if ($this->hasParent()) {
-            $cancelRoute = $this->getParent()->getConfiguration()->getRoute('show');
-        } else {
-            $cancelRoute = $this->config->getRoute('list');
-        }
-
         $resource = $context->getResource();
-        $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
-
-        return $this->createForm($this->config->getFormType(), $resource, array(
+        $options = array(
+            'action' => $this->generateUrl(
+                $this->config->getRoute('new'),
+                $context->getIdentifiers()
+            ),
+            'method' => 'POST',
+            'attr' => array(
+                'class' => 'form-horizontal form-with-tabs',
+            ),
             'admin_mode' => true,
             '_redirect_enabled' => true,
-            '_footer' => array(
+        );
+
+        if ($footer) {
+            if ($this->hasParent()) {
+                $cancelRoute = $this->getParent()->getConfiguration()->getRoute('show');
+            } else {
+                $cancelRoute = $this->config->getRoute('list');
+            }
+            $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
+            $options['_footer'] = array(
                 'cancel_path' => $cancelPath,
-            ),
-        ));
+            );
+        }
+
+        return $this->createForm($this->config->getFormType(), $resource, $options);
     }
 
     /**
@@ -295,26 +301,47 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     public function editAction(Request $request)
     {
         $context = $this->loadContext($request);
+
         $resourceName = $this->config->getResourceName();
         $resource = $context->getResource($resourceName);
 
         $this->isGranted('EDIT', $resource);
 
-        $form = $this->createEditResourceForm($context);
+        $isXhr = $request->isXmlHttpRequest();
+        $form = $this->createEditResourceForm($context, !$isXhr);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
             // TODO use ResourceManager
             $event = $this->getOperator()->update($resource);
-
-            $event->toFlashes($this->getFlashBag());
+            if (!$isXhr) {
+                $event->toFlashes($this->getFlashBag());
+            }
 
             if (!$event->hasErrors()) {
+                if ($isXhr) {
+                    $modal = $this->createModal('edit');
+                    $modal->setContent(array(
+                        'id' => $resource->getId(),
+                        'name' => (string) $resource,
+                    ));
+                    return $this->get('ekyna_core.modal')->render($modal);
+                }
+
                 if (null === $redirectPath = $form->get('_redirect')->getData()) {
                     $redirectPath = $this->generateUrl($this->config->getRoute('show'), $context->getIdentifiers(true));
                 }
                 return $this->redirect($redirectPath);
             }
+        }
+
+        if ($isXhr) {
+            $modal = $this->createModal('edit');
+            $modal
+                ->setContent($form->createView())
+                ->setVars($context->getTemplateVars())
+            ;
+            return $this->get('ekyna_core.modal')->render($modal);
         }
 
         $this->appendBreadcrumb(
@@ -334,31 +361,43 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * Creates the edit resource form.
      *
      * @param Context $context
+     * @param bool    $footer
      * @return \Symfony\Component\Form\Form
      */
-    protected function createEditResourceForm(Context $context)
+    protected function createEditResourceForm(Context $context, $footer = true)
     {
-        if ($this->hasParent()) {
-            $cancelPath = $this->generateUrl(
-                $this->getParent()->getConfiguration()->getRoute('show'),
-                $context->getIdentifiers()
-            );
-        } else {
-            $cancelPath = $this->generateUrl(
-                $this->config->getRoute('show'),
+        $resource = $context->getResource();
+        $options = array(
+            'action' => $this->generateUrl(
+                $this->config->getRoute('edit'),
                 $context->getIdentifiers(true)
+            ),
+            'attr' => array(
+                'class' => 'form-horizontal form-with-tabs',
+            ),
+            'method' => 'POST',
+            'admin_mode' => true,
+            '_redirect_enabled' => true,
+        );
+
+        if ($footer) {
+            if ($this->hasParent()) {
+                $cancelPath = $this->generateUrl(
+                    $this->getParent()->getConfiguration()->getRoute('show'),
+                    $context->getIdentifiers()
+                );
+            } else {
+                $cancelPath = $this->generateUrl(
+                    $this->config->getRoute('show'),
+                    $context->getIdentifiers(true)
+                );
+            }
+            $options['_footer'] = array(
+                'cancel_path' => $cancelPath,
             );
         }
 
-        $resource = $context->getResource();
-
-        return $this->createForm($this->config->getFormType(), $resource, array(
-            'admin_mode' => true,
-            '_redirect_enabled' => true,
-            '_footer' => array(
-                'cancel_path' => $cancelPath,
-            ),
-        ));
+        return $this->createForm($this->config->getFormType(), $resource, $options);
     }
 
     /**
@@ -373,16 +412,24 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $this->isGranted('DELETE', $resource);
 
-        $form = $this->createRemoveResourceForm($context);
+        $isXhr = $request->isXmlHttpRequest();
+        $form = $this->createRemoveResourceForm($context, null, !$isXhr);
 
         $form->handleRequest($request);
         if ($form->isValid()) {
             // TODO use ResourceManager
             $event = $this->getOperator()->delete($resource);
-
-            $event->toFlashes($this->getFlashBag());
+            if (!$isXhr) {
+                $event->toFlashes($this->getFlashBag());
+            }
 
             if (!$event->hasErrors()) {
+                if ($isXhr) {
+                    $modal = $this->createModal('remove');
+                    $modal->setContent(array('success' => true));
+                    return $this->get('ekyna_core.modal')->render($modal);
+                }
+
                 if (null !== $redirectPath = $form->get('_redirect')->getData()) {
                     return $this->redirect($redirectPath);
                 }
@@ -400,6 +447,15 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     )
                 );
             }
+        }
+
+        if ($isXhr) {
+            $modal = $this->createModal('remove');
+            $modal
+                ->setContent($form->createView())
+                ->setVars($context->getTemplateVars())
+            ;
+            return $this->get('ekyna_core.modal')->render($modal);
         }
 
         $this->appendBreadcrumb(
@@ -420,31 +476,41 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @param Context $context
      * @param string $message
-     *
+     * @param bool $footer
      * @return \Symfony\Component\Form\Form
      */
-    protected function createRemoveResourceForm(Context $context, $message = null)
+    protected function createRemoveResourceForm(Context $context, $message = null, $footer = true)
     {
         if (null === $message) {
-            $message = 'Confirmer la suppression ?';
+            $message = 'ekyna_core.message.remove_confirm';
         }
 
-        if ($this->hasParent()) {
-            $cancelPath = $this->generateUrl(
-                $this->getParent()->getConfiguration()->getRoute('show'),
-                $context->getIdentifiers()
-            );
-        } else {
-            $cancelPath = $this->generateUrl(
-                $this->config->getRoute('show'),
+        $options = array(
+            'action' => $this->generateUrl(
+                $this->config->getRoute('remove'),
                 $context->getIdentifiers(true)
-            );
-        }
-
-        $builder = $this->createFormBuilder(null, array(
+            ),
+            'attr' => array(
+                'class' => 'form-horizontal form-with-tabs',
+            ),
+            'method' => 'POST',
             'admin_mode' => true,
             '_redirect_enabled' => true,
-            '_footer' => array(
+        );
+
+        if ($footer) {
+            if ($this->hasParent()) {
+                $cancelPath = $this->generateUrl(
+                    $this->getParent()->getConfiguration()->getRoute('show'),
+                    $context->getIdentifiers()
+                );
+            } else {
+                $cancelPath = $this->generateUrl(
+                    $this->config->getRoute('show'),
+                    $context->getIdentifiers(true)
+                );
+            }
+            $options['_footer'] = array(
                 'cancel_path' => $cancelPath,
                 'buttons' => array(
                     'submit' => array(
@@ -453,8 +519,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         'label' => 'ekyna_core.button.remove',
                     )
                 )
-            ),
-        ));
+            );
+        }
+
+        $builder = $this->createFormBuilder(null, $options);
 
         return $builder
             ->add('confirm', 'checkbox', array(
@@ -754,5 +822,48 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         return $resource;
+    }
+
+    /**
+     * Creates a modal object.
+     *
+     * @param string $action
+     * @return Modal
+     */
+    protected function createModal($action)
+    {
+        $modal = new Modal(sprintf('%s.header.%s', $this->config->getId(), $action));
+
+        $buttons = [];
+
+        if (in_array($action, array('new', 'edit', 'remove'))) {
+            $submitButton = array(
+                'id'       => 'submit',
+                'label'    => 'ekyna_core.button.save',
+                'icon'     => 'glyphicon glyphicon-ok',
+                'cssClass' => 'btn-success',
+                'autospin' => true,
+            );
+            if ($action === 'edit') {
+                $submitButton['icon'] = 'glyphicon glyphicon-ok';
+                $submitButton['cssClass'] = 'btn-warning';
+            } elseif ($action === 'remove') {
+                $submitButton['label'] = 'ekyna_core.button.remove';
+                $submitButton['icon'] = 'glyphicon glyphicon-trash';
+                $submitButton['cssClass'] = 'btn-danger';
+            }
+            $buttons[] = $submitButton;
+        }
+
+        $buttons[] = array(
+            'id' => 'close',
+            'label' => 'ekyna_core.button.cancel',
+            'icon' => 'glyphicon glyphicon-remove',
+            'cssClass' => 'btn-default',
+        );
+
+        $modal->setButtons($buttons);
+
+        return $modal;
     }
 }

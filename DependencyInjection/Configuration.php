@@ -26,6 +26,11 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('output_dir')->defaultValue('')->end()
                 ->append($this->getResourcesSection())
                 ->append($this->getMenusSection())
+                ->arrayNode('css_inputs')
+                    ->prototype('scalar')
+                    ->treatNullLike(array())
+                    ->defaultValue(array())
+                ->end()
             ->end()
         ;
 
