@@ -41,7 +41,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
     });*/
 
     // sidebar menu dropdown toggle
-    $("#dashboard-menu .dropdown-toggle").click(function(e) {
+    $('#dashboard-menu').on('click', '.dropdown-toggle', function(e) {
         e.preventDefault();
         var $item = $(this).parent();
         $item.toggleClass("active");
@@ -133,6 +133,26 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         $(this).tab('show');
     });
 
+    // Forms
+    var $forms = $('.form-body');
+    if ($forms.size() > 0) {
+        require(['ekyna-form'], function(Form) {
+            $forms.each(function(i, f) {
+                Form.create(f);
+            });
+        });
+    }
+
+    // Tables
+    var $tables = $('.ekyna-table');
+    if ($tables.size() > 0) {
+        require(['ekyna-table'], function(Table) {
+            $tables.each(function(i, t) {
+                Table.create(t);
+            });
+        });
+    }
+
     /* Helpers */
     var $helperContent = $('#helper-content:visible');
     var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');
@@ -166,23 +186,10 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         var defaultReference = $helperContent.data('helper') || null;
         loadHelper(defaultReference);
 
-        // Forms
-        var $forms = $('.form-body');
-        if ($forms.size() > 0) {
-            require(['ekyna-form'], function(Form) {
-                Form.init($forms);
-            });
-
-            $forms.on('focus', '*[data-helper]', function(e) {
-                loadHelper($(this).data('helper'));
-            }).on('blur', '*[data-helper]', function(e) {
-                loadHelper(defaultReference);
-            });
-        }
-
-        var $tables = $('.ekyna-table');
-        if ($tables.size() > 0) {
-            $tables.ekynaTable();
-        }
+        $forms.on('focus', '*[data-helper]', function() {
+            loadHelper($(this).data('helper'));
+        }).on('blur', '*[data-helper]', function() {
+            loadHelper(defaultReference);
+        });
     }
 });

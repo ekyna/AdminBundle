@@ -51,9 +51,6 @@ class AsseticConfiguration
             '@EkynaAdminBundle/Resources/asset/css/elements.css',
             '@EkynaAdminBundle/Resources/asset/css/ui-elements.css',
             '@EkynaAdminBundle/Resources/asset/css/show.css',
-
-            // TODO prepend in TableBundle
-            '@EkynaTableBundle/Resources/public/css/table.css',
         ), $config['css_inputs']);
 
         return array(
