@@ -126,7 +126,7 @@ class EkynaAdminExtension extends Extension
      */
     private function configureAsseticBundle(ContainerBuilder $container, array $config)
     {
-        $asseticConfig = new AsseticConfiguration;
+        $asseticConfig = new AsseticConfiguration();
         $container->prependExtensionConfig('assetic', array(
             'bundles' => array('EkynaAdminBundle'),
             'assets' => $asseticConfig->build($config),

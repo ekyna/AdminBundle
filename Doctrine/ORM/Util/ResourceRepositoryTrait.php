@@ -3,11 +3,17 @@
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util;
 
 use Doctrine\ORM\QueryBuilder;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * Trait ResourceRepositoryTrait
  * @package Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util
  * @author Étienne Dauvergne <contact@ekyna.com>
+ *
+ * @method string getClassName()
+ * @method QueryBuilder createQueryBuilder()
  */
 trait ResourceRepositoryTrait
 {
@@ -43,7 +49,7 @@ trait ResourceRepositoryTrait
     public function findAll()
     {
         return $this
-            ->getQueryBuilder()
+            ->getCollectionQueryBuilder()
             ->getQuery()
             ->getResult()
         ;
@@ -67,19 +73,19 @@ trait ResourceRepositoryTrait
     }
 
     /**
-     * @param array   $criteria
-     * @param array   $orderBy
-     * @param integer $limit
-     * @param integer $offset
+     * @param array $criteria
+     * @param array $sorting
+     * @param int   $limit
+     * @param int   $offset
      *
      * @return array
      */
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    public function findBy(array $criteria, array $sorting = array(), $limit = null, $offset = null)
     {
-        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder = $this->getCollectionQueryBuilder();
 
         $this->applyCriteria($queryBuilder, $criteria);
-        $this->applySorting($queryBuilder, $orderBy);
+        $this->applySorting($queryBuilder, $sorting);
 
         if (null !== $limit) {
             $queryBuilder->setMaxResults($limit);
@@ -96,6 +102,39 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function createPager(array $criteria = array(), array $sorting = array())
+    {
+        $queryBuilder = $this->getCollectionQueryBuilder();
+
+        $this->applyCriteria($queryBuilder, $criteria);
+        $this->applySorting($queryBuilder, $sorting);
+
+        return $this->getPager($queryBuilder);
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     *
+     * @return Pagerfanta
+     */
+    public function getPager(QueryBuilder $queryBuilder)
+    {
+        return new Pagerfanta(new DoctrineORMAdapter($queryBuilder, true, false));
+    }
+
+    /**
+     * @param array $objects
+     *
+     * @return Pagerfanta
+     */
+    public function getArrayPager($objects)
+    {
+        return new Pagerfanta(new ArrayAdapter($objects));
+    }
+
+    /**
      * Returns the query builder.
      *
      * @return QueryBuilder
@@ -106,29 +145,30 @@ trait ResourceRepositoryTrait
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     *
-     * @param array $criteria
+     * @return QueryBuilder
      */
-    protected function applyCriteria(QueryBuilder $queryBuilder, array $criteria = null)
+    protected function getCollectionQueryBuilder()
     {
-        if (null === $criteria) {
-            return;
-        }
+        return $this->createQueryBuilder($this->getAlias());
+    }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param array        $criteria
+     */
+    protected function applyCriteria(QueryBuilder $queryBuilder, array $criteria = array())
+    {
         foreach ($criteria as $property => $value) {
+            $name = $this->getPropertyName($property);
             if (null === $value) {
-                $queryBuilder
-                    ->andWhere($queryBuilder->expr()->isNull($this->getPropertyName($property)));
+                $queryBuilder->andWhere($queryBuilder->expr()->isNull($name));
             } elseif (is_array($value)) {
-                $queryBuilder->andWhere($queryBuilder->expr()->in($this->getPropertyName($property), $value));
+                $queryBuilder->andWhere($queryBuilder->expr()->in($name, $value));
             } elseif ('' !== $value) {
+                $parameter = str_replace('.', '_', $property);
                 $queryBuilder
-                    ->andWhere($queryBuilder->expr()->eq(
-                        $this->getPropertyName($property),
-                        ':' . $key = str_replace('.', '_', $property))
-                    )
-                    ->setParameter($key, $value)
+                    ->andWhere($queryBuilder->expr()->eq($name, ':'.$parameter))
+                    ->setParameter($parameter, $value)
                 ;
             }
         }
@@ -136,15 +176,10 @@ trait ResourceRepositoryTrait
 
     /**
      * @param QueryBuilder $queryBuilder
-     *
-     * @param array $sorting
+     * @param array        $sorting
      */
-    protected function applySorting(QueryBuilder $queryBuilder, array $sorting = null)
+    protected function applySorting(QueryBuilder $queryBuilder, array $sorting = array())
     {
-        if (null === $sorting) {
-            return;
-        }
-
         foreach ($sorting as $property => $order) {
             if (!empty($order)) {
                 $queryBuilder->addOrderBy($this->getPropertyName($property), $order);
@@ -162,7 +197,6 @@ trait ResourceRepositoryTrait
         if (false === strpos($name, '.')) {
             return $this->getAlias().'.'.$name;
         }
-
         return $name;
     }
 

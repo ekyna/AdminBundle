@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM;
 
+use Doctrine\ORM\EntityRepository;
 use Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util\TranslatableResourceRepositoryTrait;
 
 /**
@@ -9,7 +10,7 @@ use Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util\TranslatableResourceRepositoryTra
  * @package Ekyna\Bundle\AdminBundle\Doctrine\ORM
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class TranslatableResourceRepository extends ResourceRepository implements TranslatableResourceRepositoryInterface
+class TranslatableResourceRepository extends EntityRepository implements TranslatableResourceRepositoryInterface
 {
     use TranslatableResourceRepositoryTrait;
 }

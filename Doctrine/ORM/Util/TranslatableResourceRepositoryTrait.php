@@ -12,6 +12,13 @@ use Ekyna\Bundle\AdminBundle\Model\TranslatableInterface;
  */
 trait TranslatableResourceRepositoryTrait
 {
+    use ResourceRepositoryTrait {
+        createNew as traitCreateNew;
+        getQueryBuilder as traitGetQueryBuilder;
+        getCollectionQueryBuilder as traitGetCollectionQueryBuilder;
+        getPropertyName as traitGetPropertyName;
+    }
+
     /**
      * @var LocaleProviderInterface
      */
@@ -22,12 +29,13 @@ trait TranslatableResourceRepositoryTrait
      */
     protected $translatableFields = array();
 
+
     /**
      * {@inheritdoc}
      */
-    /*protected function getQueryBuilder()
+    protected function getQueryBuilder()
     {
-        $queryBuilder = parent::getQueryBuilder();
+        $queryBuilder = $this->traitGetQueryBuilder();
 
         $queryBuilder
             ->addSelect('translation')
@@ -35,14 +43,14 @@ trait TranslatableResourceRepositoryTrait
         ;
 
         return $queryBuilder;
-    }*/
+    }
 
     /**
      * {@inheritdoc}
      */
-    /*protected function getCollectionQueryBuilder()
+    protected function getCollectionQueryBuilder()
     {
-        $queryBuilder = parent::getCollectionQueryBuilder();
+        $queryBuilder = $this->traitGetCollectionQueryBuilder();
 
         $queryBuilder
             ->addSelect('translation')
@@ -50,15 +58,14 @@ trait TranslatableResourceRepositoryTrait
         ;
 
         return $queryBuilder;
-    }*/
+    }
 
     /**
      * {@inheritdoc}
      */
     public function createNew()
     {
-        $class = $this->getClassName();
-        $resource = new $class;
+        $resource = $this->traitCreateNew();
 
         if (!$resource instanceof TranslatableInterface) {
             throw new \InvalidArgumentException('Resource must implement TranslatableInterface.');
@@ -91,42 +98,13 @@ trait TranslatableResourceRepositoryTrait
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     *
-     * @param array $criteria
+     * {@inheritdoc}
      */
-    /*protected function applyCriteria(QueryBuilder $queryBuilder, array $criteria = null)
+    protected function getPropertyName($name)
     {
-        if (null === $criteria) {
-            return;
+        if (in_array($name, $this->translatableFields)) {
+            return 'translation.'.$name;
         }
-
-        foreach ($criteria as $property => $value) {
-            if (in_array($property, $this->translatableFields)) {
-                $property = 'translation.'.$property;
-                if (null === $value) {
-                    $queryBuilder
-                        ->andWhere($queryBuilder->expr()->isNull($property));
-                } elseif (is_array($value)) {
-                    $queryBuilder->andWhere($queryBuilder->expr()->in($property, $value));
-                } elseif ('' !== $value) {
-                    $parameter = str_replace('.', '_', $property);
-                    $queryBuilder
-                        ->andWhere($queryBuilder->expr()->eq($property, ':'.$parameter))
-                        ->setParameter($parameter, $value);
-                }
-            } else {
-                if (null === $value) {
-                    $queryBuilder
-                        ->andWhere($queryBuilder->expr()->isNull($this->getPropertyName($property)));
-                } elseif (is_array($value)) {
-                    $queryBuilder->andWhere($queryBuilder->expr()->in($this->getPropertyName($property), $value));
-                } elseif ('' !== $value) {
-                    $queryBuilder
-                        ->andWhere($queryBuilder->expr()->eq($this->getPropertyName($property), ':'.$property))
-                        ->setParameter($property, $value);
-                }
-            }
-        }
-    }*/
+        return $this->traitGetPropertyName($name);
+    }
 }
