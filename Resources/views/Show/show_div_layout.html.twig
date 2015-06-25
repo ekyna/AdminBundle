@@ -139,18 +139,17 @@
 {% endspaceless %}
 {% endblock render_image%}
 
-{% block show_widget_uploadable %}
+{% block show_widget_upload %}
 {% spaceless %}
     <div class="show-widget show-widget-simple">
-    {#{% if file is sameas(null) %}
+    {% if upload is sameas(null) %}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
-	    <a href="{{ path('ekyna_media_file', {'key': file.path}) }}">{{ file.guessFilename }}</a>
-    {% endif %}#}
-        <em>Not yet implemented.</em>
+	    <a href="{{ path('ekyna_core_download', {'key': upload.path}) }}" class="show-entity" target="_blank">{{ upload.guessFilename }}</a>
+    {% endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_uploadable %}
+{% endblock show_widget_upload %}
 
 {% block show_widget_media %}
 {% spaceless %}

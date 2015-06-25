@@ -86,7 +86,7 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderColorWidget($content, $options);
         } elseif ($type == 'tinymce') {
             $content = $this->renderTinymceWidget($content, $options);
-        } elseif ($type == 'uploadable') {
+        } elseif ($type == 'upload') {
             $content = $this->renderUploadWidget($content, $options);
         } elseif ($type == 'media') {
             $content = $this->renderMediaWidget($content, $options);
@@ -327,15 +327,15 @@ class ShowExtension extends \Twig_Extension
     /**
      * Renders the uploadable widget.
      *
-     * @param UploadableInterface $uploadable
+     * @param UploadableInterface $upload
      * @param array $options
      *
      * @return string
      */
-    protected function renderUploadWidget(UploadableInterface $uploadable = null, array $options = array())
+    protected function renderUploadWidget(UploadableInterface $upload = null, array $options = array())
     {
-        return $this->renderBlock('show_widget_uploadable', array(
-            'uploadable' => $uploadable
+        return $this->renderBlock('show_widget_upload', array(
+            'upload' => $upload
         ));
     }
 
