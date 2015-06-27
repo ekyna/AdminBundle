@@ -46,7 +46,8 @@ class AsseticConfiguration
             '@fontawesome_css',
             '@form_css',
 
-            '@EkynaAdminBundle/Resources/asset/css/bootstrap-overrides.css',
+            '@EkynaAdminBundle/Resources/asset/css/bootstrap.overrides.css',
+            '@EkynaAdminBundle/Resources/asset/css/jquery-ui.overrides.css',
             '@EkynaAdminBundle/Resources/asset/css/layout.css',
             '@EkynaAdminBundle/Resources/asset/css/elements.css',
             '@EkynaAdminBundle/Resources/asset/css/ui-elements.css',
