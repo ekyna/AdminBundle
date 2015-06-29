@@ -379,6 +379,10 @@ class ShowExtension extends \Twig_Extension
      */
     protected function renderMediasWidget(Collection $medias, array $options = array())
     {
+        $medias = array_map(function($m) {
+            return $m->getMedia();
+        }, $medias->toArray());
+
         return $this->renderBlock('show_widget_medias', array(
             'medias' => $medias
         ));
