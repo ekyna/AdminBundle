@@ -102,6 +102,52 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * @param array $criteria
+     *
+     * @return null|object
+     */
+    public function findRandomOneBy(array $criteria)
+    {
+        $queryBuilder = $this->getQueryBuilder();
+
+        $this->applyCriteria($queryBuilder, $criteria);
+
+        return $queryBuilder
+            ->addSelect('RAND() as HIDDEN rand')
+            ->orderBy('rand')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    /**
+     * @param array $criteria
+     * @param int   $limit
+     *
+     * @return array
+     */
+    public function findRandomBy(array $criteria, $limit)
+    {
+        $limit = intval($limit);
+        if ($limit <= 1) {
+            throw new \InvalidArgumentException('Please use `findRandomOneBy()` for single result.');
+        }
+
+        $queryBuilder = $this->getCollectionQueryBuilder();
+
+        $this->applyCriteria($queryBuilder, $criteria);
+
+        return $queryBuilder
+            ->addSelect('RAND() as HIDDEN rand')
+            ->orderBy('rand')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function createPager(array $criteria = array(), array $sorting = array())
