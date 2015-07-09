@@ -57,6 +57,7 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('entity')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('controller')->end()
                         ->scalarNode('repository')->end()
+                        ->scalarNode('operator')->end()
                         ->scalarNode('form')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('table')->isRequired()->cannotBeEmpty()->end()
                         ->scalarNode('parent')->end()
