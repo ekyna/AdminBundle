@@ -13,6 +13,9 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class EkynaAdminBundle extends Bundle
 {
+    /**
+     * {@inheritdoc}
+     */
     public function build(ContainerBuilder $container)
     {
         parent::build($container);
