@@ -12,8 +12,8 @@
 {% endblock actions %}
 
 {% block main %}
-<form action="{{ path(route_prefix ~ '_edit', {(resource_name ~ 'Id'): resource.id}) }}" {{ form_enctype(form) }} method="post" class="form-horizontal form-with-tabs">
+{{ form_start(form) }}
     {% include form_template %}
     {{ ui_form_footer(form) }}
-</form>
+{{ form_end(form) }}
 {% endblock main %}
