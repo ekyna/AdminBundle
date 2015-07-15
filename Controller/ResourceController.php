@@ -491,7 +491,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 $context->getIdentifiers(true)
             ),
             'attr' => array(
-                'class' => 'form-horizontal form-with-tabs',
+                'class' => 'form-horizontal',
             ),
             'method' => 'POST',
             'admin_mode' => true,
