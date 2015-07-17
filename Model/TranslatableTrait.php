@@ -80,6 +80,7 @@ trait TranslatableTrait
         }
 
         $this->currentTranslation = $translation;
+        $this->currentLocale      = $locale;
 
         return $translation;
     }
@@ -114,9 +115,9 @@ trait TranslatableTrait
      * @param string $locale
      * @return TranslatableInterface|$this
      */
-    public function setFallbackLocale($fallbackLocale)
+    public function setFallbackLocale($locale)
     {
-        $this->fallbackLocale = $fallbackLocale;
+        $this->fallbackLocale = $locale;
 
         return $this;
     }

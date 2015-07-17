@@ -186,10 +186,8 @@ textarea::-webkit-input-placeholder {
 
 .input-group .input-group-addon {
     background-color: #f2f5f9;
-    border: 1px solid #ccc;
-    border-left: 0;
-    padding: 4px 8px;
-    font-size: 13px;
+    padding-left: 7px;
+    padding-right: 7px;
 }
 
 /* NAVBAR */
