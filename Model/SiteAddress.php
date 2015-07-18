@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Model;
 
-use Ekyna\Bundle\CoreBundle\Model\AbstractAddress;
+use Ekyna\Bundle\CoreBundle\Entity\AbstractAddress;
 
 /**
  * Class SiteAddress
