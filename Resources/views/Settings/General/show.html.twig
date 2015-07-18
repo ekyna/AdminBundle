@@ -2,21 +2,30 @@
 {{ show_row(settings.general.admin_name, 'text', 'ekyna_admin.settings.general.admin_name', {'label_nb_col': 3}) }}
 {{ show_row(settings.general.admin_email, 'text', 'ekyna_admin.settings.general.admin_email', {'label_nb_col': 3}) }}
 <hr>
-{{ show_row(settings.general.site_address.street, 'text', 'ekyna_core.field.street', {'label_nb_col': 3}) }}
-{{ show_row(settings.general.site_address.supplement, 'text', 'ekyna_core.field.supplement', {'label_nb_col': 3}) }}
+{% set site_address = settings.general.site_address %}
+{{ show_row(site_address.street, 'text', 'ekyna_core.field.street', {'label_nb_col': 3}) }}
+{{ show_row(site_address.supplement, 'text', 'ekyna_core.field.supplement', {'label_nb_col': 3}) }}
 <div class="row">
     <div class="col-md-6">
-        {{ show_row(settings.general.site_address.postalCode, 'text', 'ekyna_core.field.postal_code', {'label_nb_col': 6}) }}
+        {{ show_row(site_address.postalCode, 'text', 'ekyna_core.field.postal_code', {'label_nb_col': 6}) }}
     </div>
     <div class="col-md-6">
-        {{ show_row(settings.general.site_address.city, 'text', 'ekyna_core.field.city', {'label_nb_col': 6}) }}
+        {{ show_row(site_address.city, 'text', 'ekyna_core.field.city', {'label_nb_col': 6}) }}
     </div>
 </div>
 <div class="row">
     <div class="col-md-6">
-        {{ show_row(settings.general.site_address.phone, 'text', 'ekyna_core.field.phone', {'label_nb_col': 6}) }}
+        {{ show_row(site_address.country|country, 'text', 'ekyna_core.field.country', {'label_nb_col': 6}) }}
     </div>
     <div class="col-md-6">
-        {{ show_row(settings.general.site_address.mobile, 'text', 'ekyna_core.field.mobile', {'label_nb_col': 6}) }}
+        {{ show_row(site_address.state, 'text', 'ekyna_core.field.state', {'label_nb_col': 6}) }}
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        {{ show_row(site_address.phone, 'text', 'ekyna_core.field.phone', {'label_nb_col': 6}) }}
+    </div>
+    <div class="col-md-6">
+        {{ show_row(site_address.mobile, 'text', 'ekyna_core.field.mobile', {'label_nb_col': 6}) }}
     </div>
 </div>

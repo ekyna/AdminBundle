@@ -27,5 +27,15 @@
                 <option name="max">64</option>
             </constraint>
         </property>
+        <property name="country">
+            <constraint name="NotBlank" />
+            <constraint name="Country" />
+        </property>
+        <property name="state">
+            <constraint name="Length">
+                <option name="min">3</option>
+                <option name="max">64</option>
+            </constraint>
+        </property>
     </class>
 </constraint-mapping>
