@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
-use Ekyna\Bundle\CoreBundle\Form\Type\AbstractAddressType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
@@ -11,15 +11,13 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  * @package Ekyna\Bundle\AdminBundle\Form\Type
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class SiteAddressType extends AbstractAddressType
+class SiteAddressType extends AbstractType
 {
     /**
      * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildForm($builder, $options);
-    
         $builder
             ->add('phone', 'text', array(
                 'label' => 'ekyna_core.field.phone',
@@ -43,6 +41,14 @@ class SiteAddressType extends AbstractAddressType
 	       ))
 	    ;
 	}
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getParent()
+    {
+        return 'ekyna_address';
+    }
 
     /**
      * {@inheritDoc}
