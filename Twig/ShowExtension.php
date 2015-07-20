@@ -6,8 +6,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Ekyna\Bundle\CmsBundle\Model\SeoInterface;
 use Ekyna\Bundle\CoreBundle\Model\UploadableInterface;
-use Ekyna\Bundle\MediaBundle\Model\GalleryInterface;
 use Ekyna\Bundle\MediaBundle\Model\MediaInterface;
+use Ivory\GoogleMap\Base\Coordinate;
+use Ivory\GoogleMap\Map;
+use Ivory\GoogleMap\Overlays\Marker;
 
 /**
  * Class ShowExtension
@@ -90,14 +92,14 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderUploadWidget($content, $options);
         } elseif ($type == 'media') {
             $content = $this->renderMediaWidget($content, $options);
-        } elseif ($type == 'gallery') {
-            $content = $this->renderGalleryWidget($content, $options);
         } elseif ($type == 'medias') {
             $content = $this->renderMediasWidget($content, $options);
         } elseif ($type == 'seo') {
             $content = $this->renderSeoWidget($content, $options);
         } elseif ($type == 'key_value_collection') {
             $content = $this->renderKeyValueCollectionWidget($content, $options);
+        } elseif ($type == 'coordinate') {
+            $content = $this->renderCoordinateWidget($content, $options);
         } else {
             $content = $this->renderSimpleWidget($content, $options);
         }
@@ -122,7 +124,7 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderCheckboxWidget($content)
+    protected function renderCheckboxWidget($content, array $options = array())
     {
         return $this->renderBlock('show_widget_checkbox', array(
             'content' => $content
@@ -156,7 +158,7 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderTextareaWidget($content)
+    protected function renderTextareaWidget($content, array $options = array())
     {
         return $this->renderBlock('show_widget_textarea', array(
             'content' => $content
@@ -355,21 +357,6 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Renders the cms gallery widget.
-     *
-     * @param GalleryInterface $gallery
-     * @param array $options
-     *
-     * @return string
-     */
-    protected function renderGalleryWidget(GalleryInterface $gallery = null, array $options = array())
-    {
-        return $this->renderBlock('show_widget_medias', array(
-            'medias' => null !== $gallery ? $gallery->getMedias() : [],
-        ));
-    }
-
-    /**
      * Renders the medias widget.
      *
      * @param Collection $medias
@@ -415,6 +402,40 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_key_value_collection', array(
             'content' => $content
+        ));
+    }
+
+    /**
+     * Renders the coordinate widget.
+     *
+     * @param Coordinate $coordinate
+     * @param array $options
+     *
+     * @return string
+     */
+    protected function renderCoordinateWidget(Coordinate $coordinate = null, array $options = array())
+    {
+        $map = new Map();
+        $map->setAutoZoom(true);
+        $map->setMapOptions(array(
+            'minZoom' => 3,
+            'maxZoom' => 18,
+            'disableDefaultUI' => true,
+        ));
+        $map->setStylesheetOptions(array(
+            'width' => '100%',
+            'height' => '320px',
+        ));
+
+        /** @var \Ivory\GoogleMap\Base\Coordinate $coordinate */
+        if (null !== $coordinate && null !== $coordinate->getLatitude() && null !== $coordinate->getLongitude()) {
+            $marker = new Marker();
+            $marker->setPosition($coordinate);
+            $map->addMarker($marker);
+        }
+
+        return $this->renderBlock('show_widget_coordinate', array(
+            'map' => $map
         ));
     }
 

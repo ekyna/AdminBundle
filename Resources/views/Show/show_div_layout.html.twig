@@ -207,3 +207,15 @@
     </div>
 {% endspaceless %}
 {% endblock show_widget_key_value_collection %}
+
+{% block show_widget_coordinate %}
+{% spaceless %}
+    <div class="show-widget show-widget-block">
+    {% if map is empty %}
+        <em>{{ 'ekyna_core.value.none'|trans }}</em>
+    {% else %}
+        {{ google_map(map) }}
+    {% endif %}
+    </div>
+{% endspaceless %}
+{% endblock show_widget_coordinate %}
