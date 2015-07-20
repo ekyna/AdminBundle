@@ -13,7 +13,7 @@ use Pagerfanta\Pagerfanta;
  * @author Étienne Dauvergne <contact@ekyna.com>
  *
  * @method string getClassName()
- * @method QueryBuilder createQueryBuilder()
+ * @method QueryBuilder createQueryBuilder($alias)
  */
 trait ResourceRepositoryTrait
 {

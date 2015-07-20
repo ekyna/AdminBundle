@@ -3,7 +3,6 @@
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM;
 
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
 use Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util\ResourceRepositoryTrait;
 
 /**
