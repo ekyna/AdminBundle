@@ -36,7 +36,7 @@ class NotificationSettingsSchema extends AbstractSchema
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options = array())
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('from_name', 'text', array(

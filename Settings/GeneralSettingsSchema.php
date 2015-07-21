@@ -40,7 +40,7 @@ class GeneralSettingsSchema extends AbstractSchema
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilderInterface $builder, array $options = array())
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->add('site_name', 'text', array(
