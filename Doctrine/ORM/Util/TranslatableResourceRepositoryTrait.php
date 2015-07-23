@@ -2,6 +2,8 @@
 
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util;
 
+use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Ekyna\Bundle\CoreBundle\Locale\LocaleProviderInterface;
 use Ekyna\Bundle\AdminBundle\Model\TranslatableInterface;
 
@@ -106,5 +108,14 @@ trait TranslatableResourceRepositoryTrait
             return 'translation.'.$name;
         }
         return $this->traitGetPropertyName($name);
+    }
+
+    /**
+     * @param Query $query
+     * @return array
+     */
+    protected function collectionResult(Query $query)
+    {
+        return new Paginator($query, true);
     }
 }

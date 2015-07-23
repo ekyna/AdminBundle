@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util;
 
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
@@ -48,11 +49,10 @@ trait ResourceRepositoryTrait
      */
     public function findAll()
     {
-        return $this
+        return $this->collectionResult($this
             ->getCollectionQueryBuilder()
             ->getQuery()
-            ->getResult()
-        ;
+        );
     }
 
     /**
@@ -95,10 +95,13 @@ trait ResourceRepositoryTrait
             $queryBuilder->setFirstResult($offset);
         }
 
-        return $queryBuilder
-            ->getQuery()
-            ->getResult()
-        ;
+        $query = $queryBuilder->getQuery();
+
+        if ($limit == 1) {
+            return $query->getResult();
+        }
+
+        return $this->collectionResult($query);
     }
 
     /**
@@ -138,13 +141,14 @@ trait ResourceRepositoryTrait
 
         $this->applyCriteria($queryBuilder, $criteria);
 
-        return $queryBuilder
+        $query = $queryBuilder
             ->addSelect('RAND() as HIDDEN rand')
             ->orderBy('rand')
             ->setMaxResults($limit)
             ->getQuery()
-            ->getResult()
         ;
+
+        return $this->collectionResult($query);
     }
 
     /**
@@ -244,6 +248,15 @@ trait ResourceRepositoryTrait
             return $this->getAlias().'.'.$name;
         }
         return $name;
+    }
+
+    /**
+     * @param Query $query
+     * @return array
+     */
+    protected function collectionResult(Query $query)
+    {
+        return $query->getResult();
     }
 
     /**
