@@ -49,10 +49,11 @@ trait ResourceRepositoryTrait
      */
     public function findAll()
     {
-        return $this->collectionResult($this
+        return $this
             ->getCollectionQueryBuilder()
             ->getQuery()
-        );
+            ->getResult()
+        ;
     }
 
     /**
@@ -97,11 +98,11 @@ trait ResourceRepositoryTrait
 
         $query = $queryBuilder->getQuery();
 
-        if ($limit == 1) {
-            return $query->getResult();
+        if (null !== $limit) {
+            return $this->collectionResult($query);
         }
 
-        return $this->collectionResult($query);
+        return $query->getResult();
     }
 
     /**

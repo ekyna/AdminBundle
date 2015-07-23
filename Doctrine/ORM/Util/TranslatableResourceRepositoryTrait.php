@@ -116,6 +116,7 @@ trait TranslatableResourceRepositoryTrait
      */
     protected function collectionResult(Query $query)
     {
+        //return $query->getResult();
         return new Paginator($query, true);
     }
 }
