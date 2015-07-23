@@ -160,8 +160,9 @@ class ResourceHelper
      * @param string $routeName
      * @return null|\Symfony\Component\Routing\Route
      */
-    private function findRoute($routeName)
+    public function findRoute($routeName)
     {
+        // TODO create a route finder ? (same in CmsBundle MenuBuilder)
         $i18nRouterClass = 'JMS\I18nRoutingBundle\Router\I18nRouterInterface';
         if (interface_exists($i18nRouterClass) && $this->router instanceof $i18nRouterClass) {
             $route = $this->router->getOriginalRouteCollection()->get($routeName);

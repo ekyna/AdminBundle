@@ -122,8 +122,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param Context $context
      * @return Response|null
      */
-    protected function buildShowData(array &$data, Context $context)
-    {
+    protected function buildShowData(
+        /** @noinspection PhpUnusedParameterInspection */ array &$data,
+        /** @noinspection PhpUnusedParameterInspection */ Context $context
+    ) {
         return null;
     }
 
@@ -644,8 +646,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 );
             } else {
                 $listRoute = $this->config->getRoute('list');
-                // TODO use ResourceHelper (because of i18n router getOriginalRouteCollection)
-                if (null === $this->getRouter()->getRouteCollection()->get($listRoute)) {
+                if (null === $this->getResourceHelper()->findRoute($listRoute)) {
                     $listRoute = null;
                 }
                 $this->appendBreadcrumb(
