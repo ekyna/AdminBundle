@@ -37,14 +37,18 @@ trait TranslatableResourceRepositoryTrait
      */
     protected function getQueryBuilder()
     {
-        $queryBuilder = $this->traitGetQueryBuilder();
+        $qb = $this->traitGetQueryBuilder();
 
-        $queryBuilder
+        $qb
             ->addSelect('translation')
             ->leftJoin($this->getAlias() . '.translations', 'translation')
+            ->andWhere($qb->expr()->eq(
+                'translation.locale',
+                $qb->expr()->literal($this->localeProvider->getCurrentLocale())
+            ))
         ;
 
-        return $queryBuilder;
+        return $qb;
     }
 
     /**
@@ -52,14 +56,18 @@ trait TranslatableResourceRepositoryTrait
      */
     protected function getCollectionQueryBuilder()
     {
-        $queryBuilder = $this->traitGetCollectionQueryBuilder();
+        $qb = $this->traitGetCollectionQueryBuilder();
 
-        $queryBuilder
+        $qb
             ->addSelect('translation')
             ->leftJoin($this->getAlias() . '.translations', 'translation')
+            ->andWhere($qb->expr()->eq(
+                'translation.locale',
+                $qb->expr()->literal($this->localeProvider->getCurrentLocale())
+            ))
         ;
 
-        return $queryBuilder;
+        return $qb;
     }
 
     /**
