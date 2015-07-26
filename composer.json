@@ -21,6 +21,7 @@
         "php" : ">=5.4.0",
         "ekyna/core-bundle" : "0.3.*@dev",
         "ekyna/user-bundle" : "0.3.*@dev",
+        "ekyna/google-bundle" : "0.3.*@dev",
         "ekyna/setting-bundle" : "0.3.*@dev",
         "ekyna/install-bundle" : "0.3.*@dev"
     },
