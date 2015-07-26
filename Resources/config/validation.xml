@@ -37,5 +37,10 @@
                 <option name="max">64</option>
             </constraint>
         </property>
+        <property name="coordinate">
+            <constraint name="NotNull" />
+            <constraint name="Valid" />
+        </property>
     </class>
+
 </constraint-mapping>

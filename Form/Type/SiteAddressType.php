@@ -27,6 +27,7 @@ class SiteAddressType extends AbstractType
                 'label' => 'ekyna_core.field.mobile',
                 'required' => false
             ))
+            ->add('coordinate', 'ekyna_google_coordinate')
         ;
     }
 

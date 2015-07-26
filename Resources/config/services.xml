@@ -116,6 +116,7 @@
 	        <argument>%ekyna_admin.twig.show_extension.template%</argument>
 	        <tag name="twig.extension" />
 	    </service>
+
     </services>
 
 </container>
