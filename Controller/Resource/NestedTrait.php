@@ -75,30 +75,70 @@ trait NestedTrait
 
         $child = $this->createNewFromParent($context, $resource);
 
-        $form = $this->createForm($this->config->getFormType(), $child, array(
-            'admin_mode' => true,
-            '_redirect_enabled' => true,
-            '_footer' => array(
-                'cancel_path' => $this->generateUrl(
-                    $this->config->getRoute('show'),
+        if (0 < strlen($referer = $request->headers->get('referer'))) {
+            $cancelPath = $referer;
+        } else {
+            $cancelPath = $this->generateResourcePath($request);
+        }
+
+        $form = $this
+            ->createForm($this->config->getFormType(), $child, array(
+                'action' => $this->generateUrl(
+                    $this->config->getRoute('new_child'),
                     $context->getIdentifiers(true)
                 ),
-            ),
-        ));
+                'method' => 'POST',
+                'attr' => array(
+                    'class' => 'form-horizontal form-with-tabs',
+                ),
+                'admin_mode' => true,
+                '_redirect_enabled' => true,
+            ))
+            ->add('actions', 'form_actions', [
+                'buttons' => [
+                    'saveAndList' => [
+                        'type' => 'submit', 'options' => [
+                            'button_class' => 'primary',
+                            'label' => 'ekyna_core.button.save_and_list',
+                            'attr' => [
+                                'icon' => 'list',
+                            ],
+                        ],
+                    ],
+                    'save' => [
+                        'type' => 'submit', 'options' => [
+                            'button_class' => 'primary',
+                            'label' => 'ekyna_core.button.save',
+                            'attr' => [
+                                'icon' => 'ok',
+                            ],
+                        ],
+                    ],
+                    'cancel' => [
+                        'type' => 'button', 'options' => [
+                            'label' => 'ekyna_core.button.cancel',
+                            'button_class' => 'default',
+                            'as_link' => true,
+                            'attr' => [
+                                'class' => 'form-cancel-btn',
+                                'icon' => 'remove',
+                                'href' => $cancelPath,
+                            ],
+                        ],
+                    ],
+                ],
+            ])
+        ;
 
         $form->handleRequest($this->getRequest());
         if ($form->isValid()) {
 
-            $em = $this->getManager();
-            $repo = $this->getRepository();
-            
-            $repo->persistAsLastChildOf($child, $resource);
+            $this->getRepository()->persistAsLastChildOf($child, $resource);
 
             // TODO use ResourceManager
-            //$event = $this->getManager()->create($child);
             $event = $this->getOperator()->create($child);
 
-            /*if ($request->isXmlHttpRequest()) {
+            /* if ($request->isXmlHttpRequest()) {
                 if ($event->hasErrors()) {
                     $errorMessages = $event->getErrors();
                     $errors = [];
@@ -117,17 +157,13 @@ trait NestedTrait
             $event->toFlashes($this->getFlashBag());
 
             if (!$event->hasErrors()) {
-                if (null !== $redirectPath = $form->get('_redirect')->getData()) {
-                    return $this->redirect($redirectPath);
+                /** @noinspection PhpUndefinedMethodInspection */
+                if ($form->get('actions')->get('saveAndList')->isClicked()) {
+                    $redirectPath = $this->generateResourcePath($resource, 'list');
+                } elseif (null === $redirectPath = $form->get('_redirect')->getData()) {
+                    $redirectPath = $this->generateResourcePath($child);
                 }
-                return $this->redirect(
-                    $this->generateUrl(
-                        $this->config->getRoute('show'),
-                        array_merge($context->getIdentifiers(), array(
-                            sprintf('%sId', $resourceName) => $child->getId()
-                        ))
-                    )
-                );
+                return $this->redirect($redirectPath);
             }
         }
 

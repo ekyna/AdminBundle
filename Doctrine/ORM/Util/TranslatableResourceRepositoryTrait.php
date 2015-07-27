@@ -42,10 +42,6 @@ trait TranslatableResourceRepositoryTrait
         $qb
             ->addSelect('translation')
             ->leftJoin($this->getAlias() . '.translations', 'translation')
-            ->andWhere($qb->expr()->eq(
-                'translation.locale',
-                $qb->expr()->literal($this->localeProvider->getCurrentLocale())
-            ))
         ;
 
         return $qb;
@@ -61,10 +57,6 @@ trait TranslatableResourceRepositoryTrait
         $qb
             ->addSelect('translation')
             ->leftJoin($this->getAlias() . '.translations', 'translation')
-            ->andWhere($qb->expr()->eq(
-                'translation.locale',
-                $qb->expr()->literal($this->localeProvider->getCurrentLocale())
-            ))
         ;
 
         return $qb;
@@ -124,7 +116,6 @@ trait TranslatableResourceRepositoryTrait
      */
     protected function collectionResult(Query $query)
     {
-        //return $query->getResult();
         return new Paginator($query, true);
     }
 }

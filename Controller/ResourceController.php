@@ -230,11 +230,18 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     return $this->get('ekyna_core.modal')->render($modal);
                 }
 
-                if (null === $redirectPath = $form->get('_redirect')->getData()) {
-                    $redirectPath = $this->generateUrl(
-                        $this->config->getRoute('show'),
-                        $context->getIdentifiers(true)
-                    );
+                /** @noinspection PhpUndefinedMethodInspection */
+                if ($form->get('actions')->get('saveAndList')->isClicked()) {
+                    if ($this->hasParent()) {
+                        $redirectPath = $this->generateUrl(
+                            $this->getParent()->getConfiguration()->getRoute('show'),
+                            $context->getIdentifiers()
+                        );
+                    } else {
+                        $redirectPath = $this->generateResourcePath($resource, 'list');
+                    }
+                } elseif (null === $redirectPath = $form->get('_redirect')->getData()) {
+                    $redirectPath = $this->generateResourcePath($resource);
                 }
                 return $this->redirect($redirectPath);
             }
@@ -282,19 +289,56 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             '_redirect_enabled' => true,
         );
 
+        $form = $this->createForm($this->config->getFormType(), $resource, $options);
         if ($footer) {
-            if ($this->hasParent()) {
-                $cancelRoute = $this->getParent()->getConfiguration()->getRoute('show');
+            if (0 < strlen($referer = $context->getRequest()->headers->get('referer'))) {
+                $cancelPath = $referer;
             } else {
-                $cancelRoute = $this->config->getRoute('list');
+                if ($this->hasParent()) {
+                    $cancelRoute = $this->getParent()->getConfiguration()->getRoute('show');
+                } else {
+                    $cancelRoute = $this->config->getRoute('list');
+                }
+                $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
             }
-            $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
-            $options['_footer'] = array(
-                'cancel_path' => $cancelPath,
-            );
+
+            $form->add('actions', 'form_actions', [
+                'buttons' => [
+                    'saveAndList' => [
+                        'type' => 'submit', 'options' => [
+                            'button_class' => 'primary',
+                            'label' => 'ekyna_core.button.save_and_list',
+                            'attr' => [
+                                'icon' => 'list',
+                            ],
+                        ],
+                    ],
+                    'save' => [
+                        'type' => 'submit', 'options' => [
+                            'button_class' => 'primary',
+                            'label' => 'ekyna_core.button.save',
+                            'attr' => [
+                                'icon' => 'ok',
+                            ],
+                        ],
+                    ],
+                    'cancel' => [
+                        'type' => 'button', 'options' => [
+                            'label' => 'ekyna_core.button.cancel',
+                            'button_class' => 'default',
+                            'as_link' => true,
+                            'attr' => [
+                                'class' => 'form-cancel-btn',
+                                'icon' => 'remove',
+                                'href' => $cancelPath,
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
         }
 
-        return $this->createForm($this->config->getFormType(), $resource, $options);
+        return $form;
     }
 
     /**
@@ -330,8 +374,18 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     return $this->get('ekyna_core.modal')->render($modal);
                 }
 
-                if (null === $redirectPath = $form->get('_redirect')->getData()) {
-                    $redirectPath = $this->generateUrl($this->config->getRoute('show'), $context->getIdentifiers(true));
+                /** @noinspection PhpUndefinedMethodInspection */
+                if ($form->get('actions')->get('saveAndList')->isClicked()) {
+                    if ($this->hasParent()) {
+                        $redirectPath = $this->generateUrl(
+                            $this->getParent()->getConfiguration()->getRoute('show'),
+                            $context->getIdentifiers()
+                        );
+                    } else {
+                        $redirectPath = $this->generateResourcePath($resource, 'list');
+                    }
+                } elseif (null === $redirectPath = $form->get('_redirect')->getData()) {
+                    $redirectPath = $this->generateResourcePath($resource);
                 }
                 return $this->redirect($redirectPath);
             }
@@ -370,10 +424,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         $resource = $context->getResource();
         $options = array(
-            'action' => $this->generateUrl(
-                $this->config->getRoute('edit'),
-                $context->getIdentifiers(true)
-            ),
+            'action' => $this->generateResourcePath($resource, 'edit'),
             'attr' => array(
                 'class' => 'form-horizontal form-with-tabs',
             ),
@@ -382,24 +433,59 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             '_redirect_enabled' => true,
         );
 
+        $form = $this->createForm($this->config->getFormType(), $resource, $options);
+
         if ($footer) {
-            if ($this->hasParent()) {
-                $cancelPath = $this->generateUrl(
-                    $this->getParent()->getConfiguration()->getRoute('show'),
-                    $context->getIdentifiers()
-                );
+            if (0 < strlen($referer = $context->getRequest()->headers->get('referer'))) {
+                $cancelPath = $referer;
             } else {
-                $cancelPath = $this->generateUrl(
-                    $this->config->getRoute('show'),
-                    $context->getIdentifiers(true)
-                );
+                if ($this->hasParent()) {
+                    $cancelPath = $this->generateUrl(
+                        $this->getParent()->getConfiguration()->getRoute('show'),
+                        $context->getIdentifiers()
+                    );
+                } else {
+                    $cancelPath = $this->generateResourcePath($resource);
+                }
             }
-            $options['_footer'] = array(
-                'cancel_path' => $cancelPath,
-            );
+
+            $form->add('actions', 'form_actions', [
+                'buttons' => [
+                    'saveAndList' => [
+                        'type' => 'submit', 'options' => [
+                            'button_class' => 'primary',
+                            'label' => 'ekyna_core.button.save_and_list',
+                            'attr' => [
+                                'icon' => 'list',
+                            ],
+                        ],
+                    ],
+                    'save' => [
+                        'type' => 'submit', 'options' => [
+                            'button_class' => 'primary',
+                            'label' => 'ekyna_core.button.save',
+                            'attr' => [
+                                'icon' => 'ok',
+                            ],
+                        ],
+                    ],
+                    'cancel' => [
+                        'type' => 'button', 'options' => [
+                            'label' => 'ekyna_core.button.cancel',
+                            'button_class' => 'default',
+                            'as_link' => true,
+                            'attr' => [
+                                'class' => 'form-cancel-btn',
+                                'icon' => 'remove',
+                                'href' => $cancelPath,
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
         }
 
-        return $this->createForm($this->config->getFormType(), $resource, $options);
+        return $form;
     }
 
     /**
@@ -489,46 +575,18 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $message = 'ekyna_core.message.remove_confirm';
         }
 
-        $options = array(
-            'action' => $this->generateUrl(
-                $this->config->getRoute('remove'),
-                $context->getIdentifiers(true)
-            ),
-            'attr' => array(
-                'class' => 'form-horizontal',
-            ),
-            'method' => 'POST',
-            'admin_mode' => true,
-            '_redirect_enabled' => true,
-        );
+        $resource = $context->getResource();
 
-        if ($footer) {
-            if ($this->hasParent()) {
-                $cancelPath = $this->generateUrl(
-                    $this->getParent()->getConfiguration()->getRoute('show'),
-                    $context->getIdentifiers()
-                );
-            } else {
-                $cancelPath = $this->generateUrl(
-                    $this->config->getRoute('show'),
-                    $context->getIdentifiers(true)
-                );
-            }
-            $options['_footer'] = array(
-                'cancel_path' => $cancelPath,
-                'buttons' => array(
-                    'submit' => array(
-                        'theme' => 'danger',
-                        'icon' => 'trash',
-                        'label' => 'ekyna_core.button.remove',
-                    )
-                )
-            );
-        }
-
-        $builder = $this->createFormBuilder(null, $options);
-
-        return $builder
+        $form = $this
+            ->createFormBuilder(null, array(
+                'action' => $this->generateResourcePath($resource, 'remove'),
+                'attr' => array(
+                    'class' => 'form-horizontal',
+                ),
+                'method' => 'POST',
+                'admin_mode' => true,
+                '_redirect_enabled' => true,
+            ))
             ->add('confirm', 'checkbox', array(
                 'label' => $message,
                 'attr' => array('align_with_widget' => true),
@@ -537,7 +595,51 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     new Constraints\True(),
                 )
             ))
-            ->getForm();
+            ->getForm()
+        ;
+
+        if ($footer) {
+            if (0 < strlen($referer = $context->getRequest()->headers->get('referer'))) {
+                $cancelPath = $referer;
+            } else {
+                if ($this->hasParent()) {
+                    $cancelPath = $this->generateUrl(
+                        $this->getParent()->getConfiguration()->getRoute('show'),
+                        $context->getIdentifiers()
+                    );
+                } else {
+                    $cancelPath = $this->generateResourcePath($resource);
+                }
+            }
+
+            $form->add('actions', 'form_actions', [
+                'buttons' => [
+                    'remove' => [
+                        'type' => 'submit', 'options' => [
+                            'button_class' => 'danger',
+                            'label' => 'ekyna_core.button.remove',
+                            'attr' => [
+                                'icon' => 'trash',
+                            ],
+                        ],
+                    ],
+                    'cancel' => [
+                        'type' => 'button', 'options' => [
+                            'label' => 'ekyna_core.button.cancel',
+                            'button_class' => 'default',
+                            'as_link' => true,
+                            'attr' => [
+                                'class' => 'form-cancel-btn',
+                                'icon' => 'remove',
+                                'href' => $cancelPath,
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+        }
+
+        return $form;
     }
 
     /**
@@ -760,6 +862,18 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     protected function getTableFactory()
     {
         return $this->get('table.factory');
+    }
+
+    /**
+     * Generates the resource path.
+     *
+     * @param object $resource
+     * @param string $action
+     * @return string
+     */
+    protected function generateResourcePath($resource, $action = 'show')
+    {
+        return $this->getResourceHelper()->generateResourcePath($resource, $action);
     }
 
     /**
