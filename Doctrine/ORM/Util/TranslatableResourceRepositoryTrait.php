@@ -33,7 +33,7 @@ trait TranslatableResourceRepositoryTrait
 
 
     /**
-     * {@inheritdoc}
+     * @return \Doctrine\ORM\QueryBuilder
      */
     protected function getQueryBuilder()
     {
@@ -48,7 +48,7 @@ trait TranslatableResourceRepositoryTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @return \Doctrine\ORM\QueryBuilder
      */
     protected function getCollectionQueryBuilder()
     {
@@ -63,7 +63,7 @@ trait TranslatableResourceRepositoryTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @return object
      */
     public function createNew()
     {
@@ -80,7 +80,9 @@ trait TranslatableResourceRepositoryTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param LocaleProviderInterface $provider
+     *
+     * @return $this
      */
     public function setLocaleProvider(LocaleProviderInterface $provider)
     {
@@ -90,7 +92,9 @@ trait TranslatableResourceRepositoryTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $translatableFields
+     *
+     * @return $this
      */
     public function setTranslatableFields(array $translatableFields)
     {
@@ -100,7 +104,9 @@ trait TranslatableResourceRepositoryTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $name
+     *
+     * @return string
      */
     protected function getPropertyName($name)
     {
@@ -112,7 +118,8 @@ trait TranslatableResourceRepositoryTrait
 
     /**
      * @param Query $query
-     * @return array
+     *
+     * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
     protected function collectionResult(Query $query)
     {

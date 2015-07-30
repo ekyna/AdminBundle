@@ -21,7 +21,7 @@ trait ResourceRepositoryTrait
     /**
      * Creates a new resource.
      *
-     * @return mixed
+     * @return object
      */
     public function createNew()
     {
@@ -45,7 +45,7 @@ trait ResourceRepositoryTrait
     }
 
     /**
-     * @return array
+     * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
     public function findAll()
     {
@@ -79,7 +79,7 @@ trait ResourceRepositoryTrait
      * @param int   $limit
      * @param int   $offset
      *
-     * @return array
+     * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
     public function findBy(array $criteria, array $sorting = array(), $limit = null, $offset = null)
     {
@@ -129,7 +129,7 @@ trait ResourceRepositoryTrait
      * @param array $criteria
      * @param int   $limit
      *
-     * @return array
+     * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
     public function findRandomBy(array $criteria, $limit)
     {
@@ -153,7 +153,10 @@ trait ResourceRepositoryTrait
     }
 
     /**
-     * {@inheritdoc}
+     * @param array $criteria
+     * @param array $sorting
+     *
+     * @return Pagerfanta
      */
     public function createPager(array $criteria = array(), array $sorting = array())
     {
@@ -186,8 +189,6 @@ trait ResourceRepositoryTrait
     }
 
     /**
-     * Returns the query builder.
-     *
      * @return QueryBuilder
      */
     protected function getQueryBuilder()
@@ -253,7 +254,8 @@ trait ResourceRepositoryTrait
 
     /**
      * @param Query $query
-     * @return array
+     *
+     * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
     protected function collectionResult(Query $query)
     {
