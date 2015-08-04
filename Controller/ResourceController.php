@@ -271,12 +271,13 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @param Context $context
      * @param bool    $footer
+     * @param array   $options
      * @return \Symfony\Component\Form\Form
      */
-    protected function createNewResourceForm(Context $context, $footer = true)
+    protected function createNewResourceForm(Context $context, $footer = true, array $options = array())
     {
         $resource = $context->getResource();
-        $options = array(
+        $options = array_merge(array(
             'action' => $this->generateUrl(
                 $this->config->getRoute('new'),
                 $context->getIdentifiers()
@@ -287,7 +288,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             ),
             'admin_mode' => true,
             '_redirect_enabled' => true,
-        );
+        ), $options);
 
         $form = $this->createForm($this->config->getFormType(), $resource, $options);
         if ($footer) {
@@ -418,12 +419,13 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @param Context $context
      * @param bool    $footer
+     * @param array   $options
      * @return \Symfony\Component\Form\Form
      */
-    protected function createEditResourceForm(Context $context, $footer = true)
+    protected function createEditResourceForm(Context $context, $footer = true, array $options = array())
     {
         $resource = $context->getResource();
-        $options = array(
+        $options = array_merge(array(
             'action' => $this->generateResourcePath($resource, 'edit'),
             'attr' => array(
                 'class' => 'form-horizontal form-with-tabs',
@@ -431,7 +433,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             'method' => 'POST',
             'admin_mode' => true,
             '_redirect_enabled' => true,
-        );
+        ), $options);
 
         $form = $this->createForm($this->config->getFormType(), $resource, $options);
 
@@ -565,11 +567,12 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * Creates the remove resource form.
      *
      * @param Context $context
-     * @param string $message
-     * @param bool $footer
+     * @param string  $message
+     * @param bool    $footer
+     * @param array   $options
      * @return \Symfony\Component\Form\Form
      */
-    protected function createRemoveResourceForm(Context $context, $message = null, $footer = true)
+    protected function createRemoveResourceForm(Context $context, $message = null, $footer = true, array $options = array())
     {
         if (null === $message) {
             $message = 'ekyna_core.message.remove_confirm';
@@ -578,7 +581,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $resource = $context->getResource();
 
         $form = $this
-            ->createFormBuilder(null, array(
+            ->createFormBuilder(null, array_merge(array(
                 'action' => $this->generateResourcePath($resource, 'remove'),
                 'attr' => array(
                     'class' => 'form-horizontal',
@@ -586,7 +589,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 'method' => 'POST',
                 'admin_mode' => true,
                 '_redirect_enabled' => true,
-            ))
+            ), $options))
             ->add('confirm', 'checkbox', array(
                 'label' => $message,
                 'attr' => array('align_with_widget' => true),
