@@ -605,12 +605,12 @@ input.search {
     text-align: right;
 }
 
-.actions a {
+.actions a.btn {
     display: inline-block;
     margin: 0 0 10px 10px;
 }
 
-.actions .glyphicon {
+.actions a.btn .glyphicon {
     margin-right: 5px;
 }
 
