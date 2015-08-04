@@ -255,20 +255,20 @@ textarea::-webkit-input-placeholder {
 }
 
 /* dropdown caret */
-.dropdown .caret {
+/*.dropdown .caret {
     position: relative;
     top: -1px;
-}
+}*/
 
 /* dropdown active */
-.dropdown.open > a,
+/*.dropdown.open > a,
 .dropdown.open > a:hover,
 .dropdown.open > a:focus {
     border-color: #101417;
-}
+}*/
 
 /* dropdown menu */
-.dropdown-menu > li > a {
+/*.dropdown-menu > li > a {
     font-size: 13px;
     outline: none;
 }
@@ -278,7 +278,7 @@ textarea::-webkit-input-placeholder {
 .dropdown-submenu:hover > a,
 .dropdown-submenu:focus > a {
     background: rgb(60, 91, 121) !important;
-}
+}*/
 
 /* PAGINATION */
 .pagination > li > a, .pagination > li > span {
