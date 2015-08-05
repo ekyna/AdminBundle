@@ -18,6 +18,11 @@ class ResourceEvent extends Event implements ResourceEventInterface
     protected $resource;
 
     /**
+     * @var bool
+     */
+    protected $hard = false;
+
+    /**
      * @var array
      */
     protected $datas = [];
@@ -42,6 +47,23 @@ class ResourceEvent extends Event implements ResourceEventInterface
     public function getResource()
     {
         return $this->resource;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setHard($hard)
+    {
+        $this->hard = $hard;
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getHard()
+    {
+        return $this->hard;
     }
 
     /**

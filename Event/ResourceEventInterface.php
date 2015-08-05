@@ -27,6 +27,21 @@ interface ResourceEventInterface
     public function getResource();
 
     /**
+     * Sets whether the operation must be performed "hardly" or not (for deletion).
+     *
+     * @param boolean $hard
+     * @return ResourceEventInterface|$this
+     */
+    public function setHard($hard);
+
+    /**
+     * Returns whether the operation must be performed "hardly" or not.
+     *
+     * @return boolean
+     */
+    public function getHard();
+
+    /**
      * Adds the data.
      *
      * @param string $key

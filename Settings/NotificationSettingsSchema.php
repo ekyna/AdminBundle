@@ -69,7 +69,7 @@ class NotificationSettingsSchema extends AbstractSchema
                     )),
                     new Constraints\Count(array(
                         'min'        => 1,
-                        'minMessage' => 'Vous devez spécifier au moins une addresse email.', // TODO trans
+                        'minMessage' => 'ekyna_admin.settings.notification.at_least_one_email',
                     )),
                 ),
             ))

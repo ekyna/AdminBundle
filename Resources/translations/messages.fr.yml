@@ -21,3 +21,12 @@ ekyna_admin:
             from_name: Nom de l'expéditeur
             from_email: Email de l'expéditeur
             to_emails: Emails des destinataires
+    resource:
+        message:
+            persist:
+                success: La ressource a été sauvegardée avec succès.
+                failure: L'application a rencontré une erreur relative à la base de données. La ressource n'a pas été sauvegardée.
+            remove:
+                success: La ressource a été supprimée avec succès.
+                integrity: Cette ressource est liée à d'autres ressources et ne peut pas être supprimée.
+                failure: L'application a rencontré une erreur relative à la base de données. La ressource n'a pas été supprimée.

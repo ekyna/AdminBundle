@@ -277,22 +277,22 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     protected function createNewResourceForm(Context $context, $footer = true, array $options = array())
     {
         $resource = $context->getResource();
-        $options = array_merge(array(
-            'action' => $this->generateUrl(
-                $this->config->getRoute('new'),
-                $context->getIdentifiers()
-            ),
+
+        $action = $this->generateResourcePath($resource, 'new');
+
+        $form = $this->createForm($this->config->getFormType(), $resource, array_merge(array(
+            'action' => $action,
             'method' => 'POST',
             'attr' => array(
                 'class' => 'form-horizontal form-with-tabs',
             ),
             'admin_mode' => true,
             '_redirect_enabled' => true,
-        ), $options);
+        ), $options));
 
-        $form = $this->createForm($this->config->getFormType(), $resource, $options);
         if ($footer) {
-            if (0 < strlen($referer = $context->getRequest()->headers->get('referer'))) {
+            $referer = $context->getRequest()->headers->get('referer');
+            if (0 < strlen($referer) && false === strpos($referer, $action)) {
                 $cancelPath = $referer;
             } else {
                 if ($this->hasParent()) {
@@ -425,20 +425,22 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     protected function createEditResourceForm(Context $context, $footer = true, array $options = array())
     {
         $resource = $context->getResource();
-        $options = array_merge(array(
-            'action' => $this->generateResourcePath($resource, 'edit'),
+
+        $action = $this->generateResourcePath($resource, 'edit');
+
+        $form = $this->createForm($this->config->getFormType(), $resource, array_merge(array(
+            'action' => $action,
             'attr' => array(
                 'class' => 'form-horizontal form-with-tabs',
             ),
             'method' => 'POST',
             'admin_mode' => true,
             '_redirect_enabled' => true,
-        ), $options);
-
-        $form = $this->createForm($this->config->getFormType(), $resource, $options);
+        ), $options));
 
         if ($footer) {
-            if (0 < strlen($referer = $context->getRequest()->headers->get('referer'))) {
+            $referer = $context->getRequest()->headers->get('referer');
+            if (0 < strlen($referer) && false === strpos($referer, $action)) {
                 $cancelPath = $referer;
             } else {
                 if ($this->hasParent()) {
@@ -580,9 +582,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $resource = $context->getResource();
 
+        $action = $this->generateResourcePath($resource, 'remove');
+
         $form = $this
             ->createFormBuilder(null, array_merge(array(
-                'action' => $this->generateResourcePath($resource, 'remove'),
+                'action' => $action,
                 'attr' => array(
                     'class' => 'form-horizontal',
                 ),
@@ -602,7 +606,8 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         ;
 
         if ($footer) {
-            if (0 < strlen($referer = $context->getRequest()->headers->get('referer'))) {
+            $referer = $context->getRequest()->headers->get('referer');
+            if (0 < strlen($referer) && false === strpos($referer, $action)) {
                 $cancelPath = $referer;
             } else {
                 if ($this->hasParent()) {

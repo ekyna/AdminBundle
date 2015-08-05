@@ -2,7 +2,6 @@
 
 namespace Ekyna\Bundle\AdminBundle\Operator;
 
-use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManagerInterface;
 use Ekyna\Bundle\AdminBundle\Event\ResourceEvent;
@@ -16,7 +15,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  * @package Ekyna\Bundle\AdminBundle\Doctrine\ORM
  * @author Étienne Dauvergne <contact@ekyna.com>
  *
- * @TODO Swap with ResourceManager when ready.
+ * @TODO Swap with ResourceManagerDecorator when ready.
  */
 class ResourceOperator implements ResourceOperatorInterface
 {
@@ -132,12 +131,13 @@ class ResourceOperator implements ResourceOperatorInterface
     public function delete($resourceOrEvent, $hard = false)
     {
         $event = $resourceOrEvent instanceof ResourceEvent ? $resourceOrEvent : $this->createResourceEvent($resourceOrEvent);
+        $event->setHard($event->getHard() || $hard);
         $this->dispatcher->dispatch($this->config->getEventName('pre_delete'), $event);
 
         if (!$event->isPropagationStopped()) {
             $eventManager = $this->manager->getEventManager();
             $disabledListeners = [];
-            if ($hard) {
+            if ($event->getHard()) {
                 foreach ($eventManager->getListeners() as $eventName => $listeners) {
                     foreach ($listeners as $listener) {
                         if ($listener instanceof SoftDeleteableListener) {
@@ -166,7 +166,7 @@ class ResourceOperator implements ResourceOperatorInterface
      * Persists a resource.
      *
      * @param ResourceEvent $event
-     * @return $this|ResourceEvent
+     * @return ResourceEvent
      * @throws DBALException
      * @throws \Exception
      */
@@ -184,14 +184,14 @@ class ResourceOperator implements ResourceOperatorInterface
                 throw $e;
             }
             $event->addMessage(new ResourceMessage(
-                'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été sauvegardée.',
+                'ekyna_admin.resource.message.persist.failure',
                 ResourceMessage::TYPE_ERROR
             ));
             return $event;
         }
 
         return $event->addMessage(new ResourceMessage(
-            'La ressource a été sauvegardée avec succès.',
+            'ekyna_admin.resource.message.persist.success',
             ResourceMessage::TYPE_SUCCESS
         ));
     }
@@ -218,19 +218,19 @@ class ResourceOperator implements ResourceOperatorInterface
             if (null !== $previous = $e->getPrevious()) {
                 if ($previous instanceof \PDOException && $previous->getCode() == 23000) {
                     return $event->addMessage(new ResourceMessage(
-                        'Cette ressource est liée à d\'autres ressources et ne peut pas être supprimée.',
+                        'ekyna_admin.resource.message.remove.integrity',
                         ResourceMessage::TYPE_ERROR
                     ));
                 }
             }
             return $event->addMessage(new ResourceMessage(
-                'L\'application a rencontré une erreur relative à la base de données. La ressource n\'a pas été supprimée.',
+                'ekyna_admin.resource.message.remove.failure',
                 ResourceMessage::TYPE_ERROR
             ));
         }
 
         return $event->addMessage(new ResourceMessage(
-            'La ressource a été supprimée avec succès.',
+            'ekyna_admin.resource.message.remove.success',
             ResourceMessage::TYPE_SUCCESS
         ));
     }
