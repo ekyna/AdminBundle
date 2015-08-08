@@ -4,6 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepositoryInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
@@ -30,7 +31,9 @@ trait ResourceRepositoryTrait
     }
 
     /**
-     * @param mixed $id
+     * Finds the resource by his ID.
+     *
+     * @param int $id
      *
      * @return null|object
      */
@@ -45,6 +48,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Finds all resources.
+     *
      * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
     public function findAll()
@@ -57,11 +62,13 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Finds one resource by criteria and sorting.
+     *
      * @param array $criteria
      *
      * @return null|object
      */
-    public function findOneBy(array $criteria)
+    public function findOneBy(array $criteria = array())
     {
         $queryBuilder = $this->getQueryBuilder();
 
@@ -74,6 +81,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Finds resources by criteria, sorting, limit and offset.
+     *
      * @param array $criteria
      * @param array $sorting
      * @param int   $limit
@@ -81,7 +90,7 @@ trait ResourceRepositoryTrait
      *
      * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
-    public function findBy(array $criteria, array $sorting = array(), $limit = null, $offset = null)
+    public function findBy(array $criteria = array(), array $sorting = array(), $limit = null, $offset = null)
     {
         $queryBuilder = $this->getCollectionQueryBuilder();
 
@@ -106,6 +115,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Finds a random resource by criteria.
+     *
      * @param array $criteria
      *
      * @return null|object
@@ -126,6 +137,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Finds random resource by criteria and limit.
+     *
      * @param array $criteria
      * @param int   $limit
      *
@@ -153,6 +166,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Creates a pager.
+     *
      * @param array $criteria
      * @param array $sorting
      *
@@ -169,6 +184,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Returns the (doctrine) pager.
+     *
      * @param QueryBuilder $queryBuilder
      *
      * @return Pagerfanta
@@ -179,6 +196,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Returns th (array) pager.
+     *
      * @param array $objects
      *
      * @return Pagerfanta
@@ -189,6 +208,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Returns the query builder.
+     *
      * @return QueryBuilder
      */
     protected function getQueryBuilder()
@@ -197,6 +218,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Returns the collection query builder.
+     *
      * @return QueryBuilder
      */
     protected function getCollectionQueryBuilder()
@@ -205,6 +228,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Applies the criteria to the query builder.
+     *
      * @param QueryBuilder $queryBuilder
      * @param array        $criteria
      */
@@ -227,6 +252,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Applies the sorting to the query builder.
+     *
      * @param QueryBuilder $queryBuilder
      * @param array        $sorting
      */
@@ -240,6 +267,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Returns the property name.
+     *
      * @param string $name
      *
      * @return string
@@ -253,6 +282,8 @@ trait ResourceRepositoryTrait
     }
 
     /**
+     * Returns the collection results.
+     *
      * @param Query $query
      *
      * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
