@@ -283,9 +283,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $form = $this->createForm($this->config->getFormType(), $resource, array_merge(array(
             'action' => $action,
             'method' => 'POST',
-            'attr' => array(
-                'class' => 'form-horizontal form-with-tabs',
-            ),
+            'attr' => array('class' => 'form-horizontal form-with-tabs'),
             'admin_mode' => true,
             '_redirect_enabled' => true,
         ), $options));
@@ -306,25 +304,24 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $form->add('actions', 'form_actions', [
                 'buttons' => [
                     'saveAndList' => [
-                        'type' => 'submit', 'options' => [
+                        'type' => 'submit',
+                        'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save_and_list',
-                            'attr' => [
-                                'icon' => 'list',
-                            ],
+                            'attr' => ['icon' => 'list'],
                         ],
                     ],
                     'save' => [
-                        'type' => 'submit', 'options' => [
+                        'type' => 'submit',
+                        'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save',
-                            'attr' => [
-                                'icon' => 'ok',
-                            ],
+                            'attr' => ['icon' => 'ok'],
                         ],
                     ],
                     'cancel' => [
-                        'type' => 'button', 'options' => [
+                        'type' => 'button',
+                        'options' => [
                             'label' => 'ekyna_core.button.cancel',
                             'button_class' => 'default',
                             'as_link' => true,
@@ -430,9 +427,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $form = $this->createForm($this->config->getFormType(), $resource, array_merge(array(
             'action' => $action,
-            'attr' => array(
-                'class' => 'form-horizontal form-with-tabs',
-            ),
+            'attr' => array('class' => 'form-horizontal form-with-tabs'),
             'method' => 'POST',
             'admin_mode' => true,
             '_redirect_enabled' => true,
@@ -456,25 +451,24 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $form->add('actions', 'form_actions', [
                 'buttons' => [
                     'saveAndList' => [
-                        'type' => 'submit', 'options' => [
+                        'type' => 'submit',
+                        'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save_and_list',
-                            'attr' => [
-                                'icon' => 'list',
-                            ],
+                            'attr' => ['icon' => 'list'],
                         ],
                     ],
                     'save' => [
-                        'type' => 'submit', 'options' => [
+                        'type' => 'submit',
+                        'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save',
-                            'attr' => [
-                                'icon' => 'ok',
-                            ],
+                            'attr' => ['icon' => 'ok'],
                         ],
                     ],
                     'cancel' => [
-                        'type' => 'button', 'options' => [
+                        'type' => 'button',
+                        'options' => [
                             'label' => 'ekyna_core.button.cancel',
                             'button_class' => 'default',
                             'as_link' => true,
@@ -587,9 +581,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $form = $this
             ->createFormBuilder(null, array_merge(array(
                 'action' => $action,
-                'attr' => array(
-                    'class' => 'form-horizontal',
-                ),
+                'attr' => array('class' => 'form-horizontal'),
                 'method' => 'POST',
                 'admin_mode' => true,
                 '_redirect_enabled' => true,
@@ -623,16 +615,16 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $form->add('actions', 'form_actions', [
                 'buttons' => [
                     'remove' => [
-                        'type' => 'submit', 'options' => [
+                        'type' => 'submit',
+                        'options' => [
                             'button_class' => 'danger',
                             'label' => 'ekyna_core.button.remove',
-                            'attr' => [
-                                'icon' => 'trash',
-                            ],
+                            'attr' => ['icon' => 'trash'],
                         ],
                     ],
                     'cancel' => [
-                        'type' => 'button', 'options' => [
+                        'type' => 'button',
+                        'options' => [
                             'label' => 'ekyna_core.button.cancel',
                             'button_class' => 'default',
                             'as_link' => true,

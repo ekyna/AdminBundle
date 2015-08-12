@@ -7,11 +7,11 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class RegistryPass
+ * Class ResourceRegistryPass
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class RegistryPass implements CompilerPassInterface
+class ResourceRegistryPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
