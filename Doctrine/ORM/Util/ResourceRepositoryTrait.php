@@ -4,7 +4,6 @@ namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM\Util;
 
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
-use Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepositoryInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
@@ -186,13 +185,14 @@ trait ResourceRepositoryTrait
     /**
      * Returns the (doctrine) pager.
      *
-     * @param QueryBuilder $queryBuilder
+     * @param \Doctrine\ORM\Query|\Doctrine\ORM\QueryBuilder $query
      *
      * @return Pagerfanta
      */
-    public function getPager(QueryBuilder $queryBuilder)
+    public function getPager($query)
     {
-        return new Pagerfanta(new DoctrineORMAdapter($queryBuilder, true, false));
+        $pager = new Pagerfanta(new DoctrineORMAdapter($query, true, false));
+        return $pager->setNormalizeOutOfRangePages(true);
     }
 
     /**
@@ -202,9 +202,10 @@ trait ResourceRepositoryTrait
      *
      * @return Pagerfanta
      */
-    public function getArrayPager($objects)
+    public function getArrayPager(array $objects)
     {
-        return new Pagerfanta(new ArrayAdapter($objects));
+        $pager = new Pagerfanta(new ArrayAdapter($objects));
+        return $pager->setNormalizeOutOfRangePages(true);
     }
 
     /**
