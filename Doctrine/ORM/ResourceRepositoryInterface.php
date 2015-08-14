@@ -89,9 +89,9 @@ interface ResourceRepositoryInterface extends ObjectRepository, Selectable
     /**
      * Returns the (doctrine) pager.
      *
-     * @param QueryBuilder $queryBuilder
+     * @param \Doctrine\ORM\Query|\Doctrine\ORM\QueryBuilder $query
      *
      * @return \Pagerfanta\Pagerfanta
      */
-    public function getPager(QueryBuilder $queryBuilder);
+    public function getPager($query);
 }
