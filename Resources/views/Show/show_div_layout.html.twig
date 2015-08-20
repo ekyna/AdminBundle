@@ -116,6 +116,8 @@
     <div class="show-widget show-widget-block">
     {% if content is empty %}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+    {% elseif options.html %}
+        {{ content|raw }}
     {% else %}
         {{ content|nl2br|raw }}
     {% endif %}

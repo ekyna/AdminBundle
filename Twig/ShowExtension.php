@@ -155,13 +155,19 @@ class ShowExtension extends \Twig_Extension
      * Renders the textarea widget.
      *
      * @param mixed $content
+     * @param array $options
      *
      * @return string
      */
     protected function renderTextareaWidget($content, array $options = array())
     {
+        $options = array_replace(array(
+            'html' => false,
+        ), $options);
+
         return $this->renderBlock('show_widget_textarea', array(
-            'content' => $content
+            'content' => $content,
+            'options' => $options,
         ));
     }
 
