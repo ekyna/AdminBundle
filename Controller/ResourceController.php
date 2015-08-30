@@ -512,7 +512,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             if (!$event->hasErrors()) {
                 if ($isXhr) {
                     $modal = $this->createModal('remove');
-                    $modal->setContent(array('success' => true));
+                    $modal
+                        ->setSize(Modal::SIZE_NORMAL)
+                        ->setContent(array('success' => true))
+                    ;
                     return $this->get('ekyna_core.modal')->render($modal);
                 }
 
@@ -540,6 +543,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $vars = $context->getTemplateVars();
             unset($vars['form_template']);
             $modal
+                ->setSize(Modal::SIZE_NORMAL)
                 ->setContent($form->createView())
                 ->setVars($vars)
             ;
