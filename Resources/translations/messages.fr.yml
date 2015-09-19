@@ -13,7 +13,7 @@ ekyna_admin:
         general:
             label: Général
             site_name: Nom du site
-            site_address: Addresse de votre entreprise
+            site_address: Adresse de votre entreprise
             admin_name: Nom du contact principal
             admin_email: Email du contact principal
         notification:
