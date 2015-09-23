@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Table\Type;
 
 use Ekyna\Component\Table\AbstractTableType;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class ResourceTableType
@@ -28,16 +28,16 @@ abstract class ResourceTableType extends AbstractTableType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        parent::setDefaultOptions($resolver);
+        parent::configureOptions($resolver);
 
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => $this->dataClass,
-            'selector_config' => array(
+            'selector_config' => [
                 'property_path' => 'id',
-                'data_map' => array('id', 'name' => null),
-            )
-        ));
+                'data_map' => ['id', 'name' => null],
+            ]
+        ]);
     }
 }

@@ -109,7 +109,7 @@ class ResourceHelper
 
         $accessor = PropertyAccess::createPropertyAccessor();
 
-        $entities = array();
+        $entities = [];
         if (is_object($resource)) {
             $entities[$configuration->getResourceName()] = $resource;
             $current = $resource;
@@ -120,7 +120,7 @@ class ResourceHelper
             }
         }
 
-        $parameters = array();
+        $parameters = [];
         foreach ($entities as $name => $resource) {
             if (array_key_exists($name . 'Id', $requirements)) {
                 $parameters[$name . 'Id'] = $accessor->getValue($resource, 'id');

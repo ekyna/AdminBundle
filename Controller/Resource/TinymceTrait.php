@@ -2,7 +2,6 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller\Resource;
 
-use Ekyna\Bundle\AdminBundle\Controller\Context;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
@@ -37,8 +36,8 @@ trait TinymceTrait
         $propertyAcessor = PropertyAccess::createPropertyAccessor();
         $content = $propertyAcessor->getValue($resource, $field);
 
-        return $this->render('EkynaCoreBundle:Ui:tinymce.html.twig', array(
+        return $this->render('EkynaCoreBundle:Ui:tinymce.html.twig', [
             'content' => $content
-        ));
+        ]);
     }
 }

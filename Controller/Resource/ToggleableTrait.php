@@ -2,7 +2,6 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller\Resource;
 
-use Ekyna\Bundle\AdminBundle\Controller\Context;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 
@@ -36,6 +35,8 @@ trait ToggleableTrait
             $event = $this->getOperator()->update($resource);
             $event->toFlashes($this->getFlashBag());
         }
+
+        // TODO Redirect to parent show
 
         return $this->redirectToReferer($this->generateUrl(
             $this->config->getRoute('list'),

@@ -86,11 +86,12 @@ class ResourceMessage
     /**
      * Validates the type.
      *
+     * @param string $type
      * @throws \InvalidArgumentException
      */
     public static function validateType($type)
     {
-        if (!in_array($type, array(self::TYPE_INFO, self::TYPE_SUCCESS, self::TYPE_WARNING, self::TYPE_ERROR))) {
+        if (!in_array($type, [self::TYPE_INFO, self::TYPE_SUCCESS, self::TYPE_WARNING, self::TYPE_ERROR])) {
             throw new \InvalidArgumentException('Invalid resource message type "%s".', $type);
         }
     }

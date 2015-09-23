@@ -1,7 +1,7 @@
 {% extends 'knp_menu.html.twig' %}
 
 {% block list %}
-{% if item.hasChildren and options.depth is not sameas(0) and item.displayChildren %}
+{% if item.hasChildren and options.depth is not same as(0) and item.displayChildren %}
     {% import 'knp_menu.html.twig' as knp_menu %}
     {%- if matcher.isAncestor(item, options.matchingDepth) %}
         {%- set listAttributes = listAttributes|merge({'style': 'display:block;'}) %}
@@ -15,11 +15,19 @@
 {% block label %}
 {% spaceless %}
     {% if item.labelAttribute('icon') %}
-    <i class="fa fa-{{ item.labelAttribute('icon') }}"></i>
-    <span>{{ item.label|trans }}</span>
-    {% if item.hasChildren %}<i class="glyphicon glyphicon-chevron-down"></i>{% endif %}
+        <i class="fa fa-{{ item.labelAttribute('icon') }}"></i>
+        <span>
+            {{ item.label|trans(
+                item.getExtra('translation_params', {}),
+                item.getExtra('translation_domain', 'messages')
+            ) }}
+        </span>
+        {% if item.hasChildren %}<i class="glyphicon glyphicon-chevron-down"></i>{% endif %}
     {% else %}
-    {{ item.label|trans }}
+        {{ item.label|trans(
+            item.getExtra('translation_params', {}),
+            item.getExtra('translation_domain', 'messages')
+        ) }}
     {% endif %}
 {% endspaceless %}
 {% endblock label %}

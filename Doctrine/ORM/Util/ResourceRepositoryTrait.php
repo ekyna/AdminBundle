@@ -67,7 +67,7 @@ trait ResourceRepositoryTrait
      *
      * @return null|object
      */
-    public function findOneBy(array $criteria = array())
+    public function findOneBy(array $criteria = [])
     {
         $queryBuilder = $this->getQueryBuilder();
 
@@ -89,7 +89,7 @@ trait ResourceRepositoryTrait
      *
      * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
-    public function findBy(array $criteria = array(), array $sorting = array(), $limit = null, $offset = null)
+    public function findBy(array $criteria = [], array $sorting = [], $limit = null, $offset = null)
     {
         $queryBuilder = $this->getCollectionQueryBuilder();
 
@@ -172,7 +172,7 @@ trait ResourceRepositoryTrait
      *
      * @return Pagerfanta
      */
-    public function createPager(array $criteria = array(), array $sorting = array())
+    public function createPager(array $criteria = [], array $sorting = [])
     {
         $queryBuilder = $this->getCollectionQueryBuilder();
 
@@ -234,7 +234,7 @@ trait ResourceRepositoryTrait
      * @param QueryBuilder $queryBuilder
      * @param array        $criteria
      */
-    protected function applyCriteria(QueryBuilder $queryBuilder, array $criteria = array())
+    protected function applyCriteria(QueryBuilder $queryBuilder, array $criteria = [])
     {
         foreach ($criteria as $property => $value) {
             $name = $this->getPropertyName($property);
@@ -258,7 +258,7 @@ trait ResourceRepositoryTrait
      * @param QueryBuilder $queryBuilder
      * @param array        $sorting
      */
-    protected function applySorting(QueryBuilder $queryBuilder, array $sorting = array())
+    protected function applySorting(QueryBuilder $queryBuilder, array $sorting = [])
     {
         foreach ($sorting as $property => $order) {
             if (!empty($order)) {

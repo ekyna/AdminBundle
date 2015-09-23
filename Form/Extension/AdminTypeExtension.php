@@ -5,7 +5,7 @@ namespace Ekyna\Bundle\AdminBundle\Form\Extension;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class AdminTypeExtension
@@ -17,17 +17,15 @@ class AdminTypeExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'admin_mode' => false,
                 'admin_helper' => null,
-            ))
-            ->setAllowedTypes(array(
-                'admin_mode' => 'bool',
-                'admin_helper' => array('null', 'string'),
-            ))
+            ])
+            ->setAllowedTypes('admin_mode', 'bool')
+            ->setAllowedTypes('admin_helper', ['null', 'string'])
         ;
     }
 

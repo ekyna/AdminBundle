@@ -58,7 +58,7 @@ class MenuGroup
      */
     public function __construct($options)
     {
-        $this->entries = array();
+        $this->entries = [];
         $this->prepared = false;
 
         $this

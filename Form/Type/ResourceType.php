@@ -7,7 +7,7 @@ use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class ResourceType
@@ -60,7 +60,7 @@ class ResourceType extends AbstractType
             $view->vars['list_route'] = $configuration->getRoute('list');
             $view->vars['list_route_params'] = array_merge(
                 $options['list_route_params'],
-                array('selector' => 1, 'multiple' => $options['multiple']) // TODO
+                ['selector' => 1, 'multiple' => $options['multiple']] // TODO
             );
         }
     }
@@ -68,25 +68,23 @@ class ResourceType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'new_route'         => null,
-                'new_route_params'  => array(),
+                'new_route_params'  => [],
                 'list_route'        => null,
-                'list_route_params' => array(),
+                'list_route_params' => [],
                 'allow_new'         => false,
                 'allow_list'        => false,
-            ))
-            ->setAllowedTypes(array(
-                'new_route'         => array('null', 'string'),
-                'new_route_params'  => 'array',
-                'list_route'        => array('null', 'string'),
-                'list_route_params' => 'array',
-                'allow_new'         => 'bool',
-                'allow_list'        => 'bool',
-            ))
+            ])
+            ->setAllowedTypes('new_route',         ['null', 'string'])
+            ->setAllowedTypes('new_route_params',  'array')
+            ->setAllowedTypes('list_route',        ['null', 'string'])
+            ->setAllowedTypes('list_route_params', 'array')
+            ->setAllowedTypes('allow_new',         'bool')
+            ->setAllowedTypes('allow_list',        'bool')
         ;
     }
 

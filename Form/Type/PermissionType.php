@@ -34,10 +34,10 @@ class PermissionType extends AbstractType
     {
         foreach($this->permissions as $permission) {
             $builder
-                ->add($permission, 'checkbox', array(
+                ->add($permission, 'checkbox', [
                     'label' => ucfirst($permission),
                     'required' => false
-                ))
+                ])
             ;
         }
     }

@@ -35,7 +35,7 @@ class MenuPool
     
     public function __construct()
     {
-        $this->groups = array();
+        $this->groups = [];
         $this->prepared = false;
 
         $this->initResolvers();
@@ -45,42 +45,38 @@ class MenuPool
     {
         $this->groupOptionsResolver = new OptionsResolver();
         $this->groupOptionsResolver
-            ->setDefaults(array(
+            ->setDefaults([
             	'name'     => null,
             	'label'    => null,
             	'icon'     => null,
             	'position' => 1,
-            	'domain'   => null,
+            	'domain'   => 'messages',
             	'route'    => null,
-            ))
-            ->setAllowedTypes(array(
-            	'name'     => 'string',
-            	'label'    => 'string',
-            	'icon'     => 'string',
-            	'position' => 'int',
-            	'domain'   => array('string', 'null'),
-            	'route'    => array('string', 'null'),
-            ))
+            ])
+            ->setAllowedTypes('name',     'string')
+            ->setAllowedTypes('label',    'string')
+            ->setAllowedTypes('icon',     'string')
+            ->setAllowedTypes('position', 'int')
+            ->setAllowedTypes('domain',   'string')
+            ->setAllowedTypes('route',    ['string', 'null'])
         ;
 
         $this->entryOptionsResolver = new OptionsResolver();
         $this->entryOptionsResolver
-            ->setDefaults(array(
+            ->setDefaults([
             	'name'     => null,
             	'label'    => null,
             	'route'    => null,
             	'position' => 1,
-            	'domain'   => null,
+                'domain'   => 'messages',
             	'resource' => null,
-            ))
-            ->setAllowedTypes(array(
-            	'name'     => 'string',
-            	'label'    => 'string',
-            	'route'    => 'string',
-            	'position' => 'int',
-            	'domain'   => array('string', 'null'),
-            	'resource' => array('string', 'null'),
-            ))
+            ])
+            ->setAllowedTypes('name',     'string')
+            ->setAllowedTypes('label',    'string')
+            ->setAllowedTypes('route',    'string')
+            ->setAllowedTypes('position', 'int')
+            ->setAllowedTypes('domain',   'string')
+            ->setAllowedTypes('resource', ['string', 'null'])
         ;
         
     }

@@ -38,7 +38,7 @@ class Context
         $this->config = $config;
         $this->request = $request;
 
-        $this->resources = array();
+        $this->resources = [];
     }
 
     /**
@@ -100,9 +100,10 @@ class Context
      */
     public function getIdentifiers($with_current = false)
     {
-        $identifiers = array();
+        $identifiers = [];
         foreach ($this->resources as $name => $resource) {
             if (!(!$with_current && $name === $this->config->getResourceName())) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $identifiers[$name . 'Id'] = $resource->getId();
             }
         }
@@ -116,7 +117,7 @@ class Context
      * @throws \RuntimeException
      * @return array
      */
-    public function getTemplateVars(array $extra = array())
+    public function getTemplateVars(array $extra = [])
     {
         $extraKeys = array_keys($extra);
         if (0 < count($extraKeys)) {
@@ -125,19 +126,19 @@ class Context
                     throw new \RuntimeException(sprintf('Key "%s" used in extra template vars overrides a resource key.', $key));
                 }
             }
-            foreach (array('identifiers', 'resource_name', 'resource_id', 'route_prefix') as $key) {
+            foreach (['identifiers', 'resource_name', 'resource_id', 'route_prefix'] as $key) {
                 if (array_key_exists($key, $extraKeys)) {
                     throw new \RuntimeException(sprintf('Key "%s" is reserved and cannot be used in extra template vars.', $key));
                 }
             }
         }
 
-        return array_merge($this->resources, array(
+        return array_merge($this->resources, [
             'identifiers'   => $this->getIdentifiers(),
             'resource_name' => $this->config->getResourceName(),
             'resource_id'   => $this->config->getId(),
             'route_prefix'  => $this->config->getRoutePrefix(),
             'form_template' => $this->config->getTemplate('_form.html'),
-        ), $extra);
+        ], $extra);
     }
 }

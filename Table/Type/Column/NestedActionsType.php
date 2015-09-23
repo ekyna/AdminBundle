@@ -8,8 +8,6 @@ use Ekyna\Component\Table\Table;
 use Ekyna\Component\Table\TableConfig;
 use Ekyna\Component\Table\View\Cell;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Class NestedActionsType
@@ -31,17 +29,16 @@ class NestedActionsType extends BaseType
     /**
      * {@inheritdoc}
      */
-    protected function configureButtonOptions(OptionsResolverInterface $resolver)
+    protected function configureButtonOptions(OptionsResolver $resolver)
     {
         parent::configureButtonOptions($resolver);
 
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'permission' => null,
-            ))
-            ->setAllowedTypes(array(
-                'permission' => array('string', 'null'),
-            ));
+            ])
+            ->setAllowedTypes('permission',  ['string', 'null'])
+        ;
     }
 
     /**
@@ -54,7 +51,7 @@ class NestedActionsType extends BaseType
 
         $dataClass = $config->getDataClass();
 
-        $tmp = array();
+        $tmp = [];
         foreach ($buttonsOptions as $buttonOptions) {
             $tmpButton = $buttonResolver->resolve($buttonOptions);
             if (null !== $tmpButton['permission'] && !$this->aclOperator->isAccessGranted($dataClass, $tmpButton['permission'])) {
@@ -72,9 +69,9 @@ class NestedActionsType extends BaseType
     {
         parent::buildViewCell($cell, $table, $options);
 
-        $cell->setVars(array(
+        $cell->setVars([
             'type' => 'nested_actions',
-        ));
+        ]);
     }
 
     /**

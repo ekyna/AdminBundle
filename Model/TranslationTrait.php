@@ -35,6 +35,7 @@ trait TranslationTrait
         $previousTranslatable = $this->translatable;
         $this->translatable = $translatable;
 
+        /** @var TranslationInterface $this */
         if (null !== $previousTranslatable) {
             $previousTranslatable->removeTranslation($this);
         }

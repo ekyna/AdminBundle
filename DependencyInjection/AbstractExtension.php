@@ -15,9 +15,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
  */
 abstract class AbstractExtension extends Extension
 {
-    protected $configFiles = array(
+    protected $configFiles = [
         'services',
-    );
+    ];
 
     /**
      * {@inheritDoc}

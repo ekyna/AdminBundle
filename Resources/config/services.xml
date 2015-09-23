@@ -30,7 +30,7 @@
             <argument type="service" id="security.acl.provider" />
             <argument type="service" id="security.acl.permission.map" />
             <argument type="service" id="ekyna_admin.pool_registry" />
-            <argument type="service" id="security.context" />
+            <argument type="service" id="security.authorization_checker" />
         </service>
 
         <!-- Kernel controller event listener -->

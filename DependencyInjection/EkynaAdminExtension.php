@@ -31,7 +31,7 @@ class EkynaAdminExtension extends Extension
         $this->configureMenus($config['menus'], $container);
 
         if (!$container->hasParameter('ekyna_admin.translation_mapping')) {
-            $container->setParameter('ekyna_admin.translation_mapping', array());
+            $container->setParameter('ekyna_admin.translation_mapping', []);
         }
     }
 
@@ -68,21 +68,21 @@ class EkynaAdminExtension extends Extension
         $pool = $container->getDefinition('ekyna_admin.menu.pool');
 
         foreach ($menus as $groupName => $groupConfig) {
-            $pool->addMethodCall('createGroup', array(array(
+            $pool->addMethodCall('createGroup', [[
                 'name' => $groupName,
                 'label' => $groupConfig['label'],
                 'icon' => $groupConfig['icon'],
                 'position' => $groupConfig['position'],
-            )));
+            ]]);
             foreach ($groupConfig['entries'] as $entryName => $entryConfig) {
-                $pool->addMethodCall('createEntry', array($groupName, array(
+                $pool->addMethodCall('createEntry', [$groupName, [
                     'name' => $entryName,
                     'route' => $entryConfig['route'],
                     'label' => $entryConfig['label'],
                     'resource' => $entryConfig['resource'],
                     'position' => $entryConfig['position'],
                     'domain' => $entryConfig['domain'],
-                )));
+                ]]);
             }
         }
     }
@@ -113,9 +113,9 @@ class EkynaAdminExtension extends Extension
      */
     private function configureTwigBundle(ContainerBuilder $container)
     {
-        $container->prependExtensionConfig('twig', array(
-            'form' => array('resources' => array('EkynaAdminBundle:Form:form_div_layout.html.twig')),
-        ));
+        $container->prependExtensionConfig('twig', [
+            'form' => ['resources' => ['EkynaAdminBundle:Form:form_div_layout.html.twig']],
+        ]);
     }
 
     /**
@@ -127,9 +127,9 @@ class EkynaAdminExtension extends Extension
     private function configureAsseticBundle(ContainerBuilder $container, array $config)
     {
         $asseticConfig = new AsseticConfiguration();
-        $container->prependExtensionConfig('assetic', array(
-            'bundles' => array('EkynaAdminBundle'),
+        $container->prependExtensionConfig('assetic', [
+            'bundles' => ['EkynaAdminBundle'],
             'assets' => $asseticConfig->build($config),
-        ));
+        ]);
     }
 }

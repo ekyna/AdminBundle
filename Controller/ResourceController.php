@@ -62,11 +62,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $context = $this->loadContext($request);
 
         $table = $this->getTableFactory()
-            ->createBuilder($this->config->getTableType(), array(
+            ->createBuilder($this->config->getTableType(), [
                 'name' => $this->config->getId(),
                 'selector' => (bool)$request->get('selector', false), // TODO use constants (single/multiple)
                 'multiple' => (bool)$request->get('multiple', false),
-            ))
+            ])
             ->getTable($request);
 
         if ($request->isXmlHttpRequest()) {
@@ -77,9 +77,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         return $this->render(
             $this->config->getTemplate('list.html'),
-            $context->getTemplateVars(array(
+            $context->getTemplateVars([
                 $this->config->getResourceName(true) => $table->createView()
-            ))
+            ])
         );
     }
 
@@ -183,10 +183,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
 
                 $table = $this->getTableFactory()
-                    ->createBuilder($childConfig->getTableType(), array(
+                    ->createBuilder($childConfig->getTableType(), [
                         'name' => $childConfig->getId(),
                         'customize_qb' => $customizeQb,
-                    ))
+                    ])
                     ->getTable($context->getRequest());
 
                 //$table->getConfig()->setCustomizeQb($customizeQb);
@@ -223,10 +223,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             if (!$event->hasErrors()) {
                 if ($isXhr) {
                     $modal = $this->createModal('new');
-                    $modal->setContent(array(
+                    $modal->setContent([
                         'id' => $resource->getId(),
                         'name' => (string) $resource,
-                    ));
+                    ]);
                     return $this->get('ekyna_core.modal')->render($modal);
                 }
 
@@ -260,9 +260,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         return $this->render(
             $this->config->getTemplate('new.html'),
-            $context->getTemplateVars(array(
+            $context->getTemplateVars([
                 'form' => $form->createView()
-            ))
+            ])
         );
     }
 
@@ -274,19 +274,19 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param array   $options
      * @return \Symfony\Component\Form\Form
      */
-    protected function createNewResourceForm(Context $context, $footer = true, array $options = array())
+    protected function createNewResourceForm(Context $context, $footer = true, array $options = [])
     {
         $resource = $context->getResource();
 
         $action = $this->generateResourcePath($resource, 'new');
 
-        $form = $this->createForm($this->config->getFormType(), $resource, array_merge(array(
+        $form = $this->createForm($this->config->getFormType(), $resource, array_merge([
             'action' => $action,
             'method' => 'POST',
-            'attr' => array('class' => 'form-horizontal form-with-tabs'),
+            'attr' => ['class' => 'form-horizontal form-with-tabs'],
             'admin_mode' => true,
             '_redirect_enabled' => true,
-        ), $options));
+        ], $options));
 
         if ($footer) {
             $referer = $context->getRequest()->headers->get('referer');
@@ -365,10 +365,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             if (!$event->hasErrors()) {
                 if ($isXhr) {
                     $modal = $this->createModal('edit');
-                    $modal->setContent(array(
+                    $modal->setContent([
                         'id' => $resource->getId(),
                         'name' => (string) $resource,
-                    ));
+                    ]);
                     return $this->get('ekyna_core.modal')->render($modal);
                 }
 
@@ -405,9 +405,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         return $this->render(
             $this->config->getTemplate('edit.html'),
-            $context->getTemplateVars(array(
+            $context->getTemplateVars([
                 'form' => $form->createView()
-            ))
+            ])
         );
     }
 
@@ -419,19 +419,19 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param array   $options
      * @return \Symfony\Component\Form\Form
      */
-    protected function createEditResourceForm(Context $context, $footer = true, array $options = array())
+    protected function createEditResourceForm(Context $context, $footer = true, array $options = [])
     {
         $resource = $context->getResource();
 
         $action = $this->generateResourcePath($resource, 'edit');
 
-        $form = $this->createForm($this->config->getFormType(), $resource, array_merge(array(
+        $form = $this->createForm($this->config->getFormType(), $resource, array_merge([
             'action' => $action,
-            'attr' => array('class' => 'form-horizontal form-with-tabs'),
+            'attr' => ['class' => 'form-horizontal form-with-tabs'],
             'method' => 'POST',
             'admin_mode' => true,
             '_redirect_enabled' => true,
-        ), $options));
+        ], $options));
 
         if ($footer) {
             $referer = $context->getRequest()->headers->get('referer');
@@ -514,7 +514,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     $modal = $this->createModal('remove');
                     $modal
                         ->setSize(Modal::SIZE_NORMAL)
-                        ->setContent(array('success' => true))
+                        ->setContent(['success' => true])
                     ;
                     return $this->get('ekyna_core.modal')->render($modal);
                 }
@@ -557,9 +557,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         return $this->render(
             $this->config->getTemplate('remove.html'),
-            $context->getTemplateVars(array(
+            $context->getTemplateVars([
                 'form' => $form->createView()
-            ))
+            ])
         );
     }
 
@@ -572,7 +572,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param array   $options
      * @return \Symfony\Component\Form\Form
      */
-    protected function createRemoveResourceForm(Context $context, $message = null, $footer = true, array $options = array())
+    protected function createRemoveResourceForm(Context $context, $message = null, $footer = true, array $options = [])
     {
         if (null === $message) {
             $message = 'ekyna_core.message.remove_confirm';
@@ -583,21 +583,21 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $action = $this->generateResourcePath($resource, 'remove');
 
         $form = $this
-            ->createFormBuilder(null, array_merge(array(
+            ->createFormBuilder(null, array_merge([
                 'action' => $action,
-                'attr' => array('class' => 'form-horizontal'),
+                'attr' => ['class' => 'form-horizontal'],
                 'method' => 'POST',
                 'admin_mode' => true,
                 '_redirect_enabled' => true,
-            ), $options))
-            ->add('confirm', 'checkbox', array(
+            ], $options))
+            ->add('confirm', 'checkbox', [
                 'label' => $message,
-                'attr' => array('align_with_widget' => true),
+                'attr' => ['align_with_widget' => true],
                 'required' => true,
-                'constraints' => array(
+                'constraints' => [
                     new Constraints\True(),
-                )
-            ))
+                ]
+            ])
             ->getForm()
         ;
 
@@ -662,10 +662,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $results = $repository->defaultSearch($search);
 
         $serializer = $this->container->get('jms_serializer');
-        $response = new Response(sprintf('%s(%s);', $callback, $serializer->serialize(array(
+        $response = new Response(sprintf('%s(%s);', $callback, $serializer->serialize([
             'results' => $results,
             'total' => count($results)
-        ), 'json', SerializationContext::create()->setGroups(array('Search')))));
+        ], 'json', SerializationContext::create()->setGroups(['Search']))));
         $response->headers->set('Content-Type', 'text/javascript');
 
         return $response;
@@ -678,12 +678,12 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         $id = intval($request->query->get('id'));
 
-        $resource = $this->findResourceOrThrowException(array('id' => $id));
+        $resource = $this->findResourceOrThrowException(['id' => $id]);
 
-        return JsonResponse::create(array(
+        return JsonResponse::create([
             'id' => $resource->getId(),
             'text' => (string) $resource,
-        ));
+        ]);
     }
 
     /**
@@ -695,7 +695,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @param array $parameters
      */
-    protected function appendBreadcrumb($name, $label, $route = null, array $parameters = array())
+    protected function appendBreadcrumb($name, $label, $route = null, array $parameters = [])
     {
         $this->container->get('ekyna_admin.menu.builder')->breadcrumbAppend($name, $label, $route, $parameters);
     }
@@ -767,7 +767,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         if ($request->attributes->has($resourceName . 'Id')) {
-            $resource = $this->findResourceOrThrowException(array('id' => $request->attributes->get($resourceName . 'Id')));
+            $resource = $this->findResourceOrThrowException(['id' => $request->attributes->get($resourceName . 'Id')]);
             $context->addResource($resourceName, $resource);
             if (!$request->isXmlHttpRequest()) {
                 $this->appendBreadcrumb(
@@ -817,7 +817,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         } else {
             $object = $this->get('ekyna_admin.pool_registry')->getObjectIdentity($object);
         }
-        if (!$this->get('security.context')->isGranted($attributes, $object)) {
+        if (!$this->get('security.authorization_checker')->isGranted($attributes, $object)) {
             if ($throwException) {
                 throw new AccessDeniedHttpException('You are not allowed to view this resource.');
             }
@@ -957,14 +957,14 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $buttons = [];
 
-        if (in_array($action, array('new', 'edit', 'remove'))) {
-            $submitButton = array(
+        if (in_array($action, ['new', 'edit', 'remove'])) {
+            $submitButton = [
                 'id'       => 'submit',
                 'label'    => 'ekyna_core.button.save',
                 'icon'     => 'glyphicon glyphicon-ok',
                 'cssClass' => 'btn-success',
                 'autospin' => true,
-            );
+            ];
             if ($action === 'edit') {
                 $submitButton['icon'] = 'glyphicon glyphicon-ok';
                 $submitButton['cssClass'] = 'btn-warning';
@@ -976,12 +976,12 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $buttons[] = $submitButton;
         }
 
-        $buttons[] = array(
+        $buttons[] = [
             'id' => 'close',
             'label' => 'ekyna_core.button.cancel',
             'icon' => 'glyphicon glyphicon-remove',
             'cssClass' => 'btn-default',
-        );
+        ];
 
         $modal->setButtons($buttons);
 

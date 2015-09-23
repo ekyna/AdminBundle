@@ -49,11 +49,11 @@ class AdminExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            new \Twig_SimpleFunction('admin_resource_btn',    array($this, 'renderResourceButton'), array('is_safe' => array('html'))),
-            new \Twig_SimpleFunction('admin_resource_access', array($this, 'hasResourceAccess')),
-            new \Twig_SimpleFunction('admin_resource_path',   array($this, 'generateResourcePath')),
-        );
+        return [
+            new \Twig_SimpleFunction('admin_resource_btn',    [$this, 'renderResourceButton'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('admin_resource_access', [$this, 'hasResourceAccess']),
+            new \Twig_SimpleFunction('admin_resource_path',   [$this, 'generateResourcePath']),
+        ];
     }
 
     /**
@@ -66,7 +66,7 @@ class AdminExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function renderResourceButton($resource, $action = 'view', array $options = array(), array $attributes = array())
+    public function renderResourceButton($resource, $action = 'view', array $options = [], array $attributes = [])
     {
         if ($this->helper->isGranted($resource, $action)) {
             $options = array_merge($this->getButtonOptions($action), $options);
@@ -139,30 +139,30 @@ class AdminExtension extends \Twig_Extension
     private function getButtonOptions($action)
     {
         if ($action == 'new') {
-            return array(
+            return [
                 'theme' => 'primary',
                 'icon' => 'plus',
-            );
+            ];
         } elseif ($action == 'edit') {
-            return array(
+            return [
                 'theme' => 'warning',
                 'icon' => 'pencil',
-            );
+            ];
         } elseif ($action == 'remove') {
-            return array(
+            return [
                 'theme' => 'danger',
                 'icon' => 'trash',
-            );
+            ];
         } elseif ($action == 'show') {
-            return array(
+            return [
                 'icon' => 'eye-open',
-            );
+            ];
         } elseif ($action == 'list') {
-            return array(
+            return [
                 'icon' => 'list',
-            );
+            ];
         }
-        return array();
+        return [];
     }
 
     /**
@@ -170,9 +170,9 @@ class AdminExtension extends \Twig_Extension
      */
     public function getGlobals()
     {
-        return array(
+        return [
             'ekyna_admin_logo_path' => $this->logoPath,
-        );
+        ];
     }
 
     /**

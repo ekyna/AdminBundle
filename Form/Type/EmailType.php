@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints;
 
 /**
@@ -13,21 +13,30 @@ use Symfony\Component\Validator\Constraints;
  */
 class EmailType extends AbstractType
 {
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
-            'constraints' => array(
+        $resolver->setDefaults([
+            'constraints' => [
                 new Constraints\NotBlank(),
                 new Constraints\Email(),
-            ),
-        ));
+            ],
+        ]);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getParent()
     {
         return 'text';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return 'ekyna_admin_email';

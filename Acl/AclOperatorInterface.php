@@ -23,9 +23,12 @@ interface AclOperatorInterface
     /**
      * Find acl.
      *
+     * @param ObjectIdentityInterface $oid
+     * @param array $sids
+     *
      * @see \Symfony\Component\Security\Acl\Model\AclProviderInterface::findAcl
      */
-    public function findAcl(ObjectIdentityInterface $oid, array $sids = array());
+    public function findAcl(ObjectIdentityInterface $oid, array $sids = []);
 
     /**
      * Returns the mask relative to ObjectIdentity and RoleSecurityIdentity
@@ -42,7 +45,7 @@ interface AclOperatorInterface
      *
      * @param ObjectIdentity $oid
      * @param RoleSecurityIdentity $rid
-     * @param number $mask
+     * @param int $mask
      */
     public function setClassMask(ObjectIdentity $oid, RoleSecurityIdentity $rid, $mask = 0);
 

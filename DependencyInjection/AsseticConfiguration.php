@@ -18,7 +18,7 @@ class AsseticConfiguration
      */
     public function build(array $config)
     {
-        $output = array();
+        $output = [];
 
         // Fix path in output dir
         if ('/' !== substr($config['output_dir'], -1) && strlen($config['output_dir']) > 0) {
@@ -37,7 +37,7 @@ class AsseticConfiguration
      */
     protected function buildCss(array $config)
     {
-        $inputs = array_merge(array(
+        $inputs = array_merge([
             'assets/bootstrap/css/bootstrap.min.css',
             'assets/bootstrap-dialog/dist/css/bootstrap-dialog.min.css',
             'assets/jquery-ui/themes/base/jquery-ui.min.css',
@@ -52,13 +52,13 @@ class AsseticConfiguration
             '@EkynaAdminBundle/Resources/asset/css/elements.css',
             '@EkynaAdminBundle/Resources/asset/css/ui-elements.css',
             '@EkynaAdminBundle/Resources/asset/css/show.css',
-        ), $config['css_inputs']);
+        ], $config['css_inputs']);
 
-        return array(
+        return [
             'inputs'  => $inputs,
-            'filters' => array('yui_css', 'cssrewrite'), // 'cssrewrite'
+            'filters' => ['yui_css', 'cssrewrite'], // 'cssrewrite'
             'output'  => $config['output_dir'].'css/admin-main.css',
             'debug'   => false,
-        );
+        ];
     }
 }

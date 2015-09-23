@@ -22,10 +22,10 @@ class ORMTranslatableListener extends AbstractTranslatableListener implements Ev
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             Events::loadClassMetadata,
             Events::postLoad,
-        );
+        ];
     }
 
     /**
@@ -65,15 +65,15 @@ class ORMTranslatableListener extends AbstractTranslatableListener implements Ev
             return;
         }
 
-        $metadata->mapOneToMany(array(
+        $metadata->mapOneToMany([
             'fieldName'     => 'translations',
             'targetEntity'  => $this->configs[$metadata->name],
             'mappedBy'      => 'translatable',
             'fetch'         => ClassMetadataInfo::FETCH_EXTRA_LAZY,
             'indexBy'       => 'locale',
-            'cascade'       => array('persist', 'merge', 'refresh', 'remove'),
+            'cascade'       => ['persist', 'merge', 'refresh', 'remove'],
             'orphanRemoval' => true,
-        ));
+        ]);
     }
 
     /**
@@ -89,42 +89,42 @@ class ORMTranslatableListener extends AbstractTranslatableListener implements Ev
             return;
         }
 
-        $metadata->mapManyToOne(array(
+        $metadata->mapManyToOne([
             'fieldName'    => 'translatable' ,
             'targetEntity' => $this->configs[$metadata->name],
             'inversedBy'   => 'translations' ,
-            'joinColumns'  => array(array(
+            'joinColumns'  => [[
                 'name'                 => 'translatable_id',
                 'referencedColumnName' => 'id',
                 'onDelete'             => 'CASCADE',
                 'nullable'             => false,
-            )),
-        ));
+            ]],
+        ]);
 
         if (!$metadata->hasField('locale')) {
-            $metadata->mapField(array(
+            $metadata->mapField([
                 'fieldName' => 'locale',
                 'type'      => 'string',
                 'nullable'  => false,
-            ));
+            ]);
         }
 
         // Map unique index.
-        $columns = array(
+        $columns = [
             $metadata->getSingleAssociationJoinColumnName('translatable'),
             'locale'
-        );
+        ];
 
         if (!$this->hasUniqueConstraint($metadata, $columns)) {
-            $constraints = isset($metadata->table['uniqueConstraints']) ? $metadata->table['uniqueConstraints'] : array();
+            $constraints = isset($metadata->table['uniqueConstraints']) ? $metadata->table['uniqueConstraints'] : [];
 
-            $constraints[$metadata->getTableName().'_uniq_trans'] = array(
+            $constraints[$metadata->getTableName().'_uniq_trans'] = [
                 'columns' => $columns,
-            );
+            ];
 
-            $metadata->setPrimaryTable(array(
+            $metadata->setPrimaryTable([
                 'uniqueConstraints' => $constraints,
-            ));
+            ]);
         }
     }
 

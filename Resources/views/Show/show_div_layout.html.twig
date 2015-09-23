@@ -1,6 +1,6 @@
 {% block show_row %}
 {% spaceless %}
-    {% if compound and label is sameas(false) %}
+    {% if compound and label is same as(false) %}
         {{ content|raw }}
     {% else %}
     <div class="row show-row">
@@ -15,7 +15,7 @@
 
 {% block show_label %}
 {% spaceless %}
-    {% if label is not sameas(false) %}
+    {% if label is not same as(false) %}
     <div class="col-md-{{ label_nb_col }} show-label">{{ label|trans }}</div>
     {% endif %}
 {% endspaceless %}
@@ -63,18 +63,18 @@
 
 {% block show_widget_checkbox %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline">{% if content is sameas(true) %}{{ 'ekyna_core.value.yes'|trans }}{% else %}{{ 'ekyna_core.value.no'|trans }}{% endif %}</div>
+    <div class="show-widget show-widget-inline">{% if content is same as(true) %}{{ 'ekyna_core.value.yes'|trans }}{% else %}{{ 'ekyna_core.value.no'|trans }}{% endif %}</div>
 {% endspaceless %}
 {% endblock show_widget_checkbox %}
 
 {% block show_widget_entity %}
 {% spaceless %}
     <div class="show-widget show-widget-inline">
-    {% if entities is sameas(null) -%}
+    {% if entities is same as(null) -%}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {%- elseif entities|length > 0 %}
     {% for entity in entities %}
-        {% if route is not sameas(null) %}
+        {% if route is not same as(null) %}
         {% set params = route_params %}
         {% for param, property_path in route_params_map %}
             {% set params = params|merge({(param): get_property(entity, property_path)}) %}
@@ -144,7 +144,7 @@
 {% block show_widget_upload %}
 {% spaceless %}
     <div class="show-widget show-widget-inline">
-    {% if upload is sameas(null) %}
+    {% if upload is same as(null) %}
         <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
     {% else %}
 	    <a href="{{ path('ekyna_core_download', {'key': upload.path}) }}" class="show-entity" target="_blank">{{ upload.guessFilename }}</a>

@@ -48,7 +48,7 @@ abstract class ResourceControllerTest extends WebTestCase
      * @param array $params
      * @return string
      */
-    protected function generateResourcePath($action, $params = array())
+    protected function generateResourcePath($action, $params = [])
     {
         return $this->getRouter()->generate(
             $this->config->getRoute($action),
@@ -63,7 +63,7 @@ abstract class ResourceControllerTest extends WebTestCase
      */
     protected function getBaseRouteParams()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -135,7 +135,7 @@ abstract class ResourceControllerTest extends WebTestCase
      */
     public function testShowAction()
     {
-        $params = array($this->config->getResourceName().'Id' => 1);
+        $params = [$this->config->getResourceName().'Id' => 1];
 
         $crawler = $this->client->request('GET', $this->generateResourcePath('show', $params));
 
@@ -158,7 +158,7 @@ abstract class ResourceControllerTest extends WebTestCase
      */
     public function testEditAction()
     {
-        $params = array($this->config->getResourceName().'Id' => 1);
+        $params = [$this->config->getResourceName().'Id' => 1];
         $crawler = $this->client->request('GET', $this->generateResourcePath('edit', $params));
 
         // Asserts that this the "edit" page
@@ -203,7 +203,7 @@ abstract class ResourceControllerTest extends WebTestCase
      */
     public function testRemoveAction()
     {
-        $params = array($this->config->getResourceName().'Id' => 1);
+        $params = [$this->config->getResourceName().'Id' => 1];
         $crawler = $this->client->request('GET', $this->generateResourcePath('remove', $params));
 
         // Asserts that this the "remove" page

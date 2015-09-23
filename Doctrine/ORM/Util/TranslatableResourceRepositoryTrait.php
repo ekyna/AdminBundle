@@ -29,7 +29,7 @@ trait TranslatableResourceRepositoryTrait
     /**
      * @var array
      */
-    protected $translatableFields = array();
+    protected $translatableFields = [];
 
 
     /**

@@ -48,9 +48,9 @@ class ShowExtension extends \Twig_Extension
      */
     public function getFunctions()
     {
-        return array(
-            new \Twig_SimpleFunction('show_row', array($this, 'renderRow'), array('is_safe' => array('html'))),
-        );
+        return [
+            new \Twig_SimpleFunction('show_row', [$this, 'renderRow'], ['is_safe' => ['html']]),
+        ];
     }
 
     /**
@@ -63,7 +63,7 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function renderRow($content, $type = null, $label = null, array $options = array())
+    public function renderRow($content, $type = null, $label = null, array $options = [])
     {
         $compound = false;
 
@@ -104,11 +104,11 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderSimpleWidget($content, $options);
         }
 
-        $vars = array(
+        $vars = [
             'label' => $label !== null ? $label : false,
             'content' => $content,
             'compound' => $compound
-        );
+        ];
 
         /* Fix boostrap columns */
         $vars['label_nb_col'] = isset($options['label_nb_col']) ? intval($options['label_nb_col']) : (strlen($label) > 0 ? 2 : 0);
@@ -121,14 +121,15 @@ class ShowExtension extends \Twig_Extension
      * Renders the checkbox row.
      *
      * @param mixed $content
+     * @param array $options
      *
      * @return string
      */
-    protected function renderCheckboxWidget($content, array $options = array())
+    protected function renderCheckboxWidget($content, array $options = [])
     {
-        return $this->renderBlock('show_widget_checkbox', array(
+        return $this->renderBlock('show_widget_checkbox', [
             'content' => $content
-        ));
+        ]);
     }
 
     /**
@@ -139,16 +140,16 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderNumberWidget($content, array $options = array())
+    protected function renderNumberWidget($content, array $options = [])
     {
-        $options = array_merge(array(
+        $options = array_merge([
             'precision' => 2,
             'append' => '',
-        ), $options);
+        ], $options);
 
-        return $this->renderBlock('show_widget_simple', array(
+        return $this->renderBlock('show_widget_simple', [
             'content' => trim(sprintf('%s %s', number_format($content, $options['precision'], ',', ' '), $options['append']))
-        ));
+        ]);
     }
 
     /**
@@ -159,16 +160,16 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderTextareaWidget($content, array $options = array())
+    protected function renderTextareaWidget($content, array $options = [])
     {
-        $options = array_replace(array(
+        $options = array_replace([
             'html' => false,
-        ), $options);
+        ], $options);
 
-        return $this->renderBlock('show_widget_textarea', array(
+        return $this->renderBlock('show_widget_textarea', [
             'content' => $content,
             'options' => $options,
-        ));
+        ]);
     }
 
     /**
@@ -181,7 +182,7 @@ class ShowExtension extends \Twig_Extension
      *
      * @throws \InvalidArgumentException
      */
-    protected function renderEntityWidget($entities, array $options = array())
+    protected function renderEntityWidget($entities, array $options = [])
     {
         if (!array_key_exists('field', $options)) {
             // throw new \InvalidArgumentException('Missing "field" option for entity widget.');
@@ -191,23 +192,23 @@ class ShowExtension extends \Twig_Extension
             $options['route'] = null;
         }
         if (!array_key_exists('route_params', $options)) {
-            $options['route_params'] = array();
+            $options['route_params'] = [];
         }
         if (!array_key_exists('route_params_map', $options)) {
-            $options['route_params_map'] = array('id' => 'id');
+            $options['route_params_map'] = ['id' => 'id'];
         }
 
         if (null !== $entities && !($entities instanceof Collection)) {
-            $entities = new ArrayCollection(array($entities));
+            $entities = new ArrayCollection([$entities]);
         }
 
-        $vars = array(
+        $vars = [
             'route' => $options['route'],
             'field' => $options['field'],
             'route_params'     => $options['route_params'],
             'route_params_map' => $options['route_params_map'],
             'entities' => $entities
-        );
+        ];
 
         return $this->renderBlock('show_widget_entity', $vars);
     }
@@ -220,12 +221,12 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderUrlWidget($content, array $options = array())
+    protected function renderUrlWidget($content, array $options = [])
     {
-        $vars = array(
+        $vars = [
             'target' => isset($options['target']) ? $options['target'] : '_blank',
             'content' => $content
-        );
+        ];
 
         return $this->renderBlock('show_widget_url', $vars);
     }
@@ -238,7 +239,7 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderDatetimeWidget($content, array $options = array())
+    protected function renderDatetimeWidget($content, array $options = [])
     {
         if (!array_key_exists('time', $options)) {
             $options['time'] = true;
@@ -259,10 +260,10 @@ class ShowExtension extends \Twig_Extension
             $options['format'] = '';
         }
 
-        $vars = array(
+        $vars = [
             'content' => $content,
             'options' => $options,
-        );
+        ];
 
         return $this->renderBlock('show_widget_datetime', $vars);
     }
@@ -275,11 +276,11 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderColorWidget($content, array $options = array())
+    protected function renderColorWidget($content, array $options = [])
     {
-        return $this->renderBlock('show_widget_color', array(
+        return $this->renderBlock('show_widget_color', [
             'content' => $content
-        ));
+        ]);
     }
 
     /**
@@ -290,16 +291,16 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderTinymceWidget($content, array $options = array())
+    protected function renderTinymceWidget($content, array $options = [])
     {
         $height = isset($options['height']) ? intval($options['height']) : 0;
         if (0 >= $height) {
             $height = 250;
         }
-        return $this->renderBlock('show_widget_tinymce', array(
+        return $this->renderBlock('show_widget_tinymce', [
             'height' => $height,
             'route' => $content
-        ));
+        ]);
     }
 
     /**
@@ -310,11 +311,11 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderSimpleWidget($content, array $options = array())
+    protected function renderSimpleWidget($content, array $options = [])
     {
-        return $this->renderBlock('show_widget_simple', array(
+        return $this->renderBlock('show_widget_simple', [
             'content' => $content
-        ));
+        ]);
     }
 
     /**
@@ -325,11 +326,11 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderTelWidget($content, array $options = array())
+    protected function renderTelWidget($content, array $options = [])
     {
-        return $this->renderBlock('show_widget_tel', array(
+        return $this->renderBlock('show_widget_tel', [
             'content' => $content
-        ));
+        ]);
     }
 
     /**
@@ -340,11 +341,11 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderUploadWidget(UploadableInterface $upload = null, array $options = array())
+    protected function renderUploadWidget(UploadableInterface $upload = null, array $options = [])
     {
-        return $this->renderBlock('show_widget_upload', array(
+        return $this->renderBlock('show_widget_upload', [
             'upload' => $upload
-        ));
+        ]);
     }
 
     /**
@@ -355,11 +356,11 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderMediaWidget(MediaInterface $media = null, array $options = array())
+    protected function renderMediaWidget(MediaInterface $media = null, array $options = [])
     {
-        return $this->renderBlock('show_widget_media', array(
+        return $this->renderBlock('show_widget_media', [
             'media' => $media
-        ));
+        ]);
     }
 
     /**
@@ -370,15 +371,16 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderMediasWidget(Collection $medias, array $options = array())
+    protected function renderMediasWidget(Collection $medias, array $options = [])
     {
         $medias = array_map(function($m) {
+            /** @var \Ekyna\Bundle\MediaBundle\Model\MediaSubjectInterface $m */
             return $m->getMedia();
         }, $medias->toArray());
 
-        return $this->renderBlock('show_widget_medias', array(
+        return $this->renderBlock('show_widget_medias', [
             'medias' => $medias
-        ));
+        ]);
     }
 
     /**
@@ -389,11 +391,11 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderSeoWidget(SeoInterface $seo, array $options = array())
+    protected function renderSeoWidget(SeoInterface $seo, array $options = [])
     {
-        return $this->renderBlock('show_widget_seo', array(
+        return $this->renderBlock('show_widget_seo', [
             'seo' => $seo
-        ));
+        ]);
     }
 
     /**
@@ -404,11 +406,11 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderKeyValueCollectionWidget(array $content, array $options = array())
+    protected function renderKeyValueCollectionWidget(array $content, array $options = [])
     {
-        return $this->renderBlock('show_widget_key_value_collection', array(
+        return $this->renderBlock('show_widget_key_value_collection', [
             'content' => $content
-        ));
+        ]);
     }
 
     /**
@@ -419,19 +421,19 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderCoordinateWidget(Coordinate $coordinate = null, array $options = array())
+    protected function renderCoordinateWidget(Coordinate $coordinate = null, array $options = [])
     {
         $map = new Map();
         $map->setAutoZoom(true);
-        $map->setMapOptions(array(
+        $map->setMapOptions([
             'minZoom' => 3,
             'maxZoom' => 18,
             'disableDefaultUI' => true,
-        ));
-        $map->setStylesheetOptions(array(
+        ]);
+        $map->setStylesheetOptions([
             'width' => '100%',
             'height' => '320px',
-        ));
+        ]);
 
         /** @var \Ivory\GoogleMap\Base\Coordinate $coordinate */
         if (null !== $coordinate && null !== $coordinate->getLatitude() && null !== $coordinate->getLongitude()) {
@@ -440,9 +442,9 @@ class ShowExtension extends \Twig_Extension
             $map->addMarker($marker);
         }
 
-        return $this->renderBlock('show_widget_coordinate', array(
+        return $this->renderBlock('show_widget_coordinate', [
             'map' => $map
-        ));
+        ]);
     }
 
     /**

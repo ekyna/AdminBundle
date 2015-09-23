@@ -26,10 +26,10 @@ abstract class WebTestCase extends BaseTestCase
         // TODO https://gist.github.com/deltaepsilon/6391565 ?
         $crawler = $this->client->request('GET', $this->generatePath('ekyna_admin_security_login'));
 
-        $form = $crawler->selectButton('_submit')->form(array(
+        $form = $crawler->selectButton('_submit')->form([
             '_username'  => 'admin@example.org',
             '_password'  => 'admin',
-        ));
+        ]);
 
         $this->client->submit($form);
         $this->client->followRedirect();

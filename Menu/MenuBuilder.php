@@ -72,24 +72,24 @@ class MenuBuilder
     {
         $this->pool->prepare();
 
-        $menu = $this->factory->createItem('root', array(
-            'childrenAttributes' => array(
+        $menu = $this->factory->createItem('root', [
+            'childrenAttributes' => [
                 'id' => 'dashboard-menu'
-            )
-        ));
+            ]
+        ]);
 
         //$menu->setCurrent($request->getRequestUri());
 
-        $childOptions = array(
-            'childrenAttributes' => array(),
-            'labelAttributes'    => array()
-        );
+        $childOptions = [
+            'childrenAttributes' => [],
+            'labelAttributes'    => []
+        ];
 
         $menu
-            ->addChild('dashboard', array(
+            ->addChild('dashboard', [
                 'route' => 'ekyna_admin_dashboard',
-                'labelAttributes' => array('icon' => 'dashboard'),
-            ))
+                'labelAttributes' => ['icon' => 'dashboard'],
+            ])
             ->setLabel('ekyna_admin.dashboard')
         ;
 
@@ -108,31 +108,36 @@ class MenuBuilder
     {
         foreach ($this->pool->getGroups() as $group) {
 
-            $groupOptions = array(
-                'labelAttributes' => array('icon' => $group->getIcon()),
-                'childrenAttributes' => array('class' => 'submenu')
-            );
+            $groupOptions = [
+                'labelAttributes' => ['icon' => $group->getIcon()],
+                'childrenAttributes' => ['class' => 'submenu']
+            ];
 
             if ($group->hasEntries()) {
                 $groupOptions['labelAttributes']['class'] = 'dropdown-toggle';
 
-                $groupEntries = array();
+                $groupEntries = [];
                 foreach ($group->getEntries() as $entry) {
                     if (!$this->entrySecurityCheck($entry)) {
                         continue;
                     }
 
-                    $groupEntry = $this->factory->createItem($entry->getName(), array(
+                    $groupEntry = $this->factory->createItem($entry->getName(), [
                         'route' => $entry->getRoute()
-                    ));
-                    $groupEntry->setLabel($this->translate($entry->getLabel(), array(), $entry->getDomain()));
+                    ]);
+                    $groupEntry
+                        ->setLabel($entry->getLabel())
+                        ->setExtra('translation_domain', $entry->getDomain())
+                    ;
+
                     $groupEntries[] = $groupEntry;
                 }
 
                 if (0 < count($groupEntries)) {
                     $menuGroup = $menu
                         ->addChild($group->getName(), $groupOptions)
-                        ->setLabel($this->translate($group->getLabel(), array(), $group->getDomain()))
+                        ->setLabel($group->getLabel())
+                        ->setExtra('translation_domain', $group->getDomain())
                     ;
                     foreach ($groupEntries as $groupEntry) {
                         $menuGroup->addChild($groupEntry);
@@ -142,7 +147,8 @@ class MenuBuilder
                 $groupOptions['route'] = $group->getRoute();
                 $menu
                     ->addChild($group->getName(), $groupOptions)
-                    ->setLabel($this->translate($group->getLabel(), array(), $group->getDomain()))
+                    ->setLabel($group->getLabel())
+                    ->setExtra('translation_domain', $group->getDomain())
                 ;
             }
         }
@@ -172,13 +178,13 @@ class MenuBuilder
      * @param string $route
      * @param array $parameters
      */
-    public function breadcrumbAppend($name, $label, $route = null, array $parameters = array())
+    public function breadcrumbAppend($name, $label, $route = null, array $parameters = [])
     {
         $this->createBreadcrumb();
 
         $this
             ->breadcrumb
-            ->addChild($name, array('route' => $route, 'routeParameters' => $parameters))
+            ->addChild($name, ['route' => $route, 'routeParameters' => $parameters])
             ->setLabel($label)
         ;
     }
@@ -191,12 +197,12 @@ class MenuBuilder
     public function createBreadcrumb()
     {
         if (null === $this->breadcrumb) {
-            $this->breadcrumb = $this->factory->createItem('root', array(
-                'childrenAttributes' => array(
+            $this->breadcrumb = $this->factory->createItem('root', [
+                'childrenAttributes' => [
                     'class' => 'breadcrumb hidden-xs'
-                )
-            ));
-            $this->breadcrumb->addChild('dashboard', array('route' => 'ekyna_admin_dashboard'))->setLabel('ekyna_admin.dashboard');
+                ]
+            ]);
+            $this->breadcrumb->addChild('dashboard', ['route' => 'ekyna_admin_dashboard'])->setLabel('ekyna_admin.dashboard');
         }
         return $this->breadcrumb;
     }
@@ -210,7 +216,7 @@ class MenuBuilder
      *
      * @return string
      */
-    private function translate($label, $parameters = array(), $domain = null)
+    private function translate($label, $parameters = [], $domain = null)
     {
         return $this->translator->trans($label, $parameters, $domain);
     }

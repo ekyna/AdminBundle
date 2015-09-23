@@ -113,7 +113,7 @@ class ConfigurationRegistry
      */
     public function getAncestors(ConfigurationInterface $configuration, $included = false)
     {
-        $ancestors = array();
+        $ancestors = [];
 
         if ($included) {
             $ancestors[$configuration->getResourceName()] = $configuration;
@@ -136,7 +136,7 @@ class ConfigurationRegistry
      */
     public function getChildren(ConfigurationInterface $configuration)
     {
-        $children = array();
+        $children = [];
 
         foreach($this->configurations as $child) {
             if ($child->getParentId() === $configuration->getId()) {

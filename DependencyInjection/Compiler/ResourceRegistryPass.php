@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\Reference;
  */
 class ResourceRegistryPass implements CompilerPassInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public function process(ContainerBuilder $container)
     {
         if (!$container->hasDefinition('ekyna_admin.pool_registry')) {
@@ -21,7 +24,7 @@ class ResourceRegistryPass implements CompilerPassInterface
 
         $definition = $container->getDefinition('ekyna_admin.pool_registry');
 
-        $configurations = array();
+        $configurations = [];
         foreach ($container->findTaggedServiceIds('ekyna_admin.configuration') as $serviceId => $tag) {
             $alias = isset($tag[0]['alias']) ? $tag[0]['alias'] : $serviceId;
             $configurations[$alias] = new Reference($serviceId);

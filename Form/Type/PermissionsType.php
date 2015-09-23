@@ -43,9 +43,9 @@ class PermissionsType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         foreach ($this->registry->getConfigurations() as $config) {
-            $builder->add($config->getAlias(), new PermissionType($this->permissions), array(
+            $builder->add($config->getAlias(), new PermissionType($this->permissions), [
                 'label' => $config->getResourceLabel(true)
-            ));
+            ]);
         }
     }
 

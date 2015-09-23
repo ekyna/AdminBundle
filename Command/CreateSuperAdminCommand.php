@@ -63,7 +63,7 @@ EOT
                 if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
                     throw new \RuntimeException('This is not a valid email address.');
                 }
-                if (null !== $userRepository->findOneBy(array('email' => $answer))) {
+                if (null !== $userRepository->findOneBy(['email' => $answer])) {
                     throw new \RuntimeException('This email address is already used.');
                 }
                 return $answer;

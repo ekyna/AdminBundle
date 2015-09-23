@@ -2,7 +2,6 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller\Resource;
 
-use Ekyna\Bundle\AdminBundle\Controller\Context;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

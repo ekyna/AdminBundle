@@ -35,12 +35,12 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
      * Default groups :
      * [name => [[roles], permission, default]]
      */
-    protected $defaultGroups = array(
-        'Super administrateur' => array(array('ROLE_SUPER_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'), 'MASTER', false),
-        'Administrateur'       => array(array('ROLE_ADMIN'), 'OPERATOR', false),
-        'Modérateur'           => array(array('ROLE_ADMIN'), 'EDIT', false),
-        'Utilisateur'          => array(array(), 'VIEW', true),
-    );
+    protected $defaultGroups = [
+        'Super administrateur' => [['ROLE_SUPER_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'], 'MASTER', false],
+        'Administrateur'       => [['ROLE_ADMIN'], 'OPERATOR', false],
+        'Modérateur'           => [['ROLE_ADMIN'], 'EDIT', false],
+        'Utilisateur'          => [[], 'VIEW', true],
+    ];
 
     /**
      * {@inheritdoc}
@@ -78,7 +78,7 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
                 $name,
                 str_pad('.', 44 - mb_strlen($name), '.', STR_PAD_LEFT)
             ));
-            if (null !== $group = $repository->findOneBy(array('name' => $name))) {
+            if (null !== $group = $repository->findOneBy(['name' => $name])) {
                 $output->writeln('already exists.');
                 continue;
             }
@@ -117,9 +117,9 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
             } else {
                 continue;
             }
-            $datas = array();
+            $datas = [];
             foreach ($registry->getConfigurations() as $id => $config) {
-                $datas[$id] = array($permission => true);
+                $datas[$id] = [$permission => true];
             }
             $aclOperator->updateGroup($group, $datas);
         }
@@ -139,13 +139,13 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
         $userRepository = $this->container->get('ekyna_user.user.repository');
 
         /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
-        if (null === $group = $groupRepository->findOneBy(array('name' => array_keys($this->defaultGroups)[0]))) {
+        if (null === $group = $groupRepository->findOneBy(['name' => array_keys($this->defaultGroups)[0]])) {
             $output->writeln('Super admin group not found, aborting.');
             return;
         }
 
         /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $superAdmin */
-        if (null !== $superAdmin = $userRepository->findOneBy(array('group' => $group))) {
+        if (null !== $superAdmin = $userRepository->findOneBy(['group' => $group])) {
             $output->writeln(sprintf('Super admin already exists (<comment>%s</comment>).', $superAdmin->getEmail()));
             return;
         }
@@ -159,7 +159,7 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
             if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
                 throw new \RuntimeException('This is not a valid email address.');
             }
-            if (null !== $userRepository->findOneBy(array('email' => $answer))) {
+            if (null !== $userRepository->findOneBy(['email' => $answer])) {
                 throw new \RuntimeException('This email address is already used.');
             }
             return $answer;

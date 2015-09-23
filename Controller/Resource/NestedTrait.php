@@ -82,18 +82,18 @@ trait NestedTrait
         }
 
         $form = $this
-            ->createForm($this->config->getFormType(), $child, array(
+            ->createForm($this->config->getFormType(), $child, [
                 'action' => $this->generateUrl(
                     $this->config->getRoute('new_child'),
                     $context->getIdentifiers(true)
                 ),
                 'method' => 'POST',
-                'attr' => array(
+                'attr' => [
                     'class' => 'form-horizontal form-with-tabs',
-                ),
+                ],
                 'admin_mode' => true,
                 '_redirect_enabled' => true,
-            ))
+            ])
             ->add('actions', 'form_actions', [
                 'buttons' => [
                     'saveAndList' => [
@@ -169,10 +169,10 @@ trait NestedTrait
 
         return $this->render(
             $this->config->getTemplate('new_child.html'),
-            $context->getTemplateVars(array(
+            $context->getTemplateVars([
                 'child' => $child,
                 'form' => $form->createView()
-            ))
+            ])
         );
     }
 

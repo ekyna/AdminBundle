@@ -4,7 +4,6 @@ namespace Ekyna\Bundle\AdminBundle\Doctrine\ORM;
 
 use Doctrine\Common\Collections\Selectable;
 use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ORM\QueryBuilder;
 
 /**
  * Interface ResourceRepositoryInterface
@@ -55,7 +54,7 @@ interface ResourceRepositoryInterface extends ObjectRepository, Selectable
      *
      * @return array|\Doctrine\ORM\Tools\Pagination\Paginator
      */
-    public function findBy(array $criteria, array $sorting = array(), $limit = null, $offset = null);
+    public function findBy(array $criteria, array $sorting = [], $limit = null, $offset = null);
 
     /**
      * Finds a random resource by criteria.
@@ -84,7 +83,7 @@ interface ResourceRepositoryInterface extends ObjectRepository, Selectable
      *
      * @return \Pagerfanta\Pagerfanta
      */
-    public function createPager(array $criteria = array(), array $sorting = array());
+    public function createPager(array $criteria = [], array $sorting = []);
 
     /**
      * Returns the (doctrine) pager.

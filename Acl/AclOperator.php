@@ -14,7 +14,7 @@ use Symfony\Component\Security\Acl\Model\MutableAclProviderInterface;
 use Symfony\Component\Security\Acl\Model\ObjectIdentityInterface;
 use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 use Symfony\Component\Security\Acl\Permission\PermissionMapInterface;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Class AclOperator
@@ -24,12 +24,12 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 class AclOperator implements AclOperatorInterface
 {
     /**
-     * @var \Symfony\Component\Security\Acl\Model\MutableAclProviderInterface
+     * @var MutableAclProviderInterface
      */
     protected $aclProvider;
 
     /**
-     * @var \Symfony\Component\Security\Acl\Permission\PermissionMapInterface
+     * @var PermissionMapInterface
      */
     protected $permissionMap;
 
@@ -39,12 +39,12 @@ class AclOperator implements AclOperatorInterface
     protected $permissions;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry
+     * @var ConfigurationRegistry
      */
     protected $registry;
 
     /**
-     * @var \Symfony\Component\Security\Core\SecurityContextInterface
+     * @var AuthorizationCheckerInterface
      */
     protected $security;
 
@@ -54,18 +54,18 @@ class AclOperator implements AclOperatorInterface
      * @param MutableAclProviderInterface $aclProvider
      * @param PermissionMapInterface $permissionMap
      * @param ConfigurationRegistry $registry
-     * @param SecurityContextInterface $securityContext
+     * @param AuthorizationCheckerInterface $security
      */
     public function __construct(
         MutableAclProviderInterface $aclProvider, 
         PermissionMapInterface $permissionMap, 
         ConfigurationRegistry $registry,
-        SecurityContextInterface $securityContext
+        AuthorizationCheckerInterface $security
     ) {
         $this->aclProvider   = $aclProvider;
         $this->permissionMap = $permissionMap;
         $this->registry      = $registry;
-        $this->security      = $securityContext;
+        $this->security      = $security;
     }
 
     /**
@@ -88,7 +88,7 @@ class AclOperator implements AclOperatorInterface
     /**
      * {@inheritDoc}
      */
-    public function findAcl(ObjectIdentityInterface $oid, array $sids = array())
+    public function findAcl(ObjectIdentityInterface $oid, array $sids = [])
     {
         return $this->aclProvider->findAcl($oid, $sids);
     }
@@ -160,7 +160,7 @@ class AclOperator implements AclOperatorInterface
     public function getPermissions()
     {
         if(null === $this->permissions) {
-            $this->permissions = array();
+            $this->permissions = [];
             $reflexion = new \ReflectionClass($this->permissionMap);
             foreach($reflexion->getConstants() as $name => $value) {
                 if(substr($name, 0, 10) == 'PERMISSION') {
@@ -184,9 +184,9 @@ class AclOperator implements AclOperatorInterface
      */
     public function buildGroupForm(FormBuilderInterface $builder)
     {
-        $builder->add('acls', new PermissionsType($this->registry, $this->permissions), array(
+        $builder->add('acls', new PermissionsType($this->registry, $this->permissions), [
             'label' => false,
-        ));
+        ]);
     }
 
     /**
@@ -194,14 +194,14 @@ class AclOperator implements AclOperatorInterface
      */
     public function generateGroupFormDatas(GroupInterface $group)
     {
-        $datas = array();
+        $datas = [];
         $rid = $group->getSecurityIdentity();
         $permissions = $this->getPermissions();
 
         foreach ($this->registry->getConfigurations() as $config) {
             $mask = $this->getClassMask($config->getObjectIdentity(), $rid);
 
-            $oidDatas = array();
+            $oidDatas = [];
             foreach ($permissions as $permission) {
                 $permissionMask = $this->getPermissionMasks(strtoupper($permission))[0];
                 $oidDatas[$permission] = $permissionMask === ($mask & $permissionMask);
@@ -217,12 +217,12 @@ class AclOperator implements AclOperatorInterface
      */
     public function generateGroupViewDatas(GroupInterface $group)
     {
-        $datas = array();
+        $datas = [];
         $rid = $group->getSecurityIdentity();
         $permissions = $this->getPermissions();
 
         foreach ($this->registry->getConfigurations() as $config) {
-            $oidDatas = array();
+            $oidDatas = [];
             try {
                 $acl = $this->findAcl($config->getObjectIdentity());
             }catch(\Exception $e) {
@@ -232,7 +232,7 @@ class AclOperator implements AclOperatorInterface
             if (false !== $acl) {
                 foreach ($permissions as $permission) {
                     try {
-                        $granted = $acl->isGranted($this->getPermissionMasks(strtoupper($permission)), array($rid));
+                        $granted = $acl->isGranted($this->getPermissionMasks(strtoupper($permission)), [$rid]);
                         $oidDatas[$permission] = $granted;
                     } catch(\Exception $e) {
                         $oidDatas[$permission] = false;
@@ -260,7 +260,7 @@ class AclOperator implements AclOperatorInterface
         foreach ($datas as $configName => $oidDatas) {
             $config = $this->registry->get($configName);
 
-            $retainedPermissions = array();
+            $retainedPermissions = [];
             $oidDatas = array_reverse($oidDatas);
             foreach ($oidDatas as $permission => $enabled) {
                 if ($enabled) {

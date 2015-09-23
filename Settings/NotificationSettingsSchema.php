@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Settings;
 
 use Ekyna\Bundle\SettingBundle\Schema\AbstractSchema;
-use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilderInterface;
+use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilder;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints;
 
@@ -17,19 +17,17 @@ class NotificationSettingsSchema extends AbstractSchema
     /**
      * {@inheritdoc}
      */
-    public function buildSettings(SettingsBuilderInterface $builder)
+    public function buildSettings(SettingsBuilder $builder)
     {
         $builder
-            ->setDefaults(array_merge(array(
+            ->setDefaults(array_merge([
                 'from_name'  => 'Default admin name',
                 'from_email' => 'contact@example.org',
                 'to_emails'  => ['contact@example.org'],
-            ), $this->defaults))
-            ->setAllowedTypes(array(
-                'from_name'  => 'string',
-                'from_email' => 'string',
-                'to_emails'  => 'array',
-            ))
+            ], $this->defaults))
+            ->setAllowedTypes('from_name',  'string')
+            ->setAllowedTypes('from_email', 'string')
+            ->setAllowedTypes('to_emails',  'array')
         ;
     }
 
@@ -39,20 +37,20 @@ class NotificationSettingsSchema extends AbstractSchema
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('from_name', 'text', array(
+            ->add('from_name', 'text', [
                 'label' => 'ekyna_admin.settings.notification.from_name',
-                'constraints' => array(
+                'constraints' => [
                     new Constraints\NotBlank()
-                )
-            ))
-            ->add('from_email', 'text', array(
+                ]
+            ])
+            ->add('from_email', 'text', [
                 'label' => 'ekyna_admin.settings.notification.from_email',
-                'constraints' => array(
+                'constraints' => [
                     new Constraints\NotBlank(),
                     new Constraints\Email(),
-                )
-            ))
-            ->add('to_emails', 'ekyna_collection', array(
+                ]
+            ])
+            ->add('to_emails', 'ekyna_collection', [
                 'label'           => 'ekyna_admin.settings.notification.to_emails',
                 'type'            => 'text',
                 'allow_add'       => true,
@@ -60,19 +58,19 @@ class NotificationSettingsSchema extends AbstractSchema
                 'add_button_text' => 'ekyna_core.button.add',
                 'sub_widget_col'  => 10,
                 'button_col'      => 2,
-                'constraints'     => array(
-                    new Constraints\All(array(
-                        'constraints' => array(
+                'constraints'     => [
+                    new Constraints\All([
+                        'constraints' => [
                             new Constraints\NotBlank(),
                             new Constraints\Email(),
-                        ),
-                    )),
-                    new Constraints\Count(array(
+                        ],
+                    ]),
+                    new Constraints\Count([
                         'min'        => 1,
                         'minMessage' => 'ekyna_admin.settings.notification.at_least_one_email',
-                    )),
-                ),
-            ))
+                    ]),
+                ],
+            ])
         ;
     }
 
