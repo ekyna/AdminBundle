@@ -17,7 +17,9 @@
             <form method="post" action="{{ path('ekyna_admin_security_check') }}" class="content-wrap">
                 <h6>{{ 'ekyna_admin.login_header'|trans }}</h6>
                 {% if error %}
-                <div class="alert alert-danger">{{ error|trans({}, 'FOSUserBundle')  }}</div>
+                    <div class="alert alert-danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
                 {% endif %}
                 <input name="_username" class="form-control" type="text" placeholder="{{ 'ekyna_core.field.email_address'|trans }}">
                 <input name="_password" class="form-control" type="password" placeholder="{{ 'ekyna_core.field.password'|trans }}">
