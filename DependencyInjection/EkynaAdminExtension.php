@@ -73,6 +73,8 @@ class EkynaAdminExtension extends Extension
                 'label' => $groupConfig['label'],
                 'icon' => $groupConfig['icon'],
                 'position' => $groupConfig['position'],
+                'domain' => $groupConfig['domain'],
+                'route' => $groupConfig['route'],
             ]]);
             foreach ($groupConfig['entries'] as $entryName => $entryConfig) {
                 $pool->addMethodCall('createEntry', [$groupName, [
