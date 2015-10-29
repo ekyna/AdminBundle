@@ -1,6 +1,7 @@
 <?php
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
+
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 
 
@@ -18,6 +19,8 @@ class DashboardController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('EkynaAdminBundle:Dashboard:index.html.twig');
+        return $this->render('EkynaAdminBundle:Dashboard:index.html.twig', array(
+            'dashboard' => $this->get('ekyna_admin.dashboard'),
+        ));
     }
 }

@@ -1,4 +1,5 @@
         <ul class="nav navbar-nav pull-right hidden-xs">
+            {% block navbar_right_buttons %}{% endblock navbar_right_buttons %}
             {#
             <li class="hidden-xs hidden-sm">
                 <input class="search" type="text" />
@@ -107,7 +108,7 @@
             </li>
             #}
             <li class="settings hidden-xs hidden-sm">
-                <a href="{{ path(ekyna_cms_home_route) }}" target="_blank" title="Voir le site">
+                <a href="{{ path(ekyna_cms_home_route) }}" target="_blank" title="{{ 'ekyna_admin.navbar.go_to_front'|trans }}">
                     <i class="fa fa-sitemap"></i>
                 </a>
             </li>

@@ -16,27 +16,27 @@ use Symfony\Component\Translation\TranslatorInterface;
 class MenuBuilder
 {
     /**
-     * @var \Knp\Menu\FactoryInterface
+     * @var FactoryInterface
      */
     private $factory;
 
     /**
-     * @var \Symfony\Component\Translation\TranslatorInterface
+     * @var TranslatorInterface
      */
     private $translator;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Menu\MenuPool
+     * @var MenuPool
      */
     private $pool;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface
+     * @var AclOperatorInterface
      */
     private $aclOperator;
 
     /**
-     * @var \Knp\Menu\ItemInterface
+     * @var ItemInterface
      */
     private $breadcrumb;
 
@@ -44,10 +44,10 @@ class MenuBuilder
     /**
      * Constructor.
      *
-     * @param \Knp\Menu\FactoryInterface                         $factory
-     * @param \Symfony\Component\Translation\TranslatorInterface $translator
-     * @param \Ekyna\Bundle\AdminBundle\Menu\MenuPool            $pool
-     * @param \Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface $aclOperator
+     * @param FactoryInterface     $factory
+     * @param TranslatorInterface  $translator
+     * @param MenuPool             $pool
+     * @param AclOperatorInterface $aclOperator
      */
     public function __construct(
         FactoryInterface     $factory,
@@ -74,7 +74,7 @@ class MenuBuilder
 
         $menu = $this->factory->createItem('root', [
             'childrenAttributes' => [
-                'id' => 'dashboard-menu'
+                'id' => 'sidebar-menu'
             ]
         ]);
 
