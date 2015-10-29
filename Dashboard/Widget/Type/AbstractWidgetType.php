@@ -23,7 +23,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
         foreach (array('xs', 'sm', 'md', 'lg') as $sizing) {
             $size = $options['col_'.$sizing];
             if (0 < $size && $size < 12) {
-                $classes[] = 'col-'. $sizing. '-' . $options['col_xs'];
+                $classes[] = 'col-'. $sizing. '-' . $options['col_'.$sizing];
             }
         }
         if (empty($classes)) {
@@ -57,7 +57,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
          * @return mixed
          */
         $sizeNormalizer = function ($min, $value) {
-            return $min < $value ? $min : $value;
+            return $min > $value ? $min : $value;
         };
 
         /** @noinspection PhpUnusedParameterInspection */
@@ -71,8 +71,8 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
                 'col_lg_min' => 6,
                 'col_xs'     => 12,
                 'col_sm'     => 12,
-                'col_md'     => 6,
-                'col_lg'     => 6,
+                'col_md'     => 12,
+                'col_lg'     => 12,
                 'position'   => 0,
                 'css_path'   => null,
                 'js_path'    => null,

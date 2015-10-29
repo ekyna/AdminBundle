@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        {% set col = 0 + widget.options['col_md'] %}
+        {% set col = col + widget.options['col_md'] %}
         {% if col % 12 == 0 or loop.last %}</div>{% endif %}
     {% endfor %}
 {% endblock content %}
