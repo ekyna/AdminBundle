@@ -5,7 +5,6 @@ namespace Ekyna\Bundle\AdminBundle\Menu;
 use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
@@ -64,11 +63,9 @@ class MenuBuilder
     /**
      * Builds backend sidebar menu.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     *
      * @return \Knp\Menu\ItemInterface
      */
-    public function createSideMenu(Request $request)
+    public function createSideMenu()
     {
         $this->pool->prepare();
 
@@ -78,13 +75,6 @@ class MenuBuilder
             ]
         ]);
 
-        //$menu->setCurrent($request->getRequestUri());
-
-        $childOptions = [
-            'childrenAttributes' => [],
-            'labelAttributes'    => []
-        ];
-
         $menu
             ->addChild('dashboard', [
                 'route' => 'ekyna_admin_dashboard',
@@ -93,7 +83,7 @@ class MenuBuilder
             ->setLabel('ekyna_admin.dashboard')
         ;
 
-        $this->appendChildren($menu, $childOptions);
+        $this->appendChildren($menu);
 
         return $menu;
     }
@@ -102,9 +92,8 @@ class MenuBuilder
      * Fills the menu with menu pool's groups and entries.
      *
      * @param \Knp\Menu\ItemInterface $menu
-     * @param array                   $childOptions
      */
-    private function appendChildren(ItemInterface $menu, array $childOptions)
+    private function appendChildren(ItemInterface $menu)
     {
         foreach ($this->pool->getGroups() as $group) {
 
@@ -205,19 +194,5 @@ class MenuBuilder
             $this->breadcrumb->addChild('dashboard', ['route' => 'ekyna_admin_dashboard'])->setLabel('ekyna_admin.dashboard');
         }
         return $this->breadcrumb;
-    }
-
-    /**
-     * Translate label.
-     *
-     * @param string $label
-     * @param array  $parameters
-     * @param string $domain
-     *
-     * @return string
-     */
-    private function translate($label, $parameters = [], $domain = null)
-    {
-        return $this->translator->trans($label, $parameters, $domain);
     }
 }

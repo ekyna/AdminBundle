@@ -6,7 +6,7 @@ use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type\AbstractWidgetType;
 use Ekyna\Bundle\AdminBundle\Menu\MenuPool;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -71,7 +71,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
     /**
      * {@inheritdoc}
      */
-    public function configureOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         parent::configureOptions($resolver);
 

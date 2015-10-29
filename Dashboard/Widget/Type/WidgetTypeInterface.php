@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\WidgetInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Interface WidgetTypeInterface
@@ -32,9 +32,9 @@ interface WidgetTypeInterface
     /**
      * Configures the options.
      *
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolverInterface $resolver);
+    public function configureOptions(OptionsResolver $resolver);
 
     /**
      * Returns the name.

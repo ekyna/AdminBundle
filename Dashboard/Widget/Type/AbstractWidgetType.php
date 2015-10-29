@@ -4,7 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\WidgetInterface;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class AbstractWidgetType
@@ -37,7 +37,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
     /**
      * {@inheritdoc}
      */
-    public function configureOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         /**
          * Validates the column min size.
@@ -99,23 +99,21 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
                 'col_md_min' => $minSizeValidator,
                 'col_lg_min' => $minSizeValidator,
             ))
-            ->setNormalizers(array(
-                'col_xs'     => function (Options $options, $value) use ($sizeNormalizer) {
-                    return $sizeNormalizer($options['col_xs_min'], $value);
-                },
-                'col_sm'     => function (Options $options, $value) use ($sizeNormalizer) {
-                    return $sizeNormalizer($options['col_sm_min'], $value);
-                },
-                'col_md'     => function (Options $options, $value) use ($sizeNormalizer) {
-                    return $sizeNormalizer($options['col_md_min'], $value);
-                },
-                'col_lg'     => function (Options $options, $value) use ($sizeNormalizer) {
-                    return $sizeNormalizer($options['col_lg_min'], $value);
-                },
-                'position'   => function (Options $options, $value) use ($sizeNormalizer) {
-                    return 0 > $value ? 0 : $value;
-                },
-            ))
+            ->setNormalizer('col_xs', function (Options $options, $value) use ($sizeNormalizer) {
+                return $sizeNormalizer($options['col_xs_min'], $value);
+            })
+            ->setNormalizer('col_sm', function (Options $options, $value) use ($sizeNormalizer) {
+                return $sizeNormalizer($options['col_sm_min'], $value);
+            })
+            ->setNormalizer('col_md', function (Options $options, $value) use ($sizeNormalizer) {
+                return $sizeNormalizer($options['col_md_min'], $value);
+            })
+            ->setNormalizer('col_lg', function (Options $options, $value) use ($sizeNormalizer) {
+                return $sizeNormalizer($options['col_lg_min'], $value);
+            })
+            ->setNormalizer('position', function (Options $options, $value) use ($sizeNormalizer) {
+                return 0 > $value ? 0 : $value;
+            })
         ;
     }
 }

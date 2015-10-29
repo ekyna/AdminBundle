@@ -52,7 +52,6 @@
             factory-service="ekyna_admin.menu.builder" 
             factory-method="createSideMenu" 
             scope="request">
-            <argument type="service" id="request" />
             <tag name="knp_menu.menu" alias="ekyna_admin.side" />
         </service>
         <service id="ekyna_admin.menu.breadcrumb" 
@@ -60,7 +59,6 @@
             factory-service="ekyna_admin.menu.builder" 
             factory-method="createBreadcrumb" 
             scope="request">
-            <argument type="service" id="request" />
             <tag name="knp_menu.menu" alias="ekyna_admin.breadcrumb" />
         </service>
 
