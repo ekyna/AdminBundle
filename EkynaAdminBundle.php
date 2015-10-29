@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle;
 
-use Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler\ResourceRegistryPass;
+use Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler as Pass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -20,6 +20,7 @@ class EkynaAdminBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new ResourceRegistryPass());
+        $container->addCompilerPass(new Pass\ResourceRegistryPass());
+        $container->addCompilerPass(new Pass\DashboardWidgetTypeRegistryPass());
     }
 }

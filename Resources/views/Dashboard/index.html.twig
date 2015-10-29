@@ -5,8 +5,42 @@
         <div class="col-md-12">
             <h2>{{ 'ekyna_admin.dashboard'|trans }}</h2>
         </div>
-        <div class="col-md-12">
-
-        </div>
     </div>
+    <hr>
+    {% set col = 0 %}
+    {% for widget in dashboard.widgets %}
+        {% if col % 12 == 0 or loop.first %}<div class="row">{% endif %}
+        <div{% for attrname, attrvalue in widget.options.attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+            <div class="panel panel-default">
+                {% if widget.options['title'] is not empty %}
+                <div class="panel-heading">
+                    <h4>{{ widget.options['title']|trans }}</h4>
+                </div>
+                {% endif %}
+                <div class="panel-body">
+                    {{ render_dashboard_widget(widget) }}
+                </div>
+            </div>
+        </div>
+        {% set col = 0 + widget.options['col_md'] %}
+        {% if col % 12 == 0 or loop.last %}</div>{% endif %}
+    {% endfor %}
 {% endblock content %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {% for widget in dashboard.widgets -%}
+        {% if widget.options['css_path'] -%}
+            <link href="{{ widget.options['css_path'] }}" rel="stylesheet" type="text/css" />
+        {%- endif %}
+    {%- endfor %}
+{% endblock stylesheets %}
+
+{#{% block javascripts %}
+    {{ parent() }}
+    {% for widget in dashboard.widgets -%}
+        {% if widget.options['js_path'] -%}
+            <script type="text/javascript" src="{{ widget.options['js_path'] }}"></script>
+        {%- endif %}
+    {%- endfor %}
+{% endblock javascripts %}#}

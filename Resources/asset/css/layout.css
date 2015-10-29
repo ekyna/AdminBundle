@@ -303,7 +303,7 @@ input.search {
     font-size: 12px;
 }
 
-#sidebar-nav #dashboard-menu {
+#sidebar-nav > ul {
     list-style: none;
     padding-right: 15px;
     padding-left: 15px;
@@ -312,7 +312,7 @@ input.search {
     /* sidebar submenus */
 }
 
-#sidebar-nav #dashboard-menu > li > a {
+#sidebar-nav > ul > li > a {
     display: block;
     padding: 18px 14px 18px 14px;
     margin-left: -15px;
@@ -324,47 +324,47 @@ input.search {
     line-height: 20px;
 }
 
-#sidebar-nav #dashboard-menu > li {
+#sidebar-nav > ul > li {
     position: relative;
     /* font awesome icon */
 }
 
-#sidebar-nav #dashboard-menu > li .icon-group {
+#sidebar-nav > ul > li .icon-group {
     font-size: 22px;
 }
 
-#sidebar-nav #dashboard-menu > li i {
+#sidebar-nav > ul > li i {
     font-size: 22px;
     top: 17px;
 }
 
-#sidebar-nav #dashboard-menu > li:hover i {
+#sidebar-nav > ul > li:hover i {
     opacity: 1;
 }
 
-#sidebar-nav #dashboard-menu > li.active > a,
-#sidebar-nav #dashboard-menu > li > a:hover {
+#sidebar-nav > ul > li.active > a,
+#sidebar-nav > ul > li > a:hover {
     color: #33455a;
     text-decoration: none;
 }
 
-#sidebar-nav #dashboard-menu > li.active a {
+#sidebar-nav > ul > li.active a {
     font-weight: 600;
     text-shadow: 1px 1px 1px #fff;
 }
 
-#sidebar-nav #dashboard-menu > li.active i {
+#sidebar-nav > ul > li.active i {
     opacity: 1;
 }
 
-#sidebar-nav #dashboard-menu .pointer {
+#sidebar-nav > ul .pointer {
     position: absolute;
     right: 9px;
     top: 20px;
 }
 
-#sidebar-nav #dashboard-menu .pointer .arrow,
-#sidebar-nav #dashboard-menu .pointer .arrow_border {
+#sidebar-nav > ul .pointer .arrow,
+#sidebar-nav > ul .pointer .arrow_border {
     border-color: transparent #fff transparent transparent;
     border-width: 11px;
     border-style: solid;
@@ -380,7 +380,7 @@ input.search {
     margin-left: 45%;
 }
 
-#sidebar-nav #dashboard-menu .pointer .arrow_border {
+#sidebar-nav > ul .pointer .arrow_border {
     border-color: transparent #c0d2dd transparent transparent;
     border-width: 11px;
     margin-left: -1px;
@@ -389,7 +389,7 @@ input.search {
     top: 0;
 }
 
-#sidebar-nav #dashboard-menu a span {
+#sidebar-nav > ul a span {
     margin-left: 35px;
     transition: color .1s linear;
     -moz-transition: color .1s linear;
@@ -397,11 +397,11 @@ input.search {
     -o-transition: color .1s linear;
 }
 
-#sidebar-nav #dashboard-menu a.ui-elements span {
+#sidebar-nav > ul a.ui-elements span {
     margin-left: 25px;
 }
 
-#sidebar-nav #dashboard-menu a i {
+#sidebar-nav > ul a i {
     position: absolute;
     overflow: visible;
     left: 0;
@@ -414,7 +414,7 @@ input.search {
     -o-transition: opacity .1s ease;
 }
 
-#sidebar-nav #dashboard-menu a i.glyphicon-chevron-down {
+#sidebar-nav > ul a i.glyphicon-chevron-down {
     position: relative;
     float: right;
     top: 5px;
@@ -424,12 +424,12 @@ input.search {
     height: initial;
 }
 
-#sidebar-nav #dashboard-menu > li.active .dropdown-toggle {
+#sidebar-nav > ul > li.active .dropdown-toggle {
     border-bottom: 0;
     box-shadow: none;
 }
 
-#sidebar-nav #dashboard-menu ul.submenu {
+#sidebar-nav > ul ul.submenu {
     list-style-type: none;
     display: none;
     margin-top: 0;
@@ -442,11 +442,11 @@ input.search {
     padding-bottom: 10px;
 }
 
-#sidebar-nav #dashboard-menu ul.submenu.active {
+#sidebar-nav > ul ul.submenu.active {
     display: block;
 }
 
-#sidebar-nav #dashboard-menu ul.submenu a {
+#sidebar-nav > ul ul.submenu a {
     font-weight: normal;
     font-size: 13px;
     color: #4c535a;
@@ -455,11 +455,11 @@ input.search {
     margin-bottom: 7px;
 }
 
-#sidebar-nav #dashboard-menu ul.submenu a:hover {
+#sidebar-nav > ul ul.submenu a:hover {
     text-decoration: underline;
 }
 
-#sidebar-nav #dashboard-menu ul.submenu > li.active a {
+#sidebar-nav > ul ul.submenu > li.active a {
     font-weight: bold;
     text-shadow: none;
 }
@@ -668,7 +668,7 @@ div.mce-fullscreen {
         margin: 0;
     }
 
-    #dashboard-menu .pointer {
+    #sidebar-nav > ul .pointer {
         display: none;
     }
 
@@ -688,15 +688,15 @@ div.mce-fullscreen {
         transition: left .3s ease;
     }
 
-    #sidebar-nav #dashboard-menu {
+    #sidebar-nav > ul {
         margin-left: 10px;
     }
 
-    #sidebar-nav #dashboard-menu li a span {
+    #sidebar-nav > ul li a span {
         visibility: visible;
     }
 
-    #sidebar-nav #dashboard-menu li:last-child a {
+    #sidebar-nav > ul li:last-child a {
         border-bottom: 0;
         box-shadow: none;
     }

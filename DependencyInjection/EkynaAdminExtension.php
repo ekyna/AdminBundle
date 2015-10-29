@@ -26,6 +26,7 @@ class EkynaAdminExtension extends Extension
         $loader->load('services.xml');
 
         $container->setParameter('ekyna_admin.logo_path', $config['logo_path']);
+        $container->setParameter('ekyna_admin.dashboard.config', $config['dashboard']);
 
         $this->configureResources($config['resources'], $container);
         $this->configureMenus($config['menus'], $container);

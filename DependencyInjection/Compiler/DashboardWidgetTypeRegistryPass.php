@@ -7,28 +7,30 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class ResourceRegistryPass
+ * Class DashboardWidgetTypeRegistryPass
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class ResourceRegistryPass implements CompilerPassInterface
+class DashboardWidgetTypeRegistryPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('ekyna_admin.pool_registry')) {
+        if (!$container->hasDefinition('ekyna_admin.dashboard.widget.registry')) {
             return;
         }
 
-        $definition = $container->getDefinition('ekyna_admin.pool_registry');
-
-        $configurations = array();
-        foreach ($container->findTaggedServiceIds('ekyna_admin.configuration') as $serviceId => $tag) {
+        $types = array();
+        foreach ($container->findTaggedServiceIds('ekyna_admin.dashboard.widget_type') as $serviceId => $tag) {
             $alias = isset($tag[0]['alias']) ? $tag[0]['alias'] : $serviceId;
-            $configurations[$alias] = new Reference($serviceId);
+            $types[$alias] = new Reference($serviceId);
         }
-        $definition->replaceArgument(0, $configurations);
+
+        $container
+            ->getDefinition('ekyna_admin.dashboard.widget.registry')
+            ->replaceArgument(0, $types)
+        ;
     }
 }
