@@ -74,7 +74,7 @@ class MenuBuilder
 
         $menu = $this->factory->createItem('root', array(
             'childrenAttributes' => array(
-                'id' => 'dashboard-menu'
+                'id' => 'sidebar-menu'
             )
         ));
 

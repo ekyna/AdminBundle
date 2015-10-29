@@ -7,21 +7,29 @@
         </div>
     </div>
     <hr>
+    {% set count = 0 %}
     {% set col = 0 %}
     {% for widget in dashboard.widgets %}
         {% if col % 12 == 0 or loop.first %}<div class="row">{% endif %}
         <div{% for attrname, attrvalue in widget.options.attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
-            <div class="panel panel-default">
+            <div class="panel panel-default panel-dashboard">
                 {% if widget.options['title'] is not empty %}
                 <div class="panel-heading">
-                    <h4>{{ widget.options['title']|trans }}</h4>
+
+                        <a class="panel-title" data-toggle="collapse" data-target="#dashboard-widget-{{ count }}" href="#dashboard-widget-{{ count }}">
+                            {{ widget.options['title']|trans }}
+                        </a>
+
                 </div>
+                <div id="dashboard-widget-{{ count }}" class="panel-collapse collapse in">
                 {% endif %}
                 <div class="panel-body">
                     {{ render_dashboard_widget(widget) }}
                 </div>
+                {% if widget.options['title'] is not empty %}</div>{% endif %}
             </div>
         </div>
+        {% set count = count + 1 %}
         {% set col = col + widget.options['col_md'] %}
         {% if col % 12 == 0 or loop.last %}</div>{% endif %}
     {% endfor %}
