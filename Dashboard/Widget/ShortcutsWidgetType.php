@@ -112,6 +112,9 @@ class ShortcutsWidgetType extends AbstractWidgetType
             }
 
             while ($currentCount < $countPerCol && !empty($groups)) {
+                if (end($groups)['count'] + $currentCount - $countPerCol > 2) {
+                    break;
+                }
                 $group = array_pop($groups);
                 $columnGroups[] = $group;
                 $currentCount += $group['count'];
@@ -164,10 +167,10 @@ class ShortcutsWidgetType extends AbstractWidgetType
             );
             if (!empty($entries)) {
                 $group['entries'] = $entries;
-                $group['count']   = count($entries) + 1;
+                $group['count']   = count($entries) + 2;
             } else {
                 $group['path']  = $this->urlGenerator->generate($menuGroup->getRoute());
-                $group['count'] = 1;
+                $group['count'] = 2;
             }
             $groups[] = $group;
         }
