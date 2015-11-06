@@ -32,7 +32,11 @@ class MenuPool
      * @var OptionsResolver
      */
     private $entryOptionsResolver;
-    
+
+
+    /**
+     * Constructor.
+     */
     public function __construct()
     {
         $this->groups = [];
@@ -41,6 +45,9 @@ class MenuPool
         $this->initResolvers();
     }
 
+    /**
+     * Initializes the options resolvers.
+     */
     private function initResolvers()
     {
         $this->groupOptionsResolver = new OptionsResolver();
@@ -76,9 +83,8 @@ class MenuPool
             ->setAllowedTypes('route',    'string')
             ->setAllowedTypes('position', 'int')
             ->setAllowedTypes('domain',   'string')
-            ->setAllowedTypes('resource', ['string', 'null'])
+            ->setAllowedTypes('resource', 'string')
         ;
-        
     }
 
     /**

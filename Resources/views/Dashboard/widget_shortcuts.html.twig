@@ -1,0 +1,31 @@
+<div class="row dashboard-shortcuts">
+{% for column in columns %}
+    <div class="col-sm-6 col-md-3">
+    {% for group in column %}
+        <ul class="list-unstyled">
+        {% if group.path is defined %}
+            <li class="dashboard-shortcuts-head">
+                <a href="{{ group.path }}">
+                    <i class="fa fa-{{ group.icon }}"></i>
+                    {{ group.label|trans({}, group.domain) }}
+                </a>
+            </li>
+        {% else %}
+            <li class="dashboard-shortcuts-head">
+                <i class="fa fa-{{ group.icon }}"></i>
+                {{ group.label|trans({}, group.domain) }}
+            </li>
+            {% for entry in group.entries %}
+            <li>
+                <a href="{{ entry.path }}">{{ entry.label|trans({}, entry.domain) }}</a>
+                {% if entry.create_path is defined %}
+                    <a href="{{ entry.create_path }}" class="btn btn-primary dashboard-shortcuts-create">+</a>
+                {% endif %}
+            </li>
+            {% endfor %}
+        {% endif %}
+        </ul>
+    {% endfor %}
+    </div>
+{% endfor %}
+</div>

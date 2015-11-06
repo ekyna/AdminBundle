@@ -595,7 +595,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 'attr' => ['align_with_widget' => true],
                 'required' => true,
                 'constraints' => [
-                    new Constraints\True(),
+                    new Constraints\IsTrue(),
                 ]
             ])
             ->getForm()

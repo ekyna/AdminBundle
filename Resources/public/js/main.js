@@ -41,7 +41,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
     });*/
 
     // sidebar menu dropdown toggle
-    $('#dashboard-menu').on('click', '.dropdown-toggle', function(e) {
+    $('#sidebar-menu').on('click', '.dropdown-toggle', function(e) {
         e.preventDefault();
         var $item = $(this).parent();
         $item.toggleClass("active");

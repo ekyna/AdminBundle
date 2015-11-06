@@ -52,7 +52,6 @@
             factory-service="ekyna_admin.menu.builder" 
             factory-method="createSideMenu" 
             scope="request">
-            <argument type="service" id="request" />
             <tag name="knp_menu.menu" alias="ekyna_admin.side" />
         </service>
         <service id="ekyna_admin.menu.breadcrumb" 
@@ -60,7 +59,6 @@
             factory-service="ekyna_admin.menu.builder" 
             factory-method="createBreadcrumb" 
             scope="request">
-            <argument type="service" id="request" />
             <tag name="knp_menu.menu" alias="ekyna_admin.breadcrumb" />
         </service>
 
@@ -116,6 +114,34 @@
 	        <argument>%ekyna_admin.twig.show_extension.template%</argument>
 	        <tag name="twig.extension" />
 	    </service>
+	    <service id="ekyna_dashboard_extension" class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
+	        <tag name="twig.extension" />
+	    </service>
+
+        <!-- Dashboard -->
+        <service id="ekyna_admin.dashboard.widget.registry" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\Registry">
+            <argument type="collection" />
+        </service>
+        <service id="ekyna_admin.dashboard.widget.factory" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\Factory">
+            <argument id="ekyna_admin.dashboard.widget.registry" type="service" />
+        </service>
+        <service id="ekyna_admin.dashboard.factory" class="Ekyna\Bundle\AdminBundle\Dashboard\Factory">
+            <argument id="ekyna_admin.dashboard.widget.factory" type="service" />
+        </service>
+        <service id="ekyna_admin.dashboard.widget.shortcuts" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\ShortcutsWidgetType">
+            <argument id="ekyna_admin.menu.pool" type="service" />
+            <argument id="ekyna_admin.pool_registry" type="service" />
+            <argument id="ekyna_admin.acl_operator" type="service" />
+            <argument id="router" type="service" />
+            <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts" />
+        </service>
+
+        <service id="ekyna_admin.dashboard"
+                 class="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard"
+                 factory-service="ekyna_admin.dashboard.factory"
+                 factory-method="create">
+            <argument>%ekyna_admin.dashboard.config%</argument>
+        </service>
 
     </services>
 

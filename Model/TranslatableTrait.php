@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Trait TranslatableTrait
@@ -13,21 +14,25 @@ trait TranslatableTrait
 {
     /**
      * @var string
+     * @JMS\Exclude()
      */
     protected $currentLocale;
 
     /**
      * @var string
+     * @JMS\Exclude()
      */
     protected $fallbackLocale;
 
     /**
      * @var TranslationInterface
+     * @JMS\Exclude()
      */
     protected $currentTranslation;
 
     /**
      * @var ArrayCollection|TranslationInterface[]
+     * @JMS\Expose()
      */
     protected $translations;
 

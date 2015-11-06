@@ -172,6 +172,7 @@ class PoolBuilder
             };
 
             self::$optionsResolver = new OptionsResolver();
+            /** @noinspection PhpUnusedParameterInspection */
             self::$optionsResolver
                 ->setDefaults([
                     'entity'      => null,
@@ -321,8 +322,7 @@ class PoolBuilder
         if (!$this->container->has($id)) {
             $definition = new Definition(self::CLASS_METADATA);
             $definition
-                ->setFactoryService($this->getManagerServiceId())
-                ->setFactoryMethod('getClassMetadata')
+                ->setFactory([new Reference($this->getManagerServiceId()), 'getClassMetadata'])
                 ->setArguments([
                     $this->container->getParameter($this->getServiceId('class'))
                 ])//->setPublic(false)

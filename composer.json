@@ -19,20 +19,15 @@
     ],
     "require" : {
         "php" : ">=5.4.0",
-        "ekyna/core-bundle" : "1.0.x-dev",
-        "ekyna/user-bundle" : "1.0.x-dev",
-        "ekyna/google-bundle" : "1.0.x-dev",
-        "ekyna/setting-bundle" : "1.0.x-dev",
-        "ekyna/install-bundle" : "1.0.x-dev"
+        "ekyna/core-bundle" : "dev-master",
+        "ekyna/user-bundle" : "dev-master",
+        "ekyna/google-bundle" : "dev-master",
+        "ekyna/setting-bundle" : "dev-master",
+        "ekyna/install-bundle" : "dev-master"
     },
     "autoload" : {
         "psr-4" : {
             "Ekyna\\Bundle\\AdminBundle\\" : ""
-        }
-    },
-    "extra" : {
-        "branch-alias" : {
-            "dev-master" : "1.0.x-dev"
         }
     }
 }

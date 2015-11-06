@@ -26,6 +26,7 @@ class EkynaAdminExtension extends Extension
         $loader->load('services.xml');
 
         $container->setParameter('ekyna_admin.logo_path', $config['logo_path']);
+        $container->setParameter('ekyna_admin.dashboard.config', $config['dashboard']);
 
         $this->configureResources($config['resources'], $container);
         $this->configureMenus($config['menus'], $container);
@@ -73,6 +74,8 @@ class EkynaAdminExtension extends Extension
                 'label' => $groupConfig['label'],
                 'icon' => $groupConfig['icon'],
                 'position' => $groupConfig['position'],
+                'domain' => $groupConfig['domain'],
+                'route' => $groupConfig['route'],
             ]]);
             foreach ($groupConfig['entries'] as $entryName => $entryConfig) {
                 $pool->addMethodCall('createEntry', [$groupName, [

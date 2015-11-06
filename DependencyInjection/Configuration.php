@@ -26,6 +26,7 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('output_dir')->defaultValue('')->end()
                 ->append($this->getResourcesSection())
                 ->append($this->getMenusSection())
+                ->append($this->getDashboardSection())
                 ->arrayNode('css_inputs')
                     ->prototype('scalar')
                     ->treatNullLike([])
@@ -97,6 +98,8 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('label')->isRequired()->cannotBeEmpty()->end()
                     ->scalarNode('icon')->isRequired()->cannotBeEmpty()->end()
                     ->integerNode('position')->defaultValue(0)->end()
+                    ->scalarNode('domain')->defaultValue('messages')->end()
+                    ->scalarNode('route')->defaultNull()->end()
                     ->arrayNode('entries')
                         ->useAttributeAsKey('name')
                         ->prototype('array')
@@ -105,9 +108,36 @@ class Configuration implements ConfigurationInterface
                                 ->scalarNode('label')->isRequired()->cannotBeEmpty()->end()
                                 ->scalarNode('resource')->isRequired()->cannotBeEmpty()->end()
                                 ->integerNode('position')->defaultValue(0)->end()
-                                ->scalarNode('domain')->defaultNull()->end()
+                                ->scalarNode('domain')->defaultValue('messages')->end()
                             ->end()
                         ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * Returns the dashboard configuration definition.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
+    private function getDashboardSection()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('dashboard');
+
+        $node
+            ->useAttributeAsKey('name')
+            ->prototype('array')
+                ->children()
+                    ->scalarNode('type')->isRequired()->cannotBeEmpty()->end()
+                    ->arrayNode('options')
+                        ->useAttributeAsKey('name')
+                        ->prototype('scalar')->end()
+                        ->defaultValue(array())
                     ->end()
                 ->end()
             ->end()
