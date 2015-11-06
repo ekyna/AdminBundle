@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 /**
  * Class ShortcutsWidgetType
  * @package Ekyna\Bundle\AdminBundle\Dashboard\Widget
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class ShortcutsWidgetType extends AbstractWidgetType
 {
@@ -52,9 +52,9 @@ class ShortcutsWidgetType extends AbstractWidgetType
         AclOperatorInterface $aclOperator,
         UrlGeneratorInterface $urlGenerator
     ) {
-        $this->menuPool     = $menuPool;
-        $this->registry     = $registry;
-        $this->aclOperator  = $aclOperator;
+        $this->menuPool = $menuPool;
+        $this->registry = $registry;
+        $this->aclOperator = $aclOperator;
         $this->urlGenerator = $urlGenerator;
     }
 
@@ -78,8 +78,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
         $resolver
             ->setDefaults(array(
                 'css_path' => '/bundles/ekynaadmin/css/dashboard-shortcuts.css',
-            ))
-        ;
+            ));
     }
 
     private function createColumns()
@@ -87,9 +86,9 @@ class ShortcutsWidgetType extends AbstractWidgetType
         $groups = $this->createGroups();
 
         // Sort groups by count desc
-        usort($groups, function($gA, $gB) {
+        usort($groups, function ($gA, $gB) {
             if ($gA['count'] == $gB['count']) {
-                return  0;
+                return 0;
             }
             return $gA['count'] < $gB['count'] ? 1 : -1;
         });
@@ -124,7 +123,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
             $columnGroups = [];
             $currentCount = 0;
 
-        } while(!empty($groups));
+        } while (!empty($groups));
 
         return $columns;
     }
@@ -147,11 +146,11 @@ class ShortcutsWidgetType extends AbstractWidgetType
                         if (null !== $config->getParentId() || !$this->aclOperator->isAccessGranted($resource, 'VIEW')) {
                             continue;
                         }
-                        if($this->aclOperator->isAccessGranted($resource, 'CREATE')) {
+                        if ($this->aclOperator->isAccessGranted($resource, 'CREATE')) {
                             try {
                                 $path = $this->urlGenerator->generate($config->getRoute('new'));
                                 $entry['create_path'] = $path;
-                            } catch(ExceptionInterface $e) {
+                            } catch (ExceptionInterface $e) {
                             }
                         }
                     }
@@ -161,15 +160,15 @@ class ShortcutsWidgetType extends AbstractWidgetType
 
             // Group
             $group = array(
-                'label'   => $menuGroup->getLabel(),
-                'domain'  => $menuGroup->getDomain(),
-                'icon'    => $menuGroup->getIcon(),
+                'label'  => $menuGroup->getLabel(),
+                'domain' => $menuGroup->getDomain(),
+                'icon'   => $menuGroup->getIcon(),
             );
             if (!empty($entries)) {
                 $group['entries'] = $entries;
-                $group['count']   = count($entries) + 2;
+                $group['count'] = count($entries) + 2;
             } else {
-                $group['path']  = $this->urlGenerator->generate($menuGroup->getRoute());
+                $group['path'] = $this->urlGenerator->generate($menuGroup->getRoute());
                 $group['count'] = 2;
             }
             $groups[] = $group;

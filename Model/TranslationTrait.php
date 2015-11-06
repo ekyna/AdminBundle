@@ -2,6 +2,8 @@
 
 namespace Ekyna\Bundle\AdminBundle\Model;
 
+use JMS\Serializer\Annotation as JMS;
+
 /**
  * Trait TranslationTrait
  * @package Ekyna\Bundle\AdminBundle\Model
@@ -11,11 +13,13 @@ trait TranslationTrait
 {
     /**
      * @var string
+     * @JMS\Exclude()
      */
     protected $locale;
 
     /**
      * @var TranslatableInterface
+     * @JMS\Exclude()
      */
     protected $translatable;
 
