@@ -126,6 +126,8 @@ class ORMTranslatableListener extends AbstractTranslatableListener implements Ev
                 'uniqueConstraints' => $constraints,
             ));
         }
+
+        $metadata->addEntityListener('preFlush', '\Ekyna\Bundle\AdminBundle\Listener\TranslationListener', 'preFlush');
     }
 
     /**
