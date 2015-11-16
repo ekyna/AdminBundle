@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 /**
  * Class AbstractWidgetType
  * @package Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 abstract class AbstractWidgetType implements WidgetTypeInterface
 {
@@ -21,9 +21,9 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
         $attr = ['name' => $options['name']];
         $classes = [];
         foreach (array('xs', 'sm', 'md', 'lg') as $sizing) {
-            $size = $options['col_'.$sizing];
+            $size = $options['col_' . $sizing];
             if (0 < $size && $size < 12) {
-                $classes[] = 'col-'. $sizing. '-' . $options['col_'.$sizing];
+                $classes[] = 'col-' . $sizing . '-' . $options['col_' . $sizing];
             }
         }
         if (empty($classes)) {
@@ -43,6 +43,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
          * Validates the column min size.
          *
          * @param int $value
+         *
          * @return bool
          */
         $minSizeValidator = function ($value) {
@@ -54,6 +55,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
          *
          * @param $min
          * @param $value
+         *
          * @return mixed
          */
         $sizeNormalizer = function ($min, $value) {
@@ -65,6 +67,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
             ->setDefaults(array(
                 'name'       => null,
                 'title'      => null,
+                'theme'      => 'default',
                 'col_xs_min' => 12,
                 'col_sm_min' => 12,
                 'col_md_min' => 6,
@@ -80,7 +83,8 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
             ->setRequired(array('name', 'title'))
             ->setAllowedTypes(array(
                 'name'       => 'string',
-                'title'      => 'string',
+                'title'      => array('null', 'string'),
+                'theme'      => array('null', 'string'),
                 'col_xs_min' => 'int',
                 'col_sm_min' => 'int',
                 'col_md_min' => 'int',
@@ -94,28 +98,37 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
                 'js_path'    => array('null', 'string'),
             ))
             ->setAllowedValues(array(
+                'theme'      => function ($value) {
+                    return null === $value || in_array($value, array(
+                        'default',
+                        'primary',
+                        'success',
+                        'info',
+                        'warning',
+                        'danger',
+                    ));
+                },
                 'col_xs_min' => $minSizeValidator,
                 'col_sm_min' => $minSizeValidator,
                 'col_md_min' => $minSizeValidator,
                 'col_lg_min' => $minSizeValidator,
             ))
             ->setNormalizers(array(
-                'col_xs'     => function (Options $options, $value) use ($sizeNormalizer) {
+                'col_xs'   => function (Options $options, $value) use ($sizeNormalizer) {
                     return $sizeNormalizer($options['col_xs_min'], $value);
                 },
-                'col_sm'     => function (Options $options, $value) use ($sizeNormalizer) {
+                'col_sm'   => function (Options $options, $value) use ($sizeNormalizer) {
                     return $sizeNormalizer($options['col_sm_min'], $value);
                 },
-                'col_md'     => function (Options $options, $value) use ($sizeNormalizer) {
+                'col_md'   => function (Options $options, $value) use ($sizeNormalizer) {
                     return $sizeNormalizer($options['col_md_min'], $value);
                 },
-                'col_lg'     => function (Options $options, $value) use ($sizeNormalizer) {
+                'col_lg'   => function (Options $options, $value) use ($sizeNormalizer) {
                     return $sizeNormalizer($options['col_lg_min'], $value);
                 },
-                'position'   => function (Options $options, $value) use ($sizeNormalizer) {
+                'position' => function (Options $options, $value) use ($sizeNormalizer) {
                     return 0 > $value ? 0 : $value;
                 },
-            ))
-        ;
+            ));
     }
 }

@@ -12,7 +12,7 @@
     {% for widget in dashboard.widgets %}
         {% if col % 12 == 0 or loop.first %}<div class="row">{% endif %}
         <div{% for attrname, attrvalue in widget.options.attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
-            <div class="panel panel-default panel-dashboard">
+            <div class="panel panel-dashboard{% if widget.options.theme is not same as(null) %} panel-{{ widget.options.theme }}{% endif %}">
                 {% if widget.options['title'] is not empty %}
                 <div class="panel-heading">
                     <a class="panel-title" data-toggle="collapse" data-target="#dashboard-widget-{{ count }}">
