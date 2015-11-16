@@ -21,9 +21,9 @@
                 </div>
                 <div id="dashboard-widget-{{ count }}" class="panel-collapse collapse in">
                 {% endif %}
-                <div class="panel-body">
+                {% if widget.options.theme is not same as(null) %}<div class="panel-body">{% endif %}
                     {{ render_dashboard_widget(widget) }}
-                </div>
+                {% if widget.options.theme is not same as(null) %}</div>{% endif %}
                 {% if widget.options['title'] is not empty %}</div>{% endif %}
             </div>
         </div>
