@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class AbstractWidgetType
  * @package Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 abstract class AbstractWidgetType implements WidgetTypeInterface
 {
@@ -21,9 +21,9 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
         $attr = ['name' => $options['name']];
         $classes = [];
         foreach (array('xs', 'sm', 'md', 'lg') as $sizing) {
-            $size = $options['col_'.$sizing];
+            $size = $options['col_' . $sizing];
             if (0 < $size && $size < 12) {
-                $classes[] = 'col-'. $sizing. '-' . $options['col_'.$sizing];
+                $classes[] = 'col-' . $sizing . '-' . $options['col_' . $sizing];
             }
         }
         if (empty($classes)) {
@@ -43,6 +43,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
          * Validates the column min size.
          *
          * @param int $value
+         *
          * @return bool
          */
         $minSizeValidator = function ($value) {
@@ -54,6 +55,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
          *
          * @param $min
          * @param $value
+         *
          * @return mixed
          */
         $sizeNormalizer = function ($min, $value) {
@@ -65,6 +67,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
             ->setDefaults(array(
                 'name'       => null,
                 'title'      => null,
+                'theme'      => 'default',
                 'col_xs_min' => 12,
                 'col_sm_min' => 12,
                 'col_md_min' => 6,
@@ -78,27 +81,36 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
                 'js_path'    => null,
             ))
             ->setRequired(array('name', 'title'))
-            ->setAllowedTypes(array(
-                'name'       => 'string',
-                'title'      => 'string',
-                'col_xs_min' => 'int',
-                'col_sm_min' => 'int',
-                'col_md_min' => 'int',
-                'col_lg_min' => 'int',
-                'col_xs'     => 'int',
-                'col_sm'     => 'int',
-                'col_md'     => 'int',
-                'col_lg'     => 'int',
-                'position'   => 'int',
-                'css_path'   => array('null', 'string'),
-                'js_path'    => array('null', 'string'),
-            ))
-            ->setAllowedValues(array(
-                'col_xs_min' => $minSizeValidator,
-                'col_sm_min' => $minSizeValidator,
-                'col_md_min' => $minSizeValidator,
-                'col_lg_min' => $minSizeValidator,
-            ))
+
+            ->setAllowedTypes('name', 'string')
+            ->setAllowedTypes('title', array('null', 'string'))
+            ->setAllowedTypes('theme', array('null', 'string'))
+            ->setAllowedTypes('col_xs_min', 'int')
+            ->setAllowedTypes('col_sm_min', 'int')
+            ->setAllowedTypes('col_md_min', 'int')
+            ->setAllowedTypes('col_lg_min', 'int')
+            ->setAllowedTypes('col_xs', 'int')
+            ->setAllowedTypes('col_sm', 'int')
+            ->setAllowedTypes('col_md', 'int')
+            ->setAllowedTypes('col_lg', 'int')
+            ->setAllowedTypes('position', 'int')
+            ->setAllowedTypes('css_path', array('null', 'string'))
+            ->setAllowedTypes('js_path', array('null', 'string'))
+            ->setAllowedValues('theme', function ($value) {
+                return null === $value || in_array($value, array(
+                    'default',
+                    'primary',
+                    'success',
+                    'info',
+                    'warning',
+                    'danger',
+                ));
+            })
+            ->setAllowedValues('col_xs_min', $minSizeValidator)
+            ->setAllowedValues('col_sm_min', $minSizeValidator)
+            ->setAllowedValues('col_md_min', $minSizeValidator)
+            ->setAllowedValues('col_lg_min', $minSizeValidator)
+
             ->setNormalizer('col_xs', function (Options $options, $value) use ($sizeNormalizer) {
                 return $sizeNormalizer($options['col_xs_min'], $value);
             })
