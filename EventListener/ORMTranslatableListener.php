@@ -71,7 +71,7 @@ class ORMTranslatableListener extends AbstractTranslatableListener implements Ev
             'mappedBy'      => 'translatable',
             'fetch'         => ClassMetadataInfo::FETCH_EXTRA_LAZY,
             'indexBy'       => 'locale',
-            'cascade'       => ['persist', 'merge', 'refresh', 'remove'],
+            'cascade'       => ['persist', 'merge', 'refresh', 'remove', 'detach'],
             'orphanRemoval' => true,
         ]);
     }
