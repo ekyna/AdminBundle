@@ -20,6 +20,11 @@ class Configuration implements ConfigurationInterface
     /**
      * @var string
      */
+    private $resourceId;
+
+    /**
+     * @var string
+     */
     protected $resourceName;
 
     /**
@@ -46,17 +51,18 @@ class Configuration implements ConfigurationInterface
      * Constructor.
      *
      * @param string $prefix            The configuration prefix
-     * @param string $resourceName      The resource name
+     * @param string $resourceId        The resource id
      * @param string $resourceClass     The resource FQCN
      * @param array  $templatesList     The templates list
      * @param string $eventClass        The event FQCN
      * @param string $parentId          The parent configuration identifier
      */
-    public function __construct($prefix, $resourceName, $resourceClass, array $templatesList, $eventClass = null, $parentId = null)
+    public function __construct($prefix, $resourceId, $resourceClass, array $templatesList, $eventClass = null, $parentId = null)
     {
         // Required
         $this->prefix = $prefix;
-        $this->resourceName = $resourceName;
+        $this->resourceId = $resourceId;
+        $this->resourceName = Inflector::camelize($resourceId);
         $this->resourceClass = $resourceClass;
         $this->templatesList = $templatesList;
 
@@ -70,7 +76,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getId()
     {
-        return sprintf('%s.%s', $this->prefix, $this->resourceName);
+        return sprintf('%s.%s', $this->prefix, $this->resourceId);
     }
 
     /**
@@ -78,7 +84,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getAlias()
     {
-        return sprintf('%s_%s', $this->prefix, $this->resourceName);
+        return sprintf('%s_%s', $this->prefix, $this->resourceId);
     }
 
     /**
@@ -134,7 +140,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getResourceLabel($plural = false)
     {
-        return sprintf('%s.%s.label.%s', $this->prefix, $this->resourceName, $plural ? 'plural' : 'singular');
+        return sprintf('%s.%s.label.%s', $this->prefix, $this->resourceId, $plural ? 'plural' : 'singular');
     }
 
     /**
@@ -153,7 +159,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getRoutePrefix()
     {
-        return sprintf('%s_%s_admin', $this->prefix, $this->resourceName);
+        return sprintf('%s_%s_admin', $this->prefix, $this->resourceId);
     }
 
     /**
@@ -169,7 +175,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getEventName($action)
     {
-        return sprintf('%s.%s.%s', $this->prefix, $this->resourceName, $action);
+        return sprintf('%s.%s.%s', $this->prefix, $this->resourceId, $action);
     }
 
     /**
@@ -177,7 +183,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getFormType()
     {
-        return sprintf('%s_%s', $this->prefix, $this->resourceName);
+        return sprintf('%s_%s', $this->prefix, $this->resourceId);
     }
 
     /**
@@ -185,7 +191,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getTableType()
     {
-        return sprintf('%s_%s', $this->prefix, $this->resourceName);
+        return sprintf('%s_%s', $this->prefix, $this->resourceId);
     }
 
     /**
@@ -193,7 +199,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getServiceKey($service)
     {
-        return sprintf('%s.%s.%s', $this->prefix, $this->resourceName, $service);
+        return sprintf('%s.%s.%s', $this->prefix, $this->resourceId, $service);
     }
 
     /**
@@ -201,7 +207,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getObjectIdentity()
     {
-        return new ObjectIdentity(sprintf('%s_%s', $this->prefix, $this->resourceName), $this->resourceClass);
+        return new ObjectIdentity($this->getAlias(), $this->resourceClass);
     }
 
     /**
