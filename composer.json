@@ -19,11 +19,11 @@
     ],
     "require" : {
         "php" : ">=5.4.0",
-        "ekyna/core-bundle" : "0.4.x-dev",
-        "ekyna/user-bundle" : "0.4.x-dev",
-        "ekyna/google-bundle" : "0.4.x-dev",
-        "ekyna/setting-bundle" : "0.4.x-dev",
-        "ekyna/install-bundle" : "0.4.x-dev"
+        "ekyna/core-bundle" : "0.5.x-dev",
+        "ekyna/user-bundle" : "0.5.x-dev",
+        "ekyna/google-bundle" : "0.5.x-dev",
+        "ekyna/setting-bundle" : "0.5.x-dev",
+        "ekyna/install-bundle" : "0.5.x-dev"
     },
     "autoload" : {
         "psr-4" : {
