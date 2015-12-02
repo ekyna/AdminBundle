@@ -68,7 +68,7 @@ class PoolBuilder
     /**
      * @var string
      */
-    private $resourceName;
+    private $resourceId;
 
     /**
      * @var array
@@ -89,15 +89,24 @@ class PoolBuilder
      * Configures the pool builder.
      *
      * @param string $prefix
-     * @param string $resourceName
+     * @param string $resourceId
      * @param array  $options
+     *
+     * @throws \RuntimeException
      *
      * @return PoolBuilder
      */
-    public function configure($prefix, $resourceName, array $options)
+    public function configure($prefix, $resourceId, array $options)
     {
+        if (!(preg_match('~^[a-z_]+$~', $prefix))) {
+            throw new \RuntimeException(sprintf('Bad prefix format "%s" (underscore expected).', $prefix));
+        }
+        if (!(preg_match('~^[a-z_]+$~', $resourceId))) {
+            throw new \RuntimeException(sprintf('Bad resource id format "%s" (underscore expected).', $resourceId));
+        }
+
         $this->prefix = $prefix;
-        $this->resourceName = $resourceName;
+        $this->resourceId = $resourceId;
         $this->options = $this->getOptionsResolver()->resolve($options);
 
         return $this;
@@ -253,7 +262,7 @@ class PoolBuilder
         }
 
         $this->configureInheritanceMapping(
-            $this->prefix.'.'.$this->resourceName,
+            $this->prefix.'.'.$this->resourceId,
             $this->options['entity'],
             $this->options['repository']
         );
@@ -273,14 +282,14 @@ class PoolBuilder
 //                ->setFactoryMethod('createConfiguration')
                 ->setArguments([
                     $this->prefix,
-                    $this->resourceName,
+                    $this->resourceId,
                     $this->options['entity'],
                     $this->buildTemplateList($this->options['templates']),
                     $this->options['event'],
                     $this->options['parent']
                 ])
                 ->addTag('ekyna_admin.configuration', [
-                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)]
+                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceId)]
                 )
             ;
             $this->container->setDefinition($id, $definition);
@@ -411,7 +420,7 @@ class PoolBuilder
             $definition
                 ->setArguments([$this->options['entity']])
                 ->addTag('form.type', [
-                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)]
+                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceId)]
                 )
             ;
             $this->container->setDefinition($id, $definition);
@@ -429,7 +438,7 @@ class PoolBuilder
             $definition
                 ->setArguments([$this->options['entity']])
                 ->addTag('table.type', [
-                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceName)]
+                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceId)]
                 )
             ;
             $this->container->setDefinition($id, $definition);
@@ -445,7 +454,7 @@ class PoolBuilder
             $translatable = $this->options['entity'];
             $translation = $this->options['translation']['entity'];
 
-            $id = sprintf('%s.%s_translation', $this->prefix, $this->resourceName);
+            $id = sprintf('%s.%s_translation', $this->prefix, $this->resourceId);
 
             // Load metadata event mapping
             $mapping = [
@@ -518,7 +527,7 @@ class PoolBuilder
      */
     private function getServiceId($name)
     {
-        return sprintf('%s.%s.%s', $this->prefix, $this->resourceName, $name);
+        return sprintf('%s.%s.%s', $this->prefix, $this->resourceId, $name);
     }
 
     /**
