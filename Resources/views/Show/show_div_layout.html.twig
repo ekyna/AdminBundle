@@ -155,7 +155,7 @@
 
 {% block show_widget_media %}
 {% spaceless %}
-    {{ render_media_thumb(media) }}
+    {{ media|media_thumb }}
 {% endspaceless %}
 {% endblock show_widget_media %}
 
@@ -163,7 +163,7 @@
 {% spaceless %}
     <div class="show-widget show-widget-block">
     {% for media in medias %}
-        {{ render_media_thumb(media) }}
+        {{ media|media_thumb }}
     {% endfor %}
     </div>
 {% endspaceless %}
