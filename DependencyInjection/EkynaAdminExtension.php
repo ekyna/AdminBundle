@@ -117,7 +117,7 @@ class EkynaAdminExtension extends Extension
     private function configureTwigBundle(ContainerBuilder $container)
     {
         $container->prependExtensionConfig('twig', [
-            'form' => ['resources' => ['EkynaAdminBundle:Form:form_div_layout.html.twig']],
+            'form_themes' => ['EkynaAdminBundle:Form:form_div_layout.html.twig'],
         ]);
     }
 

@@ -48,23 +48,21 @@
             <argument type="service" id="ekyna_admin.acl_operator" />
         </service>
         <service id="ekyna_admin.menu.side"
-            class="Knp\Menu\MenuItem" 
-            factory-service="ekyna_admin.menu.builder" 
-            factory-method="createSideMenu" 
-            scope="request">
+            class="Knp\Menu\MenuItem">
+            <factory service="ekyna_admin.menu.builder" method="createSideMenu" />
+            <argument type="service" id="request_stack" />
             <tag name="knp_menu.menu" alias="ekyna_admin.side" />
         </service>
-        <service id="ekyna_admin.menu.breadcrumb" 
-            class="Knp\Menu\MenuItem" 
-            factory-service="ekyna_admin.menu.builder" 
-            factory-method="createBreadcrumb" 
-            scope="request">
+        <service id="ekyna_admin.menu.breadcrumb"
+            class="Knp\Menu\MenuItem">
+            <factory service="ekyna_admin.menu.builder" method="createBreadcrumb" />
+            <argument type="service" id="request_stack" />
             <tag name="knp_menu.menu" alias="ekyna_admin.breadcrumb" />
         </service>
 
         <!-- Form Types Extensions -->
         <service id="ekyna_admin.form.admin_extension" class="Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension">
-		    <tag name="form.type_extension" alias="form" />
+		    <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType" />
 		</service>
 
         <!-- Form Types -->
@@ -136,10 +134,8 @@
             <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts" />
         </service>
 
-        <service id="ekyna_admin.dashboard"
-                 class="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard"
-                 factory-service="ekyna_admin.dashboard.factory"
-                 factory-method="create">
+        <service id="ekyna_admin.dashboard" class="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard">
+            <factory service="ekyna_admin.dashboard.factory" method="create" />
             <argument>%ekyna_admin.dashboard.config%</argument>
         </service>
 
