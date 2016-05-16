@@ -2,8 +2,15 @@
 
 namespace Ekyna\Bundle\AdminBundle\Install;
 
+use Doctrine\ORM\EntityRepository;
+use Ekyna\Bundle\InstallBundle\Install\AbstractInstaller;
 use Ekyna\Bundle\InstallBundle\Install\OrderedInstallerInterface;
+use Ekyna\Bundle\UserBundle\Command\UserInputInteract;
+use Ekyna\Bundle\UserBundle\Model\GroupInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -14,12 +21,27 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @package Ekyna\Bundle\AdminBundle\Install
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterface
+class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterface, ContainerAwareInterface
 {
     /**
      * @var ContainerInterface
      */
     private $container;
+
+    /**
+     * @var EntityRepository
+     */
+    private $userRepository;
+
+    /**
+     * @var GroupInterface
+     */
+    private $superAdminGroup;
+
+    /**
+     * @var InputInterface
+     */
+    private $userDataInput;
 
     /**
      * Sets the container.
@@ -45,6 +67,57 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
     /**
      * {@inheritdoc}
      */
+    public function initialize(Command $command, InputInterface $input, OutputInterface $output)
+    {
+        if ($input->getOption('no-interaction')) {
+            return;
+        }
+
+        $groupRepository = $this->container->get('ekyna_user.group.repository');
+        /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
+        if (null === $this->superAdminGroup = $groupRepository->findOneBy(['name' => array_keys($this->defaultGroups)[0]])) {
+            $output->writeln('Super admin group not found, aborting.');
+            return;
+        }
+
+        $this->userRepository = $this->container->get('ekyna_user.user.repository');
+        /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $superAdmin */
+        if (null !== $superAdmin = $this->userRepository->findOneBy(['group' => $this->superAdminGroup])) {
+            $output->writeln(sprintf('Super admin already exists (<comment>%s</comment>).', $superAdmin->getEmail()));
+            return;
+        }
+
+        $definition = new InputDefinition(array(
+            new InputArgument('email'),
+            new InputArgument('password'),
+            new InputArgument('firstName'),
+            new InputArgument('lastName'),
+        ));
+
+        $this->userDataInput = new ArrayInput([], $definition);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function interact(Command $command, InputInterface $input, OutputInterface $output)
+    {
+        if (null !== $this->userDataInput) {
+            $output->writeln('<question>Please provide super admin initial information ...</question>');
+
+            /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
+            $helper = $command->getHelperSet()->get('question');
+
+            $userInput = new UserInputInteract($this->userRepository);
+            $userInput->interact($this->userDataInput, $output, $helper);
+
+            $output->writeln('');
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function install(Command $command, InputInterface $input, OutputInterface $output)
     {
         $output->writeln('<info>[Admin] Creating users groups:</info>');
@@ -55,9 +128,9 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
         $this->createAclRules($output);
         $output->writeln('');
 
-        if (!$input->getOption('no-interaction')) {
+        if (null !== $this->userDataInput) {
             $output->writeln('<info>[Admin] Creating Super Admin:</info>');
-            $this->createSuperAdmin($command, $output);
+            $this->createSuperAdmin($command, $this->userDataInput, $output);
             $output->writeln('');
         }
     }
@@ -117,11 +190,11 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
             } else {
                 continue;
             }
-            $datas = [];
+            $data = [];
             foreach ($registry->getConfigurations() as $id => $config) {
-                $datas[$id] = [$permission => true];
+                $data[$id] = [$permission => true];
             }
-            $aclOperator->updateGroup($group, $datas);
+            $aclOperator->updateGroup($group, $data);
         }
 
         $output->writeln('Acl rules have been successfully generated.');
@@ -133,65 +206,18 @@ class AdminInstaller implements OrderedInstallerInterface, ContainerAwareInterfa
      * @param Command $command
      * @param OutputInterface $output
      */
-    private function createSuperAdmin(Command $command, OutputInterface $output)
+    private function createSuperAdmin(Command $command, InputInterface $input, OutputInterface $output)
     {
-        $groupRepository = $this->container->get('ekyna_user.group.repository');
-        $userRepository = $this->container->get('ekyna_user.user.repository');
-
-        /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
-        if (null === $group = $groupRepository->findOneBy(['name' => array_keys($this->defaultGroups)[0]])) {
-            $output->writeln('Super admin group not found, aborting.');
-            return;
-        }
-
-        /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $superAdmin */
-        if (null !== $superAdmin = $userRepository->findOneBy(['group' => $group])) {
-            $output->writeln(sprintf('Super admin already exists (<comment>%s</comment>).', $superAdmin->getEmail()));
-            return;
-        }
-
-        $output->writeln('<question>Please provide initial informations ...</question>');
-
-        /** @var \Symfony\Component\Console\Helper\DialogHelper $dialog */
-        $dialog = $command->getHelperSet()->get('dialog');
-
-        $email = $dialog->askAndValidate($output, 'Email: ', function ($answer) use ($userRepository) {
-            if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                throw new \RuntimeException('This is not a valid email address.');
-            }
-            if (null !== $userRepository->findOneBy(['email' => $answer])) {
-                throw new \RuntimeException('This email address is already used.');
-            }
-            return $answer;
-        }, 3);
-
-        $password = $dialog->askAndValidate($output, 'Password: ', function ($answer) {
-            if (!(preg_match('#^[a-zA-Z0-9]+$#', $answer) && strlen($answer) > 5)) {
-                throw new \RuntimeException('Password should be composed of at least 6 letters and numbers.');
-            }
-            return $answer;
-        }, 3);
-
-        $notBlankValidator = function ($answer) {
-            if (0 === strlen($answer)) {
-                throw new \RuntimeException('This cannot be blank.');
-            }
-            return $answer;
-        };
-
-        $firstName = $dialog->askAndValidate($output, 'First name: ', $notBlankValidator, 3);
-        $lastName = $dialog->askAndValidate($output, 'Last name: ', $notBlankValidator, 3);
-
         $userManager = $this->container->get('fos_user.user_manager');
         /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $user */
         $user = $userManager->createUser();
         $user
-            ->setGroup($group)
+            ->setGroup($this->superAdminGroup)
             ->setGender('mr')
-            ->setFirstName($firstName)
-            ->setLastName($lastName)
-            ->setPlainPassword($password)
-            ->setEmail($email)
+            ->setFirstName($input->getArgument('firstName'))
+            ->setLastName($input->getArgument('lastName'))
+            ->setPlainPassword($input->getArgument('password'))
+            ->setEmail($input->getArgument('email'))
             ->setEnabled(true);
         $userManager->updateUser($user);
 

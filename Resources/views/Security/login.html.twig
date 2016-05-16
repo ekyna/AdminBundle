@@ -1,34 +1,34 @@
 {% extends 'EkynaAdminBundle::base.html.twig' %}
 
 {% block stylesheets %}
-{{ parent() }}
-{% stylesheets output='css/admin-login.css' filter='cssrewrite, ?yui_css' debug=false
-    '@EkynaAdminBundle/Resources/asset/css/login.css' %}
-    <link href="{{ asset_url }}" rel="stylesheet" type="text/css" />
-{% endstylesheets %}
+  {{ parent() }}
+  <link href="{{ asset('bundles/ekynaadmin/css/login.css') }}" rel="stylesheet" type="text/css"/>
 {% endblock stylesheets %}
 
 {% block body %}
-    <div class="login-wrapper">
-        <a href="{{ path('ekyna_admin_security_login') }}">
-            <img class="logo" src="{{ asset(ekyna_admin_logo_path) }}" height="28px" />
-        </a>
-        <div class="box">
-            <form method="post" action="{{ path('ekyna_admin_security_check') }}" class="content-wrap">
-                <h6>{{ 'ekyna_admin.login_header'|trans }}</h6>
-                {% if error %}
-                    <div class="alert alert-danger">
-                        {{ error.messageKey|trans(error.messageData, 'security') }}
-                    </div>
-                {% endif %}
-                <input name="_username" class="form-control" type="text" placeholder="{{ 'ekyna_core.field.email_address'|trans }}">
-                <input name="_password" class="form-control" type="password" placeholder="{{ 'ekyna_core.field.password'|trans }}">
-                <div class="remember">
-                    <input name="_remember_me" id="remember_me" type="checkbox">
-                    <label for="remember_me">{{ 'ekyna_core.field.remember_me'|trans }}</label>
-                </div>
-                <button name="_submit" class="btn-glow primary login" type="submit">{{ 'ekyna_core.button.login'|trans }}</button>
-            </form>
+  <div class="login-wrapper">
+    <a href="{{ path('ekyna_admin_security_login') }}">
+      <img class="logo" src="{{ asset(admin_logo_path()) }}" height="28px"/>
+    </a>
+    <div class="box">
+      <form method="post" action="{{ path('ekyna_admin_security_check') }}" class="content-wrap">
+        <h6>{{ 'ekyna_admin.login_header'|trans }}</h6>
+        {% if error %}
+          <div class="alert alert-danger">
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+          </div>
+        {% endif %}
+        <input name="_username" class="form-control" type="text"
+               placeholder="{{ 'ekyna_core.field.email_address'|trans }}">
+        <input name="_password" class="form-control" type="password"
+               placeholder="{{ 'ekyna_core.field.password'|trans }}">
+        <div class="remember">
+          <input name="_remember_me" id="remember_me" type="checkbox">
+          <label for="remember_me">{{ 'ekyna_core.field.remember_me'|trans }}</label>
         </div>
+        <button name="_submit" class="btn-glow primary login"
+                type="submit">{{ 'ekyna_core.button.login'|trans }}</button>
+      </form>
     </div>
+  </div>
 {% endblock body %}

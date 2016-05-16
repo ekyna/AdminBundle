@@ -50,15 +50,15 @@ class AclOperator implements AclOperatorInterface
 
     /**
      * Constructor.
-     * 
+     *
      * @param MutableAclProviderInterface $aclProvider
      * @param PermissionMapInterface $permissionMap
      * @param ConfigurationRegistry $registry
      * @param AuthorizationCheckerInterface $security
      */
     public function __construct(
-        MutableAclProviderInterface $aclProvider, 
-        PermissionMapInterface $permissionMap, 
+        MutableAclProviderInterface $aclProvider,
+        PermissionMapInterface $permissionMap,
         ConfigurationRegistry $registry,
         AuthorizationCheckerInterface $security
     ) {
@@ -211,7 +211,7 @@ class AclOperator implements AclOperatorInterface
 
         return $datas;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -252,17 +252,17 @@ class AclOperator implements AclOperatorInterface
     /**
      * {@inheritDoc}
      */
-    public function updateGroup(GroupInterface $group, array $datas)
+    public function updateGroup(GroupInterface $group, array $data)
     {
         $rid = $group->getSecurityIdentity();
         $maskBuilder = new MaskBuilder();
 
-        foreach ($datas as $configName => $oidDatas) {
+        foreach ($data as $configName => $oidData) {
             $config = $this->registry->get($configName);
 
             $retainedPermissions = [];
-            $oidDatas = array_reverse($oidDatas);
-            foreach ($oidDatas as $permission => $enabled) {
+            $oidData = array_reverse($oidData);
+            foreach ($oidData as $permission => $enabled) {
                 if ($enabled) {
                     $permission = strtoupper($permission);
                     if (empty($retainedPermissions)) {

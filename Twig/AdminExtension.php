@@ -4,6 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 
 use Ekyna\Bundle\AdminBundle\Helper\ResourceHelper;
 use Ekyna\Bundle\CoreBundle\Twig\UiExtension;
+use Symfony\Bridge\Twig\Extension\AssetExtension;
 
 /**
  * Class AdminExtension
@@ -18,30 +19,30 @@ class AdminExtension extends \Twig_Extension
     private $helper;
 
     /**
-     * @var string
-     */
-    private $logoPath;
-
-    /**
      * @var UiExtension
      */
     private $ui;
+
+    /**
+     * @var array
+     */
+    private $config;
 
     /**
      * Constructor.
      *
      * @param ResourceHelper $helper
      * @param UiExtension    $ui
-     * @param string         $logoPath
+     * @param array          $config
      */
     public function __construct(
         ResourceHelper $helper,
         UiExtension $ui,
-        $logoPath
+        $config
     ) {
         $this->helper = $helper;
         $this->ui = $ui;
-        $this->logoPath = $logoPath;
+        $this->config = $config;
     }
 
     /**
@@ -50,10 +51,38 @@ class AdminExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
+            new \Twig_SimpleFunction('admin_stylesheets',     [$this, 'renderStylesheets'],    ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('admin_logo_path',       [$this, 'getLogoPath']),
             new \Twig_SimpleFunction('admin_resource_btn',    [$this, 'renderResourceButton'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('admin_resource_access', [$this, 'hasResourceAccess']),
             new \Twig_SimpleFunction('admin_resource_path',   [$this, 'generateResourcePath']),
         ];
+    }
+
+    /**
+     * Renders the stylesheets link tags.
+     *
+     * @return string
+     */
+    public function renderStylesheets()
+    {
+        $output = '';
+
+        foreach ($this->config['stylesheets'] as $path) {
+            $output .= $this->ui->buildStylesheetTag($path);
+        }
+
+        return $output;
+    }
+
+    /**
+     * Returns the logo path.
+     *
+     * @return string
+     */
+    public function getLogoPath()
+    {
+        return $this->config['logo_path'];
     }
 
     /**
@@ -163,16 +192,6 @@ class AdminExtension extends \Twig_Extension
             ];
         }
         return [];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getGlobals()
-    {
-        return [
-            'ekyna_admin_logo_path' => $this->logoPath,
-        ];
     }
 
     /**

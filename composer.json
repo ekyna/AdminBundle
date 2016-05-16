@@ -23,7 +23,8 @@
         "ekyna/user-bundle" : "0.5.x-dev",
         "ekyna/google-bundle" : "0.5.x-dev",
         "ekyna/setting-bundle" : "0.5.x-dev",
-        "ekyna/install-bundle" : "0.5.x-dev"
+        "ekyna/install-bundle" : "0.5.x-dev",
+        "symfony/security-acl": "^3.0"
     },
     "autoload" : {
         "psr-4" : {

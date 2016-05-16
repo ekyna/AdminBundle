@@ -25,11 +25,14 @@ class EkynaAdminExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
-        $container->setParameter('ekyna_admin.logo_path', $config['logo_path']);
-        $container->setParameter('ekyna_admin.dashboard.config', $config['dashboard']);
-
         $this->configureResources($config['resources'], $container);
         $this->configureMenus($config['menus'], $container);
+
+        $container->setParameter('ekyna_admin.config.dashboard', $config['dashboard']);
+        $container->setParameter('ekyna_admin.config.front', [
+            'logo_path'   => $config['logo_path'],
+            'stylesheets' => $config['stylesheets']
+        ]);
 
         if (!$container->hasParameter('ekyna_admin.translation_mapping')) {
             $container->setParameter('ekyna_admin.translation_mapping', []);
@@ -98,14 +101,9 @@ class EkynaAdminExtension extends Extension
         parent::prepend($container);
 
         $bundles = $container->getParameter('kernel.bundles');
-        $configs = $container->getExtensionConfig($this->getAlias());
-        $config = $this->processConfiguration(new Configuration(), $configs);
 
         if (array_key_exists('TwigBundle', $bundles)) {
             $this->configureTwigBundle($container);
-        }
-        if (array_key_exists('AsseticBundle', $bundles)) {
-            $this->configureAsseticBundle($container, $config);
         }
     }
 
@@ -118,21 +116,6 @@ class EkynaAdminExtension extends Extension
     {
         $container->prependExtensionConfig('twig', [
             'form_themes' => ['EkynaAdminBundle:Form:form_div_layout.html.twig'],
-        ]);
-    }
-
-    /**
-     * Configures the AsseticBundle.
-     *
-     * @param ContainerBuilder $container
-     * @param array $config
-     */
-    private function configureAsseticBundle(ContainerBuilder $container, array $config)
-    {
-        $asseticConfig = new AsseticConfiguration();
-        $container->prependExtensionConfig('assetic', [
-            'bundles' => ['EkynaAdminBundle'],
-            'assets' => $asseticConfig->build($config),
         ]);
     }
 }

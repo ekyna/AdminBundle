@@ -1,34 +1,36 @@
 {% extends 'EkynaAdminBundle::base.html.twig' %}
 
 {% block body %}
-    <!-- navbar -->
-    <header class="navbar navbar-inverse" role="banner">
-        <div class="navbar-header">
-            <button class="navbar-toggle" type="button" data-toggle="collapse" id="menu-toggler">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{{ path('ekyna_admin_dashboard') }}"><img src="{{ asset(ekyna_admin_logo_path) }}" height="21" /></a>
-        </div>
-        {% include 'EkynaAdminBundle:Layout:navbar.html.twig' %}
-    </header>
-    <!-- end navbar -->
-
-    <!-- sidebar -->
-    <div id="sidebar-nav">
-        {{ knp_menu_render('ekyna_admin.side', {'template': 'EkynaAdminBundle:Layout:sidemenu.html.twig', 'currentClass': 'active', 'ancestorClass': 'active'}) }}
+  <!-- navbar -->
+  <header class="navbar navbar-inverse" role="banner">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" id="menu-toggler">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="{{ path('ekyna_admin_dashboard') }}">
+        <img src="{{ asset(admin_logo_path()) }}" height="21"/>
+      </a>
     </div>
-    <!-- end sidebar -->
+    {% include 'EkynaAdminBundle:Layout:navbar.html.twig' %}
+  </header>
+  <!-- end navbar -->
 
-	<!-- main container -->
-    <div class="content">
-        {{ knp_menu_render('ekyna_admin.breadcrumb', {'template': 'EkynaAdminBundle:Layout:breadcrumb.html.twig'}) }}
-        <div id="pad-wrapper">
-        {% include 'EkynaCoreBundle:Ui:flashes.html.twig' %}
-        {% block content %}{% endblock %}
-        </div>
+  <!-- sidebar -->
+  <div id="sidebar-nav">
+    {{ knp_menu_render('ekyna_admin.side', {'template': 'EkynaAdminBundle:Layout:sidemenu.html.twig', 'currentClass': 'active', 'ancestorClass': 'active'}) }}
+  </div>
+  <!-- end sidebar -->
+
+  <!-- main container -->
+  <div class="content">
+    {{ knp_menu_render('ekyna_admin.breadcrumb', {'template': 'EkynaAdminBundle:Layout:breadcrumb.html.twig'}) }}
+    <div id="pad-wrapper">
+      {% include 'EkynaCoreBundle:Ui:flashes.html.twig' %}
+      {% block content %}{% endblock %}
     </div>
-    <!-- end main container -->
+  </div>
+  <!-- end main container -->
 {% endblock body %}

@@ -23,11 +23,11 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('logo_path')->defaultValue('bundles/ekynaadmin/img/logo.png')->end()
-                ->scalarNode('output_dir')->defaultValue('')->end()
+                /*->scalarNode('output_dir')->defaultValue('')->end()*/
                 ->append($this->getResourcesSection())
                 ->append($this->getMenusSection())
                 ->append($this->getDashboardSection())
-                ->arrayNode('css_inputs')
+                ->arrayNode('stylesheets')
                     ->prototype('scalar')
                     ->treatNullLike([])
                     ->defaultValue([])
