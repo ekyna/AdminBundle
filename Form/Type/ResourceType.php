@@ -4,6 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -12,7 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class ResourceType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class ResourceType extends AbstractType
 {
@@ -26,11 +27,12 @@ class ResourceType extends AbstractType
      */
     private $aclOperator;
 
+
     /**
      * Constructor.
      *
      * @param ConfigurationRegistry $configurationRegistry
-     * @param AclOperatorInterface $aclOperator
+     * @param AclOperatorInterface  $aclOperator
      */
     public function __construct(ConfigurationRegistry $configurationRegistry, AclOperatorInterface $aclOperator)
     {
@@ -79,13 +81,12 @@ class ResourceType extends AbstractType
                 'allow_new'         => false,
                 'allow_list'        => false,
             ])
-            ->setAllowedTypes('new_route',         ['null', 'string'])
-            ->setAllowedTypes('new_route_params',  'array')
-            ->setAllowedTypes('list_route',        ['null', 'string'])
+            ->setAllowedTypes('new_route', ['null', 'string'])
+            ->setAllowedTypes('new_route_params', 'array')
+            ->setAllowedTypes('list_route', ['null', 'string'])
             ->setAllowedTypes('list_route_params', 'array')
-            ->setAllowedTypes('allow_new',         'bool')
-            ->setAllowedTypes('allow_list',        'bool')
-        ;
+            ->setAllowedTypes('allow_new', 'bool')
+            ->setAllowedTypes('allow_list', 'bool');
     }
 
     /**
@@ -93,13 +94,13 @@ class ResourceType extends AbstractType
      */
     public function getParent()
     {
-        return 'entity';
+        return EntityType::class;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'ekyna_resource';
     }

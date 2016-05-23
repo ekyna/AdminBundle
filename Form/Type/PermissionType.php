@@ -3,50 +3,47 @@
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class PermissionType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class PermissionType extends AbstractType
 {
-    /**
-     * @var array
-     */
-    protected $permissions;
-
-    /**
-     * Constructor.
-     *
-     * @param array $permissions
-     */
-    public function __construct(array $permissions)
-    {
-        $this->permissions = $permissions;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach($this->permissions as $permission) {
+        foreach ($options['permissions'] as $permission) {
             $builder
-                ->add($permission, 'checkbox', [
-                    'label' => ucfirst($permission),
-                    'required' => false
-                ])
-            ;
+                ->add($permission, CheckboxType::class, [
+                    'label'    => ucfirst($permission),
+                    'required' => false,
+                ]);
         }
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function configureOptions(OptionsResolver $resolver)
     {
-    	return 'ekyna_admin_permission';
+        $resolver
+            ->setDefined('permissions')
+            ->setRequired('permissions')
+            ->setAllowedTypes('permissions', 'array');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
+    {
+        return 'ekyna_admin_permission';
     }
 }

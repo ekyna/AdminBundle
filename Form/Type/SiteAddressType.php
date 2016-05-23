@@ -2,14 +2,17 @@
 
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
+use Ekyna\Bundle\CoreBundle\Form\Type\AddressType;
+use Ekyna\Bundle\GoogleBundle\Form\Type\CoordinateType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class SiteAddressType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class SiteAddressType extends AbstractType
 {
@@ -19,43 +22,34 @@ class SiteAddressType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('phone', 'text', [
-                'label' => 'ekyna_core.field.phone',
-                'required' => false
+            ->add('phone', TextType::class, [
+                'label'    => 'ekyna_core.field.phone',
+                'required' => false,
             ])
-            ->add('mobile', 'text', [
-                'label' => 'ekyna_core.field.mobile',
-                'required' => false
+            ->add('mobile', TextType::class, [
+                'label'    => 'ekyna_core.field.mobile',
+                'required' => false,
             ])
-            ->add('coordinate', 'ekyna_google_coordinate')
+            ->add('coordinate', CoordinateType::class)
         ;
     }
 
     /**
      * {@inheritDoc}
      */
-	public function configureOptions(OptionsResolver $resolver)
-	{
-	    $resolver
-	       ->setDefaults([
-	       	   'data_class' => 'Ekyna\Bundle\AdminBundle\Model\SiteAddress',
-	       ])
-	    ;
-	}
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefaults([
+                'data_class' => 'Ekyna\Bundle\AdminBundle\Model\SiteAddress',
+            ]);
+    }
 
     /**
      * {@inheritDoc}
      */
     public function getParent()
     {
-        return 'ekyna_address';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-    	return 'ekyna_admin_site_address';
+        return AddressType::class;
     }
 }

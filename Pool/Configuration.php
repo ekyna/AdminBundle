@@ -13,62 +13,19 @@ use Symfony\Component\Security\Acl\Domain\ObjectIdentity;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * @var string
+     * @var array
      */
-    protected $prefix;
+    protected $config;
 
-    /**
-     * @var string
-     */
-    private $resourceId;
-
-    /**
-     * @var string
-     */
-    protected $resourceName;
-
-    /**
-     * @var string
-     */
-    protected $resourceClass;
-
-    /**
-     * @var string
-     */
-    protected $eventClass;
-
-    /**
-     * @var string
-     */
-    protected $templatesList;
-
-    /**
-     * @var string
-     */
-    protected $parentId;
 
     /**
      * Constructor.
      *
-     * @param string $prefix            The configuration prefix
-     * @param string $resourceId        The resource id
-     * @param string $resourceClass     The resource FQCN
-     * @param array  $templatesList     The templates list
-     * @param string $eventClass        The event FQCN
-     * @param string $parentId          The parent configuration identifier
+     * @param array $config
      */
-    public function __construct($prefix, $resourceId, $resourceClass, array $templatesList, $eventClass = null, $parentId = null)
+    public function __construct(array $config)
     {
-        // Required
-        $this->prefix = $prefix;
-        $this->resourceId = $resourceId;
-        $this->resourceName = Inflector::camelize($resourceId);
-        $this->resourceClass = $resourceClass;
-        $this->templatesList = $templatesList;
-
-        // Optional
-        $this->eventClass = $eventClass;
-        $this->parentId = $parentId;
+        $this->config = $config;
     }
 
     /**
@@ -76,23 +33,15 @@ class Configuration implements ConfigurationInterface
      */
     public function getId()
     {
-        return sprintf('%s.%s', $this->prefix, $this->resourceId);
+        return $this->config['id'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAlias()
+    public function getNamespace()
     {
-        return sprintf('%s_%s', $this->prefix, $this->resourceId);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPrefix()
-    {
-        return $this->prefix;
+        return $this->config['namespace'];
     }
 
     /**
@@ -100,7 +49,23 @@ class Configuration implements ConfigurationInterface
      */
     public function getParentId()
     {
-        return $this->parentId;
+        return $this->config['parent_id'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAlias()
+    {
+        return sprintf('%s_%s', $this->getNamespace(), $this->getId());
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResourceId()
+    {
+        return sprintf('%s.%s', $this->getNamespace(), $this->getId());
     }
 
     /**
@@ -108,7 +73,22 @@ class Configuration implements ConfigurationInterface
      */
     public function getParentControllerId()
     {
-        return sprintf('%s.controller', $this->parentId);
+        return sprintf('%s.controller', $this->getParentId());
+    }
+
+    /**
+     * Returns the class for the given key.
+     *
+     * @param string $key
+     *
+     * @return string
+     */
+    private function getClass($key)
+    {
+        if (!array_key_exists($key, $this->config['classes'])) {
+            throw new \InvalidArgumentException(sprintf('Undefined resource class "%s".', $key));
+        }
+        return $this->config['classes'][$key];
     }
 
     /**
@@ -116,7 +96,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getResourceClass()
     {
-        return $this->resourceClass;
+        return $this->getClass('resource');
     }
 
     /**
@@ -124,7 +104,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getEventClass()
     {
-        return $this->eventClass;
+        return $this->getClass('event');
     }
 
     /**
@@ -132,7 +112,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getResourceName($plural = false)
     {
-        return $plural ? Inflector::pluralize($this->resourceName) : $this->resourceName;
+        return $plural ? Inflector::pluralize($this->config['name']) : $this->config['name'];
     }
 
     /**
@@ -140,7 +120,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getResourceLabel($plural = false)
     {
-        return sprintf('%s.%s.label.%s', $this->prefix, $this->resourceId, $plural ? 'plural' : 'singular');
+        return sprintf('%s.%s.label.%s', $this->getNamespace(), $this->getId(), $plural ? 'plural' : 'singular');
     }
 
     /**
@@ -148,10 +128,10 @@ class Configuration implements ConfigurationInterface
      */
     public function getTemplate($name)
     {
-        if (array_key_exists($name, $this->templatesList)) {
-            return sprintf('%s.twig', $this->templatesList[$name]);
+        if (!array_key_exists($name, $this->config['templates'])) {
+            throw new \InvalidArgumentException(sprintf('Template "%s.twig" is not registered.', $name));
         }
-        throw new \InvalidArgumentException(sprintf('Template "%s.twig" is not registered.', $name));
+        return sprintf('%s.twig', $this->config['templates'][$name]);
     }
 
     /**
@@ -159,7 +139,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getRoutePrefix()
     {
-        return sprintf('%s_%s_admin', $this->prefix, $this->resourceId);
+        return sprintf('%s_%s_admin', $this->getNamespace(), $this->getId());
     }
 
     /**
@@ -175,7 +155,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getEventName($action)
     {
-        return sprintf('%s.%s.%s', $this->prefix, $this->resourceId, $action);
+        return sprintf('%s.%s.%s', $this->getNamespace(), $this->getId(), $action);
     }
 
     /**
@@ -183,7 +163,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getFormType()
     {
-        return sprintf('%s_%s', $this->prefix, $this->resourceId);
+        return $this->getClass('form_type');
     }
 
     /**
@@ -191,7 +171,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getTableType()
     {
-        return sprintf('%s_%s', $this->prefix, $this->resourceId);
+        return sprintf('%s_%s', $this->getNamespace(), $this->getId());
     }
 
     /**
@@ -199,7 +179,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getServiceKey($service)
     {
-        return sprintf('%s.%s.%s', $this->prefix, $this->resourceId, $service);
+        return sprintf('%s.%s.%s', $this->getNamespace(), $this->getId(), $service);
     }
 
     /**
@@ -207,7 +187,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getObjectIdentity()
     {
-        return new ObjectIdentity($this->getAlias(), $this->resourceClass);
+        return new ObjectIdentity($this->getAlias(), $this->getResourceClass());
     }
 
     /**
@@ -215,7 +195,7 @@ class Configuration implements ConfigurationInterface
      */
     public function isRelevant($object)
     {
-        $class = $this->resourceClass;
+        $class = $this->getResourceClass();
         return $object instanceOf $class;
     }
 }

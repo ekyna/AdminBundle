@@ -112,7 +112,7 @@ class AdminExtension extends \Twig_Extension
             }
             if (null === $label) {
                 $config = $this->helper->getRegistry()->findConfiguration($resource);
-                $label = sprintf('%s.button.%s', $config->getId(), $action);
+                $label = sprintf('%s.button.%s', $config->getResourceId(), $action);
             }
 
             if (!array_key_exists('path', $options)) {

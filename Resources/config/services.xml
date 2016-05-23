@@ -62,14 +62,14 @@
 
         <!-- Form Types Extensions -->
         <service id="ekyna_admin.form.admin_extension" class="Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension">
-		    <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType" />
-		</service>
+            <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType" />
+        </service>
 
         <!-- Form Types -->
         <service id="ekyna_admin.resource.form_type" class="Ekyna\Bundle\AdminBundle\Form\Type\ResourceType">
             <argument type="service" id="ekyna_admin.pool_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
-            <tag name="form.type" alias="ekyna_resource" />
+            <tag name="form.type" />
         </service>
 
         <!-- Table types -->
@@ -95,26 +95,21 @@
             <argument>%ekyna_admin.translation_mapping%</argument>
             <tag name="doctrine.event_subscriber" connection="default" priority="99" />
         </service>
-        <!--<service id="sylius.translation.translatable_listener.doctrine.mongodb_odm" class="Ekyna\Bundle\AdminBundle\EventListener\ODMTranslatableListener">
-            <argument type="service" id="sylius.translation.locale_provider" />
-            <argument>%sylius.translation.mapping%</argument>
-            <tag name="doctrine_mongodb.odm.event_subscriber" connection="default" priority="99" />
-        </service>-->
 
         <!-- Twig Extensions -->
-	    <service id="ekyna_admin.twig.admin_extension" class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
+        <service id="ekyna_admin.twig.admin_extension" class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
             <argument type="service" id="ekyna_admin.helper.resource_helper" />
             <argument type="service" id="ekyna_core.twig.ui_extension" />
-	        <argument>%ekyna_admin.config.front%</argument>
-	        <tag name="twig.extension" />
-	    </service>
-	    <service id="ekyna_admin.twig.show_extension" class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
-	        <argument>%ekyna_admin.twig.show_extension.template%</argument>
-	        <tag name="twig.extension" />
-	    </service>
-	    <service id="ekyna_dashboard_extension" class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
-	        <tag name="twig.extension" />
-	    </service>
+            <argument>%ekyna_admin.config.front%</argument>
+            <tag name="twig.extension" />
+        </service>
+        <service id="ekyna_admin.twig.show_extension" class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
+            <argument>%ekyna_admin.twig.show_extension.template%</argument>
+            <tag name="twig.extension" />
+        </service>
+        <service id="ekyna_dashboard_extension" class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
+            <tag name="twig.extension" />
+        </service>
 
         <!-- Dashboard -->
         <service id="ekyna_admin.dashboard.widget.registry" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\Registry">

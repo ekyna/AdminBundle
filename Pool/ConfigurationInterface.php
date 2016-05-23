@@ -10,25 +10,16 @@ namespace Ekyna\Bundle\AdminBundle\Pool;
 interface ConfigurationInterface
 {
     /**
-     * Returns the configuration identifier.
-     *
-     * @return string
+     * Returns the resource identifier (without namespace).
      */
     public function getId();
 
     /**
-     * Returns the configuration alias.
+     * Returns the namespace.
      *
      * @return string
      */
-    public function getAlias();
-
-    /**
-     * Returns the prefix.
-     *
-     * @return string
-     */
-    public function getPrefix();
+    public function getNamespace();
 
     /**
      * Returns the parent resource identifier.
@@ -36,6 +27,20 @@ interface ConfigurationInterface
      * @return string
      */
     public function getParentId();
+
+    /**
+     * Returns the resource alias (<namespace>_<id>).
+     *
+     * @return string
+     */
+    public function getAlias();
+
+    /**
+     * Returns the resource identifier (<namespace>.<id>).
+     *
+     * @return string
+     */
+    public function getResourceId();
 
     /**
      * Returns the parent controller identifier.
@@ -148,4 +153,4 @@ interface ConfigurationInterface
      * @return boolean
      */
     public function isRelevant($object);
-} 
+}

@@ -2,40 +2,47 @@
 
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
-use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\Alias;
+use Doctrine\Common\Inflector\Inflector;
+use Doctrine\ORM\Mapping\ClassMetadata;
+use Ekyna\Bundle\AdminBundle\Controller;
+use Ekyna\Bundle\AdminBundle\Doctrine\ORM;
+use Ekyna\Bundle\AdminBundle\Event\ResourceEventInterface;
+use Ekyna\Bundle\AdminBundle\Operator;
+use Ekyna\Bundle\AdminBundle\Pool\Configuration;
+use Ekyna\Component\Table\TableTypeInterface;
+use Symfony\Component\DependencyInjection as DI;
+use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class PoolBuilder
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class PoolBuilder
 {
-    const DEFAULT_CONTROLLER   = 'Ekyna\Bundle\AdminBundle\Controller\ResourceController';
-    const CONTROLLER_INTERFACE = 'Ekyna\Bundle\AdminBundle\Controller\ResourceControllerInterface';
+    const DEFAULT_CONTROLLER   = Controller\ResourceController::class;
+    const CONTROLLER_INTERFACE = Controller\ResourceControllerInterface::class;
 
-    const DEFAULT_OPERATOR     = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperator';
-    const OPERATOR_INTERFACE   = 'Ekyna\Bundle\AdminBundle\Operator\ResourceOperatorInterface';
+    const DEFAULT_OPERATOR     = Operator\ResourceOperator::class;
+    const OPERATOR_INTERFACE   = Operator\ResourceOperatorInterface::class;
 
-    const DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository';
-    const REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepositoryInterface';
+    const DEFAULT_REPOSITORY   = ORM\ResourceRepository::class;
+    const REPOSITORY_INTERFACE = ORM\ResourceRepositoryInterface::class;
 
-    const TRANSLATABLE_DEFAULT_REPOSITORY   = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepository';
-    const TRANSLATABLE_REPOSITORY_INTERFACE = 'Ekyna\Bundle\AdminBundle\Doctrine\ORM\TranslatableResourceRepositoryInterface';
+    const TRANSLATABLE_DEFAULT_REPOSITORY   = ORM\TranslatableResourceRepository::class;
+    const TRANSLATABLE_REPOSITORY_INTERFACE = ORM\TranslatableResourceRepositoryInterface::class;
 
     const DEFAULT_TEMPLATES    = 'EkynaAdminBundle:Entity/Default';
 
-    const FORM_INTERFACE       = 'Symfony\Component\Form\FormTypeInterface';
-    const TABLE_INTERFACE      = 'Ekyna\Component\Table\TableTypeInterface';
-    const EVENT_INTERFACE      = 'Ekyna\Bundle\AdminBundle\Event\ResourceEventInterface';
+    const FORM_INTERFACE       = FormTypeInterface::class;
+    const TABLE_INTERFACE      = TableTypeInterface::class;
+    const EVENT_INTERFACE      = ResourceEventInterface::class;
 
-    const CONFIGURATION        = 'Ekyna\Bundle\AdminBundle\Pool\Configuration';
-    const CLASS_METADATA       = 'Doctrine\ORM\Mapping\ClassMetadata';
+    const CONFIGURATION        = Configuration::class;
+    const CLASS_METADATA       = ClassMetadata::class;
 
     /**
      * @var OptionsResolver
@@ -56,14 +63,14 @@ class PoolBuilder
     ];
 
     /**
-     * @var ContainerBuilder
+     * @var DI\ContainerBuilder
      */
     private $container;
 
     /**
      * @var string
      */
-    private $prefix;
+    private $namespace;
 
     /**
      * @var string
@@ -78,9 +85,9 @@ class PoolBuilder
     /**
      * Constructor.
      *
-     * @param ContainerBuilder $container
+     * @param DI\ContainerBuilder $container
      */
-    public function __construct(ContainerBuilder $container)
+    public function __construct(DI\ContainerBuilder $container)
     {
         $this->container = $container;
     }
@@ -88,7 +95,7 @@ class PoolBuilder
     /**
      * Configures the pool builder.
      *
-     * @param string $prefix
+     * @param string $namespace
      * @param string $resourceId
      * @param array  $options
      *
@@ -96,16 +103,16 @@ class PoolBuilder
      *
      * @return PoolBuilder
      */
-    public function configure($prefix, $resourceId, array $options)
+    public function configure($namespace, $resourceId, array $options)
     {
-        if (!(preg_match('~^[a-z_]+$~', $prefix))) {
-            throw new \RuntimeException(sprintf('Bad prefix format "%s" (underscore expected).', $prefix));
+        if (!(preg_match('~^[a-z_]+$~', $namespace))) {
+            throw new \RuntimeException(sprintf('Bad namespace format "%s" (underscore expected).', $namespace));
         }
         if (!(preg_match('~^[a-z_]+$~', $resourceId))) {
             throw new \RuntimeException(sprintf('Bad resource id format "%s" (underscore expected).', $resourceId));
         }
 
-        $this->prefix = $prefix;
+        $this->namespace = $namespace;
         $this->resourceId = $resourceId;
         $this->options = $this->getOptionsResolver()->resolve($options);
 
@@ -214,7 +221,7 @@ class PoolBuilder
                 ->setAllowedValues('table',      $validTable)
                 ->setAllowedValues('event',      $validEvent)
 
-                ->setNormalizer('repository', function($options, $value) use ($classExistsAndImplements) {
+                ->setNormalizer('repository', function(Options $options, $value) use ($classExistsAndImplements) {
                     $translatable = is_array($options['translation']);
                     $interface = $translatable ? self::TRANSLATABLE_REPOSITORY_INTERFACE : self::REPOSITORY_INTERFACE;
                     if (null === $value) {
@@ -227,7 +234,7 @@ class PoolBuilder
                     $classExistsAndImplements($value, $interface);
                     return $value;
                 })
-                ->setNormalizer('translation', function ($options, $value) use ($classExistsAndImplements) {
+                ->setNormalizer('translation', function (Options $options, $value) use ($classExistsAndImplements) {
                     if (is_array($value)) {
                         if (!array_key_exists('entity', $value)) {
                             throw new InvalidOptionsException('translation.entity must be defined.');
@@ -262,7 +269,7 @@ class PoolBuilder
         }
 
         $this->configureInheritanceMapping(
-            $this->prefix.'.'.$this->resourceId,
+            $this->namespace.'.'.$this->resourceId,
             $this->options['entity'],
             $this->options['repository']
         );
@@ -275,21 +282,25 @@ class PoolBuilder
     {
         $id = $this->getServiceId('configuration');
         if (!$this->container->has($id)) {
-            $definition = new Definition(self::CONFIGURATION);
+            $config = [
+                'namespace' => $this->namespace,
+                'id'        => $this->resourceId,
+                'name'      => Inflector::camelize($this->resourceId),
+                'parent_id' => $this->options['parent'],
+                'classes'   => [
+                    'resource'  => $this->options['entity'],
+                    'form_type' => $this->getServiceClass('form'), // TODO
+                    'event'     => $this->options['event'],
+                ],
+                'templates' => $this->buildTemplateList($this->options['templates']),
+            ];
+
+            $definition = new DI\Definition(self::CONFIGURATION);
             $definition
-                ->setFactory([new Reference('ekyna_admin.pool_factory'), 'createConfiguration'])
-//                ->setFactoryService('ekyna_admin.pool_factory')
-//                ->setFactoryMethod('createConfiguration')
-                ->setArguments([
-                    $this->prefix,
-                    $this->resourceId,
-                    $this->options['entity'],
-                    $this->buildTemplateList($this->options['templates']),
-                    $this->options['event'],
-                    $this->options['parent']
-                ])
+                ->setFactory([new DI\Reference('ekyna_admin.pool_factory'), 'createConfiguration'])
+                ->setArguments([$config])
                 ->addTag('ekyna_admin.configuration', [
-                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceId)]
+                    'alias' => sprintf('%s_%s', $this->namespace, $this->resourceId)]
                 )
             ;
             $this->container->setDefinition($id, $definition);
@@ -329,9 +340,9 @@ class PoolBuilder
     {
         $id = $this->getServiceId('metadata');
         if (!$this->container->has($id)) {
-            $definition = new Definition(self::CLASS_METADATA);
+            $definition = new DI\Definition(self::CLASS_METADATA);
             $definition
-                ->setFactory([new Reference($this->getManagerServiceId()), 'getClassMetadata'])
+                ->setFactory([new DI\Reference($this->getManagerServiceId()), 'getClassMetadata'])
                 ->setArguments([
                     $this->container->getParameter($this->getServiceId('class'))
                 ])//->setPublic(false)
@@ -347,7 +358,7 @@ class PoolBuilder
     {
         $id = $this->getServiceId('manager');
         if (!$this->container->has($id)) {
-            $this->container->setAlias($id, new Alias($this->getManagerServiceId()));
+            $this->container->setAlias($id, new DI\Alias($this->getManagerServiceId()));
         }
     }
 
@@ -358,14 +369,14 @@ class PoolBuilder
     {
         $id = $this->getServiceId('repository');
         if (!$this->container->has($id)) {
-            $definition = new Definition($class = $this->getServiceClass('repository'));
+            $definition = new DI\Definition($class = $this->getServiceClass('repository'));
             $definition->setArguments([
-                new Reference($this->getServiceId('manager')),
-                new Reference($this->getServiceId('metadata'))
+                new DI\Reference($this->getServiceId('manager')),
+                new DI\Reference($this->getServiceId('metadata'))
             ]);
             if (is_array($this->options['translation'])) {
                 $definition
-                    ->addMethodCall('setLocaleProvider', [new Reference('ekyna_core.locale_provider.request')]) // TODO alias / configurable ?
+                    ->addMethodCall('setLocaleProvider', [new DI\Reference('ekyna_core.locale_provider.request')]) // TODO alias / configurable ?
                     ->addMethodCall('setTranslatableFields', [$this->options['translation']['fields']])
                 ;
             }
@@ -382,11 +393,11 @@ class PoolBuilder
     {
         $id = $this->getServiceId('operator');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('operator'));
+            $definition = new DI\Definition($this->getServiceClass('operator'));
             $definition->setArguments([
-                new Reference($this->getManagerServiceId()),
-                new Reference($this->getEventDispatcherServiceId()),
-                new Reference($this->getServiceId('configuration')),
+                new DI\Reference($this->getManagerServiceId()),
+                new DI\Reference($this->getEventDispatcherServiceId()),
+                new DI\Reference($this->getServiceId('configuration')),
                 $this->container->getParameter('kernel.debug')
             ]);
             $this->container->setDefinition($id, $definition);
@@ -400,10 +411,10 @@ class PoolBuilder
     {
         $id = $this->getServiceId('controller');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('controller'));
+            $definition = new DI\Definition($this->getServiceClass('controller'));
             $definition
-                ->addMethodCall('setConfiguration', [new Reference($this->getServiceId('configuration'))])
-                ->addMethodCall('setContainer', [new Reference('service_container')])
+                ->addMethodCall('setConfiguration', [new DI\Reference($this->getServiceId('configuration'))])
+                ->addMethodCall('setContainer', [new DI\Reference('service_container')])
             ;
             $this->container->setDefinition($id, $definition);
         }
@@ -416,12 +427,10 @@ class PoolBuilder
     {
         $id = $this->getServiceId('form_type');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('form'));
+            $definition = new DI\Definition($this->getServiceClass('form'));
             $definition
                 ->setArguments([$this->options['entity']])
-                ->addTag('form.type', [
-                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceId)]
-                )
+                ->addTag('form.type')
             ;
             $this->container->setDefinition($id, $definition);
         }
@@ -434,11 +443,11 @@ class PoolBuilder
     {
         $id = $this->getServiceId('table_type');
         if (!$this->container->has($id)) {
-            $definition = new Definition($this->getServiceClass('table'));
+            $definition = new DI\Definition($this->getServiceClass('table'));
             $definition
                 ->setArguments([$this->options['entity']])
                 ->addTag('table.type', [
-                    'alias' => sprintf('%s_%s', $this->prefix, $this->resourceId)]
+                    'alias' => sprintf('%s_%s', $this->namespace, $this->resourceId)]
                 )
             ;
             $this->container->setDefinition($id, $definition);
@@ -454,7 +463,7 @@ class PoolBuilder
             $translatable = $this->options['entity'];
             $translation = $this->options['translation']['entity'];
 
-            $id = sprintf('%s.%s_translation', $this->prefix, $this->resourceId);
+            $id = sprintf('%s.%s_translation', $this->namespace, $this->resourceId);
 
             // Load metadata event mapping
             $mapping = [
@@ -527,7 +536,7 @@ class PoolBuilder
      */
     private function getServiceId($name)
     {
-        return sprintf('%s.%s.%s', $this->prefix, $this->resourceId, $name);
+        return sprintf('%s.%s.%s', $this->namespace, $this->resourceId, $name);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints;
 
@@ -10,6 +11,7 @@ use Symfony\Component\Validator\Constraints;
  * Class EmailType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
  * @author Étienne Dauvergne <contact@ekyna.com>
+ * @todo remove as useless ?
  */
 class EmailType extends AbstractType
 {
@@ -31,14 +33,7 @@ class EmailType extends AbstractType
      */
     public function getParent()
     {
-        return 'text';
+        return TextType::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'ekyna_admin_email';
-    }
 }

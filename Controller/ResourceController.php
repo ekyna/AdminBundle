@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
+use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
@@ -9,6 +10,7 @@ use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use JMS\Serializer\SerializationContext;
+use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,7 +65,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $table = $this->getTableFactory()
             ->createBuilder($this->config->getTableType(), [
-                'name' => $this->config->getId(),
+                'name' => $this->config->getResourceId(),
                 'selector' => (bool)$request->get('selector', false), // TODO use constants (single/multiple)
                 'multiple' => (bool)$request->get('multiple', false),
             ])
@@ -184,7 +186,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
                 $table = $this->getTableFactory()
                     ->createBuilder($childConfig->getTableType(), [
-                        'name' => $childConfig->getId(),
+                        'name' => $childConfig->getResourceId(),
                         'customize_qb' => $customizeQb,
                     ])
                     ->getTable($context->getRequest());
@@ -301,10 +303,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
             }
 
-            $form->add('actions', 'form_actions', [
+            $form->add('actions', FormActionsType::class, [
                 'buttons' => [
                     'saveAndList' => [
-                        'type' => 'submit',
+                        'type' => Type\SubmitType::class,
                         'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save_and_list',
@@ -312,7 +314,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         ],
                     ],
                     'save' => [
-                        'type' => 'submit',
+                        'type' => Type\SubmitType::class,
                         'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save',
@@ -320,7 +322,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         ],
                     ],
                     'cancel' => [
-                        'type' => 'button',
+                        'type' => Type\ButtonType::class,
                         'options' => [
                             'label' => 'ekyna_core.button.cancel',
                             'button_class' => 'default',
@@ -448,10 +450,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
             }
 
-            $form->add('actions', 'form_actions', [
+            $form->add('actions', FormActionsType::class, [
                 'buttons' => [
                     'saveAndList' => [
-                        'type' => 'submit',
+                        'type' => Type\SubmitType::class,
                         'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save_and_list',
@@ -459,7 +461,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         ],
                     ],
                     'save' => [
-                        'type' => 'submit',
+                        'type' => Type\SubmitType::class,
                         'options' => [
                             'button_class' => 'primary',
                             'label' => 'ekyna_core.button.save',
@@ -467,7 +469,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         ],
                     ],
                     'cancel' => [
-                        'type' => 'button',
+                        'type' => Type\ButtonType::class,
                         'options' => [
                             'label' => 'ekyna_core.button.cancel',
                             'button_class' => 'default',
@@ -590,7 +592,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 'admin_mode' => true,
                 '_redirect_enabled' => true,
             ], $options))
-            ->add('confirm', 'checkbox', [
+            ->add('confirm', Type\CheckboxType::class, [
                 'label' => $message,
                 'attr' => ['align_with_widget' => true],
                 'required' => true,
@@ -616,10 +618,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
             }
 
-            $form->add('actions', 'form_actions', [
+            $form->add('actions', FormActionsType::class, [
                 'buttons' => [
                     'remove' => [
-                        'type' => 'submit',
+                        'type' => Type\SubmitType::class,
                         'options' => [
                             'button_class' => 'danger',
                             'label' => 'ekyna_core.button.remove',
@@ -627,7 +629,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         ],
                     ],
                     'cancel' => [
-                        'type' => 'button',
+                        'type' => Type\ButtonType::class,
                         'options' => [
                             'label' => 'ekyna_core.button.cancel',
                             'button_class' => 'default',
@@ -953,7 +955,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     protected function createModal($action)
     {
-        $modal = new Modal(sprintf('%s.header.%s', $this->config->getId(), $action));
+        $modal = new Modal(sprintf('%s.header.%s', $this->config->getResourceId(), $action));
 
         $buttons = [];
 

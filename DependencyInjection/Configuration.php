@@ -49,7 +49,7 @@ class Configuration implements ConfigurationInterface
         $node = $builder->root('resources');
 
         $node
-            ->useAttributeAsKey('prefix')
+            ->useAttributeAsKey('prefix') // TODO rename as 'namespace'
             ->prototype('array')
                 ->useAttributeAsKey('name')
                 ->prototype('array')

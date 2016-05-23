@@ -2,8 +2,10 @@
 
 namespace Ekyna\Bundle\AdminBundle\Settings;
 
+use Ekyna\Bundle\CoreBundle\Form\Type\CollectionType;
 use Ekyna\Bundle\SettingBundle\Schema\AbstractSchema;
 use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilder;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints;
 
@@ -37,22 +39,22 @@ class NotificationSettingsSchema extends AbstractSchema
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('from_name', 'text', [
+            ->add('from_name', TextType::class, [
                 'label' => 'ekyna_admin.settings.notification.from_name',
                 'constraints' => [
                     new Constraints\NotBlank()
                 ]
             ])
-            ->add('from_email', 'text', [
+            ->add('from_email', TextType::class, [
                 'label' => 'ekyna_admin.settings.notification.from_email',
                 'constraints' => [
                     new Constraints\NotBlank(),
                     new Constraints\Email(),
                 ]
             ])
-            ->add('to_emails', 'ekyna_collection', [
+            ->add('to_emails', CollectionType::class, [
                 'label'           => 'ekyna_admin.settings.notification.to_emails',
-                'type'            => 'text',
+                'entry_type'      => TextType::class,
                 'allow_add'       => true,
                 'allow_delete'    => true,
                 'add_button_text' => 'ekyna_core.button.add',

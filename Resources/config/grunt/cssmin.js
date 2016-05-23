@@ -3,8 +3,7 @@ module.exports = function (grunt, options) {
         admin: {
             files: {
                 'src/Ekyna/Bundle/AdminBundle/Resources/public/css/main.css': [
-                    'bower_components/bootstrap/dist/css/bootstrap.css',
-                    'bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.css', // TODO is in core
+                    'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/bootstrap.css',
                     'bower_components/jquery-ui/themes/base/jquery-ui.css',
                     'bower_components/jquery-ui/themes/smoothness/jquery-ui.css',
 

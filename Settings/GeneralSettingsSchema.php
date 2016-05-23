@@ -6,6 +6,7 @@ use Ekyna\Bundle\AdminBundle\Form\Type\SiteAddressType;
 use Ekyna\Bundle\AdminBundle\Model\SiteAddress;
 use Ekyna\Bundle\SettingBundle\Schema\AbstractSchema;
 use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilder;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints;
 
@@ -41,28 +42,30 @@ class GeneralSettingsSchema extends AbstractSchema
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('site_name', 'text', [
+            ->add('site_name', TextType::class, [
                 'label' => 'ekyna_admin.settings.general.site_name',
                 'constraints' => [
                     new Constraints\NotBlank()
                 ]
             ])
-            ->add('admin_name', 'text', [
+            ->add('admin_name', TextType::class, [
                 'label' => 'ekyna_admin.settings.general.admin_name',
                 'constraints' => [
                     new Constraints\NotBlank()
                 ]
             ])
-            ->add('admin_email', 'text', [
+            ->add('admin_email', TextType::class, [
                 'label' => 'ekyna_admin.settings.general.admin_email',
                 'constraints' => [
                     new Constraints\NotBlank(),
                     new Constraints\Email(),
                 ]
             ])
-            ->add('site_address', new SiteAddressType(), [
+            ->add('site_address', SiteAddressType::class, [
                 'label' => 'ekyna_admin.settings.general.siteaddress',
-                'cascade_validation' => true,
+                'constraints' => [
+                    new Constraints\Valid()
+                ]
             ])
         ;
     }

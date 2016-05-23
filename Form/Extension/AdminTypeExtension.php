@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -10,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class AdminTypeExtension
  * @package Ekyna\Bundle\AdminBundle\Form\Extension
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class AdminTypeExtension extends AbstractTypeExtension
 {
@@ -21,12 +22,11 @@ class AdminTypeExtension extends AbstractTypeExtension
     {
         $resolver
             ->setDefaults([
-                'admin_mode' => false,
+                'admin_mode'   => false,
                 'admin_helper' => null,
             ])
             ->setAllowedTypes('admin_mode', 'bool')
-            ->setAllowedTypes('admin_helper', ['null', 'string'])
-        ;
+            ->setAllowedTypes('admin_helper', ['null', 'string']);
     }
 
     /**
@@ -44,6 +44,6 @@ class AdminTypeExtension extends AbstractTypeExtension
      */
     public function getExtendedType()
     {
-    	return 'form';
+        return FormType::class;
     }
 }

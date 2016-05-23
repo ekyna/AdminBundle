@@ -7,44 +7,27 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class PermissionsType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class PermissionsType extends AbstractType
 {
-    /**
-     * @var ConfigurationRegistry
-     */
-    protected $registry;
-
-    /**
-     * @var array
-     */
-    protected $permissions;
-
-    /**
-     * Constructor.
-     *
-     * @param ConfigurationRegistry $registry
-     * @param array                 $permissions
-     */
-    public function __construct(ConfigurationRegistry $registry, array $permissions)
-    {
-        $this->registry    = $registry;
-        $this->permissions = $permissions;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        foreach ($this->registry->getConfigurations() as $config) {
-            $builder->add($config->getAlias(), new PermissionType($this->permissions), [
-                'label' => $config->getResourceLabel(true)
+        /** @var ConfigurationRegistry $registry */
+        $registry = $options['registry'];
+
+        foreach ($registry->getConfigurations() as $config) {
+            $builder->add($config->getAlias(), PermissionType::class, [
+                'label' => $config->getResourceLabel(true),
+                'permissions' => $options['permissions'],
             ]);
         }
     }
@@ -54,13 +37,25 @@ class PermissionsType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['permissions'] = $this->permissions;
+        $view->vars['permissions'] = $options['permissions'];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver
+            ->setDefined(array('registry', 'permissions'))
+            ->setRequired(array('registry', 'permissions'))
+            ->setAllowedTypes('registry', ConfigurationRegistry::class)
+            ->setAllowedTypes('permissions', 'array');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockPrefix()
     {
         return 'ekyna_admin_permissions';
     }

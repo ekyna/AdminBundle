@@ -19,7 +19,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 /**
  * Class AclOperator
  * @package Ekyna\Bundle\AdminBundle\Acl
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class AclOperator implements AclOperatorInterface
 {
@@ -51,9 +51,9 @@ class AclOperator implements AclOperatorInterface
     /**
      * Constructor.
      *
-     * @param MutableAclProviderInterface $aclProvider
-     * @param PermissionMapInterface $permissionMap
-     * @param ConfigurationRegistry $registry
+     * @param MutableAclProviderInterface   $aclProvider
+     * @param PermissionMapInterface        $permissionMap
+     * @param ConfigurationRegistry         $registry
      * @param AuthorizationCheckerInterface $security
      */
     public function __construct(
@@ -62,10 +62,10 @@ class AclOperator implements AclOperatorInterface
         ConfigurationRegistry $registry,
         AuthorizationCheckerInterface $security
     ) {
-        $this->aclProvider   = $aclProvider;
+        $this->aclProvider = $aclProvider;
         $this->permissionMap = $permissionMap;
-        $this->registry      = $registry;
-        $this->security      = $security;
+        $this->registry = $registry;
+        $this->security = $security;
     }
 
     /**
@@ -80,7 +80,7 @@ class AclOperator implements AclOperatorInterface
 
         try {
             $this->aclProvider->findAcls($oids);
-        } catch(NotAllAclsFoundException $e) {
+        } catch (NotAllAclsFoundException $e) {
             // If acls has not been updated yet.
         }
     }
@@ -102,13 +102,14 @@ class AclOperator implements AclOperatorInterface
             /** @var \Symfony\Component\Security\Acl\Domain\Acl $acl */
             $acl = $this->aclProvider->findAcl($oid);
             /** @var \Symfony\Component\Security\Acl\Model\EntryInterface $entry */
-            foreach($acl->getClassAces() as $index => $entry) {
-                if($entry->getSecurityIdentity()->equals($rid)) {
+            foreach ($acl->getClassAces() as $index => $entry) {
+                if ($entry->getSecurityIdentity()->equals($rid)) {
                     return $entry->getMask();
                 }
             }
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
         }
+
         return 0;
     }
 
@@ -122,12 +123,13 @@ class AclOperator implements AclOperatorInterface
             /** @var \Symfony\Component\Security\Acl\Domain\Acl $acl */
             $acl = $this->aclProvider->findAcl($oid);
             /** @var \Symfony\Component\Security\Acl\Model\EntryInterface $entry */
-            foreach($acl->getClassAces() as $index => $entry) {
-                if($entry->getSecurityIdentity()->equals($rid)) {
-                    if($entry->getMask() != $mask) {
+            foreach ($acl->getClassAces() as $index => $entry) {
+                if ($entry->getSecurityIdentity()->equals($rid)) {
+                    if ($entry->getMask() != $mask) {
                         $acl->updateClassAce($index, $mask);
                         $this->aclProvider->updateAcl($acl);
                     }
+
                     return;
                 }
             }
@@ -135,9 +137,9 @@ class AclOperator implements AclOperatorInterface
             // Create Ace
             $acl->insertClassAce($rid, $mask);
             $this->aclProvider->updateAcl($acl);
-            return;
 
-        }catch(AclNotFoundException $e) { // TODO: Catch only acl/ace exception ?
+            return;
+        } catch (AclNotFoundException $e) { // TODO: Catch only acl/ace exception ?
         }
 
         // Create Acl and Ace
@@ -159,15 +161,16 @@ class AclOperator implements AclOperatorInterface
      */
     public function getPermissions()
     {
-        if(null === $this->permissions) {
+        if (null === $this->permissions) {
             $this->permissions = [];
             $reflexion = new \ReflectionClass($this->permissionMap);
-            foreach($reflexion->getConstants() as $name => $value) {
-                if(substr($name, 0, 10) == 'PERMISSION') {
+            foreach ($reflexion->getConstants() as $name => $value) {
+                if (substr($name, 0, 10) == 'PERMISSION') {
                     $this->permissions[] = strtolower($value);
                 }
             }
         }
+
         return $this->permissions;
     }
 
@@ -184,8 +187,10 @@ class AclOperator implements AclOperatorInterface
      */
     public function buildGroupForm(FormBuilderInterface $builder)
     {
-        $builder->add('acls', new PermissionsType($this->registry, $this->permissions), [
-            'label' => false,
+        $builder->add('acls', PermissionsType::class, [
+            'label'       => false,
+            'registry'    => $this->registry,
+            'permissions' => $this->getPermissions(),
         ]);
     }
 
@@ -225,7 +230,7 @@ class AclOperator implements AclOperatorInterface
             $oidDatas = [];
             try {
                 $acl = $this->findAcl($config->getObjectIdentity());
-            }catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $acl = false;
             }
 
@@ -234,7 +239,7 @@ class AclOperator implements AclOperatorInterface
                     try {
                         $granted = $acl->isGranted($this->getPermissionMasks(strtoupper($permission)), [$rid]);
                         $oidDatas[$permission] = $granted;
-                    } catch(\Exception $e) {
+                    } catch (\Exception $e) {
                         $oidDatas[$permission] = false;
                     }
                 }
@@ -274,7 +279,7 @@ class AclOperator implements AclOperatorInterface
                             $maskBuilder->reset();
                             $maskBuilder->add($p);
                             $mask = $maskBuilder->get();
-                            if(in_array($mask, $masks)) {
+                            if (in_array($mask, $masks)) {
                                 $add = false;
                                 break;
                             }
@@ -301,7 +306,7 @@ class AclOperator implements AclOperatorInterface
     public function isAccessGranted($resource, $permission)
     {
         $permission = strtoupper($permission);
-        if (! $this->getPermissionMap()->contains($permission)) {
+        if (!$this->getPermissionMap()->contains($permission)) {
             throw new \InvalidArgumentException(sprintf('Unknown permission "%s".', $permission));
         }
 

@@ -92,30 +92,4 @@ class EkynaAdminExtension extends Extension
             }
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function prepend(ContainerBuilder $container)
-    {
-        parent::prepend($container);
-
-        $bundles = $container->getParameter('kernel.bundles');
-
-        if (array_key_exists('TwigBundle', $bundles)) {
-            $this->configureTwigBundle($container);
-        }
-    }
-
-    /**
-     * Configures the TwigBundle.
-     *
-     * @param ContainerBuilder $container
-     */
-    private function configureTwigBundle(ContainerBuilder $container)
-    {
-        $container->prependExtensionConfig('twig', [
-            'form_themes' => ['EkynaAdminBundle:Form:form_div_layout.html.twig'],
-        ]);
-    }
 }

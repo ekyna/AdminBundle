@@ -18,7 +18,7 @@ class ConfigurationRegistry
 
     /**
      * Constructor.
-     * 
+     *
      * @param array|ConfigurationInterface[]
      */
     public function __construct(array $configurations)
@@ -28,12 +28,12 @@ class ConfigurationRegistry
 
     /**
      * Finds a configuration for the given resource (object/class/id)
-     * 
+     *
      * @param mixed $resource object, class or configuration identifier.
      * @param boolean $throwException
-     * 
+     *
      * @throws NotFoundConfigurationException
-     * 
+     *
      * @return Configuration|NULL
      */
     public function findConfiguration($resource, $throwException = true)
@@ -60,7 +60,7 @@ class ConfigurationRegistry
             }
             // By Id
             foreach($this->configurations as $config) {
-                if ($resource == $config->getId()) {
+                if ($resource == $config->getResourceId()) {
                     return $config;
                 }
             }
@@ -75,9 +75,9 @@ class ConfigurationRegistry
 
     /**
      * Returns whether a configuration exists or not for the given identifier.
-     *  
+     *
      * @param string $id
-     * 
+     *
      * @return boolean
      */
     public function has($id)
@@ -87,9 +87,9 @@ class ConfigurationRegistry
 
     /**
      * Returns the configuration for the given identifier.
-     * 
+     *
      * @param string $id
-     * 
+     *
      * @throws \InvalidArgumentException
      *
      * @return ConfigurationInterface
@@ -139,7 +139,7 @@ class ConfigurationRegistry
         $children = [];
 
         foreach($this->configurations as $child) {
-            if ($child->getParentId() === $configuration->getId()) {
+            if ($child->getParentId() === $configuration->getResourceId()) {
                 $children[$child->getResourceName()] = $child;
             }
         }
@@ -149,7 +149,7 @@ class ConfigurationRegistry
 
     /**
      * Returns the configurations.
-     * 
+     *
      * @return ConfigurationInterface[]
      */
     public function getConfigurations()
@@ -159,9 +159,9 @@ class ConfigurationRegistry
 
     /**
      * Returns the object identity.
-     * 
+     *
      * @param object $object
-     * 
+     *
      * @return \Symfony\Component\Security\Acl\Domain\ObjectIdentity|null
      */
     public function getObjectIdentity($object)

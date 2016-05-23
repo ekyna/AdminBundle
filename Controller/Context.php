@@ -136,7 +136,7 @@ class Context
         return array_merge($this->resources, [
             'identifiers'   => $this->getIdentifiers(),
             'resource_name' => $this->config->getResourceName(),
-            'resource_id'   => $this->config->getId(),
+            'resource_id'   => $this->config->getResourceId(),
             'route_prefix'  => $this->config->getRoutePrefix(),
             'form_template' => $this->config->getTemplate('_form.html'),
         ], $extra);

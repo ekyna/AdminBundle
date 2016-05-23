@@ -18,12 +18,12 @@
         "MIT"
     ],
     "require" : {
-        "php" : ">=5.4.0",
-        "ekyna/core-bundle" : "0.5.x-dev",
-        "ekyna/user-bundle" : "0.5.x-dev",
-        "ekyna/google-bundle" : "0.5.x-dev",
-        "ekyna/setting-bundle" : "0.5.x-dev",
-        "ekyna/install-bundle" : "0.5.x-dev",
+        "php" : ">=5.5.9",
+        "ekyna/core-bundle" : "0.6.x-dev",
+        "ekyna/user-bundle" : "0.6.x-dev",
+        "ekyna/google-bundle" : "0.6.x-dev",
+        "ekyna/setting-bundle" : "0.6.x-dev",
+        "ekyna/install-bundle" : "0.6.x-dev",
         "symfony/security-acl": "^3.0"
     },
     "autoload" : {

@@ -1,6 +1,8 @@
 {
   "name": "ekyna/AdminBundle",
   "devDependencies": {
+    "bootstrap": "^3.3.6",
+    "jquery-ui": "^1.11.4"
   },
   "resolutions": {
     "jquery": "1.9.1 - 2"

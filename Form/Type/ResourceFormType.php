@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Class ResourceFormType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 abstract class ResourceFormType extends AbstractType
 {
