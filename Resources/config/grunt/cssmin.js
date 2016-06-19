@@ -3,10 +3,6 @@ module.exports = function (grunt, options) {
         admin: {
             files: {
                 'src/Ekyna/Bundle/AdminBundle/Resources/public/css/main.css': [
-                    'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/bootstrap.css',
-                    'bower_components/jquery-ui/themes/base/jquery-ui.css',
-                    'bower_components/jquery-ui/themes/smoothness/jquery-ui.css',
-
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/bootstrap.overrides.css',
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/jquery-ui.overrides.css',
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/layout.css',
