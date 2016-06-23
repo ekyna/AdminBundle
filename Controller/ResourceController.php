@@ -224,12 +224,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
             if (!$event->hasErrors()) {
                 if ($isXhr) {
-                    $modal = $this->createModal('new');
-                    $modal->setContent([
+                    return JsonResponse::create([
                         'id' => $resource->getId(),
                         'name' => (string) $resource,
                     ]);
-                    return $this->get('ekyna_core.modal')->render($modal);
                 }
 
                 /** @noinspection PhpUndefinedMethodInspection */
@@ -246,7 +244,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     $redirectPath = $this->generateResourcePath($resource);
                 }
                 return $this->redirect($redirectPath);
-            }
+            }/* TODO else {
+                foreach ($event->getErrors() as $error) {
+                    $form->addError(new FormError($error->getMessage()));
+                }
+            }*/
         }
 
         if ($isXhr) {
@@ -289,6 +291,8 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             'admin_mode' => true,
             '_redirect_enabled' => true,
         ], $options));
+
+
 
         if ($footer) {
             $referer = $context->getRequest()->headers->get('referer');
@@ -366,12 +370,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
             if (!$event->hasErrors()) {
                 if ($isXhr) {
-                    $modal = $this->createModal('edit');
-                    $modal->setContent([
+                    return JsonResponse::create([
                         'id' => $resource->getId(),
                         'name' => (string) $resource,
                     ]);
-                    return $this->get('ekyna_core.modal')->render($modal);
                 }
 
                 /** @noinspection PhpUndefinedMethodInspection */
@@ -388,7 +390,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     $redirectPath = $this->generateResourcePath($resource);
                 }
                 return $this->redirect($redirectPath);
-            }
+            }/* TODO else {
+                foreach ($event->getErrors() as $error) {
+                    $form->addError(new FormError($error->getMessage()));
+                }
+            }*/
         }
 
         if ($isXhr) {
@@ -513,12 +519,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
             if (!$event->hasErrors()) {
                 if ($isXhr) {
-                    $modal = $this->createModal('remove');
-                    $modal
-                        ->setSize(Modal::SIZE_NORMAL)
-                        ->setContent(['success' => true])
-                    ;
-                    return $this->get('ekyna_core.modal')->render($modal);
+                    return JsonResponse::create([
+                        'success' => true,
+                    ]);
                 }
 
                 if (null !== $redirectPath = $form->get('_redirect')->getData()) {
@@ -537,7 +540,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         $context->getIdentifiers()
                     )
                 );
-            }
+            }/* TODO else {
+                foreach ($event->getErrors() as $error) {
+                    $form->addError(new FormError($error->getMessage()));
+                }
+            }*/
         }
 
         if ($isXhr) {
@@ -951,15 +958,20 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * Creates a modal object.
      *
      * @param string $action
+     * @param string $title
      * @return Modal
      */
-    protected function createModal($action)
+    protected function createModal($action, $title = null)
     {
-        $modal = new Modal(sprintf('%s.header.%s', $this->config->getResourceId(), $action));
+        if (!$title) {
+            $title = sprintf('%s.header.%s', $this->config->getResourceId(), $action);
+        }
+
+        $modal = new Modal($title);
 
         $buttons = [];
 
-        if (in_array($action, ['new', 'edit', 'remove'])) {
+        if (in_array($action, ['new', 'new_child', 'edit', 'remove'])) {
             $submitButton = [
                 'id'       => 'submit',
                 'label'    => 'ekyna_core.button.save',

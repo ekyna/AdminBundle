@@ -2,8 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller\Resource;
 
-use Symfony\Component\HttpFoundation\Request;
+use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Ekyna\Bundle\AdminBundle\Controller\Context;
+use Symfony\Component\Form\Extension\Core\Type;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class NestedTrait
@@ -14,7 +17,7 @@ trait NestedTrait
 {
     /**
      * Decrement the position.
-     * 
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -37,7 +40,7 @@ trait NestedTrait
 
     /**
      * Increment the position.
-     * 
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
@@ -60,103 +63,50 @@ trait NestedTrait
 
     /**
      * Creates a child resource.
-     * 
+     *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function newChildAction(Request $request)
     {
         $this->isGranted('CREATE');
+        $isXhr = $request->isXmlHttpRequest();
 
         $context = $this->loadContext($request);
 
         $resourceName = $this->config->getResourceName();
         $resource = $context->getResource($resourceName);
 
+        $action = $this->generateUrl(
+            $this->config->getRoute('new_child'),
+            $context->getIdentifiers(true)
+        );
+
         $child = $this->createNewFromParent($context, $resource);
+        $context->addResource($resourceName, $child);
+        $context->addResource('parent_resource', $resource);
 
-        if (0 < strlen($referer = $request->headers->get('referer'))) {
-            $cancelPath = $referer;
-        } else {
-            $cancelPath = $this->generateResourcePath($request);
-        }
+        $form = $this->createNewResourceForm($context, !$isXhr, ['action' => $action]);
 
-        $form = $this
-            ->createForm($this->config->getFormType(), $child, [
-                'action' => $this->generateUrl(
-                    $this->config->getRoute('new_child'),
-                    $context->getIdentifiers(true)
-                ),
-                'method' => 'POST',
-                'attr' => [
-                    'class' => 'form-horizontal form-with-tabs',
-                ],
-                'admin_mode' => true,
-                '_redirect_enabled' => true,
-            ])
-            ->add('actions', 'form_actions', [
-                'buttons' => [
-                    'saveAndList' => [
-                        'type' => 'submit', 'options' => [
-                            'button_class' => 'primary',
-                            'label' => 'ekyna_core.button.save_and_list',
-                            'attr' => [
-                                'icon' => 'list',
-                            ],
-                        ],
-                    ],
-                    'save' => [
-                        'type' => 'submit', 'options' => [
-                            'button_class' => 'primary',
-                            'label' => 'ekyna_core.button.save',
-                            'attr' => [
-                                'icon' => 'ok',
-                            ],
-                        ],
-                    ],
-                    'cancel' => [
-                        'type' => 'button', 'options' => [
-                            'label' => 'ekyna_core.button.cancel',
-                            'button_class' => 'default',
-                            'as_link' => true,
-                            'attr' => [
-                                'class' => 'form-cancel-btn',
-                                'icon' => 'remove',
-                                'href' => $cancelPath,
-                            ],
-                        ],
-                    ],
-                ],
-            ])
-        ;
-
-        $form->handleRequest($this->getRequest());
+        $form->handleRequest($request);
         if ($form->isValid()) {
 
             $this->getRepository()->persistAsLastChildOf($child, $resource);
 
             // TODO use ResourceManager
             $event = $this->getOperator()->create($child);
-
-            /* if ($request->isXmlHttpRequest()) {
-                if ($event->hasErrors()) {
-                    $errorMessages = $event->getErrors();
-                    $errors = [];
-                    foreach ($errorMessages as $message) {
-                        $errors[] = $message->getMessage();
-                    }
-                    return new JsonResponse(array('error' => implode(', ', $errors)));
-                }
-
-                return new JsonResponse(array(
-                    'id' => $resource->getId(),
-                    'name' => (string)$resource,
-                ));
-            }*/
-
-            $event->toFlashes($this->getFlashBag());
+            if (!$isXhr) {
+                $event->toFlashes($this->getFlashBag());
+            }
 
             if (!$event->hasErrors()) {
+                if ($isXhr) {
+                    return new JsonResponse([
+                        'id'   => $child->getId(),
+                        'name' => (string) $child,
+                    ]);
+                }
+
                 /** @noinspection PhpUndefinedMethodInspection */
                 if ($form->get('actions')->get('saveAndList')->isClicked()) {
                     $redirectPath = $this->generateResourcePath($resource, 'list');
@@ -164,7 +114,24 @@ trait NestedTrait
                     $redirectPath = $this->generateResourcePath($child);
                 }
                 return $this->redirect($redirectPath);
-            }
+            }/* TODO else {
+                foreach ($event->getErrors() as $error) {
+                    $form->addError(new FormError($error->getMessage()));
+                }
+            }*/
+        }
+
+        if ($isXhr) {
+            $title = $this->getTranslator()->trans(
+                sprintf('%s.header.%s', $this->config->getResourceId(), 'new_child'),
+                ['%name%' => (string) $resource]
+            );
+            $modal = $this->createModal('new_child', $title);
+            $modal
+                ->setContent($form->createView())
+                ->setVars($context->getTemplateVars())
+            ;
+            return $this->get('ekyna_core.modal')->render($modal);
         }
 
         return $this->render(
@@ -178,10 +145,10 @@ trait NestedTrait
 
     /**
      * Creates a new resource and configure it regarding to the parent.
-     * 
+     *
      * @param Context $context
      * @param object $parent
-     * 
+     *
      * @return object
      */
     public function createNewFromParent(Context $context, $parent)
