@@ -11,6 +11,7 @@ use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use JMS\Serializer\SerializationContext;
 use Symfony\Component\Form\Extension\Core\Type;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -244,11 +245,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     $redirectPath = $this->generateResourcePath($resource);
                 }
                 return $this->redirect($redirectPath);
-            }/* TODO else {
+            } else {
                 foreach ($event->getErrors() as $error) {
                     $form->addError(new FormError($error->getMessage()));
                 }
-            }*/
+            }
         }
 
         if ($isXhr) {
@@ -390,11 +391,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     $redirectPath = $this->generateResourcePath($resource);
                 }
                 return $this->redirect($redirectPath);
-            }/* TODO else {
+            } else {
                 foreach ($event->getErrors() as $error) {
                     $form->addError(new FormError($error->getMessage()));
                 }
-            }*/
+            }
         }
 
         if ($isXhr) {
@@ -540,11 +541,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         $context->getIdentifiers()
                     )
                 );
-            }/* TODO else {
+            } else {
                 foreach ($event->getErrors() as $error) {
                     $form->addError(new FormError($error->getMessage()));
                 }
-            }*/
+            }
         }
 
         if ($isXhr) {
