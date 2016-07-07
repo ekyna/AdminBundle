@@ -10,9 +10,6 @@
 
 {% block ekyna_resource_widget_collapsed %}
 {% spaceless %}
-{% if required and empty_value is none and not empty_value_in_choices %}
-    {% set required = false %}
-{% endif %}
 {% if not required %}
     {% set attr = attr|merge({'data-allow-clear': 1}) %}
 {% endif %}

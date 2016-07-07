@@ -231,18 +231,16 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     ]);
                 }
 
+                $redirectPath = null;
                 /** @noinspection PhpUndefinedMethodInspection */
-                if ($form->get('actions')->get('saveAndList')->isClicked()) {
-                    if ($this->hasParent()) {
-                        $redirectPath = $this->generateUrl(
-                            $this->getParent()->getConfiguration()->getRoute('show'),
-                            $context->getIdentifiers()
-                        );
-                    } else {
-                        $redirectPath = $this->generateResourcePath($resource, 'list');
-                    }
+                if ($form->get('actions')->has('saveAndList') && $form->get('actions')->get('saveAndList')->isClicked()) {
+                    $redirectPath = $this->generateResourcePath($resource, 'list');
                 } elseif (null === $redirectPath = $form->get('_redirect')->getData()) {
-                    $redirectPath = $this->generateResourcePath($resource);
+                    if ($this->hasParent() && null !== $parentResource = $this->getParentResource($context)) {
+                        $redirectPath = $this->generateResourcePath($parentResource, 'show');
+                    } else {
+                        $redirectPath = $this->generateResourcePath($resource, 'show');
+                    }
                 }
                 return $this->redirect($redirectPath);
             } else {
@@ -293,8 +291,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             '_redirect_enabled' => true,
         ], $options));
 
-
-
         if ($footer) {
             $referer = $context->getRequest()->headers->get('referer');
             if (0 < strlen($referer) && false === strpos($referer, $action)) {
@@ -308,38 +304,41 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
             }
 
-            $form->add('actions', FormActionsType::class, [
-                'buttons' => [
-                    'saveAndList' => [
-                        'type' => Type\SubmitType::class,
-                        'options' => [
-                            'button_class' => 'primary',
-                            'label' => 'ekyna_core.button.save_and_list',
-                            'attr' => ['icon' => 'list'],
-                        ],
+            $buttons = [];
+            if (!$this->hasParent()) {
+                $buttons['saveAndList'] = [
+                    'type' => Type\SubmitType::class,
+                    'options' => [
+                        'button_class' => 'primary',
+                        'label' => 'ekyna_core.button.save_and_list',
+                        'attr' => ['icon' => 'list'],
                     ],
-                    'save' => [
-                        'type' => Type\SubmitType::class,
-                        'options' => [
-                            'button_class' => 'primary',
-                            'label' => 'ekyna_core.button.save',
-                            'attr' => ['icon' => 'ok'],
-                        ],
-                    ],
-                    'cancel' => [
-                        'type' => Type\ButtonType::class,
-                        'options' => [
-                            'label' => 'ekyna_core.button.cancel',
-                            'button_class' => 'default',
-                            'as_link' => true,
-                            'attr' => [
-                                'class' => 'form-cancel-btn',
-                                'icon' => 'remove',
-                                'href' => $cancelPath,
-                            ],
-                        ],
+                ];
+            }
+            $buttons['save'] = [
+                'type' => Type\SubmitType::class,
+                'options' => [
+                    'button_class' => 'primary',
+                    'label' => 'ekyna_core.button.save',
+                    'attr' => ['icon' => 'ok'],
+                ],
+            ];
+            $buttons['cancel'] = [
+                'type' => Type\ButtonType::class,
+                'options' => [
+                    'label' => 'ekyna_core.button.cancel',
+                    'button_class' => 'default',
+                    'as_link' => true,
+                    'attr' => [
+                        'class' => 'form-cancel-btn',
+                        'icon' => 'remove',
+                        'href' => $cancelPath,
                     ],
                 ],
+            ];
+
+            $form->add('actions', FormActionsType::class, [
+                'buttons' => $buttons,
             ]);
         }
 
@@ -377,18 +376,16 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     ]);
                 }
 
+                $redirectPath = null;
                 /** @noinspection PhpUndefinedMethodInspection */
-                if ($form->get('actions')->get('saveAndList')->isClicked()) {
-                    if ($this->hasParent()) {
-                        $redirectPath = $this->generateUrl(
-                            $this->getParent()->getConfiguration()->getRoute('show'),
-                            $context->getIdentifiers()
-                        );
-                    } else {
-                        $redirectPath = $this->generateResourcePath($resource, 'list');
-                    }
+                if ($form->get('actions')->has('saveAndList') && $form->get('actions')->get('saveAndList')->isClicked()) {
+                    $redirectPath = $this->generateResourcePath($resource, 'list');
                 } elseif (null === $redirectPath = $form->get('_redirect')->getData()) {
-                    $redirectPath = $this->generateResourcePath($resource);
+                    if ($this->hasParent() && null !== $parentResource = $this->getParentResource($context)) {
+                        $redirectPath = $this->generateResourcePath($parentResource, 'show');
+                    } else {
+                        $redirectPath = $this->generateResourcePath($resource, 'show');
+                    }
                 }
                 return $this->redirect($redirectPath);
             } else {
@@ -457,38 +454,41 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
             }
 
-            $form->add('actions', FormActionsType::class, [
-                'buttons' => [
-                    'saveAndList' => [
-                        'type' => Type\SubmitType::class,
-                        'options' => [
-                            'button_class' => 'primary',
-                            'label' => 'ekyna_core.button.save_and_list',
-                            'attr' => ['icon' => 'list'],
-                        ],
+            $buttons = [];
+            if (!$this->hasParent()) {
+                $buttons['saveAndList'] = [
+                    'type' => Type\SubmitType::class,
+                    'options' => [
+                        'button_class' => 'primary',
+                        'label' => 'ekyna_core.button.save_and_list',
+                        'attr' => ['icon' => 'list'],
                     ],
-                    'save' => [
-                        'type' => Type\SubmitType::class,
-                        'options' => [
-                            'button_class' => 'primary',
-                            'label' => 'ekyna_core.button.save',
-                            'attr' => ['icon' => 'ok'],
-                        ],
-                    ],
-                    'cancel' => [
-                        'type' => Type\ButtonType::class,
-                        'options' => [
-                            'label' => 'ekyna_core.button.cancel',
-                            'button_class' => 'default',
-                            'as_link' => true,
-                            'attr' => [
-                                'class' => 'form-cancel-btn',
-                                'icon' => 'remove',
-                                'href' => $cancelPath,
-                            ],
-                        ],
+                ];
+            }
+            $buttons['save'] = [
+                'type' => Type\SubmitType::class,
+                'options' => [
+                    'button_class' => 'primary',
+                    'label' => 'ekyna_core.button.save',
+                    'attr' => ['icon' => 'ok'],
+                ],
+            ];
+            $buttons['cancel'] = [
+                'type' => Type\ButtonType::class,
+                'options' => [
+                    'label' => 'ekyna_core.button.cancel',
+                    'button_class' => 'default',
+                    'as_link' => true,
+                    'attr' => [
+                        'class' => 'form-cancel-btn',
+                        'icon' => 'remove',
+                        'href' => $cancelPath,
                     ],
                 ],
+            ];
+
+            $form->add('actions', FormActionsType::class, [
+                'buttons' => $buttons
             ]);
         }
 
@@ -525,22 +525,15 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     ]);
                 }
 
-                if (null !== $redirectPath = $form->get('_redirect')->getData()) {
-                    return $this->redirect($redirectPath);
+                if (null === $redirectPath = $form->get('_redirect')->getData()) {
+                    if ($this->hasParent() && null !== $parentResource = $this->getParentResource($context)) {
+                        $redirectPath = $this->generateResourcePath($parentResource, 'show');
+                    } else {
+                        $redirectPath = $this->generateResourcePath($resource, 'list');
+                    }
                 }
 
-                if ($this->hasParent()) {
-                    $returnRoute = $this->getParent()->getConfiguration()->getRoute('show');
-                } else {
-                    $returnRoute = $this->config->getRoute('list');
-                }
-
-                return $this->redirect(
-                    $this->generateUrl(
-                        $returnRoute,
-                        $context->getIdentifiers()
-                    )
-                );
+                return $this->redirect($redirectPath);
             } else {
                 foreach ($event->getErrors() as $error) {
                     $form->addError(new FormError($error->getMessage()));
@@ -790,6 +783,21 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         return $context;
+    }
+
+    /**
+     * Returns the parent resource.
+     *
+     * @param Context $context
+     *
+     * @return null|object
+     */
+    protected function getParentResource(Context $context)
+    {
+        if ($this->hasParent()) {
+            return $context->getResource($this->getParent()->getConfiguration()->getResourceName());
+        }
+        return null;
     }
 
     /**

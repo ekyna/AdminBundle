@@ -55,7 +55,7 @@ class ResourceType extends AbstractType
             $view->vars['new_route_params'] = $options['new_route_params']; // TODO
         }
 
-        if ($options['new_route']) {
+        if ($options['list_route']) {
             $view->vars['list_route'] = $options['list_route'];
             $view->vars['list_route_params'] = $options['list_route_params'];
         } elseif ($options['allow_list'] && $this->aclOperator->isAccessGranted($options['class'], 'VIEW')) {
