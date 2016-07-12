@@ -107,7 +107,7 @@
                 </a>
             </li>
             #}
-            {% if ekyna_cms_home_route|length %}
+            {% if ekyna_cms_home_route is defined and ekyna_cms_home_route is not empty %}
             <li class="settings hidden-xs hidden-sm">
                 <a href="{{ path(ekyna_cms_home_route) }}" target="_blank" title="{{ 'ekyna_admin.navbar.go_to_front'|trans }}">
                     <i class="fa fa-sitemap"></i>
