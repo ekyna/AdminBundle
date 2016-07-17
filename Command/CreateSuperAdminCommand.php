@@ -64,6 +64,12 @@ EOT
             return;
         }
 
+        $userRepository = $this->getContainer()->get('ekyna_user.user.repository');
+        if (null !== $userRepository->findOneBy(['email' => $input->getArgument('email')])) {
+            $output->writeln(sprintf('User "%s" already exists.', $input->getArgument('email')));
+            return;
+        }
+
         $userManager = $this->getContainer()->get('fos_user.user_manager');
 
         /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $user */
