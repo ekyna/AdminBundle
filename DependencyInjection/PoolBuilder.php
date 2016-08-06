@@ -35,7 +35,7 @@ class PoolBuilder
     const TRANSLATABLE_DEFAULT_REPOSITORY   = ORM\TranslatableResourceRepository::class;
     const TRANSLATABLE_REPOSITORY_INTERFACE = ORM\TranslatableResourceRepositoryInterface::class;
 
-    const DEFAULT_TEMPLATES    = 'EkynaAdminBundle:Entity/Default';
+    //const DEFAULT_TEMPLATES    = 'EkynaAdminBundle:Entity/Default';
 
     const FORM_INTERFACE       = FormTypeInterface::class;
     const TABLE_INTERFACE      = TableTypeInterface::class;
@@ -53,14 +53,14 @@ class PoolBuilder
      * The required templates (name => extensions[])[].
      * @var array
      */
-    static private $templates = [
+    /*static private $templates = [
         '_form'  => ['html'],
         'list'   => ['html', 'xml'],
         'new'    => ['html', 'xml'],
         'show'   => ['html'],
         'edit'   => ['html'],
         'remove' => ['html'],
-    ];
+    ];*/
 
     /**
      * @var DI\ContainerBuilder
@@ -292,7 +292,8 @@ class PoolBuilder
                     'form_type' => $this->getServiceClass('form'), // TODO
                     'event'     => $this->options['event'],
                 ],
-                'templates' => $this->buildTemplateList($this->options['templates']),
+                'templates' => $this->options['templates'],
+                //'templates' => $this->buildTemplateList($this->options['templates']),
             ];
 
             $definition = new DI\Definition(self::CONFIGURATION);
@@ -313,7 +314,7 @@ class PoolBuilder
      * @param mixed $templatesConfig
      * @return array
      */
-    private function buildTemplateList($templatesConfig)
+    /*private function buildTemplateList($templatesConfig)
     {
         $templateNamespace = self::DEFAULT_TEMPLATES;
         if (is_string($templatesConfig)) {
@@ -331,7 +332,7 @@ class PoolBuilder
             $templatesList = array_merge($templatesList, $templatesConfig);
         }
         return $templatesList;
-    }
+    }*/
 
     /**
      * Creates the Table service definition.

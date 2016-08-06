@@ -95,7 +95,7 @@ class AdminExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function renderResourceButton($resource, $action = 'view', array $options = [], array $attributes = [])
+    public function renderResourceButton($resource, $action = 'show', array $options = [], array $attributes = [])
     {
         if ($this->helper->isGranted($resource, $action)) {
             $options = array_merge($this->getButtonOptions($action), $options);
@@ -150,12 +150,13 @@ class AdminExtension extends \Twig_Extension
      *
      * @param mixed $resource
      * @param string $action
+     * @param array $parameters
      *
      * @return string
      */
-    public function generateResourcePath($resource, $action = 'view')
+    public function generateResourcePath($resource, $action = 'show', array $parameters = [])
     {
-        return $this->helper->generateResourcePath($resource, $action);
+        return $this->helper->generateResourcePath($resource, $action, $parameters);
     }
 
     /**

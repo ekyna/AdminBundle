@@ -39,6 +39,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     protected $config;
 
+
     /**
      * {@inheritdoc}
      */
@@ -142,7 +143,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     private function fetchChildrenResources(array &$data, Context $context)
     {
         $resourceName = $this->config->getResourceName();
-        //$resourceNamePlural = $this->config->getResourceName(true);
 
         $resource = $context->getResource($resourceName);
 
@@ -157,32 +157,23 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 $metadata = $this->get($childConfig->getServiceKey('metadata'));
 
                 // Look for many to one
-                if ($metadata->hasAssociation($resourceName)) {
-                    $mapping = $metadata->getAssociationMapping($resourceName);
-                    if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
-                        $customizeQb = function (QueryBuilder $qb, $alias) use ($resourceName, $resource) {
-                            $qb
-                                ->andWhere(sprintf($alias . '.%s = :resource', $resourceName))
-                                ->setParameter('resource', $resource);
-                        };
-                    } else {
-                        throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $childResourceName));
+                $associations = $metadata->getAssociationsByTargetClass($this->config->getResourceClass());
+                if (!empty($associations)) {
+                    foreach ($associations as $mapping) {
+                        if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
+                            $propertyPath = $mapping['fieldName'];
+                            $customizeQb = function (QueryBuilder $qb, $alias) use ($propertyPath, $resource) {
+                                $qb
+                                    ->andWhere(sprintf($alias . '.%s = :resource', $propertyPath))
+                                    ->setParameter('resource', $resource);
+                            };
+                            break;
+                        }
                     }
-                // Look for many to many
-                } /*elseif ($metadata->hasAssociation($resourceNamePlural)) {
-                    $mapping = $metadata->getAssociationMapping($resourceNamePlural);
-                    if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY) {
-                        $customizeQb = function (QueryBuilder $qb, $alias) use ($resourceNamePlural, $resource) {
-                            $qb
-                                ->join($alias.'.'.$resourceNamePlural, 'parent')
-                                ->where('parent.id = :resource')
-                                ->setParameter('resource', $resource);
-                        };
-                    } else {
-                        throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $childResourceName));
-                    }
-                }*/ else {
-                    throw new \RuntimeException(sprintf('Association "%s" not found.', $childResourceName));
+                }
+
+                if (!$customizeQb) {
+                    throw new \RuntimeException(sprintf('Association "%s" not found or not supported.', $childResourceName));
                 }
 
                 $table = $this->getTableFactory()
@@ -191,8 +182,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         'customize_qb' => $customizeQb,
                     ])
                     ->getTable($context->getRequest());
-
-                //$table->getConfig()->setCustomizeQb($customizeQb);
 
                 $data[$childResourceName] = $table->createView();
             }
@@ -210,6 +199,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $context = $this->loadContext($request);
 
         $resource = $this->createNew($context);
+
         $resourceName = $this->config->getResourceName();
         $context->addResource($resourceName, $resource);
 
@@ -851,6 +841,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     protected function getManager()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get($this->config->getServiceKey('manager'));
     }
 
@@ -863,6 +854,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     protected function getOperator()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get($this->config->getServiceKey('operator'));
     }
 
@@ -873,6 +865,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     protected function getRepository()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->get($this->config->getServiceKey('repository'));
     }
 
@@ -891,11 +884,12 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @param object $resource
      * @param string $action
+     * @param array $parameters
      * @return string
      */
-    protected function generateResourcePath($resource, $action = 'show')
+    protected function generateResourcePath($resource, $action = 'show', array $parameters = [])
     {
-        return $this->getResourceHelper()->generateResourcePath($resource, $action);
+        return $this->getResourceHelper()->generateResourcePath($resource, $action, $parameters);
     }
 
     /**
@@ -930,34 +924,23 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata */
             $metadata = $this->get($this->config->getServiceKey('metadata'));
 
-            // Look for many to one
-            if ($metadata->hasAssociation($parentResourceName)) {
-                $mapping = $metadata->getAssociationMapping($parentResourceName);
-                if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
-                    try {
-                        $propertyAccessor = PropertyAccess::createPropertyAccessor();
-                        $propertyAccessor->setValue($resource, $parentResourceName, $parent);
-                    } catch (\Exception $e) {
-                        throw new \RuntimeException('Failed to set resource\'s parent.');
+            $associations = $metadata->getAssociationsByTargetClass($parentConfig->getResourceClass());
+            if (!empty($associations)) {
+                foreach ($associations as $mapping) {
+                    if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
+                        try {
+                            $propertyAccessor = PropertyAccess::createPropertyAccessor();
+                            $propertyAccessor->setValue($resource, $mapping['fieldName'], $parent);
+                        } catch (\Exception $e) {
+                            throw new \RuntimeException('Failed to set resource\'s parent.');
+                        }
+
+                        return $resource;
                     }
-                } else {
-                    throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $parentResourceName));
                 }
-                // Look for many to many
-            } /*elseif ($metadata->hasAssociation($parentResourceNamePlural)) {
-                $mapping = $metadata->getAssociationMapping($parentResourceNamePlural);
-                if ($mapping['type'] === ClassMetadataInfo::MANY_TO_MANY) {
-                    try {
-                        call_user_func(array($resource, 'add'.ucfirst($parentResourceName)), $parent);
-                    } catch (\Exception $e) {
-                        throw new \RuntimeException('Failed to associate resource with his parent.');
-                    }
-                } else {
-                    throw new \RuntimeException(sprintf('"%s" is not a supported association type.', $parentResourceNamePlural));
-                }
-            }*/ else {
-                throw new \RuntimeException(sprintf('Association "%s" not found.', $parentResourceName));
             }
+
+            throw new \RuntimeException(sprintf('Association "%s" not found or not supported.', $parentResourceName));
         }
 
         return $resource;

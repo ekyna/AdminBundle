@@ -621,12 +621,13 @@ input.search {
     text-align: right;
 }
 
-.actions a.btn {
+.actions > .btn,
+.actions > .btn-group {
     display: inline-block;
     margin: 0 0 10px 10px;
 }
 
-.actions a.btn .glyphicon {
+.actions > a.btn .glyphicon {
     margin-right: 5px;
 }
 

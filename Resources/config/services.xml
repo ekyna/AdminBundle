@@ -84,6 +84,7 @@
 
         <!-- Resource Helper -->
         <service id="ekyna_admin.helper.resource_helper" class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper">
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
             <argument type="service" id="ekyna_admin.pool_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
             <argument type="service" id="router" />
