@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
+use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
@@ -18,7 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ResourceType extends AbstractType
 {
     /**
-     * @var ConfigurationRegistry
+     * @var \Ekyna\Component\Resource\Configuration\ConfigurationRegistry
      */
     private $configurationRegistry;
 

@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
+use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 class Context
 {
     /**
-     * @var ConfigurationInterface
+     * @var \Ekyna\Component\Resource\Configuration\ConfigurationInterface
      */
     protected $config;
 
@@ -30,8 +30,8 @@ class Context
     /**
      * Constructor.
      *
-     * @param ConfigurationInterface $config
-     * @param Request                $request
+     * @param \Ekyna\Component\Resource\Configuration\ConfigurationInterface $config
+     * @param Request                                                        $request
      */
     public function __construct(ConfigurationInterface $config, Request $request)
     {
@@ -44,7 +44,7 @@ class Context
     /**
      * Returns the configuration.
      *
-     * @return ConfigurationInterface
+     * @return \Ekyna\Component\Resource\Configuration\ConfigurationInterface
      */
     public function getConfiguration()
     {

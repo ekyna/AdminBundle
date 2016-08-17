@@ -177,7 +177,7 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
      */
     private function createAclRules(OutputInterface $output)
     {
-        $registry = $this->container->get('ekyna_admin.pool_registry');
+        $registry = $this->container->get('ekyna_resource.configuration_registry');
         $aclOperator = $this->container->get('ekyna_admin.acl_operator');
         $groups = $this->container->get('ekyna_user.group.repository')->findAll();
 

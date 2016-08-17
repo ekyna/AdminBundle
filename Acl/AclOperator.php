@@ -3,7 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Acl;
 
 use Ekyna\Bundle\AdminBundle\Form\Type\PermissionsType;
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
+use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Ekyna\Bundle\UserBundle\Model\GroupInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Security\Acl\Domain\ObjectIdentity;

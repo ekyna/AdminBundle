@@ -24,7 +24,6 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('logo_path')->defaultValue('bundles/ekynaadmin/img/logo.png')->end()
                 /*->scalarNode('output_dir')->defaultValue('')->end()*/
-                ->append($this->getResourcesSection())
                 ->append($this->getMenusSection())
                 ->append($this->getDashboardSection())
                 ->arrayNode('stylesheets')
@@ -36,49 +35,6 @@ class Configuration implements ConfigurationInterface
         ;
 
         return $treeBuilder;
-    }
-
-    /**
-     * Returns the resources configuration definition.
-     *
-     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
-     */
-    private function getResourcesSection()
-    {
-        $builder = new TreeBuilder();
-        $node = $builder->root('resources');
-
-        $node
-            ->useAttributeAsKey('prefix') // TODO rename as 'namespace'
-            ->prototype('array')
-                ->useAttributeAsKey('name')
-                ->prototype('array')
-                    ->children()
-                        ->variableNode('templates')->end() // TODO normalization ?
-                        ->scalarNode('entity')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('controller')->end()
-                        ->scalarNode('repository')->end()
-                        ->scalarNode('operator')->end()
-                        ->scalarNode('event')->end()
-                        ->scalarNode('form')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('table')->isRequired()->cannotBeEmpty()->end()
-                        ->scalarNode('parent')->end()
-                        ->arrayNode('translation')
-                            ->children()
-                                ->scalarNode('entity')->end()
-                                ->scalarNode('repository')->end()
-                                ->arrayNode('fields')
-                                    ->prototype('scalar')->end()
-                                    ->defaultValue([])
-                                ->end()
-                            ->end()
-                        ->end()
-                    ->end()
-                ->end()
-            ->end()
-        ;
-
-        return $node;
     }
 
     /**

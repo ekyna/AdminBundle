@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
+use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
@@ -21,7 +21,7 @@ class PermissionsType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        /** @var ConfigurationRegistry $registry */
+        /** @var \Ekyna\Component\Resource\Configuration\ConfigurationRegistry $registry */
         $registry = $options['registry'];
 
         foreach ($registry->getConfigurations() as $config) {

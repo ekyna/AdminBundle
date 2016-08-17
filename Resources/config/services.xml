@@ -18,18 +18,11 @@
             <tag name="ekyna_setting.schema" namespace="notification" position="1" />
         </service>
 
-        <!-- Pool Factory / Registry -->
-        <service id="ekyna_admin.pool_factory" class="Ekyna\Bundle\AdminBundle\Pool\ConfigurationFactory" />
-        <service id="ekyna_admin.pool_registry" class="Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry">
-            <!-- Services with "ekyna_admin.configuration" tag -->
-            <argument type="collection" />
-        </service>
-
         <!-- Acl Operator -->
         <service id="ekyna_admin.acl_operator" class="Ekyna\Bundle\AdminBundle\Acl\AclOperator">
             <argument type="service" id="security.acl.provider" />
             <argument type="service" id="security.acl.permission.map" />
-            <argument type="service" id="ekyna_admin.pool_registry" />
+            <argument type="service" id="ekyna_resource.configuration_registry" />
             <argument type="service" id="security.authorization_checker" />
         </service>
 
@@ -67,7 +60,7 @@
 
         <!-- Form Types -->
         <service id="ekyna_admin.resource.form_type" class="Ekyna\Bundle\AdminBundle\Form\Type\ResourceType">
-            <argument type="service" id="ekyna_admin.pool_registry" />
+            <argument type="service" id="ekyna_resource.configuration_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
             <tag name="form.type" />
         </service>
@@ -85,16 +78,9 @@
         <!-- Resource Helper -->
         <service id="ekyna_admin.helper.resource_helper" class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper">
             <argument type="service" id="doctrine.orm.default_entity_manager" />
-            <argument type="service" id="ekyna_admin.pool_registry" />
+            <argument type="service" id="ekyna_resource.configuration_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
             <argument type="service" id="router" />
-        </service>
-
-        <!-- Translation -->
-        <service id="ekyna_admin.translatable_listener.doctrine.orm" class="Ekyna\Bundle\AdminBundle\EventListener\ORMTranslatableListener">
-            <argument type="service" id="ekyna_core.locale_provider.request" />
-            <argument>%ekyna_admin.translation_mapping%</argument>
-            <tag name="doctrine.event_subscriber" connection="default" priority="99" />
         </service>
 
         <!-- Twig Extensions -->
@@ -124,7 +110,7 @@
         </service>
         <service id="ekyna_admin.dashboard.widget.shortcuts" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\ShortcutsWidgetType">
             <argument id="ekyna_admin.menu.pool" type="service" />
-            <argument id="ekyna_admin.pool_registry" type="service" />
+            <argument id="ekyna_resource.configuration_registry" type="service" />
             <argument id="ekyna_admin.acl_operator" type="service" />
             <argument id="router" type="service" />
             <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts" />

@@ -5,7 +5,7 @@ namespace Ekyna\Bundle\AdminBundle\Controller;
 use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
+use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
@@ -146,7 +146,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $resource = $context->getResource($resourceName);
 
-        $childrenConfigurations = $this->get('ekyna_admin.pool_registry')->getChildren($this->config);
+        $childrenConfigurations = $this->get('ekyna_resource.configuration_registry')->getChildren($this->config);
         foreach ($childrenConfigurations as $childConfig) {
             $childResourceName = $childConfig->getResourceName(true);
             if (!array_key_exists($childResourceName, $data)) {
@@ -823,7 +823,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         if (is_null($object)) {
             $object = $this->config->getObjectIdentity();
         } else {
-            $object = $this->get('ekyna_admin.pool_registry')->getObjectIdentity($object);
+            $object = $this->get('ekyna_resource.configuration_registry')->getObjectIdentity($object);
         }
         if (!$this->get('security.authorization_checker')->isGranted($attributes, $object)) {
             if ($throwException) {
@@ -850,7 +850,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @TODO Temporary solution until ResourceManager is available.
      *
-     * @return \Ekyna\Bundle\AdminBundle\Operator\ResourceOperatorInterface
+     * @return \Ekyna\Component\Resource\Operator\ResourceOperatorInterface
      */
     protected function getOperator()
     {
@@ -861,7 +861,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Returns the current resource entity repository.
      *
-     * @return \Ekyna\Bundle\AdminBundle\Doctrine\ORM\ResourceRepository
+     * @return \Ekyna\Component\Resource\Doctrine\ORM\ResourceRepository
      */
     protected function getRepository()
     {

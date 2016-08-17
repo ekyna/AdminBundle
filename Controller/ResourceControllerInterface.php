@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface;
+use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -15,7 +15,7 @@ interface ResourceControllerInterface
     /**
      * Sets the configuration.
      *
-     * @param ConfigurationInterface $config
+     * @param \Ekyna\Component\Resource\Configuration\ConfigurationInterface $config
      */
     public function setConfiguration(ConfigurationInterface $config);
 
@@ -99,7 +99,7 @@ interface ResourceControllerInterface
     /**
      * Returns the controller configuration
      *
-     * @return ConfigurationInterface
+     * @return \Ekyna\Component\Resource\Configuration\ConfigurationInterface
      */
     public function getConfiguration();
 

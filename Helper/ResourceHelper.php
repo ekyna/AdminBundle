@@ -2,11 +2,10 @@
 
 namespace Ekyna\Bundle\AdminBundle\Helper;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadataFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
-use Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry;
+use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -23,7 +22,7 @@ class ResourceHelper
     private $em;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Pool\ConfigurationRegistry
+     * @var \Ekyna\Component\Resource\Configuration\ConfigurationRegistry
      */
     private $registry;
 
@@ -41,10 +40,10 @@ class ResourceHelper
     /**
      * Constructor.
      *
-     * @param EntityManagerInterface $em
-     * @param ConfigurationRegistry $registry
-     * @param AclOperatorInterface  $aclOperator
-     * @param RouterInterface       $router
+     * @param EntityManagerInterface                                        $em
+     * @param \Ekyna\Component\Resource\Configuration\ConfigurationRegistry $registry
+     * @param AclOperatorInterface                                          $aclOperator
+     * @param RouterInterface                                               $router
      */
     public function __construct(
         EntityManagerInterface $em,

@@ -19,7 +19,7 @@ abstract class ResourceControllerTest extends WebTestCase
     protected $configurationId;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Pool\ConfigurationInterface
+     * @var \Ekyna\Component\Resource\Configuration\ConfigurationInterface
      */
     protected $config;
 

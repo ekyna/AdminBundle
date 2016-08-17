@@ -25,7 +25,6 @@ class EkynaAdminExtension extends Extension
         $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
         $loader->load('services.xml');
 
-        $this->configureResources($config['resources'], $container);
         $this->configureMenus($config['menus'], $container);
 
         $container->setParameter('ekyna_admin.config.dashboard', $config['dashboard']);
@@ -33,28 +32,6 @@ class EkynaAdminExtension extends Extension
             'logo_path'   => $config['logo_path'],
             'stylesheets' => $config['stylesheets']
         ]);
-
-        if (!$container->hasParameter('ekyna_admin.translation_mapping')) {
-            $container->setParameter('ekyna_admin.translation_mapping', []);
-        }
-    }
-
-    /**
-     * Configures the resources.
-     *
-     * @param array $resources
-     * @param ContainerBuilder $container
-     */
-    private function configureResources(array $resources, ContainerBuilder $container)
-    {
-        $builder = new PoolBuilder($container);
-        foreach ($resources as $prefix => $config) {
-            foreach ($config as $resourceName => $parameters) {
-                $builder
-                    ->configure($prefix, $resourceName, $parameters)
-                    ->build();
-            }
-        }
     }
 
     /**
