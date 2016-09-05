@@ -9,7 +9,7 @@ use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
-use JMS\Serializer\SerializationContext;
+//use JMS\Serializer\SerializationContext;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -82,7 +82,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         return $this->render(
             $this->config->getTemplate('list.html'),
             $context->getTemplateVars([
-                $this->config->getResourceName(true) => $table->createView()
+                $this->config->getResourceName(true) => $table->createView(),
             ])
         );
     }
@@ -254,7 +254,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         return $this->render(
             $this->config->getTemplate('new.html'),
             $context->getTemplateVars([
-                'form' => $form->createView()
+                'form' => $form->createView(),
             ])
         );
     }
@@ -402,7 +402,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         return $this->render(
             $this->config->getTemplate('edit.html'),
             $context->getTemplateVars([
-                'form' => $form->createView()
+                'form' => $form->createView(),
             ])
         );
     }
@@ -478,7 +478,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             ];
 
             $form->add('actions', FormActionsType::class, [
-                'buttons' => $buttons
+                'buttons' => $buttons,
             ]);
         }
 
@@ -551,7 +551,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         return $this->render(
             $this->config->getTemplate('remove.html'),
             $context->getTemplateVars([
-                'form' => $form->createView()
+                'form' => $form->createView(),
             ])
         );
     }
@@ -589,7 +589,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 'required' => true,
                 'constraints' => [
                     new Constraints\IsTrue(),
-                ]
+                ],
             ])
             ->getForm()
         ;
@@ -644,7 +644,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     public function searchAction(Request $request)
     {
-        $callback = $request->query->get('callback');
+        //$callback = $request->query->get('callback');
         //$limit    = intval($request->query->get('limit'));
         $search = trim($request->query->get('search'));
 
@@ -652,13 +652,36 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         if (!$repository instanceOf SearchRepositoryInterface) {
             throw new \RuntimeException('Repository must implements "SearchRepositoryInterface".');
         }
-        $results = $repository->defaultSearch($search);
 
-        $serializer = $this->container->get('jms_serializer');
-        $response = new Response(sprintf('%s(%s);', $callback, $serializer->serialize([
+        /* // With JMS Serializer
+        $results = $repository->defaultSearch($search);
+        $data = $this->container->get('jms_serializer')->serialize([
             'results' => $results,
             'total' => count($results)
-        ], 'json', SerializationContext::create()->setGroups(['Search']))));
+        ], 'json', SerializationContext::create()->setGroups(['Search']));*/
+
+        /* // With Symfony Serializer
+        $results = $repository->defaultSearch($search);
+        $data = $this->container->get('serializer')->serialize([
+            'results' => $results,
+            'total' => count($results),
+        ], 'json', ['groups' => ['Search']]);*/
+
+        // With json_encode
+        $objects = $repository->defaultSearch($search);
+        $results = [];
+        /** @var \Ekyna\Component\Resource\Model\ResourceInterface $object */
+        foreach ($objects as $object) {
+            $results[] = [
+                'id' => $object->getId(),
+                'text' => (string) $object,
+            ];
+        }
+
+        $response = new JsonResponse([
+            'items'     => $results,
+            'total_count' => count($results),
+        ]);
         $response->headers->set('Content-Type', 'text/javascript');
 
         return $response;
