@@ -646,42 +646,21 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         //$callback = $request->query->get('callback');
         //$limit    = intval($request->query->get('limit'));
-        $search = trim($request->query->get('search'));
+        $query = trim($request->query->get('query'));
 
         $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
         if (!$repository instanceOf SearchRepositoryInterface) {
             throw new \RuntimeException('Repository must implements "SearchRepositoryInterface".');
         }
 
-        /* // With JMS Serializer
-        $results = $repository->defaultSearch($search);
-        $data = $this->container->get('jms_serializer')->serialize([
-            'results' => $results,
-            'total' => count($results)
-        ], 'json', SerializationContext::create()->setGroups(['Search']));*/
-
-        /* // With Symfony Serializer
-        $results = $repository->defaultSearch($search);
+        // TODO result pagination
+        $results = $repository->defaultSearch($query);
         $data = $this->container->get('serializer')->serialize([
             'results' => $results,
-            'total' => count($results),
-        ], 'json', ['groups' => ['Search']]);*/
-
-        // With json_encode
-        $objects = $repository->defaultSearch($search);
-        $results = [];
-        /** @var \Ekyna\Component\Resource\Model\ResourceInterface $object */
-        foreach ($objects as $object) {
-            $results[] = [
-                'id' => $object->getId(),
-                'text' => (string) $object,
-            ];
-        }
-
-        $response = new JsonResponse([
-            'items'     => $results,
             'total_count' => count($results),
-        ]);
+        ], 'json', ['groups' => ['Default']]);
+
+        $response = new Response($data);
         $response->headers->set('Content-Type', 'text/javascript');
 
         return $response;

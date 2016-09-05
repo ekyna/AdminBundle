@@ -93,9 +93,9 @@
 
 {% block show_widget_entity_value %}
 {%- if field -%}
-    {{ get_property(entity, field) }}
+    {{ get_property(entity, field)|raw }}
 {%- else -%}
-    {{ entity }}
+    {{ entity|raw }}
 {%- endif -%}
 {% endblock show_widget_entity_value %}
 
