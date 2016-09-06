@@ -1,0 +1,57 @@
+{% spaceless %}
+{% set renderBackButton = flow.getFirstStepNumber() < flow.getLastStepNumber() and flow.getCurrentStepNumber() in (flow.getFirstStepNumber() + 1) .. flow.getLastStepNumber() %}
+<div class="form-footer">
+    <div class="form-group">
+        {% set offset = offset | default(2) %}
+        <div class="col-md-offset-{{ offset }} col-md-{{ 12 - offset }}">
+
+    {%- set isLastStep = flow.getCurrentStepNumber() == flow.getLastStepNumber() -%}
+    {%- set craue_formflow_button_class_last = craue_formflow_button_class_last | default('craue_formflow_button_last') -%}
+    {%- set craue_formflow_button_class_last = isLastStep
+        ? craue_formflow_button_class_finish | default(craue_formflow_button_class_last)
+        : craue_formflow_button_class_next | default(craue_formflow_button_class_last)
+    -%}
+    {%- set craue_buttons = [
+        {
+            label: isLastStep ? 'ekyna_core.button.finish' : 'ekyna_core.button.next',
+            icon: 'ok',
+            render: true,
+            attr: {
+                class: 'btn btn-primary',
+            },
+        },
+        {
+            label: 'ekyna_core.button.back',
+            icon: 'arrow-left',
+            render: renderBackButton,
+            attr: {
+                class: 'btn btn-default',
+                name: flow.getFormTransitionKey(),
+                value: 'back',
+                formnovalidate: 'formnovalidate',
+            },
+        },
+        {
+            label: 'ekyna_core.button.reset',
+            icon: 'repeat',
+            render: true,
+            attr: {
+                class: 'btn btn-default',
+                name: flow.getFormTransitionKey(),
+                value: 'reset',
+                formnovalidate: 'formnovalidate',
+            },
+        },
+    ] -%}
+
+    {% for button in craue_buttons if button.render %}
+        <button type="submit"{% for key, value in button.attr %} {{ key }}="{{ value }}"{% endfor %}>
+            <span class="glyphicon glyphicon-{{ button.icon }}"></span> {{ button.label | trans }}
+        </button>
+        &nbsp;
+    {% endfor %}
+
+        </div>
+    </div>
+</div>
+{% endspaceless %}
