@@ -90,25 +90,32 @@ interface ResourceControllerInterface
     public function findAction(Request $request);
 
     /**
-     * Returns true if controller has a parent controller
-     *
-     * @return boolean
-     */
-    public function hasParent();
-
-    /**
-     * Returns the controller configuration
+     * Returns the controller configuration.
      *
      * @return \Ekyna\Component\Resource\Configuration\ConfigurationInterface
      */
     public function getConfiguration();
 
     /**
+     * Returns whether the resource has a parent or not.
+     *
+     * @return boolean
+     */
+    public function hasParent();
+
+    /**
      * Returns the parent controller.
      *
      * @return ResourceControllerInterface
      */
-    public function getParent();
+    public function getParentController();
+
+    /**
+     * Returns the parent configuration.
+     *
+     * @return \Ekyna\Component\Resource\Configuration\ConfigurationInterface
+     */
+    public function getParentConfiguration();
 
     /**
      * Creates (or fill) the context for the given request

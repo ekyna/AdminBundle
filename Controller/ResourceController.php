@@ -12,6 +12,7 @@ use Ekyna\Bundle\CoreBundle\Modal\Modal;
 //use JMS\Serializer\SerializationContext;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,21 +24,28 @@ use Symfony\Component\Validator\Constraints;
 /**
  * Class ResourceController
  * @package Ekyna\Bundle\AdminBundle\Controller
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class ResourceController extends Controller implements ResourceControllerInterface
 {
+    /**
+     * @var ConfigurationInterface
+     */
+    protected $config;
+
     /**
      * Parent resource controller
      *
      * @var ResourceController
      */
-    protected $parent;
+    protected $parentController;
 
     /**
+     * Parent resource configuration
+     *
      * @var ConfigurationInterface
      */
-    protected $config;
+    protected $parentConfiguration;
 
 
     /**
@@ -67,7 +75,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $table = $this->getTableFactory()
             ->createBuilder($this->config->getTableType(), [
-                'name' => $this->config->getResourceId(),
+                'name'     => $this->config->getResourceId(),
                 'selector' => (bool)$request->get('selector', false), // TODO use constants (single/multiple)
                 'multiple' => (bool)$request->get('multiple', false),
             ])
@@ -76,6 +84,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         if ($request->isXmlHttpRequest()) {
             $modal = $this->createModal('list');
             $modal->setContent($table->createView());
+
             return $this->get('ekyna_core.modal')->render($modal);
         }
 
@@ -122,13 +131,16 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Builds the show view data.
      *
-     * @param array $data
+     * @param array   $data
      * @param Context $context
+     *
      * @return Response|null
      */
     protected function buildShowData(
-        /** @noinspection PhpUnusedParameterInspection */ array &$data,
-        /** @noinspection PhpUnusedParameterInspection */ Context $context
+        /** @noinspection PhpUnusedParameterInspection */
+        array &$data,
+        /** @noinspection PhpUnusedParameterInspection */
+        Context $context
     ) {
         return null;
     }
@@ -136,55 +148,59 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Fetches children resources.
      *
-     * @param array $data
+     * @param array   $data
      * @param Context $context
+     *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    private function fetchChildrenResources(array &$data, Context $context)
+    protected function fetchChildrenResources(array &$data, Context $context)
     {
         $resourceName = $this->config->getResourceName();
 
         $resource = $context->getResource($resourceName);
+        $accessor = PropertyAccess::createPropertyAccessor();
 
         $childrenConfigurations = $this->get('ekyna_resource.configuration_registry')->getChildren($this->config);
         foreach ($childrenConfigurations as $childConfig) {
             $childResourceName = $childConfig->getResourceName(true);
-            if (!array_key_exists($childResourceName, $data)) {
 
-                $customizeQb = null;
+            if ($accessor->isReadable($resource, $childResourceName) || array_key_exists($childResourceName, $data)) {
+                continue;
+            }
 
-                /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata */
-                $metadata = $this->get($childConfig->getServiceKey('metadata'));
+            $customizeQb = null;
 
-                // Look for many to one
-                $associations = $metadata->getAssociationsByTargetClass($this->config->getResourceClass());
-                if (!empty($associations)) {
-                    foreach ($associations as $mapping) {
-                        if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
-                            $propertyPath = $mapping['fieldName'];
-                            $customizeQb = function (QueryBuilder $qb, $alias) use ($propertyPath, $resource) {
-                                $qb
-                                    ->andWhere(sprintf($alias . '.%s = :resource', $propertyPath))
-                                    ->setParameter('resource', $resource);
-                            };
-                            break;
-                        }
+            /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata */
+            $metadata = $this->get($childConfig->getServiceKey('metadata'));
+
+            // Look for many to one
+            $associations = $metadata->getAssociationsByTargetClass($this->config->getResourceClass());
+            if (!empty($associations)) {
+                foreach ($associations as $mapping) {
+                    if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
+                        $propertyPath = $mapping['fieldName'];
+                        $customizeQb = function (QueryBuilder $qb, $alias) use ($propertyPath, $resource) {
+                            $qb
+                                ->andWhere(sprintf($alias . '.%s = :resource', $propertyPath))
+                                ->setParameter('resource', $resource);
+                        };
+                        break;
                     }
                 }
-
-                if (!$customizeQb) {
-                    throw new \RuntimeException(sprintf('Association "%s" not found or not supported.', $childResourceName));
-                }
-
-                $table = $this->getTableFactory()
-                    ->createBuilder($childConfig->getTableType(), [
-                        'name' => $childConfig->getResourceId(),
-                        'customize_qb' => $customizeQb,
-                    ])
-                    ->getTable($context->getRequest());
-
-                $data[$childResourceName] = $table->createView();
             }
+
+            if (!$customizeQb) {
+                throw new \RuntimeException(sprintf('Association "%s" not found or not supported.', $childResourceName));
+            }
+
+            $table = $this->getTableFactory()
+                ->createBuilder($childConfig->getTableType(), [
+                    'name'         => $childConfig->getResourceId(),
+                    'customize_qb' => $customizeQb,
+                ])
+                ->getTable($context->getRequest());
+
+            $data[$childResourceName] = $table->createView();
         }
     }
 
@@ -216,8 +232,8 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             if (!$event->hasErrors()) {
                 if ($isXhr) {
                     return JsonResponse::create([
-                        'id' => $resource->getId(),
-                        'name' => (string) $resource,
+                        'id'   => $resource->getId(),
+                        'name' => (string)$resource,
                     ]);
                 }
 
@@ -232,6 +248,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         $redirectPath = $this->generateResourcePath($resource, 'show');
                     }
                 }
+
                 return $this->redirect($redirectPath);
             } else {
                 foreach ($event->getErrors() as $error) {
@@ -244,12 +261,15 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $modal = $this->createModal('new');
             $modal
                 ->setContent($form->createView())
-                ->setVars($context->getTemplateVars())
-            ;
+                ->setVars($context->getTemplateVars());
+
             return $this->get('ekyna_core.modal')->render($modal);
         }
 
-        $this->appendBreadcrumb(sprintf('%s-new', $resourceName), 'ekyna_core.button.create');
+        $this->appendBreadcrumb(
+            sprintf('%s_new', $resourceName),
+            'ekyna_core.button.create'
+        );
 
         return $this->render(
             $this->config->getTemplate('new.html'),
@@ -265,6 +285,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param Context $context
      * @param bool    $footer
      * @param array   $options
+     *
      * @return \Symfony\Component\Form\Form
      */
     protected function createNewResourceForm(Context $context, $footer = true, array $options = [])
@@ -274,10 +295,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $action = $this->generateResourcePath($resource, 'new');
 
         $form = $this->createForm($this->config->getFormType(), $resource, array_merge([
-            'action' => $action,
-            'method' => 'POST',
-            'attr' => ['class' => 'form-horizontal form-with-tabs'],
-            'admin_mode' => true,
+            'action'            => $action,
+            'method'            => 'POST',
+            'attr'              => ['class' => 'form-horizontal form-with-tabs'],
+            'admin_mode'        => true,
             '_redirect_enabled' => true,
         ], $options));
 
@@ -287,49 +308,14 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 $cancelPath = $referer;
             } else {
                 if ($this->hasParent()) {
-                    $cancelRoute = $this->getParent()->getConfiguration()->getRoute('show');
+                    $cancelRoute = $this->getParentController()->getConfiguration()->getRoute('show');
                 } else {
                     $cancelRoute = $this->config->getRoute('list');
                 }
                 $cancelPath = $this->generateUrl($cancelRoute, $context->getIdentifiers());
             }
 
-            $buttons = [];
-            if (!$this->hasParent()) {
-                $buttons['saveAndList'] = [
-                    'type' => Type\SubmitType::class,
-                    'options' => [
-                        'button_class' => 'primary',
-                        'label' => 'ekyna_core.button.save_and_list',
-                        'attr' => ['icon' => 'list'],
-                    ],
-                ];
-            }
-            $buttons['save'] = [
-                'type' => Type\SubmitType::class,
-                'options' => [
-                    'button_class' => 'primary',
-                    'label' => 'ekyna_core.button.save',
-                    'attr' => ['icon' => 'ok'],
-                ],
-            ];
-            $buttons['cancel'] = [
-                'type' => Type\ButtonType::class,
-                'options' => [
-                    'label' => 'ekyna_core.button.cancel',
-                    'button_class' => 'default',
-                    'as_link' => true,
-                    'attr' => [
-                        'class' => 'form-cancel-btn',
-                        'icon' => 'remove',
-                        'href' => $cancelPath,
-                    ],
-                ],
-            ];
-
-            $form->add('actions', FormActionsType::class, [
-                'buttons' => $buttons,
-            ]);
+            $this->createFormFooter($form, $context, [], $cancelPath);
         }
 
         return $form;
@@ -360,9 +346,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
             if (!$event->hasErrors()) {
                 if ($isXhr) {
+                    // TODO Default serialization
                     return JsonResponse::create([
-                        'id' => $resource->getId(),
-                        'name' => (string) $resource,
+                        'id'   => $resource->getId(),
+                        'name' => (string)$resource,
                     ]);
                 }
 
@@ -377,6 +364,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                         $redirectPath = $this->generateResourcePath($resource, 'show');
                     }
                 }
+
                 return $this->redirect($redirectPath);
             } else {
                 foreach ($event->getErrors() as $error) {
@@ -389,13 +377,13 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $modal = $this->createModal('edit');
             $modal
                 ->setContent($form->createView())
-                ->setVars($context->getTemplateVars())
-            ;
+                ->setVars($context->getTemplateVars());
+
             return $this->get('ekyna_core.modal')->render($modal);
         }
 
         $this->appendBreadcrumb(
-            sprintf('%s-edit', $resourceName),
+            sprintf('%s_edit', $resourceName),
             'ekyna_core.button.edit'
         );
 
@@ -413,6 +401,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param Context $context
      * @param bool    $footer
      * @param array   $options
+     *
      * @return \Symfony\Component\Form\Form
      */
     protected function createEditResourceForm(Context $context, $footer = true, array $options = [])
@@ -422,64 +411,15 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $action = $this->generateResourcePath($resource, 'edit');
 
         $form = $this->createForm($this->config->getFormType(), $resource, array_merge([
-            'action' => $action,
-            'attr' => ['class' => 'form-horizontal form-with-tabs'],
-            'method' => 'POST',
-            'admin_mode' => true,
+            'action'            => $action,
+            'attr'              => ['class' => 'form-horizontal form-with-tabs'],
+            'method'            => 'POST',
+            'admin_mode'        => true,
             '_redirect_enabled' => true,
         ], $options));
 
         if ($footer) {
-            $referer = $context->getRequest()->headers->get('referer');
-            if (0 < strlen($referer) && false === strpos($referer, $action)) {
-                $cancelPath = $referer;
-            } else {
-                if ($this->hasParent()) {
-                    $cancelPath = $this->generateUrl(
-                        $this->getParent()->getConfiguration()->getRoute('show'),
-                        $context->getIdentifiers()
-                    );
-                } else {
-                    $cancelPath = $this->generateResourcePath($resource);
-                }
-            }
-
-            $buttons = [];
-            if (!$this->hasParent()) {
-                $buttons['saveAndList'] = [
-                    'type' => Type\SubmitType::class,
-                    'options' => [
-                        'button_class' => 'primary',
-                        'label' => 'ekyna_core.button.save_and_list',
-                        'attr' => ['icon' => 'list'],
-                    ],
-                ];
-            }
-            $buttons['save'] = [
-                'type' => Type\SubmitType::class,
-                'options' => [
-                    'button_class' => 'primary',
-                    'label' => 'ekyna_core.button.save',
-                    'attr' => ['icon' => 'ok'],
-                ],
-            ];
-            $buttons['cancel'] = [
-                'type' => Type\ButtonType::class,
-                'options' => [
-                    'label' => 'ekyna_core.button.cancel',
-                    'button_class' => 'default',
-                    'as_link' => true,
-                    'attr' => [
-                        'class' => 'form-cancel-btn',
-                        'icon' => 'remove',
-                        'href' => $cancelPath,
-                    ],
-                ],
-            ];
-
-            $form->add('actions', FormActionsType::class, [
-                'buttons' => $buttons,
-            ]);
+            $this->createFormFooter($form, $context);
         }
 
         return $form;
@@ -538,13 +478,13 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $modal
                 ->setSize(Modal::SIZE_NORMAL)
                 ->setContent($form->createView())
-                ->setVars($vars)
-            ;
+                ->setVars($vars);
+
             return $this->get('ekyna_core.modal')->render($modal);
         }
 
         $this->appendBreadcrumb(
-            sprintf('%s-remove', $resourceName),
+            sprintf('%s_remove', $resourceName),
             'ekyna_core.button.remove'
         );
 
@@ -563,6 +503,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param string  $message
      * @param bool    $footer
      * @param array   $options
+     *
      * @return \Symfony\Component\Form\Form
      */
     protected function createRemoveResourceForm(Context $context, $message = null, $footer = true, array $options = [])
@@ -577,22 +518,21 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $form = $this
             ->createFormBuilder(null, array_merge([
-                'action' => $action,
-                'attr' => ['class' => 'form-horizontal'],
-                'method' => 'POST',
-                'admin_mode' => true,
+                'action'            => $action,
+                'attr'              => ['class' => 'form-horizontal'],
+                'method'            => 'POST',
+                'admin_mode'        => true,
                 '_redirect_enabled' => true,
             ], $options))
             ->add('confirm', Type\CheckboxType::class, [
-                'label' => $message,
-                'attr' => ['align_with_widget' => true],
-                'required' => true,
+                'label'       => $message,
+                'attr'        => ['align_with_widget' => true],
+                'required'    => true,
                 'constraints' => [
                     new Constraints\IsTrue(),
                 ],
             ])
-            ->getForm()
-        ;
+            ->getForm();
 
         if ($footer) {
             $referer = $context->getRequest()->headers->get('referer');
@@ -601,7 +541,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             } else {
                 if ($this->hasParent()) {
                     $cancelPath = $this->generateUrl(
-                        $this->getParent()->getConfiguration()->getRoute('show'),
+                        $this->getParentController()->getConfiguration()->getRoute('show'),
                         $context->getIdentifiers()
                     );
                 } else {
@@ -612,23 +552,23 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $form->add('actions', FormActionsType::class, [
                 'buttons' => [
                     'remove' => [
-                        'type' => Type\SubmitType::class,
+                        'type'    => Type\SubmitType::class,
                         'options' => [
                             'button_class' => 'danger',
-                            'label' => 'ekyna_core.button.remove',
-                            'attr' => ['icon' => 'trash'],
+                            'label'        => 'ekyna_core.button.remove',
+                            'attr'         => ['icon' => 'trash'],
                         ],
                     ],
                     'cancel' => [
-                        'type' => Type\ButtonType::class,
+                        'type'    => Type\ButtonType::class,
                         'options' => [
-                            'label' => 'ekyna_core.button.cancel',
+                            'label'        => 'ekyna_core.button.cancel',
                             'button_class' => 'default',
-                            'as_link' => true,
-                            'attr' => [
+                            'as_link'      => true,
+                            'attr'         => [
                                 'class' => 'form-cancel-btn',
-                                'icon' => 'remove',
-                                'href' => $cancelPath,
+                                'icon'  => 'remove',
+                                'href'  => $cancelPath,
                             ],
                         ],
                     ],
@@ -656,7 +596,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         // TODO result pagination
         $results = $repository->defaultSearch($query);
         $data = $this->container->get('serializer')->serialize([
-            'results' => $results,
+            'results'     => $results,
             'total_count' => count($results),
         ], 'json', ['groups' => ['Default']]);
 
@@ -676,8 +616,8 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $resource = $this->findResourceOrThrowException(['id' => $id]);
 
         return JsonResponse::create([
-            'id' => $resource->getId(),
-            'text' => (string) $resource,
+            'id'   => $resource->getId(),
+            'text' => (string)$resource,
         ]);
     }
 
@@ -688,7 +628,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param string $label
      * @param string $route
      *
-     * @param array $parameters
+     * @param array  $parameters
      */
     protected function appendBreadcrumb($name, $label, $route = null, array $parameters = [])
     {
@@ -714,17 +654,33 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * {@inheritdoc}
      */
-    public function getParent()
+    public function getParentController()
     {
-        if (null === $this->parent && $this->hasParent()) {
+        if (null === $this->parentController && $this->hasParent()) {
             $parentId = $this->config->getParentControllerId();
             if (!$this->container->has($parentId)) {
                 throw new \RuntimeException('Parent resource controller &laquo; ' . $parentId . ' &raquo; does not exists.');
             }
-            $this->parent = $this->container->get($parentId);
+            $this->parentController = $this->container->get($parentId);
         }
 
-        return $this->parent;
+        return $this->parentController;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getParentConfiguration()
+    {
+        if (null === $this->parentConfiguration && $this->hasParent()) {
+            $parentId = $this->config->getParentConfigurationId();
+            if (!$this->container->has($parentId)) {
+                throw new \RuntimeException('Parent resource configuration &laquo; ' . $parentId . ' &raquo; does not exists.');
+            }
+            $this->parentConfiguration = $this->container->get($parentId);
+        }
+
+        return $this->parentConfiguration;
     }
 
     /**
@@ -738,22 +694,22 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $resourceName = $this->config->getResourceName();
 
         if ($this->hasParent()) {
-            $this->getParent()->loadContext($request, $context);
+            $this->getParentController()->loadContext($request, $context);
         }
 
         if (!$request->isXmlHttpRequest()) {
             if ($this->hasParent()) {
                 $this->appendBreadcrumb(
-                    sprintf('%s-list', $resourceName),
+                    sprintf('%s_list', $resourceName),
                     $this->config->getResourceLabel(true)
                 );
             } else {
                 $listRoute = $this->config->getRoute('list');
-                if (null === $this->getResourceHelper()->findRoute($listRoute)) {
+                if (null === $this->getResourceHelper()->findRoute($listRoute, false)) {
                     $listRoute = null;
                 }
                 $this->appendBreadcrumb(
-                    sprintf('%s-list', $resourceName),
+                    sprintf('%s_list', $resourceName),
                     $this->config->getResourceLabel(true),
                     $listRoute,
                     $context->getIdentifiers()
@@ -765,10 +721,14 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             $resource = $this->findResourceOrThrowException(['id' => $request->attributes->get($resourceName . 'Id')]);
             $context->addResource($resourceName, $resource);
             if (!$request->isXmlHttpRequest()) {
+                $showRoute = $this->config->getRoute('show');
+                if (null === $this->getResourceHelper()->findRoute($showRoute, false)) {
+                    $showRoute = null;
+                }
                 $this->appendBreadcrumb(
-                    sprintf('%s-%s', $resourceName, $resource->getId()),
+                    sprintf('%s_%s', $resourceName, $resource->getId()),
                     $resource,
-                    $this->config->getRoute('show'),
+                    $showRoute,
                     $context->getIdentifiers(true)
                 );
             }
@@ -787,8 +747,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     protected function getParentResource(Context $context)
     {
         if ($this->hasParent()) {
-            return $context->getResource($this->getParent()->getConfiguration()->getResourceName());
+            return $context->getResource($this->getParentController()->getConfiguration()->getResourceName());
         }
+
         return null;
     }
 
@@ -806,15 +767,16 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         if (null === $resource = $this->getRepository()->findOneBy($criteria)) {
             throw new NotFoundHttpException('Resource not found.');
         }
+
         return $resource;
     }
 
     /**
      * Checks if the attributes are granted against the current token.
      *
-     * @param mixed $attributes
+     * @param mixed      $attributes
      * @param mixed|null $object
-     * @param bool $throwException
+     * @param bool       $throwException
      *
      * @throws AccessDeniedHttpException when the security context has no authentication token.
      *
@@ -831,8 +793,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             if ($throwException) {
                 throw new AccessDeniedHttpException('You are not allowed to view this resource.');
             }
+
             return false;
         }
+
         return true;
     }
 
@@ -886,7 +850,8 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @param object $resource
      * @param string $action
-     * @param array $parameters
+     * @param array  $parameters
+     *
      * @return string
      */
     protected function generateResourcePath($resource, $action = 'show', array $parameters = [])
@@ -918,7 +883,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $resource = $this->getRepository()->createNew();
 
         if (null !== $context && $this->hasParent()) {
-            $parentConfig = $this->getParent()->getConfiguration();
+            $parentConfig = $this->getParentController()->getConfiguration();
             $parentResourceName = $parentConfig->getResourceName();
             //$parentResourceNamePlural = $parentConfig->getResourceName(true);
             $parent = $context->getResource($parentResourceName);
@@ -953,6 +918,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @param string $action
      * @param string $title
+     *
      * @return Modal
      */
     protected function createModal($action, $title = null)
@@ -985,14 +951,79 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         $buttons[] = [
-            'id' => 'close',
-            'label' => 'ekyna_core.button.cancel',
-            'icon' => 'glyphicon glyphicon-remove',
+            'id'       => 'close',
+            'label'    => 'ekyna_core.button.cancel',
+            'icon'     => 'glyphicon glyphicon-remove',
             'cssClass' => 'btn-default',
         ];
 
         $modal->setButtons($buttons);
 
         return $modal;
+    }
+
+    /**
+     * Create the form's footer.
+     *
+     * @param FormInterface $form
+     * @param Context       $context
+     * @param array         $buttons
+     * @param string        $cancelPath
+     */
+    protected function createFormFooter(FormInterface $form, Context $context, array $buttons = [], $cancelPath = null)
+    {
+        if (empty($buttons)) {
+            if (null === $cancelPath) {
+                $referer = $context->getRequest()->headers->get('referer');
+                if (0 < strlen($referer) && false === strpos($referer, $form->getConfig()->getAction())) {
+                    $cancelPath = $referer;
+                } else {
+                    if ($this->hasParent()) {
+                        $cancelPath = $this->generateUrl(
+                            $this->getParentController()->getConfiguration()->getRoute('show'),
+                            $context->getIdentifiers()
+                        );
+                    } else {
+                        $cancelPath = $this->generateResourcePath($context->getResource());
+                    }
+                }
+            }
+
+            if (!$this->hasParent()) {
+                $buttons['saveAndList'] = [
+                    'type'    => Type\SubmitType::class,
+                    'options' => [
+                        'button_class' => 'primary',
+                        'label'        => 'ekyna_core.button.save_and_list',
+                        'attr'         => ['icon' => 'list'],
+                    ],
+                ];
+            }
+            $buttons['save'] = [
+                'type'    => Type\SubmitType::class,
+                'options' => [
+                    'button_class' => 'primary',
+                    'label'        => 'ekyna_core.button.save',
+                    'attr'         => ['icon' => 'ok'],
+                ],
+            ];
+            $buttons['cancel'] = [
+                'type'    => Type\ButtonType::class,
+                'options' => [
+                    'label'        => 'ekyna_core.button.cancel',
+                    'button_class' => 'default',
+                    'as_link'      => true,
+                    'attr'         => [
+                        'class' => 'form-cancel-btn',
+                        'icon'  => 'remove',
+                        'href'  => $cancelPath,
+                    ],
+                ],
+            ];
+        }
+
+        $form->add('actions', FormActionsType::class, [
+            'buttons' => $buttons,
+        ]);
     }
 }

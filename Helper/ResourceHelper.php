@@ -12,7 +12,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * Class ResourceHelper
  * @package Ekyna\Bundle\AdminBundle\Helper
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class ResourceHelper
 {
@@ -105,7 +105,7 @@ class ResourceHelper
      *
      * @param object $resource
      * @param string $action
-     * @param array $parameters
+     * @param array  $parameters
      *
      * @throws \RuntimeException
      *
@@ -125,8 +125,8 @@ class ResourceHelper
         if (is_object($resource)) {
             $entities[$configuration->getResourceName()] = $resource;
             $current = $resource;
-            while (null !== $configuration->getParentId()) {
-                $parentConfiguration = $this->registry->findConfiguration($configuration->getParentId());
+            while (null !== $parentId = $configuration->getParentId()) {
+                $parentConfiguration = $this->registry->findConfiguration($parentId);
 
                 $metadata = $this->em->getClassMetadata($configuration->getResourceClass());
                 $associations = $metadata->getAssociationsByTargetClass($parentConfiguration->getResourceClass());
@@ -172,6 +172,7 @@ class ResourceHelper
         } elseif ($action == 'REMOVE') {
             return 'DELETE';
         }
+
         return $action;
     }
 
@@ -179,9 +180,11 @@ class ResourceHelper
      * Finds the route definition.
      *
      * @param string $routeName
+     * @param bool   $throw
+     *
      * @return null|\Symfony\Component\Routing\Route
      */
-    public function findRoute($routeName)
+    public function findRoute($routeName, $throw = true)
     {
         // TODO create a route finder ? (same in CmsBundle BreadcrumbBuilder)
         $i18nRouterClass = 'JMS\I18nRoutingBundle\Router\I18nRouterInterface';
@@ -190,9 +193,10 @@ class ResourceHelper
         } else {
             $route = $this->router->getRouteCollection()->get($routeName);
         }
-        if (null === $route) {
+        if (null === $route && $throw) {
             throw new \RuntimeException(sprintf('Route "%s" not found.', $routeName));
         }
+
         return $route;
     }
 }
