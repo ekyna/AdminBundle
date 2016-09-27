@@ -26,16 +26,14 @@ class CreateSuperAdminCommand extends ContainerAwareCommand
             ->setDescription('Creates a super admin user.')
             ->addArgument('email', InputArgument::OPTIONAL, 'The email address.')
             ->addArgument('password', InputArgument::OPTIONAL, 'The password.')
-            ->addArgument('firstName', InputArgument::OPTIONAL, 'The first name.')
-            ->addArgument('lastName', InputArgument::OPTIONAL, 'The last name.')
             ->setHelp(<<<EOT
 The <info>ekyna:admin:create-super-admin</info> creates a super admin user:
 
   <info>php app/console ekyna:admin:create-super-admin</info>
 
-You can also optionally specify the user datas (email, password, first name and last name):
+You can also optionally specify the user datas (email, password):
 
-  <info>php app/console ekyna:admin:create-super-admin john.doe@example.org password John Doe</info>
+  <info>php app/console ekyna:admin:create-super-admin john.doe@example.org password</info>
 EOT
             )
         ;
@@ -76,9 +74,6 @@ EOT
         $user = $userManager->createUser();
         $user
             ->setGroup($group)
-            ->setGender('mr')
-            ->setFirstName($input->getArgument('firstName'))
-            ->setLastName($input->getArgument('lastName'))
             ->setPlainPassword($input->getArgument('password'))
             ->setEmail($input->getArgument('email'))
             ->setEnabled(true)

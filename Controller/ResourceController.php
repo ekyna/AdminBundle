@@ -9,7 +9,6 @@ use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
-//use JMS\Serializer\SerializationContext;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
