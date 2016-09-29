@@ -249,7 +249,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
 
                 return $this->redirect($redirectPath);
-            } else {
+            } elseif ($isXhr) {
                 foreach ($event->getErrors() as $error) {
                     $form->addError(new FormError($error->getMessage()));
                 }
@@ -365,7 +365,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
 
                 return $this->redirect($redirectPath);
-            } else {
+            } elseif ($isXhr) {
                 foreach ($event->getErrors() as $error) {
                     $form->addError(new FormError($error->getMessage()));
                 }
@@ -463,7 +463,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
 
                 return $this->redirect($redirectPath);
-            } else {
+            } elseif ($isXhr) {
                 foreach ($event->getErrors() as $error) {
                     $form->addError(new FormError($error->getMessage()));
                 }
