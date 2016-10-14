@@ -23,7 +23,13 @@
 
 {% block show_widget_simple %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline">{{ content|default('&nbsp;')|raw }}</div>
+    <div class="show-widget show-widget-inline">
+        {% if content is same as (null) %}
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+        {% else %}
+        {{ content|default('&nbsp;')|raw }}
+        {% endif %}
+    </div>
 {% endspaceless %}
 {% endblock show_widget_simple %}
 
