@@ -7,12 +7,11 @@
 
 {% block body %}
   <div class="login-wrapper">
-    <a href="{{ path('ekyna_admin_security_login') }}">
-      <img class="logo" src="{{ asset(admin_logo_path()) }}" height="28px"/>
+    <a href="{{ path('ekyna_admin_security_login') }}" class="logo">
+      <img src="{{ asset(admin_logo_path()) }}" height="28px"/>
     </a>
     <div class="box">
       <form method="post" action="{{ path('ekyna_admin_security_check') }}" class="content-wrap">
-        <h6>{{ 'ekyna_admin.login_header'|trans }}</h6>
         {% if error %}
           <div class="alert alert-danger">
             {{ error.messageKey|trans(error.messageData, 'security') }}

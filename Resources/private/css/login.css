@@ -1,4 +1,4 @@
-html {
+body {
     background: url("/bundles/ekynaadmin/img/login-bg.jpg") no-repeat center center fixed;
     filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/bundles/ekynaadmin/img/login-bg.jpg', sizingMethod='scale');
     -ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/bundles/ekynaadmin/img/login-bg.jpg', sizingMethod='scale')";
@@ -10,23 +10,25 @@ html {
 
 .login-wrapper {
     position: absolute;
-    top: 90px;
-    left: 0;
-    right: 0;
+    top: 50%;
+    left: 50%;
+    margin: -230px 0 0 -150px;
+    width: 300px;
+    height: 400px;
     text-align: center;
 }
 
 .login-wrapper .logo {
-    margin-bottom: 45px;
-    position: relative;
-    left: -2px;
+    display: block;
+    text-align: center;
+    min-height: 30px;
+    margin-bottom: 30px;
 }
 
 .login-wrapper .box {
     margin: 0 auto;
-    padding: 35px 0 30px;
+    padding: 30px 0;
     float: none;
-    width: 400px;
     box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.65);
@@ -35,13 +37,6 @@ html {
 .login-wrapper .box .content-wrap {
     width: 82%;
     margin: 0 auto;
-}
-
-.login-wrapper .box h6 {
-    text-transform: uppercase;
-    margin: 0 0 30px 0;
-    font-size: 18px;
-    font-weight: 600;
 }
 
 .login-wrapper .box input[type="text"],
