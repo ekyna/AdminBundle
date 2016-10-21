@@ -134,7 +134,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
     });
 
     // Forms
-    var $forms = $('.form-body');
+    var $forms = $('form');
     if ($forms.size() > 0) {
         require(['ekyna-form'], function(Form) {
             $forms.each(function(i, f) {
