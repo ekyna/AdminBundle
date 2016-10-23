@@ -609,7 +609,14 @@ input.search {
 }
 
 .page-header h1 {
-    margin-top: 0;
+    display: inline-block;
+    margin: 0;
+    line-height: 1;
+}
+
+.page-header .label {
+    margin-left: 12px;
+    vertical-align: super;
 }
 
 .page-header .actions {

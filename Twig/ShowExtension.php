@@ -14,7 +14,7 @@ use Ivory\GoogleMap\Overlays\Marker;
 /**
  * Class ShowExtension
  * @package Ekyna\Bundle\AdminBundle\Twig
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class ShowExtension extends \Twig_Extension
 {
@@ -56,10 +56,10 @@ class ShowExtension extends \Twig_Extension
     /**
      * Renders the show row.
      *
-     * @param mixed $content
+     * @param mixed  $content
      * @param string $type
      * @param string $label
-     * @param array $options
+     * @param array  $options
      *
      * @return string
      */
@@ -105,9 +105,9 @@ class ShowExtension extends \Twig_Extension
         }
 
         $vars = [
-            'label' => $label !== null ? $label : false,
-            'content' => $content,
-            'compound' => $compound
+            'label'    => $label !== null ? $label : false,
+            'content'  => $content,
+            'compound' => $compound,
         ];
 
         /* Fix boostrap columns */
@@ -128,7 +128,7 @@ class ShowExtension extends \Twig_Extension
     protected function renderCheckboxWidget($content, array $options = [])
     {
         return $this->renderBlock('show_widget_checkbox', [
-            'content' => $content
+            'content' => $content,
         ]);
     }
 
@@ -144,11 +144,11 @@ class ShowExtension extends \Twig_Extension
     {
         $options = array_merge([
             'precision' => 2,
-            'append' => '',
+            'append'    => '',
         ], $options);
 
         return $this->renderBlock('show_widget_simple', [
-            'content' => trim(sprintf('%s %s', number_format($content, $options['precision'], ',', ' '), $options['append']))
+            'content' => trim(sprintf('%s %s', number_format($content, $options['precision'], ',', ' '), $options['append'])),
         ]);
     }
 
@@ -195,7 +195,7 @@ class ShowExtension extends \Twig_Extension
             $options['route_params'] = [];
         }
         if (!array_key_exists('route_params_map', $options)) {
-            $options['route_params_map'] = ['id' => 'id'];
+            $options['route_params_map'] = [];
         }
 
         if (null !== $entities && !($entities instanceof Collection)) {
@@ -203,11 +203,11 @@ class ShowExtension extends \Twig_Extension
         }
 
         $vars = [
-            'route' => $options['route'],
-            'field' => $options['field'],
+            'route'            => $options['route'],
+            'field'            => $options['field'],
             'route_params'     => $options['route_params'],
             'route_params_map' => $options['route_params_map'],
-            'entities' => $entities
+            'entities'         => $entities,
         ];
 
         return $this->renderBlock('show_widget_entity', $vars);
@@ -224,8 +224,8 @@ class ShowExtension extends \Twig_Extension
     protected function renderUrlWidget($content, array $options = [])
     {
         $vars = [
-            'target' => isset($options['target']) ? $options['target'] : '_blank',
-            'content' => $content
+            'target'  => isset($options['target']) ? $options['target'] : '_blank',
+            'content' => $content,
         ];
 
         return $this->renderBlock('show_widget_url', $vars);
@@ -279,7 +279,7 @@ class ShowExtension extends \Twig_Extension
     protected function renderColorWidget($content, array $options = [])
     {
         return $this->renderBlock('show_widget_color', [
-            'content' => $content
+            'content' => $content,
         ]);
     }
 
@@ -297,9 +297,10 @@ class ShowExtension extends \Twig_Extension
         if (0 >= $height) {
             $height = 250;
         }
+
         return $this->renderBlock('show_widget_tinymce', [
             'height' => $height,
-            'route' => $content
+            'route'  => $content,
         ]);
     }
 
@@ -314,7 +315,7 @@ class ShowExtension extends \Twig_Extension
     protected function renderSimpleWidget($content, array $options = [])
     {
         return $this->renderBlock('show_widget_simple', [
-            'content' => $content
+            'content' => $content,
         ]);
     }
 
@@ -329,7 +330,7 @@ class ShowExtension extends \Twig_Extension
     protected function renderTelWidget($content, array $options = [])
     {
         return $this->renderBlock('show_widget_tel', [
-            'content' => $content
+            'content' => $content,
         ]);
     }
 
@@ -337,14 +338,14 @@ class ShowExtension extends \Twig_Extension
      * Renders the uploadable widget.
      *
      * @param UploadableInterface $upload
-     * @param array $options
+     * @param array               $options
      *
      * @return string
      */
     protected function renderUploadWidget(UploadableInterface $upload = null, array $options = [])
     {
         return $this->renderBlock('show_widget_upload', [
-            'upload' => $upload
+            'upload' => $upload,
         ]);
     }
 
@@ -352,14 +353,14 @@ class ShowExtension extends \Twig_Extension
      * Renders the media widget.
      *
      * @param MediaInterface $media
-     * @param array $options
+     * @param array          $options
      *
      * @return string
      */
     protected function renderMediaWidget(MediaInterface $media = null, array $options = [])
     {
         return $this->renderBlock('show_widget_media', [
-            'media' => $media
+            'media' => $media,
         ]);
     }
 
@@ -367,19 +368,19 @@ class ShowExtension extends \Twig_Extension
      * Renders the medias widget.
      *
      * @param Collection $medias
-     * @param array $options
+     * @param array      $options
      *
      * @return string
      */
     protected function renderMediasWidget(Collection $medias, array $options = [])
     {
-        $medias = array_map(function($m) {
+        $medias = array_map(function ($m) {
             /** @var \Ekyna\Bundle\MediaBundle\Model\MediaSubjectInterface $m */
             return $m->getMedia();
         }, $medias->toArray());
 
         return $this->renderBlock('show_widget_medias', [
-            'medias' => $medias
+            'medias' => $medias,
         ]);
     }
 
@@ -387,14 +388,14 @@ class ShowExtension extends \Twig_Extension
      * Renders the seo widget.
      *
      * @param SeoInterface $seo
-     * @param array $options
+     * @param array        $options
      *
      * @return string
      */
     protected function renderSeoWidget(SeoInterface $seo, array $options = [])
     {
         return $this->renderBlock('show_widget_seo', [
-            'seo' => $seo
+            'seo' => $seo,
         ]);
     }
 
@@ -409,7 +410,7 @@ class ShowExtension extends \Twig_Extension
     protected function renderKeyValueCollectionWidget(array $content, array $options = [])
     {
         return $this->renderBlock('show_widget_key_value_collection', [
-            'content' => $content
+            'content' => $content,
         ]);
     }
 
@@ -417,7 +418,7 @@ class ShowExtension extends \Twig_Extension
      * Renders the coordinate widget.
      *
      * @param Coordinate $coordinate
-     * @param array $options
+     * @param array      $options
      *
      * @return string
      */
@@ -426,12 +427,12 @@ class ShowExtension extends \Twig_Extension
         $map = new Map();
         $map->setAutoZoom(true);
         $map->setMapOptions([
-            'minZoom' => 3,
-            'maxZoom' => 18,
+            'minZoom'          => 3,
+            'maxZoom'          => 18,
             'disableDefaultUI' => true,
         ]);
         $map->setStylesheetOptions([
-            'width' => '100%',
+            'width'  => '100%',
             'height' => '320px',
         ]);
 
@@ -443,7 +444,7 @@ class ShowExtension extends \Twig_Extension
         }
 
         return $this->renderBlock('show_widget_coordinate', [
-            'map' => $map
+            'map' => $map,
         ]);
     }
 
@@ -451,7 +452,7 @@ class ShowExtension extends \Twig_Extension
      * Renders a block.
      *
      * @param string $name
-     * @param array $vars
+     * @param array  $vars
      *
      * @return string
      *
@@ -462,6 +463,7 @@ class ShowExtension extends \Twig_Extension
         if (!$this->template->hasBlock($name)) {
             throw new \RuntimeException('Block "' . $name . '" not found.');
         }
+
         return $this->template->renderBlock($name, $vars);
     }
 
