@@ -28,6 +28,7 @@ class AdminExtension extends \Twig_Extension
      */
     private $config;
 
+
     /**
      * Constructor.
      *
@@ -51,12 +52,33 @@ class AdminExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('admin_stylesheets',     [$this, 'renderStylesheets'],    ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('admin_logo_path',       [$this, 'getLogoPath']),
+            new \Twig_SimpleFunction('admin_navbar_config',   [$this, 'getNavbarConfig']),
+            new \Twig_SimpleFunction('admin_stylesheets',     [$this, 'renderStylesheets'],    ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('admin_resource_btn',    [$this, 'renderResourceButton'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('admin_resource_access', [$this, 'hasResourceAccess']),
             new \Twig_SimpleFunction('admin_resource_path',   [$this, 'generateResourcePath']),
         ];
+    }
+
+    /**
+     * Returns the logo path.
+     *
+     * @return string
+     */
+    public function getLogoPath()
+    {
+        return $this->config['logo_path'];
+    }
+
+    /**
+     * Returns the navbar config.
+     *
+     * @return string
+     */
+    public function getNavbarConfig()
+    {
+        return $this->config['navbar'];
     }
 
     /**
@@ -73,16 +95,6 @@ class AdminExtension extends \Twig_Extension
         }
 
         return $output;
-    }
-
-    /**
-     * Returns the logo path.
-     *
-     * @return string
-     */
-    public function getLogoPath()
-    {
-        return $this->config['logo_path'];
     }
 
     /**
