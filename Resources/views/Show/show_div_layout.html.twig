@@ -1,229 +1,309 @@
 {% block show_row %}
-{% spaceless %}
-    {% if compound and label is same as(false) %}
-        {{ content|raw }}
-    {% else %}
-    <div class="row show-row">
-        {{ block('show_label') }}
-        <div class="col-md-{{ nb_col }}">
+    {% spaceless %}
+        {% if compound and label is same as(false) %}
             {{ content|raw }}
-        </div>
-    </div>
-    {% endif %}
-{% endspaceless %}
+        {% else %}
+            <div class="row show-row">
+                {{ block('show_label') }}
+                <div class="col-md-{{ nb_col }}">
+                    {{ content|raw }}
+                </div>
+            </div>
+        {% endif %}
+    {% endspaceless %}
 {% endblock show_row %}
 
 {% block show_label %}
-{% spaceless %}
-    {% if label is not same as(false) %}
-    <div class="col-md-{{ label_nb_col }} show-label">{{ label|trans }}</div>
-    {% endif %}
-{% endspaceless %}
+    {% spaceless %}
+        {% if label is not same as(false) %}
+            <div class="col-md-{{ label_nb_col }} show-label">{{ label|trans }}</div>
+        {% endif %}
+    {% endspaceless %}
 {% endblock show_label %}
 
 {% block show_widget_simple %}
-{% spaceless %}
-    <div class="show-widget show-widget-inline">
-        {% if content is same as (null) %}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-        {% else %}
-        {{ content|default('&nbsp;')|raw }}
-        {% endif %}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-inline">
+            {% if content is same as (null) %}
+                <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+            {% else %}
+                {{ content|default('&nbsp;')|raw }}
+            {% endif %}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_simple %}
 
 {% block show_widget_tel %}
-{% spaceless %}
-    <div class="show-widget show-widget-inline">
-    {%- if content is not empty -%}
-        {{ phone_number_format(content, 'NATIONAL') }}
-    {%- else -%}
-        &nbsp;
-    {%- endif -%}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-inline">
+            {%- if content is not empty -%}
+                {{ phone_number_format(content, 'NATIONAL') }}
+            {%- else -%}
+                &nbsp;
+            {%- endif -%}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_tel %}
 
 {% block show_widget_datetime %}
-{% spaceless %}
-    <div class="show-widget show-widget-inline">
-    {% if content is empty %}
-    <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {% else %}
-    {{ content|localizeddate(options['date_format'], options['time_format'], options['locale'], options['timezone'], options['format'])|capitalize }}
-    {% endif %}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-inline">
+            {% if content is empty %}
+                <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+            {% else %}
+                {{ content|localizeddate(options['date_format'], options['time_format'], options['locale'], options['timezone'], options['format'])|capitalize }}
+            {% endif %}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_datetime %}
 
 {% block show_widget_color %}
-<div class="show-widget show-widget-inline">
-    {% if content is empty %}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {% else %}
-        <span class="show-color" style="background-color: {{ content }};"></span> {{ content }}
-    {% endif %}
-</div>
+    <div class="show-widget show-widget-inline">
+        {% if content is empty %}
+            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+        {% else %}
+            <span class="show-color" style="background-color: {{ content }};"></span> {{ content }}
+        {% endif %}
+    </div>
 {% endblock show_widget_color %}
 
 {% block show_widget_checkbox %}
-{% spaceless %}
-    <div class="show-widget show-widget-inline">{% if content is same as(true) %}{{ 'ekyna_core.value.yes'|trans }}{% else %}{{ 'ekyna_core.value.no'|trans }}{% endif %}</div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-inline">{% if content is same as(true) %}{{ 'ekyna_core.value.yes'|trans }}{% else %}{{ 'ekyna_core.value.no'|trans }}{% endif %}</div>
+    {% endspaceless %}
 {% endblock show_widget_checkbox %}
 
 {% block show_widget_entity %}
-{% spaceless %}
-    <div class="show-widget show-widget-inline">
-    {% if entities is same as(null) -%}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {%- elseif entities|length > 0 %}
-    {% for entity in entities %}
-        {% if route is not same as(null) %}
-        {% set params = route_params %}
-        {% for param, property_path in route_params_map %}
-            {% set params = params|merge({(param): get_property(entity, property_path)}) %}
-        {% endfor %}
-        <a href="{{ path(route, params) }}" class="show-entity">{{ block('show_widget_entity_value') }}</a>
-        {% else %}
-        <span class="show-entity">{{ block('show_widget_entity_value') }}</span>
-        {% endif %}
-    {% endfor %}
-    {%- else %}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {% endif -%}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-inline">
+            {% if entities is same as(null) -%}
+                <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+            {%- elseif entities|length > 0 %}
+                {% for entity in entities %}
+                    {% if route is not same as(null) %}
+                        {% set params = route_params %}
+                        {% for param, property_path in route_params_map %}
+                            {% set params = params|merge({(param): get_property(entity, property_path)}) %}
+                        {% endfor %}
+                        <a href="{{ path(route, params) }}"
+                           class="show-entity">{{ block('show_widget_entity_value') }}</a>
+                    {% else %}
+                        <span class="show-entity">{{ block('show_widget_entity_value') }}</span>
+                    {% endif %}
+                {% endfor %}
+            {%- else %}
+                <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+            {% endif -%}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_entity %}
 
 {% block show_widget_entity_value %}
-{%- if field -%}
-    {{ get_property(entity, field)|raw }}
-{%- else -%}
-    {{ entity|raw }}
-{%- endif -%}
+    {%- if field -%}
+        {{ get_property(entity, field)|raw }}
+    {%- else -%}
+        {{ entity|raw }}
+    {%- endif -%}
 {% endblock show_widget_entity_value %}
 
 {% block show_widget_url %}
-{% spaceless %}
-    <div class="show-widget show-widget-inline">
-    {% if content is empty %}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {% else %}
-        <a href="{{ content }}" target="{{ target }}">{{ content }}</a>
-    {% endif %}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-inline">
+            {% if content is empty %}
+                <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+            {% else %}
+                <a href="{{ content }}" target="{{ target }}">{{ content }}</a>
+            {% endif %}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_url %}
 
 {% block show_widget_textarea %}
-{% spaceless %}
-    <div class="show-widget show-widget-block">
-    {% if content is empty %}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {% elseif options.html %}
-        {{ content|raw }}
-    {% else %}
-        {{ content|nl2br|raw }}
-    {% endif %}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-block">
+            {% if content is empty %}
+                <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+            {% elseif options.html %}
+                {{ content|raw }}
+            {% else %}
+                {{ content|nl2br|raw }}
+            {% endif %}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_textarea %}
 
 {% block show_widget_tinymce %}
-{% spaceless %}
-    <div class="show-widget show-widget-block">
-        <iframe src="{{ route }}" style="height:{{ height }}px"></iframe>
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-block">
+            <iframe src="{{ route }}" style="height:{{ height }}px"></iframe>
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_tinymce %}
 
 {% block render_image %}
-{% spaceless %}
-    <a class="thumbnail" href="{{ image.path|imagine_filter('admin_modal') }}" title="{{ image.alt }}">
-        <img alt="{{ image.alt }}" src="{{ image.path|imagine_filter('admin_thumb') }}" />
-    </a>
-{% endspaceless %}
-{% endblock render_image%}
+    {% spaceless %}
+        <a class="thumbnail" href="{{ image.path|imagine_filter('admin_modal') }}" title="{{ image.alt }}">
+            <img alt="{{ image.alt }}" src="{{ image.path|imagine_filter('admin_thumb') }}"/>
+        </a>
+    {% endspaceless %}
+{% endblock render_image %}
 
 {% block show_widget_upload %}
-{% spaceless %}
-    <div class="show-widget show-widget-inline">
-    {% if upload is same as(null) %}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {% else %}
-	    <a href="{{ path('ekyna_core_download', {'key': upload.path}) }}" class="show-entity" target="_blank">{{ upload.guessFilename }}</a>
-    {% endif %}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-inline">
+            {% if upload is same as(null) %}
+                <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+            {% else %}
+                <a href="{{ path('ekyna_core_download', {'key': upload.path}) }}" class="show-entity"
+                   target="_blank">{{ upload.guessFilename }}</a>
+            {% endif %}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_upload %}
 
 {% block show_widget_media %}
-{% spaceless %}
-    {{ media|media_thumb }}
-{% endspaceless %}
+    {% spaceless %}
+        {{ media|media_thumb }}
+    {% endspaceless %}
 {% endblock show_widget_media %}
 
 {% block show_widget_medias %}
-{% spaceless %}
-    <div class="show-widget show-widget-block">
-    {% for media in medias %}
-        {{ media|media_thumb }}
-    {% endfor %}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-block">
+            {% for media in medias %}
+                {{ media|media_thumb }}
+            {% else %}
+                {{ null|media_thumb }}
+            {% endfor %}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_medias %}
 
 {% block show_widget_seo %}
-{% spaceless %}
-    {{ show_row(seo.title, 'text', 'ekyna_core.field.title') }}
-    {{ show_row(seo.description, 'text', 'ekyna_core.field.description') }}
-    <div class="row">
-        <div class="col-md-6">
-            {{ show_row(seo.changefreq, 'text', 'ekyna_core.field.changefreq', {'label_nb_col': 4}) }}
+    {% spaceless %}
+        {{ show_translations_row(seo.translations, {
+            'fields': {
+                'title': {'label': 'ekyna_core.field.title'},
+                'description': {'label': 'ekyna_core.field.description', 'style': 'block'},
+            }
+        }) }}
+        <div class="row">
+            <div class="col-md-6">
+                {{ show_row(seo.changefreq, 'text', 'ekyna_core.field.changefreq', {'label_nb_col': 4}) }}
+            </div>
+            <div class="col-md-6">
+                {{ show_row(seo.priority, 'text', 'ekyna_core.field.priority', {'label_nb_col': 4}) }}
+            </div>
         </div>
-        <div class="col-md-6">
-            {{ show_row(seo.priority, 'text', 'ekyna_core.field.priority', {'label_nb_col': 4}) }}
+        <div class="row">
+            <div class="col-md-6">
+                {{ show_row(seo.follow, 'checkbox', 'ekyna_core.field.follow', {'label_nb_col': 4}) }}
+            </div>
+            <div class="col-md-6">
+                {{ show_row(seo.index, 'checkbox', 'ekyna_core.field.index', {'label_nb_col': 4}) }}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            {{ show_row(seo.follow, 'checkbox', 'ekyna_core.field.follow', {'label_nb_col': 4}) }}
-        </div>
-        <div class="col-md-6">
-            {{ show_row(seo.index, 'checkbox', 'ekyna_core.field.index', {'label_nb_col': 4}) }}
-        </div>
-    </div>
-    {{ show_row(seo.canonical, 'url', 'ekyna_core.field.canonical_url') }}
-{% endspaceless %}
+        {{ show_row(seo.canonical, 'url', 'ekyna_core.field.canonical_url') }}
+    {% endspaceless %}
 {% endblock show_widget_seo %}
 
 {% block show_widget_key_value_collection %}
-{% spaceless %}
-    <div class="show-widget show-widget-block">
-    {% if content is empty %}
-        <em>{{ 'ekyna_core.value.none'|trans }}</em>
-    {% else %}
-        <dl class="dl-horizontal">
-        {% for key, value in content %}
-            <dt>{{ key }}</dt>
-            <dd>{{ value }}</dd>
-        {% endfor %}
-        </dl>
-    {% endif %}
-    </div>
-{% endspaceless %}
+    {% spaceless %}
+        <div class="show-widget show-widget-block">
+            {% if content is empty %}
+                <em>{{ 'ekyna_core.value.none'|trans }}</em>
+            {% else %}
+                <dl class="dl-horizontal">
+                    {% for key, value in content %}
+                        <dt>{{ key }}</dt>
+                        <dd>{{ value }}</dd>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+        </div>
+    {% endspaceless %}
 {% endblock show_widget_key_value_collection %}
 
 {% block show_widget_coordinate %}
+    {% spaceless %}
+        <div class="show-widget show-widget-block">
+            {% if map is empty %}
+                <em>{{ 'ekyna_core.value.none'|trans }}</em>
+            {% else %}
+                {{ google_map(map) }}
+            {% endif %}
+        </div>
+    {% endspaceless %}
+{% endblock show_widget_coordinate %}
+
+{% block show_row_translations %}
 {% spaceless %}
-    <div class="show-widget show-widget-block">
-    {% if map is empty %}
-        <em>{{ 'ekyna_core.value.none'|trans }}</em>
-    {% else %}
-        {{ google_map(map) }}
-    {% endif %}
+    <div class="translations-forms show-row">
+        <ul class="translations-locales nav nav-tabs">
+            {% for locale, translation in translations -%}
+                <li{% if loop.first %} class="active"{% endif %}>
+                    <a href="#translation-{{ vars.name }}-{{ locale }}" data-toggle="tab">
+                        {{- locale|language|capitalize -}}
+                    </a>
+                </li>
+            {%- endfor %}
+        </ul>
+        <div class="translations-fields tab-content">
+            {{ block('translations_content') }}
+        </div>
     </div>
 {% endspaceless %}
-{% endblock show_widget_coordinate %}
+{% endblock show_row_translations %}
+
+{% block show_widget_translations %}
+{% spaceless %}
+{% if translations is not empty %}
+    <ul class="nav nav-tabs">
+        {% for locale, translation in translations -%}
+            <li{% if loop.first %} class="active"{% endif %}>
+                <a href="#translation-{{ vars.name }}-{{ locale }}" data-toggle="tab">
+                    {{- locale|language|capitalize -}}
+                </a>
+            </li>
+        {%- endfor %}
+    </ul>
+    <div class="panel-body"
+         style="border: 1px solid #ddd; border-top: none; padding:15px 15px 1px 15px; margin-bottom: 15px;">
+        <div class="tab-content">
+            {{ block('translations_content') }}
+        </div>
+    </div>
+{% else %}
+    <div class="show-widget show-widget-inline">
+        <em>{{ 'ekyna_core.message.no_translations'|trans }}</em>
+    </div>
+{% endif %}
+{% endspaceless %}
+{% endblock show_widget_translations %}
+
+{% block translations_content %}
+{% spaceless %}
+{% for locale, translation in translations %}
+    <div class="tab-pane{% if loop.first %} active{% endif %}"
+         id="translation-{{ vars.name }}-{{ locale }}">
+        {% for property, field in vars.fields -%}
+            <div class="row show-row">
+                <div class="col-md-2 show-label">
+                    {{- (field.label)|trans -}}
+                </div>
+                <div class="col-md-10">
+                    <div class="show-widget show-widget-{{ field.style }}">
+                        {%- set content = attribute(translation, property) -%}
+                        {%- if content is empty -%}
+                            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+                        {%- else -%}
+                            {{ content|raw }}
+                        {%- endif -%}
+                    </div>
+                </div>
+            </div>
+        {%- endfor %}
+    </div>
+{% endfor %}
+{% endspaceless %}
+{% endblock translations_content %}

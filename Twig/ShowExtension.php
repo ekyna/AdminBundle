@@ -49,7 +49,16 @@ class ShowExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('show_row', [$this, 'renderRow'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction(
+                'show_row',
+                [$this, 'renderRow'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction(
+                'show_translations_row',
+                [$this, 'renderTranslationsRow'],
+                ['is_safe' => ['html']]
+            ),
         ];
     }
 
@@ -94,6 +103,8 @@ class ShowExtension extends \Twig_Extension
             $content = $this->renderMediaWidget($content, $options);
         } elseif ($type == 'medias') {
             $content = $this->renderMediasWidget($content, $options);
+        } elseif ($type == 'translations') {
+            $content = $this->renderTranslationsWidget($content, $options);
         } elseif ($type == 'seo') {
             $content = $this->renderSeoWidget($content, $options);
         } elseif ($type == 'key_value_collection') {
@@ -110,11 +121,27 @@ class ShowExtension extends \Twig_Extension
             'compound' => $compound,
         ];
 
-        /* Fix boostrap columns */
+        /* Fix bootstrap columns */
         $vars['label_nb_col'] = isset($options['label_nb_col']) ? intval($options['label_nb_col']) : (strlen($label) > 0 ? 2 : 0);
         $vars['nb_col'] = isset($options['nb_col']) ? intval($options['nb_col']) : 12 - $vars['label_nb_col'];
 
         return $this->renderBlock('show_row', $vars);
+    }
+
+    /**
+     * Renders the show translations row.
+     *
+     * @param Collection $translations
+     * @param array      $options
+     *
+     * @return string
+     */
+    public function renderTranslationsRow(Collection $translations, array $options = [])
+    {
+        return $this->renderBlock('show_row_translations', [
+            'translations' => $translations->toArray(),
+            'vars'         => $this->buildTranslationsVars($options),
+        ]);
     }
 
     /**
@@ -382,6 +409,69 @@ class ShowExtension extends \Twig_Extension
         return $this->renderBlock('show_widget_medias', [
             'medias' => $medias,
         ]);
+    }
+
+    /**
+     * Renders the translations widget.
+     *
+     * @param Collection $translations
+     * @param array      $options
+     *
+     * @return string
+     */
+    protected function renderTranslationsWidget(Collection $translations, array $options = [])
+    {
+        return $this->renderBlock('show_widget_translations', [
+            'translations' => $translations->toArray(),
+            'vars'         => $this->buildTranslationsVars($options),
+        ]);
+    }
+
+    /**
+     * Builds the translations widget vars.
+     *
+     * @param array $options
+     *
+     * @return array
+     */
+    private function buildTranslationsVars(array $options)
+    {
+        $vars = [];
+
+        $vars['name'] = isset($options['name'])
+            ? $options['name']
+            : strtr(base64_encode(random_bytes(4)), '+/=', '');
+
+        if (!(isset($options['fields']) && is_array($options['fields']))) {
+            throw new \InvalidArgumentException("The 'fields' option must be defined.");
+        }
+
+        $vars['fields'] = [];
+
+        foreach ($options['fields'] as $property => $config) {
+            if (!isset($config['label'])) {
+                throw new \InvalidArgumentException("The 'label' option must be defined for the '$property' field.");
+            }
+
+            $fieldVars = ['label' => $config['label']];
+
+            if (isset($config['style'])) {
+                if (!in_array($config['style'], ['inline', 'block'], true)) {
+                    throw new \InvalidArgumentException(
+                        "The 'style' option is not valid for the '$property' field (expected 'inline' or 'block)."
+                    );
+                }
+                $fieldVars['style'] = $config['style'];
+            } else {
+                $fieldVars['style'] = 'inline';
+            }
+
+            // TODO fields label / widget col
+
+            $vars['fields'][$property] = $fieldVars;
+        }
+
+        return $vars;
     }
 
     /**
