@@ -24,6 +24,12 @@ class ShowExtension extends \Twig_Extension
     protected $template;
 
     /**
+     * @var array
+     */
+    protected $locales;
+
+
+    /**
      * Constructor
      *
      * @param string $template
@@ -428,53 +434,6 @@ class ShowExtension extends \Twig_Extension
     }
 
     /**
-     * Builds the translations widget vars.
-     *
-     * @param array $options
-     *
-     * @return array
-     */
-    private function buildTranslationsVars(array $options)
-    {
-        $vars = [];
-
-        $vars['name'] = isset($options['name'])
-            ? $options['name']
-            : strtr(base64_encode(random_bytes(4)), '+/=', '');
-
-        if (!(isset($options['fields']) && is_array($options['fields']))) {
-            throw new \InvalidArgumentException("The 'fields' option must be defined.");
-        }
-
-        $vars['fields'] = [];
-
-        foreach ($options['fields'] as $property => $config) {
-            if (!isset($config['label'])) {
-                throw new \InvalidArgumentException("The 'label' option must be defined for the '$property' field.");
-            }
-
-            $fieldVars = ['label' => $config['label']];
-
-            if (isset($config['style'])) {
-                if (!in_array($config['style'], ['inline', 'block'], true)) {
-                    throw new \InvalidArgumentException(
-                        "The 'style' option is not valid for the '$property' field (expected 'inline' or 'block)."
-                    );
-                }
-                $fieldVars['style'] = $config['style'];
-            } else {
-                $fieldVars['style'] = 'inline';
-            }
-
-            // TODO fields label / widget col
-
-            $vars['fields'][$property] = $fieldVars;
-        }
-
-        return $vars;
-    }
-
-    /**
      * Renders the seo widget.
      *
      * @param SeoInterface $seo
@@ -555,6 +514,53 @@ class ShowExtension extends \Twig_Extension
         }
 
         return $this->template->renderBlock($name, $vars);
+    }
+
+    /**
+     * Builds the translations widget vars.
+     *
+     * @param array $options
+     *
+     * @return array
+     */
+    private function buildTranslationsVars(array $options)
+    {
+        $vars = ['locales' => $this->locales];
+
+        $vars['name'] = isset($options['name'])
+            ? $options['name']
+            : strtr(base64_encode(random_bytes(4)), '+/=', '');
+
+        if (!(isset($options['fields']) && is_array($options['fields']))) {
+            throw new \InvalidArgumentException("The 'fields' option must be defined.");
+        }
+
+        $vars['fields'] = [];
+
+        foreach ($options['fields'] as $property => $config) {
+            if (!isset($config['label'])) {
+                throw new \InvalidArgumentException("The 'label' option must be defined for the '$property' field.");
+            }
+
+            $fieldVars = ['label' => $config['label']];
+
+            if (isset($config['style'])) {
+                if (!in_array($config['style'], ['inline', 'block'], true)) {
+                    throw new \InvalidArgumentException(
+                        "The 'style' option is not valid for the '$property' field (expected 'inline' or 'block)."
+                    );
+                }
+                $fieldVars['style'] = $config['style'];
+            } else {
+                $fieldVars['style'] = 'inline';
+            }
+
+            // TODO fields label / widget col
+
+            $vars['fields'][$property] = $fieldVars;
+        }
+
+        return $vars;
     }
 
     /**
