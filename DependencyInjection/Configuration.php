@@ -36,7 +36,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('route')->isRequired()->cannotBeEmpty()->end()
                                     ->scalarNode('icon')->isRequired()->cannotBeEmpty()->end()
                                     ->scalarNode('title')->defaultValue('')->end()
-                                    ->integerNode('target')->defaultValue('_blank')->end()
+                                    ->scalarNode('target')->defaultValue('_blank')->end()
                                     ->integerNode('position')->defaultValue(50)->end()
                                 ->end()
                             ->end()
