@@ -83,7 +83,7 @@
                     {% if route is not same as(null) %}
                         {% set params = route_params %}
                         {% for param, property_path in route_params_map %}
-                            {% set params = params|merge({(param): get_property(entity, property_path)}) %}
+                            {% set params = params|merge({(param): attribute(entity, property_path)}) %}
                         {% endfor %}
                         <a href="{{ path(route, params) }}"
                            class="show-entity">{{ block('show_widget_entity_value') }}</a>
@@ -100,7 +100,7 @@
 
 {% block show_widget_entity_value %}
     {%- if field -%}
-        {{ get_property(entity, field)|raw }}
+        {{ attribute(entity, field)|raw }}
     {%- else -%}
         {{ entity|raw }}
     {%- endif -%}
