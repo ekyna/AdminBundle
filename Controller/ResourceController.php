@@ -161,14 +161,14 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $childrenConfigurations = $this->get('ekyna_resource.configuration_registry')->getChildren($this->config);
         foreach ($childrenConfigurations as $childConfig) {
-            // Skip if the child table type does not exists
-            if (!$this->getTableFactory()->getRegistry()->hasTableType($childConfig->getTableType())) {
-                continue;
-            }
-
             $childResourceName = $childConfig->getResourceName(true);
 
+            // Skip if the parent has a children getter
             if ($accessor->isReadable($resource, $childResourceName) || array_key_exists($childResourceName, $data)) {
+                continue;
+            }
+            // Skip if the child table type does not exists
+            if (!$this->getTableFactory()->getRegistry()->hasTableType($childConfig->getTableType())) {
                 continue;
             }
 
