@@ -35,12 +35,20 @@
 .show-body .show-widget {
     display: block;
     position: relative;
-    padding: 7px 13px 6px 13px;
     font-size: 14px;
     line-height: 1.428571429;
     color: #555;
     vertical-align: middle;
     background-color: #fff;
+}
+
+.show-body .show-widget-sm,
+.show-body .show-widget-sm .show-widget {
+    font-size: 13px !important;
+}
+
+.show-body .show-widget-inline {
+    padding: 7px 13px 6px 13px;
 }
 
 .show-body .show-widget-inline:after {
@@ -64,6 +72,7 @@
     -o-hyphens: auto;
     hyphens: auto;
     overflow: hidden;
+    padding: 7px 13px 6px 13px;
 }
 
 .show-body .show-widget-block:before {
