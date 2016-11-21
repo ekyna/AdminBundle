@@ -27,10 +27,13 @@ trait SortableTrait
 
         $this->move($resource, -1);
 
-        return $this->redirectToReferer($this->generateUrl(
-            $this->config->getRoute('list'),
-            $context->getIdentifiers()
-        ));
+        if ($this->hasParent() && null !== $parentResource = $this->getParentResource($context)) {
+            $redirectPath = $this->generateResourcePath($parentResource, 'show');
+        } else {
+            $redirectPath = $this->generateResourcePath($resource, 'show');
+        }
+
+        return $this->redirectToReferer($redirectPath);
     }
 
     /**
@@ -49,10 +52,13 @@ trait SortableTrait
 
         $this->move($resource, 1);
 
-        return $this->redirectToReferer($this->generateUrl(
-            $this->config->getRoute('list'),
-            $context->getIdentifiers()
-        ));
+        if ($this->hasParent() && null !== $parentResource = $this->getParentResource($context)) {
+            $redirectPath = $this->generateResourcePath($parentResource, 'show');
+        } else {
+            $redirectPath = $this->generateResourcePath($resource, 'show');
+        }
+
+        return $this->redirectToReferer($redirectPath);
     }
 
     /**

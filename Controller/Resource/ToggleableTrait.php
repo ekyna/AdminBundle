@@ -36,11 +36,12 @@ trait ToggleableTrait
             $event->toFlashes($this->getFlashBag());
         }
 
-        // TODO Redirect to parent show
+        if ($this->hasParent() && null !== $parentResource = $this->getParentResource($context)) {
+            $redirectPath = $this->generateResourcePath($parentResource, 'show');
+        } else {
+            $redirectPath = $this->generateResourcePath($resource, 'show');
+        }
 
-        return $this->redirectToReferer($this->generateUrl(
-            $this->config->getRoute('list'),
-            $context->getIdentifiers()
-        ));
+        return $this->redirectToReferer($redirectPath);
     }
 }
