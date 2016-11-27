@@ -441,8 +441,12 @@ class ShowExtension extends \Twig_Extension
      *
      * @return string
      */
-    protected function renderSeoWidget(SeoInterface $seo, array $options = [])
+    protected function renderSeoWidget(SeoInterface $seo = null, array $options = [])
     {
+        if (null === $seo) {
+            $seo = new \Ekyna\Bundle\CmsBundle\Entity\Seo;
+        }
+
         return $this->renderBlock('show_widget_seo', [
             'seo' => $seo,
         ]);

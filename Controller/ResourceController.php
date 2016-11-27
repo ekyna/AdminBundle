@@ -592,7 +592,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     public function searchAction(Request $request)
     {
         //$callback = $request->query->get('callback');
-        //$limit    = intval($request->query->get('limit'));
+        $limit = intval($request->query->get('limit'));
         $query = trim($request->query->get('query'));
 
         $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
@@ -601,7 +601,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         // TODO result pagination
-        $results = $repository->defaultSearch($query);
+        $results = $repository->defaultSearch($query, $limit);
         $data = $this->container->get('serializer')->serialize([
             'results'     => $results,
             'total_count' => count($results),
