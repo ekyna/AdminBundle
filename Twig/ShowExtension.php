@@ -10,6 +10,8 @@ use Ekyna\Bundle\MediaBundle\Model\MediaInterface;
 use Ivory\GoogleMap\Base\Coordinate;
 use Ivory\GoogleMap\Map;
 use Ivory\GoogleMap\Overlays\Marker;
+use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 /**
  * Class ShowExtension
@@ -28,6 +30,11 @@ class ShowExtension extends \Twig_Extension
      */
     protected $locales;
 
+    /**
+     * @var PropertyAccessor
+     */
+    protected $propertyAccessor;
+
 
     /**
      * Constructor
@@ -37,6 +44,7 @@ class ShowExtension extends \Twig_Extension
     public function __construct($template = 'EkynaAdminBundle:Show:show_div_layout.html.twig')
     {
         $this->template = $template;
+        $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
 
     /**
@@ -44,6 +52,7 @@ class ShowExtension extends \Twig_Extension
      */
     public function initRuntime(\Twig_Environment $environment)
     {
+        // TODO Use a renderer
         if (!$this->template instanceof \Twig_Template) {
             $this->template = $environment->loadTemplate($this->template);
         }
@@ -331,6 +340,10 @@ class ShowExtension extends \Twig_Extension
             $height = 250;
         }
 
+        if (isset($options['locale'])) {
+            // TODO append locale to route (rename to path or url)
+        }
+
         return $this->renderBlock('show_widget_tinymce', [
             'height' => $height,
             'route'  => $content,
@@ -533,7 +546,7 @@ class ShowExtension extends \Twig_Extension
 
         $vars['name'] = isset($options['name'])
             ? $options['name']
-            : strtr(base64_encode(random_bytes(4)), '+/=', '');
+            : preg_replace('~[^A-Za-z0-9]+~', '', base64_encode(random_bytes(6)));
 
         if (!(isset($options['fields']) && is_array($options['fields']))) {
             throw new \InvalidArgumentException("The 'fields' option must be defined.");
@@ -546,20 +559,17 @@ class ShowExtension extends \Twig_Extension
                 throw new \InvalidArgumentException("The 'label' option must be defined for the '$property' field.");
             }
 
-            $fieldVars = ['label' => $config['label']];
+            $fieldVars = [
+                'label' => $config['label'],
+                'type' => isset($config['type']) ? $config['type'] : 'text',
+                'options' => isset($config['options']) ? $config['options'] : [],
+            ];
 
-            if (isset($config['style'])) {
-                if (!in_array($config['style'], ['inline', 'block'], true)) {
-                    throw new \InvalidArgumentException(
-                        "The 'style' option is not valid for the '$property' field (expected 'inline' or 'block)."
-                    );
-                }
-                $fieldVars['style'] = $config['style'];
+            if (isset($config['content'])) {
+                $fieldVars['content'] = $config['content'];
             } else {
-                $fieldVars['style'] = 'inline';
+                $fieldVars['property_path'] = isset($config['property_path']) ? $config['property_path'] : $property;
             }
-
-            // TODO fields label / widget col
 
             $vars['fields'][$property] = $fieldVars;
         }

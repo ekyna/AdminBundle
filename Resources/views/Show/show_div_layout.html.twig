@@ -184,7 +184,7 @@
         {{ show_translations_row(seo.translations, {
             'fields': {
                 'title': {'label': 'ekyna_core.field.title'},
-                'description': {'label': 'ekyna_core.field.description', 'style': 'block'},
+                'description': {'label': 'ekyna_core.field.description', 'type': 'textarea'},
             }
         }) }}
         <div class="row">
@@ -292,38 +292,16 @@
 {% for locale, translation in translations -%}
     <div class="tab-pane{% if loop.first %} active{% endif %}"
          id="translation-{{ vars.name }}-{{ locale }}">
-        {% for property, field in vars.fields -%}
-            <div class="row show-row">
-                <div class="col-md-2 show-label">
-                    {{- (field.label)|trans -}}
-                </div>
-                <div class="col-md-10">
-                    <div class="show-widget show-widget-{{ field.style }}">
-                        {%- set content = attribute(translation, property) -%}
-                        {%- if content is empty -%}
-                            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-                        {%- else -%}
-                            {{ content|raw }}
-                        {%- endif -%}
-                    </div>
-                </div>
-            </div>
+        {% for field in vars.fields -%}
+            {% set content = field.content is defined ? field.content : attribute(translation, field.property_path) %}
+            {{ show_row(content, field.type, field.label, field.options) }}
         {%- endfor %}
     </div>
 {%- else -%}
     <div class="tab-pane active"
          id="translation-{{ vars.name }}-{{ vars.locales|first }}">
-        {% for property, field in vars.fields -%}
-            <div class="row show-row">
-                <div class="col-md-2 show-label">
-                    {{- (field.label)|trans -}}
-                </div>
-                <div class="col-md-10">
-                    <div class="show-widget show-widget-{{ field.style }}">
-                        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-                    </div>
-                </div>
-            </div>
+        {% for field in vars.fields -%}
+            {{ show_row(null, field.type, field.label, field.options) }}
         {%- endfor %}
     </div>
 {%- endfor %}

@@ -6,7 +6,7 @@ use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
-use Ekyna\Bundle\AdminBundle\Search\SearchRepositoryInterface;
+use Ekyna\Component\Resource\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use Symfony\Component\Form\Extension\Core\Type;
@@ -218,6 +218,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $isXhr = $request->isXmlHttpRequest();
         $context = $this->loadContext($request);
 
+        /** @var \Ekyna\Component\Resource\Model\ResourceInterface $resource */
         $resource = $this->createNew($context);
 
         $resourceName = $this->config->getResourceName();
@@ -235,6 +236,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
             if (!$event->hasErrors()) {
                 if ($isXhr) {
+                    // TODO use resource serializer
                     return JsonResponse::create([
                         'id'   => $resource->getId(),
                         'name' => (string)$resource,
@@ -855,7 +857,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Generates the resource path.
      *
-     * @param object $resource
+     * @param mixed $resource
      * @param string $action
      * @param array  $parameters
      *

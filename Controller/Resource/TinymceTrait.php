@@ -27,6 +27,7 @@ trait TinymceTrait
 
         $context = $this->loadContext($request);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         if(null === $resource = $context->getResource()) {
             throw new \RuntimeException('Resource not found.');
         }
