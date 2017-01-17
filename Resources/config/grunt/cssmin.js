@@ -4,7 +4,6 @@ module.exports = function (grunt, options) {
             files: {
                 'src/Ekyna/Bundle/AdminBundle/Resources/public/css/main.css': [
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/bootstrap.overrides.css',
-                    'src/Ekyna/Bundle/AdminBundle/Resources/private/css/jquery-ui.overrides.css',
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/layout.css',
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/elements.css',
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/ui-elements.css',
