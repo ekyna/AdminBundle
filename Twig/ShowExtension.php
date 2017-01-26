@@ -189,8 +189,16 @@ class ShowExtension extends \Twig_Extension
             'append'    => '',
         ], $options);
 
+        if (null !== $content) {
+            $content = trim(sprintf(
+                '%s %s',
+                number_format($content, $options['precision'], ',', ' '),
+                $options['append']
+            ));
+        }
+
         return $this->renderBlock('show_widget_simple', [
-            'content' => trim(sprintf('%s %s', number_format($content, $options['precision'], ',', ' '), $options['append'])),
+            'content' => $content,
         ]);
     }
 

@@ -37,7 +37,7 @@
     {% spaceless %}
         <div class="show-widget show-widget-inline">
             {%- if content is not empty -%}
-                {{ phone_number_format(content, 'NATIONAL') }}
+                {{ content|phone_number_format }}
             {%- else -%}
                 &nbsp;
             {%- endif -%}
