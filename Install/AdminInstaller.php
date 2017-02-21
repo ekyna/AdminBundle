@@ -172,8 +172,6 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
      * Creates default groups permissions for each admin pool configurations (if available)
      *
      * @param OutputInterface $output
-     *
-     * @return number
      */
     private function createAclRules(OutputInterface $output)
     {
@@ -209,16 +207,18 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
     private function createSuperAdmin(Command $command, InputInterface $input, OutputInterface $output)
     {
         $userManager = $this->container->get('fos_user.user_manager');
+
         /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $user */
         $user = $userManager->createUser();
         $user
             ->setGroup($this->superAdminGroup)
-            ->setGender('mr')
-            ->setFirstName($input->getArgument('firstName'))
-            ->setLastName($input->getArgument('lastName'))
+            //->setGender('mr')
+            //->setFirstName($input->getArgument('firstName'))
+            //->setLastName($input->getArgument('lastName'))
             ->setPlainPassword($input->getArgument('password'))
             ->setEmail($input->getArgument('email'))
             ->setEnabled(true);
+
         $userManager->updateUser($user);
 
         $output->writeln('Super Admin has been successfully created.');
