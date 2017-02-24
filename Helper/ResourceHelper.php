@@ -136,10 +136,8 @@ class ResourceHelper
                         $mapping['type'] === ClassMetadataInfo::MANY_TO_ONE
                         && $accessor->isReadable($current, $mapping['fieldName'])
                     ) {
-                        if ($accessor->isReadable($current, $mapping['fieldName'])) {
-                            $current = $accessor->getValue($current, $mapping['fieldName']);
-                            $entities[$parentConfiguration->getResourceName()] = $current;
-                        }
+                        $current = $accessor->getValue($current, $mapping['fieldName']);
+                        $entities[$parentConfiguration->getResourceName()] = $current;
                     }
                 }
 

@@ -39,10 +39,12 @@ class ShowExtension extends \Twig_Extension
     /**
      * Constructor
      *
+     * @param array $locales
      * @param string $template
      */
-    public function __construct($template = 'EkynaAdminBundle:Show:show_div_layout.html.twig')
+    public function __construct(array $locales, $template = 'EkynaAdminBundle:Show:show_div_layout.html.twig')
     {
+        $this->locales = $locales;
         $this->template = $template;
         $this->propertyAccessor = PropertyAccess::createPropertyAccessor();
     }
@@ -90,6 +92,14 @@ class ShowExtension extends \Twig_Extension
     public function renderRow($content, $type = null, $label = null, array $options = [])
     {
         $compound = false;
+
+        if (!isset($options['attr'])) {
+            $options['attr'] = [];
+        }
+        if (isset($options['id'])) {
+            $options['attr']['id'] = $options['id'];
+            unset($options['id']);
+        }
 
         if ($type == 'checkbox') {
             $content = $this->renderCheckboxWidget($content, $options);
@@ -153,6 +163,14 @@ class ShowExtension extends \Twig_Extension
      */
     public function renderTranslationsRow(Collection $translations, array $options = [])
     {
+        if (!isset($options['attr'])) {
+            $options['attr'] = [];
+        }
+        if (isset($options['id'])) {
+            $options['name'] = $options['id'];
+            unset($options['id']);
+        }
+
         return $this->renderBlock('show_row_translations', [
             'translations' => $translations->toArray(),
             'vars'         => $this->buildTranslationsVars($options),
@@ -171,6 +189,7 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_checkbox', [
             'content' => $content,
+            'attr'    => $options['attr'],
         ]);
     }
 
@@ -199,6 +218,7 @@ class ShowExtension extends \Twig_Extension
 
         return $this->renderBlock('show_widget_simple', [
             'content' => $content,
+            'attr'    => $options['attr'],
         ]);
     }
 
@@ -219,6 +239,7 @@ class ShowExtension extends \Twig_Extension
         return $this->renderBlock('show_widget_textarea', [
             'content' => $content,
             'options' => $options,
+            'attr'    => $options['attr'],
         ]);
     }
 
@@ -258,6 +279,7 @@ class ShowExtension extends \Twig_Extension
             'route_params'     => $options['route_params'],
             'route_params_map' => $options['route_params_map'],
             'entities'         => $entities,
+            'attr'             => $options['attr'],
         ];
 
         return $this->renderBlock('show_widget_entity', $vars);
@@ -274,8 +296,9 @@ class ShowExtension extends \Twig_Extension
     protected function renderUrlWidget($content, array $options = [])
     {
         $vars = [
-            'target'  => isset($options['target']) ? $options['target'] : '_blank',
+            'target'  => isset($options['target']) ? $options['target'] : '_blank', // TODO as attr
             'content' => $content,
+            'attr'    => $options['attr'],
         ];
 
         return $this->renderBlock('show_widget_url', $vars);
@@ -313,6 +336,7 @@ class ShowExtension extends \Twig_Extension
         $vars = [
             'content' => $content,
             'options' => $options,
+            'attr'    => $options['attr'],
         ];
 
         return $this->renderBlock('show_widget_datetime', $vars);
@@ -330,6 +354,7 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_color', [
             'content' => $content,
+            'attr'    => $options['attr'],
         ]);
     }
 
@@ -353,8 +378,9 @@ class ShowExtension extends \Twig_Extension
         }
 
         return $this->renderBlock('show_widget_tinymce', [
-            'height' => $height,
+            'height' => $height, // TODO as attr ?
             'route'  => $content,
+            'attr'   => $options['attr'],
         ]);
     }
 
@@ -370,6 +396,7 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_simple', [
             'content' => $content,
+            'attr'    => $options['attr'],
         ]);
     }
 
@@ -385,6 +412,7 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_tel', [
             'content' => $content,
+            'attr'    => $options['attr'],
         ]);
     }
 
@@ -400,6 +428,7 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_upload', [
             'upload' => $upload,
+            'attr'   => $options['attr'],
         ]);
     }
 
@@ -415,6 +444,7 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_media', [
             'media' => $media,
+            'attr'  => $options['attr'],
         ]);
     }
 
@@ -435,6 +465,7 @@ class ShowExtension extends \Twig_Extension
 
         return $this->renderBlock('show_widget_medias', [
             'medias' => $medias,
+            'attr'   => $options['attr'],
         ]);
     }
 
@@ -448,9 +479,16 @@ class ShowExtension extends \Twig_Extension
      */
     protected function renderTranslationsWidget(Collection $translations, array $options = [])
     {
+        $prefix = 'translation';
+        if (isset($options['attr']['id'])) {
+            $prefix = $options['attr']['id'];
+            unset($options['attr']['id']);
+        }
+
         return $this->renderBlock('show_widget_translations', [
             'translations' => $translations->toArray(),
             'vars'         => $this->buildTranslationsVars($options),
+            'prefix'       => $prefix,
         ]);
     }
 
@@ -468,8 +506,16 @@ class ShowExtension extends \Twig_Extension
             $seo = new \Ekyna\Bundle\CmsBundle\Entity\Seo;
         }
 
+        $prefix = 'seo';
+        if (isset($options['attr']['id'])) {
+            $prefix = $options['attr']['id'];
+            unset($options['attr']['id']);
+        }
+
         return $this->renderBlock('show_widget_seo', [
-            'seo' => $seo,
+            'seo'    => $seo,
+            'attr'   => $options['attr'],
+            'prefix' => $prefix,
         ]);
     }
 
@@ -485,6 +531,7 @@ class ShowExtension extends \Twig_Extension
     {
         return $this->renderBlock('show_widget_key_value_collection', [
             'content' => $content,
+            'attr'    => $options['attr'],
         ]);
     }
 
@@ -518,7 +565,8 @@ class ShowExtension extends \Twig_Extension
         }
 
         return $this->renderBlock('show_widget_coordinate', [
-            'map' => $map,
+            'map'  => $map,
+            'attr' => $options['attr'],
         ]);
     }
 
@@ -554,7 +602,7 @@ class ShowExtension extends \Twig_Extension
 
         $vars['name'] = isset($options['name'])
             ? $options['name']
-            : preg_replace('~[^A-Za-z0-9]+~', '', base64_encode(random_bytes(6)));
+            : preg_replace('~[^A-Za-z0-9]+~', '', base64_encode(random_bytes(6))) . '_translations';
 
         if (!(isset($options['fields']) && is_array($options['fields']))) {
             throw new \InvalidArgumentException("The 'fields' option must be defined.");
@@ -568,15 +616,14 @@ class ShowExtension extends \Twig_Extension
             }
 
             $fieldVars = [
-                'label' => $config['label'],
-                'type' => isset($config['type']) ? $config['type'] : 'text',
-                'options' => isset($config['options']) ? $config['options'] : [],
+                'label'         => $config['label'],
+                'type'          => isset($config['type']) ? $config['type'] : 'text',
+                'property_path' => isset($config['property_path']) ? $config['property_path'] : $property,
+                'options'       => isset($config['options']) ? $config['options'] : [],
             ];
 
             if (isset($config['content'])) {
                 $fieldVars['content'] = $config['content'];
-            } else {
-                $fieldVars['property_path'] = isset($config['property_path']) ? $config['property_path'] : $property;
             }
 
             $vars['fields'][$property] = $fieldVars;

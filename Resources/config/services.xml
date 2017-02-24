@@ -91,8 +91,8 @@
             <tag name="twig.extension" />
         </service>
         <service id="ekyna_admin.twig.show_extension" class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
-            <argument>%ekyna_admin.twig.show_extension.template%</argument>
             <argument>%locales%</argument>
+            <argument>%ekyna_admin.twig.show_extension.template%</argument>
             <tag name="twig.extension" />
         </service>
         <service id="ekyna_dashboard_extension" class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">

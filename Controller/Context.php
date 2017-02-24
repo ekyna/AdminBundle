@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
+use Ekyna\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -79,7 +80,7 @@ class Context
      * Returns a resource by name.
      *
      * @param string $name
-     * @return object|null
+     * @return ResourceInterface|null
      */
     public function getResource($name = null)
     {

@@ -6,6 +6,7 @@ use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\ORM\QueryBuilder;
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
+use Ekyna\Component\Resource\Model\ResourceInterface;
 use Ekyna\Component\Resource\Search\SearchRepositoryInterface;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
@@ -227,7 +228,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $form = $this->createNewResourceForm($context, !$isXhr);
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // TODO use ResourceManager
             $event = $this->getOperator()->create($resource);
             if (!$isXhr) {
@@ -344,7 +345,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $form = $this->createEditResourceForm($context, !$isXhr);
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // TODO use ResourceManager
             $event = $this->getOperator()->update($resource);
             if (!$isXhr) {
@@ -446,10 +447,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $this->isGranted('DELETE', $resource);
 
         $isXhr = $request->isXmlHttpRequest();
+        // TODO use core bundle ConfirmType
         $form = $this->createRemoveResourceForm($context, null, !$isXhr);
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             // TODO use ResourceManager
             $event = $this->getOperator()->delete($resource);
             if (!$isXhr) {
@@ -514,6 +516,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param array   $options
      *
      * @return \Symfony\Component\Form\Form
+     * @deprecated
      */
     protected function createRemoveResourceForm(Context $context, $message = null, $footer = true, array $options = [])
     {
@@ -885,7 +888,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @throws \RuntimeException
      *
-     * @return object
+     * @return ResourceInterface
      */
     protected function createNew(Context $context)
     {
