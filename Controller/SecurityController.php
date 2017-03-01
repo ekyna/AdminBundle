@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\Security;
 /**
  * Class SecurityController
  * @package Ekyna\Bundle\AdminBundle\Controller
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class SecurityController extends Controller
 {
@@ -18,6 +18,7 @@ class SecurityController extends Controller
      * Login action.
      *
      * @param Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function loginAction(Request $request)
@@ -44,12 +45,15 @@ class SecurityController extends Controller
 
         // last username entered by the user
         $lastUsername = (null === $session) ? '' : $session->get($lastUsernameKey);
-        $csrfToken = $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue();
+
+        $csrfToken = $this->has('security.csrf.token_manager')
+            ? $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue()
+            : null;
 
         return $this->render('EkynaAdminBundle:Security:login.html.twig', [
             'last_username' => $lastUsername,
             'error'         => $error,
-            'token'         => $csrfToken,
+            'csrf_token'    => $csrfToken,
         ]);
     }
 

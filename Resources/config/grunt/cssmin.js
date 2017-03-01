@@ -7,7 +7,8 @@ module.exports = function (grunt, options) {
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/layout.css',
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/elements.css',
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/ui-elements.css',
-                    'src/Ekyna/Bundle/AdminBundle/Resources/private/css/show.css'
+                    'src/Ekyna/Bundle/AdminBundle/Resources/private/css/show.css',
+                    'src/Ekyna/Bundle/CoreBundle/Resources/public/css/ui.css'
                 ],
                 'src/Ekyna/Bundle/AdminBundle/Resources/public/css/dashboard-shortcuts.css': [
                     'src/Ekyna/Bundle/AdminBundle/Resources/private/css/dashboard-shortcuts.css'
