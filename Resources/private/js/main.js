@@ -154,6 +154,23 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         });
     }
 
+    // Toggle details
+    $(document).on('click', 'a[data-toggle-details]', function(e) {
+        e.preventDefault();
+
+        var $this = $(this), $target = $('#' + $this.data('toggle-details'));
+
+        if (1 == $target.size()) {
+            if ($target.is(':visible')) {
+                $target.hide();
+            } else {
+                $target.show();
+            }
+        }
+
+        return false;
+    });
+
     /* Helpers */
     var $helperContent = $('#helper-content:visible');
     var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');

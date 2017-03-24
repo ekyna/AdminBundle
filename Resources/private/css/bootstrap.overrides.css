@@ -314,7 +314,9 @@ textarea::-webkit-input-placeholder {
 }
 
 .table-hover tbody tr:hover > td,
-.table-hover tbody tr:hover > th {
+.table-hover tbody tr:hover > th,
+.table-hover tfoot tr:hover > td,
+.table-hover tfoot tr:hover > th {
     background-color: #f5fafc;
 }
 
@@ -360,6 +362,15 @@ textarea::-webkit-input-placeholder {
 
 table tr.first td {
     border-top: 0 none;
+}
+
+.table.table-alt thead > tr > th,
+.table.table-alt tbody > tr > th,
+.table.table-alt tfoot > tr > th,
+.table.table-alt thead > tr > td,
+.table.table-alt tbody > tr > td,
+.table.table-alt tfoot > tr > td {
+    background-color: #f9f9f9;
 }
 
 table thead th:before {
