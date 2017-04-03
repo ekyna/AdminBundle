@@ -143,7 +143,10 @@ class ShortcutsWidgetType extends AbstractWidgetType
                 );
                 if (null !== $resource = $menuEntry->getResource()) {
                     if (null !== $config = $this->registry->get($resource)) {
-                        if (null !== $config->getParentId() || !$this->aclOperator->isAccessGranted($resource, 'VIEW')) {
+                        if (!$this->aclOperator->isAccessGranted($resource, 'VIEW')) {
+                            continue;
+                        }
+                        if (null !== $config->getParentId()) {
                             continue;
                         }
                         if ($this->aclOperator->isAccessGranted($resource, 'CREATE')) {
