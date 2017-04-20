@@ -2,7 +2,7 @@
 
 {% set resource = _context[resource_name] %}
 
-{% block page_title %}{{ resource|raw }} - {{ parent() }}{% endblock page_title %}
+{% block page_title %}{{ resource|raw }}{% endblock page_title %}
 
 {% block title %}
 {{ admin_resource_pin(resource) }}
@@ -22,10 +22,10 @@
     </div>
 </div>
 <div class="show show-with-tabs">
-    <ul class="nav nav-tabs" data-tab-key="{{ resource_id }}">
+    <ul class="nav nav-tabs" data-tab-key="{{ context.config.id }}">
         <li class="active">
             <a href="#{{ resource_name }}-general" id="toggle-general" data-toggle="tab">
-                {{- 'ekyna_core.field.general'|trans -}}
+                {{- 'field.general'|trans({}, 'EkynaUi') -}}
             </a>
         </li>
     </ul>
@@ -33,7 +33,8 @@
         <div class="tab-content">
             <div class="tab-pane active" id="{{ resource_name }}-general">
               {{ show_row(resource, 'text', {
-                  'label': 'ekyna_core.field.name'
+                  'label': 'field.name',
+                  'label_trans_domain': 'EkynaUi'
               }) }}
             </div>
         </div>

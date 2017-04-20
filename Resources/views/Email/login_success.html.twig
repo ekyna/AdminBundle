@@ -1,12 +1,12 @@
 {% extends 'email.html.twig' %}
 
 {% block subject %}
-    {{- 'ekyna_admin.email.login_success.title'|trans -}}
+    {{- 'email.login_success.title'|trans({}, 'EkynaAdmin') -}}
 {% endblock subject %}
 
 {% block body %}
-    {{- 'ekyna_admin.email.login_success.message'|trans({
+    {{- 'email.login_success.message'|trans({
         '%sitename%': sitename,
-        '%date%': date|localizeddate('medium', 'none')
-    })|raw -}}
+        '%date%': date|format_datetime('medium', 'none')
+    }, 'EkynaAdmin')|raw -}}
 {% endblock body %}

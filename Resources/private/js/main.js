@@ -1,4 +1,8 @@
-require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form', 'ekyna-clipboard-copy'], function(require, $, Router) {
+require(
+    ['require', 'jquery', 'routing', 'ekyna-api', 'bootstrap', 'jquery/form', 'ekyna-clipboard-copy'],
+    function(require, $, Router, Api) {
+
+    Api.init('admin_api_login');
 
     // XHR forbidden access handler
     $(document).ajaxError(function (event, jqXHR) {
@@ -260,7 +264,7 @@ require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form', 'ekyna-clip
             $bcBtn.find('> i').removeClass('fa-barcode').addClass('fa-spinner fa-pulse fa-3x fa-fw');
 
             var xhr = $.ajax({
-                url: Router.generate('ekyna_admin_toolbar_barcode', {
+                url: Router.generate('admin_toolbar_barcode', {
                     barcode: barcode
                 }),
                 method: 'GET'
@@ -351,7 +355,7 @@ require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form', 'ekyna-clip
             }
 
             searchXhr = $.ajax({
-                url: Router.generate('ekyna_admin_toolbar_search'),
+                url: Router.generate('admin_toolbar_search'),
                 method: 'POST',
                 data: $searchForm.formSerialize(),
                 dataType: 'json'
@@ -441,7 +445,7 @@ require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form', 'ekyna-clip
             // Add new entry in user pins list
             var $span = $('<span data-id="' + data.added.id + '"></span>'),
                 $link = $('<a href="' + data.added.path + '" title="' + data.added.label + '">' + data.added.label + '</a>'),
-                path = Router.generate('ekyna_admin_pin_remove', {id: data.added.id}),
+                path = Router.generate('admin_pin_remove', {id: data.added.id}),
                 $remove = ('<a href="' + path + '"><i class="fa fa-remove"></i></a>');
 
             $span
@@ -458,7 +462,7 @@ require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form', 'ekyna-clip
             if (1 === $userPinLink.size()) {
                 $userPinLink
                     .addClass('unpin')
-                    .attr('href', Router.generate('ekyna_admin_pin_resource_unpin', {
+                    .attr('href', Router.generate('admin_pin_resource_unpin', {
                         name: data.added.resource,
                         identifier: data.added.identifier
                     }));
@@ -478,7 +482,7 @@ require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form', 'ekyna-clip
             if (1 === $userPinLink.size()) {
                 $userPinLink
                     .removeClass('unpin')
-                    .attr('href', Router.generate('ekyna_admin_pin_resource_pin', {
+                    .attr('href', Router.generate('admin_pin_resource_pin', {
                         name: data.removed.resource,
                         identifier: data.removed.identifier
                     }));

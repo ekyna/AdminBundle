@@ -1,44 +1,46 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Repository;
 
+use DateTime;
+use Doctrine\DBAL\Types\Types;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
-use Ekyna\Component\Resource\Doctrine\ORM\ResourceRepository;
+use Ekyna\Component\User\Repository\UserRepository as BaseRepository;
+use InvalidArgumentException;
 
 /**
  * Class UserRepository
  * @package Ekyna\Bundle\AdminBundle\Repository
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class UserRepository extends ResourceRepository implements UserRepositoryInterface
+class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
-    /**
-     * @inheritDoc
-     */
-    public function findOneByEmail(string $email, bool $active = true): ?UserInterface
+    public function findOneByApiToken(string $token, bool $enabled = true): ?UserInterface
     {
         $qb = $this->createQueryBuilder('u');
 
         $parameters = [
-            'email' => $email,
+            'token' => $token,
         ];
 
-        if ($active) {
-            $qb->andWhere($qb->expr()->eq('u.active', ':active'));
-            $parameters['active'] = true;
+        if ($enabled) {
+            $qb->andWhere($qb->expr()->eq('u.enabled', ':enabled'));
+            $parameters['enabled'] = true;
         }
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         return $qb
-            ->andWhere($qb->expr()->eq('u.email', ':email'))
+            ->andWhere($qb->expr()->eq('u.apiToken', ':token'))
+            ->andWhere($qb->expr()->gte('u.apiExpiresAt', ':now'))
             ->getQuery()
             ->setParameters($parameters)
+            ->setParameter('now', new DateTime(), Types::DATETIME_MUTABLE)
             ->getOneOrNullResult();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function findByRole(string $role, bool $active = true): array
+    public function findByRole(string $role, bool $enabled = true): array
     {
         $this->validateRole($role);
 
@@ -48,9 +50,9 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
             'role' => '%"' . $role . '"%',
         ];
 
-        if ($active) {
-            $qb->andWhere($qb->expr()->eq('u.active', ':active'));
-            $parameters['active'] = true;
+        if ($enabled) {
+            $qb->andWhere($qb->expr()->eq('u.enabled', ':enabled'));
+            $parameters['enabled'] = true;
         }
 
         return $qb
@@ -61,10 +63,7 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
             ->getResult();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function findByRoles(array $roles, bool $active = true): array
+    public function findByRoles(array $roles, bool $enabled = true): array
     {
         if (empty($roles)) {
             return [];
@@ -75,9 +74,9 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
 
         $parameters = [];
 
-        if ($active) {
-            $qb->andWhere($qb->expr()->eq('u.active', ':active'));
-            $parameters['active'] = true;
+        if ($enabled) {
+            $qb->andWhere($qb->expr()->eq('u.enabled', ':enabled'));
+            $parameters['enabled'] = true;
         }
 
         $count = 0;
@@ -96,41 +95,15 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
             ->getResult();
     }
 
-    /**
-     * @inheritdoc
-     */
     public function findAllActive(): array
     {
         $qb = $this->createQueryBuilder('u');
 
         return $qb
-            ->andWhere($qb->expr()->eq('u.active', ':active'))
+            ->andWhere($qb->expr()->eq('u.enabled', ':enabled'))
             ->getQuery()
-            ->setParameter('active', true)
+            ->setParameter('enabled', true)
             ->getResult();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function findOneByApiToken(string $token, bool $active = true): ?UserInterface
-    {
-        $qb = $this->createQueryBuilder('u');
-
-        $parameters = [
-            'token' => $token,
-        ];
-
-        if ($active) {
-            $qb->andWhere($qb->expr()->eq('u.active', ':active'));
-            $parameters['active'] = true;
-        }
-
-        return $qb
-            ->andWhere($qb->expr()->eq('u.apiToken', ':token'))
-            ->getQuery()
-            ->setParameters($parameters)
-            ->getOneOrNullResult();
     }
 
     /**
@@ -138,12 +111,14 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
      *
      * @param string $role
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    private function validateRole($role): void
+    private function validateRole(string $role): void
     {
-        if (!preg_match('~^ROLE_([A-Z_]+)~', $role)) {
-            throw new \InvalidArgumentException("Role must start with 'ROLE_'.");
+        if (preg_match('~^ROLE_([A-Z_]+)~', $role)) {
+            return;
         }
+
+        throw new InvalidArgumentException("Role must start with 'ROLE_'.");
     }
 }

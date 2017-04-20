@@ -3,10 +3,18 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
     var Summary = {};
 
     Summary.load = function ($element) {
-        var config = $element.data('summary');
+        var config = $element.data('summary'), url;
+
+        if (typeof config === 'object') {
+            url = Router.generate(config.route, config.parameters);
+        } else if (typeof config === 'string') {
+            url = config;
+        } else {
+            throw 'Unexpected summary config.';
+        }
 
         var xhr = $.ajax({
-            url: Router.generate(config.route, config.parameters),
+            url: url,
             dataType: 'html'
         });
 

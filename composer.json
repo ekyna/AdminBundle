@@ -5,7 +5,7 @@
     "authors": [
         {
             "name": "Etienne Dauvergne",
-            "homepage": "http://ekyna.com"
+            "homepage": "https://ekyna.com"
         }
     ],
     "keywords": [
@@ -17,12 +17,16 @@
     "homepage": "https://github.com/ekyna/AdminBundle",
     "license": "MIT",
     "require": {
-        "php": ">=7.0",
-        "ekyna/resource-bundle": "0.7.x-dev",
-        "ekyna/table-bundle": "0.7.x-dev",
-        "ekyna/google-bundle": "0.7.x-dev",
-        "ekyna/setting-bundle": "0.7.x-dev",
-        "ekyna/install-bundle": "0.7.x-dev"
+        "php": ">=7.4",
+        "ekyna/user": "0.8.x-dev",
+        "ekyna/api-bundle": "0.8.x-dev",
+        "ekyna/table-bundle": "0.8.x-dev",
+        "ekyna/google-bundle": "0.8.x-dev",
+        "ekyna/setting-bundle": "0.8.x-dev",
+        "ekyna/install-bundle": "0.8.x-dev",
+        "ekyna/social-buttons-bundle": "0.8.x-dev",
+        "knpuniversity/oauth2-client-bundle": "^2.8",
+        "craue/formflow-bundle": "^3.4"
     },
     "autoload": {
         "psr-4": {

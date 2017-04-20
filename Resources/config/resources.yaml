@@ -1,0 +1,86 @@
+extensions:
+    - Ekyna\Bundle\AdminBundle\Extension\AdminExtension
+
+actions:
+    Ekyna\Bundle\AdminBundle\Action\CrudActions: null
+    Ekyna\Bundle\AdminBundle\Action\CreateAction: null
+    Ekyna\Bundle\AdminBundle\Action\DeleteAction: null
+    Ekyna\Bundle\AdminBundle\Action\ListAction: null
+    Ekyna\Bundle\AdminBundle\Action\MoveUpAction: null
+    Ekyna\Bundle\AdminBundle\Action\MoveDownAction: null
+    Ekyna\Bundle\AdminBundle\Action\ReadAction: null
+    Ekyna\Bundle\AdminBundle\Action\SummaryAction: null
+    Ekyna\Bundle\AdminBundle\Action\TinymceAction: null
+    Ekyna\Bundle\AdminBundle\Action\ToggleAction: null
+    Ekyna\Bundle\AdminBundle\Action\UpdateAction: null
+
+    Ekyna\Bundle\AdminBundle\Action\Tree\TreeActions: null
+    Ekyna\Bundle\AdminBundle\Action\Tree\CreateChildAction: null
+    Ekyna\Bundle\AdminBundle\Action\Tree\MoveDownAction: null
+    Ekyna\Bundle\AdminBundle\Action\Tree\MoveUpAction: null
+
+    Ekyna\Bundle\AdminBundle\Action\User\GeneratePasswordAction: null
+    Ekyna\Bundle\AdminBundle\Action\User\GenerateApiTokenAction: null
+
+namespaces:
+    ekyna_admin:
+        label: administration
+        trans_domain: EkynaAdmin
+        prefix: /admin
+
+resources:
+    ekyna_admin:
+        group:
+            driver: doctrine/orm
+            entity:
+                interface: Ekyna\Bundle\AdminBundle\Model\GroupInterface
+                class: Ekyna\Bundle\AdminBundle\Entity\Group
+            repository:
+                interface: Ekyna\Bundle\AdminBundle\Repository\GroupRepositoryInterface
+                class: Ekyna\Bundle\AdminBundle\Repository\GroupRepository
+            manager:
+                interface: Ekyna\Bundle\AdminBundle\Manager\GroupManagerInterface
+                class: Ekyna\Bundle\AdminBundle\Manager\GroupManager
+            factory:
+                interface: Ekyna\Bundle\AdminBundle\Factory\GroupFactoryInterface
+                class: Ekyna\Bundle\AdminBundle\Factory\GroupFactory
+            form: Ekyna\Bundle\AdminBundle\Form\Type\GroupType
+            table: Ekyna\Bundle\AdminBundle\Table\Type\GroupType
+            trans_domain: EkynaAdmin
+            actions:
+                admin_crud:
+                    read: '@EkynaAdmin/Admin/Group/read.html.twig'
+                    form: '@EkynaAdmin/Admin/Group/_form.html.twig'
+                admin_move_up: null
+                admin_move_down: null
+                api_crud: null
+
+        user:
+            driver: doctrine/orm
+            entity:
+                interface: Ekyna\Bundle\AdminBundle\Model\UserInterface
+                class: Ekyna\Bundle\AdminBundle\Entity\User
+            repository:
+                interface: Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface
+                class: Ekyna\Bundle\AdminBundle\Repository\UserRepository
+            manager:
+                interface: Ekyna\Bundle\AdminBundle\Manager\UserManagerInterface
+                class: Ekyna\Bundle\AdminBundle\Manager\UserManager
+            factory:
+                interface: Ekyna\Bundle\AdminBundle\Factory\UserFactoryInterface
+                class: Ekyna\Bundle\AdminBundle\Factory\UserFactory
+            normalizer: Ekyna\Bundle\AdminBundle\Service\Serializer\UserNormalizer
+            search:
+                class: Ekyna\Bundle\AdminBundle\Service\Search\UserRepository
+            form: Ekyna\Bundle\AdminBundle\Form\Type\UserType
+            table: Ekyna\Bundle\AdminBundle\Table\Type\UserType
+            trans_domain: EkynaAdmin
+            actions:
+                admin_crud:
+                    read: '@EkynaAdmin/Admin/User/read.html.twig'
+                    form: '@EkynaAdmin/Admin/User/_form.html.twig'
+                admin_toggle:
+                    properties: enabled
+                Ekyna\Bundle\AdminBundle\Action\User\GeneratePasswordAction: null
+                Ekyna\Bundle\AdminBundle\Action\User\GenerateApiTokenAction: null
+                api_crud: null

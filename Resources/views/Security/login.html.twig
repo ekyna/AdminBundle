@@ -1,36 +1,77 @@
 {% extends '@EkynaAdmin/base.html.twig' %}
 
+{% block page_title %}{{ 'login_header'|trans({}, 'EkynaAdmin') }}{% endblock page_title %}
+
 {% block stylesheets %}
     {{ parent() }}
     <link href="{{ absolute_url(asset('bundles/ekynaadmin/css/login.css')) }}" rel="stylesheet" type="text/css"/>
 {% endblock stylesheets %}
 
 {% block body %}
+{% apply spaceless %}
     <div class="login-wrapper">
-        <a href="{{ path('ekyna_admin_security_login') }}" class="logo">
+        <a href="{{ path('admin_security_login') }}" class="logo">
             <img alt="logo" src="{{ absolute_url(asset(admin_navbar_config()['logo'])) }}" height="28px"/>
         </a>
         <div class="box">
-            <form method="post" action="{{ path('ekyna_admin_security_check') }}" class="content-wrap">
-                {% if error %}
-                    <div class="alert alert-danger">
-                        {{ error.messageKey|trans(error.messageData, 'security') }}
+            <form method="post" class="content-wrap">
+                {# Alerts #}
+                {% if app.user %}
+                    <div class="alert alert-info">
+                        {{ 'field.logged_in_as'|trans({'{user}': app.user.userIdentifier}, 'EkynaUi')|raw }}<br>
+                        <a href="{{ path('admin_security_logout') }}">
+                            {{- 'button.logout'|trans({}, 'EkynaUi') -}}
+                        </a><br>
+                        <a href="{{ path('admin_dashboard') }}">
+                            {{- 'dashboard'|trans({}, 'EkynaAdmin') -}}
+                        </a>
                     </div>
                 {% endif %}
-                <input name="_username" class="form-control" type="text"
-                       placeholder="{{ 'ekyna_core.field.email_address'|trans }}">
-                <input name="_password" class="form-control" type="password"
-                       placeholder="{{ 'ekyna_core.field.password'|trans }}">
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{- error.messageKey|trans(error.messageData, 'security') -}}
+                    </div>
+                {% endif %}
+
+                {# OAuth providers #}
+                {%- for owner, route in oauth_owners('ekyna_admin') -%}
+                    {%- if loop.index0 % 2 == 0 %}<div class="row oauth">{% endif -%}
+                    <div class="col-md-6">
+                        <a href="{{ path(route) }}" class="btn btn-block btn-social btn-{{ owner }}">
+                            <span class="fa fa-{{ owner }}"></span> {{ owner|capitalize }}
+                        </a>
+                    </div>
+                    {%- if loop.last or loop.index % 2 == 0 %}</div>{% endif -%}
+                {%- endfor -%}
+
+                {# Email #}
+                <input name="email" class="form-control" type="text"
+                       title="{{ 'field.email_address'|trans({}, 'EkynaUi') }}"
+                       placeholder="{{ 'field.email_address'|trans({}, 'EkynaUi') }}">
+
+                {# Password #}
+                <input name="password" class="form-control" type="password"
+                       title="{{ 'field.password'|trans({}, 'EkynaUi') }}"
+                       placeholder="{{ 'field.password'|trans({}, 'EkynaUi') }}">
+
+                {# Remember me #}
                 <div class="remember">
                     <input name="{{ remember_me }}" id="remember_me" type="checkbox">
-                    <label for="remember_me">{{ 'ekyna_core.field.remember_me'|trans }}</label>
+                    <label for="remember_me">{{ 'field.remember_me'|trans({}, 'EkynaUi') }}</label>
                 </div>
-                {% if csrf_token %}
-                    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}"/>
-                {% endif %}
-                <button name="_submit" class="btn-glow primary login"
-                        type="submit">{{ 'ekyna_core.button.login'|trans }}</button>
+
+                {# CSRF #}
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"/>
+
+                {# Button #}
+                <button name="_submit" class="btn-glow primary login" type="submit">
+                    {{- 'button.login'|trans({}, 'EkynaUi') -}}
+                </button>
             </form>
         </div>
     </div>
+{% endapply %}
 {% endblock body %}
+
+
+{%- block javascripts %}{% endblock javascripts -%}

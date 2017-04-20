@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show;
 
 /**
@@ -14,7 +16,7 @@ class View
      *
      * @var array
      */
-    public $vars = [
+    public array $vars = [
         'value' => null,
         'attr'  => [],
     ];

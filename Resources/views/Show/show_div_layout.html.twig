@@ -4,8 +4,8 @@
 {% block label %}
 {% apply spaceless %}
     {% if label is not null %}
-        <div class="col-md-{{ label_col }} show-label" title="{{ label|trans({}, trans_domain) }}">
-            {{- label|trans({}, trans_domain) -}}
+        <div class="col-md-{{ label_col }} show-label" title="{{ label|trans({}, label_trans_domain) }}">
+            {{- label|trans({}, label_trans_domain) -}}
         </div>
     {% endif %}
 {% endapply %}
@@ -14,7 +14,7 @@
 
 {% block undefined %}
 {% apply spaceless %}
-    <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+    <em>{{ 'value.undefined'|trans({}, 'EkynaUi') }}</em>
 {% endapply %}
 {% endblock undefined %}
 
@@ -77,7 +77,7 @@
         {% if value is null -%}
             {{ block('undefined') }}
         {%- else -%}
-            {{ value|localizednumber }}{% if append is not empty %}&nbsp;{{ append }}{% endif %}
+            {{ value|format_number }}{% if append is not empty %}&nbsp;{{ append }}{% endif %}
         {%- endif %}
     </div>
 {% endapply %}
@@ -91,7 +91,7 @@
         {% if value is null -%}
             {{ block('undefined') }}
         {%- else -%}
-            {{ value|localizeddate(date_format, time_format, locale, timezone, format)|capitalize }}
+            {{ value|format_datetime(date_format, time_format)|capitalize }}
         {%- endif %}
     </div>
 {% endapply %}
@@ -119,11 +119,11 @@
         {%- set class = value is null ? null_class : (value ? true_class : false_class) -%}
         {%- if toggle_path %}<a href="{{ toggle_path }}" class="{{ class }}">{% elseif color %}<span class="{{ class }}">{% endif -%}
         {%- if value is null -%}
-            {{ null_label|trans }}
+            {{ null_label|trans([], trans_domain) }}
         {%- elseif value -%}
-            {{ true_label|trans }}
+            {{ true_label|trans([], trans_domain) }}
         {%- else -%}
-            {{ false_label|trans }}
+            {{ false_label|trans([], trans_domain) }}
         {%- endif -%}
         {%- if toggle_path %}</a>{% elseif color %}</span>{% endif -%}
     </div>
@@ -138,7 +138,7 @@
     <div{{ block('widget_attributes') }}>
         <ul class="list-unstyled">
         {% for val in values -%}
-            <li>{% with {value: val, trans_domain: trans_domain, trans_params: trans_params} -%}
+            <li>{% with {value: val, trans_domain: choice_trans_domain, trans_params: choice_trans_params} -%}
                 {{ block('text_widget_value') }}
             {%- endwith %}</li>
         {%- endfor %}
@@ -147,7 +147,7 @@
 {% else %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% with {value: values|first, trans_domain: trans_domain, trans_params: trans_params} -%}
+        {% with {value: values|first, trans_domain: choice_trans_domain, trans_params: choice_trans_params} -%}
             {{ block('text_widget_value') }}
         {%- endwith %}
     </div>
@@ -181,15 +181,49 @@
 {% endblock entity_widget %}
 
 
+{% block resource_widget %}
+{% apply spaceless %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {% if value is empty -%}
+            {{ block('undefined') }}
+        {%- else -%}
+            {% for label, path in value -%}
+                {% if path is not null -%}
+                    <a href="{{ path }}" class="show-entity">{{ label }}</a>
+                {%- else -%}
+                    <span class="show-entity">{{ label }}</span>
+                {%- endif %}
+            {%- endfor %}
+        {% endif -%}
+    </div>
+{% endapply %}
+{% endblock resource_widget %}
+
+
 {% block entity_widget_value %}
 {% apply spaceless %}
-    {% if field -%}
-        {{ attribute(entity, field)|raw }}
+    {% if property -%}
+        {{ attribute(entity, property)|raw }}
     {%- else -%}
         {{ entity|raw }}
     {%- endif %}
 {% endapply %}
 {% endblock entity_widget_value %}
+
+
+{% block link_widget %}
+{% apply spaceless %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {% if value is empty %}
+            {{ block('undefined') }}
+        {% else %}
+            <a href="{{ path }}"{% if target is not empty %} target="{{ target }}"{% endif %}>{{ value }}</a>
+        {% endif %}
+    </div>
+{% endapply %}
+{% endblock link_widget %}
 
 
 {% block url_widget %}
@@ -204,6 +238,16 @@
     </div>
 {% endapply %}
 {% endblock url_widget %}
+
+
+{% block table_widget %}
+{% apply spaceless %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {{ ekyna_table_render(table) }}
+    </div>
+{% endapply %}
+{% endblock table_widget %}
 
 
 {% block textarea_widget %}
@@ -228,6 +272,8 @@
     <div{{ block('widget_attributes') }}>
         {% if route is not empty %}
             {% set value = path(route, route_params|merge({'_locale': locale})) %}
+        {% elseif value is not empty and field is not empty %}
+            {% set value = admin_resource_path(value, action, {'field': field}) %}
         {% endif %}
         <iframe src="{{ value }}" style="height:{{ height }}px"></iframe>
     </div>
@@ -242,7 +288,7 @@
         {% if value is same as(null) -%}
             {{ block('undefined') }}
         {%- else -%}
-            <a href="{{ path('ekyna_core_download', {'key': value.path}) }}" class="show-entity" target="_blank">
+            <a href="{{ path('ekyna_resource_local_upload_download', {'key': value.path}) }}" class="show-entity" target="_blank">
                 {{ value.guessFilename }}
             </a>
         {%- endif %}
@@ -256,7 +302,7 @@
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty -%}
-            <em>{{ 'ekyna_core.value.none'|trans }}</em>
+            <em>{{ 'value.none'|trans({}, 'EkynaUi') }}</em>
         {%- else -%}
             {% for val in value %}{{ val|raw }}<br>{% endfor %}
         {%- endif %}
@@ -270,7 +316,7 @@
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty -%}
-            <em>{{ 'ekyna_core.value.none'|trans }}</em>
+            <em>{{ 'value.none'|trans({}, 'EkynaUi') }}</em>
         {%- else -%}
             <dl class="dl-horizontal">
                 {% for key, val in value %}
@@ -340,7 +386,11 @@
             {% if field.value is not null -%}
                 {% set content = field.value -%}
             {% elseif translation is not null -%}
-                {% set content = attribute(translation, field.property_path) -%}
+                {% if field.property_path is not null %}
+                    {% set content = attribute(translation, field.property_path) -%}
+                {% else %}
+                    {% set content = translation -%}
+                {% endif %}
             {% else -%}
                 {% set content = null -%}
             {% endif -%}

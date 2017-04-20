@@ -1,71 +1,53 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
-use Ekyna\Bundle\CoreBundle\Form\Type\TinymceType;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Ekyna\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
+use Ekyna\Bundle\ResourceBundle\Form\Type\ResourceChoiceType;
+use Ekyna\Bundle\UiBundle\Form\Type\TinymceType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+
+use function Symfony\Component\Translation\t;
 
 /**
  * Class UserType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class UserType extends ResourceFormType
+class UserType extends AbstractResourceType
 {
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
+    private AuthorizationCheckerInterface $authorizationChecker;
 
-    /**
-     * @var string
-     */
-    protected $groupClass;
-
-
-    /**
-     * Constructor.
-     *
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param string                        $userClass
-     * @param string                        $groupClass
-     */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, $userClass, $groupClass)
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker)
     {
-        parent::__construct($userClass);
-
         $this->authorizationChecker = $authorizationChecker;
-        $this->groupClass = $groupClass;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('group', EntityType::class, [
-                'label'        => 'ekyna_core.field.group',
-                'class'        => $this->groupClass,
-                'choice_label' => 'name',
-                'disabled'     => !$this->authorizationChecker->isGranted('ROLE_SUPER_ADMIN'),
+            ->add('group', ResourceChoiceType::class, [
+                'label'    => t('field.group', [], 'EkynaUi'),
+                'resource' => 'ekyna_admin.group',
+                'disabled' => !$this->authorizationChecker->isGranted('ROLE_SUPER_ADMIN'),
             ])
             ->add('email', Type\EmailType::class, [
-                'label' => 'ekyna_core.field.email',
+                'label' => t('field.email', [], 'EkynaUi'),
             ])
             ->add('firstName', Type\TextType::class, [
-                'label'    => 'ekyna_core.field.first_name',
+                'label'    => t('field.first_name', [], 'EkynaUi'),
                 'required' => false,
             ])
             ->add('lastName', Type\TextType::class, [
-                'label'    => 'ekyna_core.field.last_name',
+                'label'    => t('field.last_name', [], 'EkynaUi'),
                 'required' => false,
             ])
-            ->add('active', Type\CheckboxType::class, [
-                'label'    => 'ekyna_core.field.enabled',
+            ->add('enabled', Type\CheckboxType::class, [
+                'label'    => t('field.enabled', [], 'EkynaUi'),
                 'required' => false,
                 'attr'     => [
                     'align_with_widget' => true,

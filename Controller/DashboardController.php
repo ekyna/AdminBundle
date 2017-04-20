@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Dashboard;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment;
 
 /**
  * Class DashboardController
@@ -13,38 +15,35 @@ use Symfony\Component\Templating\EngineInterface;
  */
 class DashboardController
 {
-    /**
-     * @var Dashboard
-     */
-    private $dashboard;
-
-    /**
-     * @var EngineInterface
-     */
-    private $templating;
+    private Dashboard   $dashboard;
+    private Environment $twig;
 
 
     /**
      * Constructor.
      *
-     * @param Dashboard       $dashboard
-     * @param EngineInterface $templating
+     * @param Dashboard   $dashboard
+     * @param Environment $twig
      */
-    public function __construct(Dashboard $dashboard, EngineInterface $templating)
+    public function __construct(Dashboard $dashboard, Environment $twig)
     {
         $this->dashboard = $dashboard;
-        $this->templating = $templating;
+        $this->twig = $twig;
     }
 
     /**
      * Dashboard index action.
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
+     * @noinspection PhpDocMissingThrowsInspection
      */
-    public function indexAction()
+    public function __invoke(): Response
     {
-        return new Response($this->templating->render('@EkynaAdmin/Dashboard/index.html.twig', [
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $content = $this->twig->render('@EkynaAdmin/Dashboard/index.html.twig', [
             'dashboard' => $this->dashboard,
-        ]));
+        ]);
+
+        return new Response($content);
     }
 }

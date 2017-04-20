@@ -1,0 +1,26 @@
+{% set resource_name = context.config.dashedName %}
+
+{% apply spaceless %}
+    <ul class="nav nav-tabs" data-tab-key="{{ resource_name }}">
+        {% block main_tabs -%}
+        <li class="active">
+            <a href="#{{ resource_name }}-general" id="toggle-general" data-toggle="tab">
+                {{- 'field.general'|trans({}, 'EkynaUi') -}}
+            </a>
+        </li>
+        {%- endblock main_tabs %}
+    </ul>
+    <div class="panel-body form-body">
+        {{ bootstrap_set_style('horizontal') }}
+        {{ bootstrap_set_col_size('md') }}
+        {{ form_errors(form, {'global_errors': true}) }}
+        <div class="tab-content">
+            {% block main_contents -%}
+            <div class="tab-pane active" id="{{ resource_name }}-general">
+                {{ form_widget(form) }}
+            </div>
+            {%- endblock main_contents -%}
+        </div>
+        {{ form_rest(form) }}
+    </div>
+{% endapply %}

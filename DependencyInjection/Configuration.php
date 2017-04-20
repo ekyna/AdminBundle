@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -14,21 +16,18 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 class Configuration implements ConfigurationInterface
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('ekyna_admin');
+        $builder = new TreeBuilder('ekyna_admin');
 
-        $rootNode
+        $root = $builder->getRootNode();
+        $root
             ->children()
-                ->arrayNode('notification')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->booleanNode('admin_login')->defaultTrue()->end()
-                    ->end()
-                ->end()
+                ->scalarNode('routing_prefix')->defaultValue('/administration')->end()
+                // TODO 'ui' section
+                ->scalarNode('logo_path')->defaultValue('bundles/ekynaadmin/img/logo.png')->end()
                 ->arrayNode('stylesheets')
                     ->prototype('scalar')
                     ->treatNullLike([])
@@ -37,13 +36,13 @@ class Configuration implements ConfigurationInterface
             ->end()
         ;
 
-        $this->addNavBarSection($rootNode);
-        $this->addMenusSection($rootNode);
-        $this->addDashboardSection($rootNode);
-        $this->addShowSection($rootNode);
-        $this->addPoolsSection($rootNode);
+        $this->addDashboardSection($root);
+        $this->addMenusSection($root);
+        $this->addNavBarSection($root);
+        $this->addSecuritySection($root);
+        $this->addShowSection($root);
 
-        return $treeBuilder;
+        return $builder;
     }
 
     /**
@@ -51,7 +50,7 @@ class Configuration implements ConfigurationInterface
      *
      * @param ArrayNodeDefinition $node
      */
-    private function addNavBarSection(ArrayNodeDefinition $node)
+    private function addNavBarSection(ArrayNodeDefinition $node): void
     {
         $node
             ->children()
@@ -75,6 +74,7 @@ class Configuration implements ConfigurationInterface
                                     ->scalarNode('route')->isRequired()->cannotBeEmpty()->end()
                                     ->scalarNode('icon')->isRequired()->cannotBeEmpty()->end()
                                     ->scalarNode('title')->defaultValue('')->end()
+                                    ->scalarNode('domain')->defaultNull()->end()
                                     ->scalarNode('target')->defaultValue('_blank')->end()
                                     ->integerNode('position')->defaultValue(50)->end()
                                 ->end()
@@ -102,17 +102,18 @@ class Configuration implements ConfigurationInterface
                             ->scalarNode('label')->isRequired()->cannotBeEmpty()->end()
                             ->scalarNode('icon')->isRequired()->cannotBeEmpty()->end()
                             ->integerNode('position')->defaultValue(0)->end()
-                            ->scalarNode('domain')->defaultValue('messages')->end()
+                            ->scalarNode('domain')->defaultNull()->end()
                             ->scalarNode('route')->defaultNull()->end()
                             ->arrayNode('entries')
                                 ->useAttributeAsKey('name')
                                 ->prototype('array')
                                     ->children()
-                                        ->scalarNode('route')->isRequired()->cannotBeEmpty()->end()
-                                        ->scalarNode('label')->isRequired()->cannotBeEmpty()->end()
-                                        ->scalarNode('resource')->isRequired()->cannotBeEmpty()->end()
+                                        ->scalarNode('label')->defaultNull()->end()
+                                        ->scalarNode('domain')->defaultNull()->end()
                                         ->integerNode('position')->defaultValue(0)->end()
-                                        ->scalarNode('domain')->defaultValue('messages')->end()
+                                        ->scalarNode('route')->defaultNull()->end()
+                                        ->scalarNode('resource')->defaultNull()->end()
+                                        ->scalarNode('action')->defaultNull()->end()
                                     ->end()
                                 ->end()
                             ->end()
@@ -140,7 +141,32 @@ class Configuration implements ConfigurationInterface
                             ->arrayNode('options')
                                 ->useAttributeAsKey('name')
                                 ->prototype('scalar')->end()
-                                ->defaultValue(array())
+                                ->defaultValue([])
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end()
+        ;
+    }
+
+    /**
+     * Adds the `security` section.
+     *
+     * @param ArrayNodeDefinition $node
+     */
+    private function addSecuritySection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode('security')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('remember_me')->defaultValue('_admin_remember_me')->end()
+                        ->arrayNode('notification')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->booleanNode('admin_login')->defaultTrue()->end()
                             ->end()
                         ->end()
                     ->end()
@@ -165,56 +191,6 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('templates')
                             ->defaultValue([])
                             ->scalarPrototype()->end()
-                        ->end()
-                    ->end()
-                ->end()
-            ->end()
-        ;
-    }
-
-    /**
-     * Adds `pools` section.
-     *
-     * @param ArrayNodeDefinition $node
-     */
-    private function addPoolsSection(ArrayNodeDefinition $node)
-    {
-        $node
-            ->children()
-                ->arrayNode('pools')
-                    ->addDefaultsIfNotSet()
-                    ->children()
-                        ->arrayNode('user')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->variableNode('templates')->defaultValue([
-                                    '_form.html' => '@EkynaAdmin/Admin/User/_form.html',
-                                    'show.html'  => '@EkynaAdmin/Admin/User/show.html',
-                                ])->end()
-                                ->scalarNode('entity')->defaultValue('Ekyna\Bundle\AdminBundle\Entity\User')->end()
-                                ->scalarNode('controller')->defaultValue('Ekyna\Bundle\AdminBundle\Controller\Admin\UserController')->end()
-                                ->scalarNode('repository')->defaultValue('Ekyna\Bundle\AdminBundle\Repository\UserRepository')->end()
-                                ->scalarNode('form')->defaultValue('Ekyna\Bundle\AdminBundle\Form\Type\UserType')->end()
-                                ->scalarNode('table')->defaultValue('Ekyna\Bundle\AdminBundle\Table\Type\UserType')->end()
-                                ->scalarNode('parent')->end()
-                                ->scalarNode('event')->end()
-                            ->end()
-                        ->end()
-                        ->arrayNode('group')
-                            ->addDefaultsIfNotSet()
-                            ->children()
-                                ->variableNode('templates')->defaultValue([
-                                    '_form.html' => '@EkynaAdmin/Admin/Group/_form.html',
-                                    'show.html'  => '@EkynaAdmin/Admin/Group/show.html',
-                                ])->end()
-                                ->scalarNode('entity')->defaultValue('Ekyna\Bundle\AdminBundle\Entity\Group')->end()
-                                ->scalarNode('controller')->defaultValue('Ekyna\Bundle\AdminBundle\Controller\Admin\GroupController')->end()
-                                ->scalarNode('repository')->defaultValue('Ekyna\Bundle\AdminBundle\Repository\GroupRepository')->end()
-                                ->scalarNode('form')->defaultValue('Ekyna\Bundle\AdminBundle\Form\Type\GroupType')->end()
-                                ->scalarNode('table')->defaultValue('Ekyna\Bundle\AdminBundle\Table\Type\GroupType')->end()
-                                ->scalarNode('parent')->end()
-                                ->scalarNode('event')->end()
-                            ->end()
                         ->end()
                     ->end()
                 ->end()

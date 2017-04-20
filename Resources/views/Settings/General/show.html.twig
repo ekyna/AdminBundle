@@ -1,35 +1,42 @@
 {{ show_row(settings.general.site_name, 'text', {
-    'label': 'ekyna_admin.settings.general.site_name',
+    'label': 'settings.general.site_name',
+    'label_trans_domain': 'EkynaAdmin',
     'label_col': 3
 }) }}
 {{ show_row(settings.general.admin_name, 'text', {
-    'label': 'ekyna_admin.settings.general.admin_name',
+    'label': 'settings.general.admin_name',
+    'label_trans_domain': 'EkynaAdmin',
     'label_col': 3
 }) }}
 {{ show_row(settings.general.admin_email, 'text', {
-    'label': 'ekyna_admin.settings.general.admin_email',
+    'label': 'settings.general.admin_email',
+    'label_trans_domain': 'EkynaAdmin',
     'label_col': 3
 }) }}
 <hr>
 {% set site_address = settings.general.site_address %}
 {{ show_row(site_address.street, 'text', {
-    'label': 'ekyna_core.field.street',
+    'label': 'field.street',
+    'label_trans_domain': 'EkynaUi',
     'label_col': 3
 }) }}
 {{ show_row(site_address.supplement, 'text', {
-    'label': 'ekyna_core.field.supplement',
+    'label': 'field.supplement',
+    'label_trans_domain': 'EkynaUi',
     'label_col': 3
 }) }}
 <div class="row">
     <div class="col-md-6">
         {{ show_row(site_address.postalCode, 'text', {
-            'label': 'ekyna_core.field.postal_code',
+            'label': 'field.postal_code',
+            'label_trans_domain': 'EkynaUi',
             'label_col': 6
         }) }}
     </div>
     <div class="col-md-6">
         {{ show_row(site_address.city, 'text', {
-            'label': 'ekyna_core.field.city',
+            'label': 'field.city',
+            'label_trans_domain': 'EkynaUi',
             'label_col': 6
         }) }}
     </div>
@@ -37,13 +44,15 @@
 <div class="row">
     <div class="col-md-6">
         {{ show_row(site_address.country|country, 'text', {
-            'label': 'ekyna_core.field.country',
+            'label': 'field.country',
+            'label_trans_domain': 'EkynaUi',
             'label_col': 6
         }) }}
     </div>
     <div class="col-md-6">
         {{ show_row(site_address.state, 'text', {
-            'label': 'ekyna_core.field.state',
+            'label': 'field.state',
+            'label_trans_domain': 'EkynaUi',
             'label_col': 6
         }) }}
     </div>
@@ -51,18 +60,21 @@
 <div class="row">
     <div class="col-md-6">
         {{ show_row(site_address.phone, 'text', {
-            'label': 'ekyna_core.field.phone',
+            'label': 'field.phone',
+            'label_trans_domain': 'EkynaUi',
             'label_col': 6
         }) }}
     </div>
     <div class="col-md-6">
         {{ show_row(site_address.mobile, 'text', {
-            'label': 'ekyna_core.field.mobile',
+            'label': 'field.mobile',
+            'label_trans_domain': 'EkynaUi',
             'label_col': 6
         }) }}
     </div>
 </div>
 {{ show_row(site_address, 'google_map', {
-    'label': 'ekyna_google.field.coordinate',
+    'label': 'field.coordinate',
+    'label_trans_domain': 'EkynaGoogle',
     'label_col': 3
 }) }}

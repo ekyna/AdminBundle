@@ -1,37 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler;
 
-use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Registry;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
+
+use function call_user_func;
 
 /**
  * Class DashboardWidgetRegistryPass
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class DashboardWidgetRegistryPass implements CompilerPassInterface
 {
+    private const WIDGET_TAG = 'ekyna_admin.dashboard_widget';
+
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition(Registry::class)) {
-            return;
-        }
+        $types = [];
+        foreach ($container->findTaggedServiceIds(self::WIDGET_TAG, true) as $serviceId => $tags) {
+            $name = call_user_func([$container->getDefinition($serviceId)->getClass(), 'getName']);
 
-        $types = array();
-        foreach ($container->findTaggedServiceIds('ekyna_admin.dashboard.widget_type') as $serviceId => $tag) {
-            $alias = isset($tag[0]['alias']) ? $tag[0]['alias'] : $serviceId;
-            $types[$alias] = new Reference($serviceId);
+            $types[$name] = new Reference($serviceId);
         }
 
         $container
-            ->getDefinition(Registry::class)
-            ->replaceArgument(0, $types)
-        ;
+            ->getDefinition('ekyna_admin.dashboard.widget_registry')
+            ->replaceArgument(0, ServiceLocatorTagPass::register($container, $types, 'admin_dashboard_widgets'));
     }
 }

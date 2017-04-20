@@ -1,12 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Service\Mailer;
 
+use DateTime;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
-use Ekyna\Bundle\SettingBundle\Manager\SettingsManagerInterface;
+use Ekyna\Bundle\SettingBundle\Manager\SettingManagerInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Templating\EngineInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 /**
  * Class AdminMailer
@@ -15,51 +21,32 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class AdminMailer
 {
-    /**
-     * @var SettingsManagerInterface
-     */
-    private $settings;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
-     * @var EngineInterface
-     */
-    private $templating;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
-
-    /**
-     * @var \Swift_Mailer
-     */
-    private $mailer;
+    protected SettingManagerInterface $setting;
+    protected TranslatorInterface     $translator;
+    protected Environment             $twig;
+    protected UrlGeneratorInterface   $urlGenerator;
+    protected MailerInterface         $mailer;
 
 
     /**
      * Constructor.
      *
-     * @param SettingsManagerInterface $settings
-     * @param TranslatorInterface      $translator
-     * @param EngineInterface          $templating
-     * @param UrlGeneratorInterface    $urlGenerator
-     * @param \Swift_Mailer            $mailer
+     * @param SettingManagerInterface $settings
+     * @param TranslatorInterface     $translator
+     * @param Environment             $twig
+     * @param UrlGeneratorInterface   $urlGenerator
+     * @param MailerInterface            $mailer
      */
     public function __construct(
-        SettingsManagerInterface $settings,
+        SettingManagerInterface $settings,
         TranslatorInterface $translator,
-        EngineInterface $templating,
+        Environment $twig,
         UrlGeneratorInterface $urlGenerator,
-        \Swift_Mailer $mailer
+        MailerInterface $mailer
     ) {
-        $this->settings = $settings;
+        $this->setting = $settings;
         $this->translator = $translator;
-        $this->templating = $templating;
+        $this->twig = $twig;
         $this->urlGenerator = $urlGenerator;
         $this->mailer = $mailer;
     }
@@ -68,76 +55,81 @@ class AdminMailer
      * Sends an email to the user to warn about successful login.
      *
      * @param UserInterface $user
+     *
+     * @noinspection PhpDocMissingThrowsInspection
      */
-    public function sendSuccessfulLoginEmailMessage(UserInterface $user)
+    public function sendSuccessfulLoginEmail(UserInterface $user): void
     {
-        $siteName = $this->settings->getParameter('general.site_name');
+        $siteName = $this->setting->getParameter('general.site_name');
 
-        $rendered = $this->templating->render('@EkynaAdmin/Email/login_success.html.twig', [
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $rendered = $this->twig->render('@EkynaAdmin/Email/login_success.html.twig', [
             'sitename' => $siteName,
-            'date'     => new \DateTime(),
+            'date'     => new DateTime(),
         ]);
 
-        $subject = $this->translator->trans('ekyna_admin.email.login_success.subject', [
+        $subject = $this->translator->trans('email.login_success.subject', [
             '%sitename%' => $siteName,
-        ]);
+        ], 'EkynaAdmin');
 
-        $this->sendEmail($rendered, $user->getEmail(), $subject);
+        $this->sendEmail($user->getEmail(), $subject, $rendered);
     }
 
     /**
      * Sends an email to the user to warn about the new password.
      *
      * @param UserInterface $user
-     * @param string        $password
+     * @param string|null   $password
      *
-     * @return integer
+     * @noinspection PhpDocMissingThrowsInspection
      */
-    public function sendNewPasswordEmailMessage(UserInterface $user, $password)
+    public function sendNewPasswordEmail(UserInterface $user, string $password = null): void
     {
-        $siteName = $this->settings->getParameter('general.site_name');
+        $siteName = $this->setting->getParameter('general.site_name');
         $login = $user->getUsername();
 
-        if (0 === strlen($password)) {
-            return 0;
+        if (empty($password)) {
+            return;
         }
 
-        $rendered = $this->templating->render('@EkynaAdmin/Email/new_password_email.html.twig', [
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $rendered = $this->twig->render('@EkynaAdmin/Email/new_password_email.html.twig', [
             'sitename'  => $siteName,
-            'login_url' => $this->urlGenerator->generate('ekyna_admin_security_login'),
+            'login_url' => $this->urlGenerator->generate('admin_security_login'),
             'login'     => $login,
             'password'  => $password,
         ]);
 
-        $subject = $this->translator->trans('ekyna_user.email.new_password.subject', [
+        $subject = $this->translator->trans('email.new_password.subject', [
             '%sitename%' => $siteName,
-        ]);
+        ], 'EkynaAdmin');
 
-        return $this->sendEmail($rendered, $user->getEmail(), $subject);
+        $this->sendEmail($user->getEmail(), $subject, $rendered);
     }
 
     /**
      * Sends the message.
      *
-     * @param string $renderedTemplate
-     * @param string $toEmail
+     * @param string $recipient
      * @param string $subject
-     *
-     * @return integer
+     * @param string $body
      */
-    protected function sendEmail($renderedTemplate, $toEmail, $subject)
+    protected function sendEmail(string $recipient, string $subject, string $body): void
     {
-        $fromEmail = $this->settings->getParameter('notification.from_email');
-        $fromName = $this->settings->getParameter('notification.from_name');
+        $fromEmail = $this->setting->getParameter('notification.from_email');
+        $fromName = $this->setting->getParameter('notification.from_name');
 
-        $message = new \Swift_Message();
+        $sender = new Address($fromEmail, $fromName);
+
+        $message = new Email();
         $message
-            ->setSubject($subject)
-            ->setFrom($fromEmail, $fromName)
-            ->setReplyTo($fromEmail, $fromName)
-            ->setTo($toEmail)
-            ->setBody($renderedTemplate, 'text/html');
+            ->from($sender)
+            ->replyTo($sender)
+            ->to($recipient)
+            ->subject($subject)
+            ->html($body);
 
-        return $this->mailer->send($message);
+        /** @noinspection PhpUnhandledExceptionInspection */
+        $this->mailer->send($message);
     }
 }

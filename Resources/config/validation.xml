@@ -45,4 +45,6 @@
         </property>
     </class>
 
+    <!-- TODO user and group validation -->
+
 </constraint-mapping>

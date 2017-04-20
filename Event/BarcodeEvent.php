@@ -1,56 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Event;
 
 use Ekyna\Bundle\AdminBundle\Model\BarcodeResult;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * Class BarcodeEvent
  * @package Ekyna\Bundle\AdminBundle\Event
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class BarcodeEvent extends Event
+final class BarcodeEvent extends Event
 {
-    const NAME = 'ekyna_admin.barcode';
+    public const NAME = 'ekyna_admin.barcode';
 
-    /**
-     * @var string
-     */
-    private $barcode;
+    private string $barcode;
+    /** @var array<BarcodeResult> */
+    private array $results = [];
 
-    /**
-     * @var BarcodeResult[]
-     */
-    private $results = [];
-
-
-    /**
-     * Constructor.
-     *
-     * @param string $barcode
-     */
     public function __construct(string $barcode)
     {
         $this->barcode = $barcode;
     }
 
-    /**
-     * Returns the barcode.
-     *
-     * @return string
-     */
     public function getBarcode(): string
     {
         return $this->barcode;
     }
 
     /**
-     * Adds the result.
-     *
-     * @param BarcodeResult $result
-     *
-     * @return $this
+     * @return $this|BarcodeEvent
      */
     public function addResult(BarcodeResult $result): self
     {
@@ -60,9 +41,7 @@ class BarcodeEvent extends Event
     }
 
     /**
-     * Returns the results.
-     *
-     * @return array
+     * @return array<BarcodeResult>
      */
     public function getResults(): array
     {

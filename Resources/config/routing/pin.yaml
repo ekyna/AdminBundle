@@ -1,0 +1,20 @@
+admin_pin_remove:
+    path:  /{id}/remove
+    methods: [GET]
+    controller: Ekyna\Bundle\AdminBundle\Controller\PinController::remove
+    options:
+        expose: true
+
+admin_pin_resource_pin:
+    path:  /resource/{name}/{identifier}/pin
+    methods: [GET]
+    controller: Ekyna\Bundle\AdminBundle\Controller\PinController::resourcePin
+    options:
+        expose: true
+
+admin_pin_resource_unpin:
+    path:  /resource/{name}/{identifier}/unpin
+    methods: [GET]
+    controller: Ekyna\Bundle\AdminBundle\Controller\PinController::resourceUnpin
+    options:
+        expose: true

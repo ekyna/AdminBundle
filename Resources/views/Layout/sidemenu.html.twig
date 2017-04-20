@@ -18,15 +18,15 @@
         <i class="fa fa-{{ item.labelAttribute('icon') }}"></i>
         <span>
             {{ item.label|trans(
-                item.getExtra('translation_params', {}),
-                item.getExtra('translation_domain', 'messages')
+                item.extra('translation_params', {}),
+                item.extra('translation_domain', 'messages')
             ) }}
         </span>
         {% if item.hasChildren %}<i class="glyphicon glyphicon-chevron-down"></i>{% endif %}
     {% else %}
         {{ item.label|trans(
-            item.getExtra('translation_params', {}),
-            item.getExtra('translation_domain', 'messages')
+            item.extra('translation_params', {}),
+            item.extra('translation_domain', 'messages')
         ) }}
     {% endif %}
 {% endapply %}

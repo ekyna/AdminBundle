@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Service\Search;
 
 use Ekyna\Bundle\AdminBundle\Repository\GroupRepository;
 use Ekyna\Bundle\UserBundle\Model\UserInterface;
-use Ekyna\Component\Resource\Search\Elastica\ResourceRepository;
+use Ekyna\Component\Resource\Bridge\Symfony\Elastica\SearchRepository;
 use Ekyna\Component\Resource\Search\Request;
 use Ekyna\Component\Resource\Search\Result;
 use Elastica\Query;
@@ -14,12 +16,12 @@ use Elastica\Query;
  * @package Ekyna\Bundle\AdminBundle\Search
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class UserRepository extends ResourceRepository
+class UserRepository extends SearchRepository
 {
     /**
      * @var GroupRepository
      */
-    private $groupRepository;
+    private GroupRepository $groupRepository;
 
 
     /**
@@ -74,12 +76,12 @@ class UserRepository extends ResourceRepository
 
         return $result
             ->setIcon('fa fa-user')
-            ->setRoute('ekyna_admin_user_admin_show')
+            ->setRoute('admin_ekyna_admin_user_read') // TODO Use resource/action
             ->setParameters(['userId' => $id]);
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     protected function getDefaultFields(): array
     {

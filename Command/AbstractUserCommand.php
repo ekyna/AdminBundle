@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Command;
 
 use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
-use Ekyna\Component\Resource\Operator\ResourceOperatorInterface;
+use Ekyna\Component\Resource\Manager\ResourceManagerInterface;
+use Ekyna\Component\User\Service\SecurityUtil;
 use Symfony\Component\Console\Command\Command;
 
 /**
@@ -15,28 +18,27 @@ abstract class AbstractUserCommand extends Command
 {
     protected const PASSWORD_REGEX = '#^[\S]{6,}$#';
 
-    /**
-     * @var UserRepositoryInterface
-     */
-    protected $userRepository;
-
-    /**
-     * @var ResourceOperatorInterface
-     */
-    protected $userOperator;
+    protected UserRepositoryInterface  $userRepository;
+    protected ResourceManagerInterface $userManager;
+    protected SecurityUtil             $securityUtil;
 
 
     /**
      * Constructor.
      *
-     * @param UserRepositoryInterface   $userRepository
-     * @param ResourceOperatorInterface $userOperator
+     * @param UserRepositoryInterface  $userRepository
+     * @param ResourceManagerInterface $userManager
+     * @param SecurityUtil             $securityUtil
      */
-    public function __construct(UserRepositoryInterface $userRepository, ResourceOperatorInterface $userOperator)
-    {
+    public function __construct(
+        UserRepositoryInterface $userRepository,
+        ResourceManagerInterface $userManager,
+        SecurityUtil $securityUtil
+    ) {
         parent::__construct();
 
         $this->userRepository = $userRepository;
-        $this->userOperator = $userOperator;
+        $this->userManager = $userManager;
+        $this->securityUtil = $securityUtil;
     }
 }

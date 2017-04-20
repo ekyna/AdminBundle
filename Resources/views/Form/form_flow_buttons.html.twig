@@ -14,7 +14,7 @@
     -%}
     {%- set craue_buttons = [
         {
-            label: isLastStep ? 'ekyna_core.button.finish' : 'ekyna_core.button.next',
+            label: isLastStep ? 'button.finish' : 'button.next',
             icon: 'ok',
             render: true,
             attr: {
@@ -23,7 +23,7 @@
             },
         },
         {
-            label: 'ekyna_core.button.back',
+            label: 'button.back',
             icon: 'arrow-left',
             render: renderBackButton,
             attr: {
@@ -35,7 +35,7 @@
             },
         },
         {
-            label: 'ekyna_core.button.reset',
+            label: 'button.reset',
             icon: 'repeat',
             render: true,
             attr: {
@@ -48,10 +48,12 @@
         },
     ] -%}
 
-    {% for button in craue_buttons if button.render -%}
+    {% for button in craue_buttons -%}
+        {% if button.render %}
         <button type="submit"{% for key, value in button.attr %} {{ key }}="{{ value }}"{% endfor %}>
-            <span class="glyphicon glyphicon-{{ button.icon }}"></span> {{ button.label | trans }}
+            <span class="glyphicon glyphicon-{{ button.icon }}"></span> {{ button.label|trans({}, 'EkynaUi') }}
         </button>&nbsp;
+        {% endif %}
     {%- endfor %}
 
         </div>

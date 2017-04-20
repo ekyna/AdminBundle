@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 
+use Ekyna\Bundle\AdminBundle\Show\Exception\InvalidArgumentException;
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
 use Ekyna\Bundle\AdminBundle\Show\View;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+
+use function is_array;
 
 /**
  * Class MapType
@@ -16,10 +20,10 @@ class MapType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function build(View $view, $value, array $options = [])
+    public function build(View $view, $value, array $options = []): void
     {
         if (!is_array($value)) {
-            throw new \InvalidArgumentException("Expected key/value array.");
+            throw new InvalidArgumentException('Expected key/value array.');
         }
 
         parent::build($view, $value, $options);
@@ -28,7 +32,7 @@ class MapType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function getWidgetPrefix()
+    public static function getName(): string
     {
         return 'map';
     }

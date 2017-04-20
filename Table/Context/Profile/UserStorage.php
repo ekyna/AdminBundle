@@ -1,14 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Table\Context\Profile;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Ekyna\Bundle\AdminBundle\Entity\TableProfile;
-use Ekyna\Bundle\AdminBundle\Service\Security\UserProviderInterface;
 use Ekyna\Component\Table\Context\Profile\ProfileInterface;
 use Ekyna\Component\Table\Context\Profile\StorageInterface;
+use Ekyna\Component\Table\Exception\UnexpectedTypeException;
 use Ekyna\Component\Table\Table;
 use Ekyna\Component\Table\TableInterface;
+use Ekyna\Component\User\Service\UserProvider;
+use InvalidArgumentException;
 
 /**
  * Class UserStorage
@@ -17,24 +21,17 @@ use Ekyna\Component\Table\TableInterface;
  */
 class UserStorage implements StorageInterface
 {
-    /**
-     * @var UserProviderInterface
-     */
-    private $userProvider;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $manager;
+    private UserProvider           $userProvider;
+    private EntityManagerInterface $manager;
 
 
     /**
      * Constructor.
      *
-     * @param UserProviderInterface  $userProvider
+     * @param UserProvider           $userProvider
      * @param EntityManagerInterface $manager
      */
-    public function __construct(UserProviderInterface $userProvider, EntityManagerInterface $manager)
+    public function __construct(UserProvider $userProvider, EntityManagerInterface $manager)
     {
         $this->userProvider = $userProvider;
         $this->manager = $manager;
@@ -43,7 +40,7 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function has($key)
+    public function has(string $key): bool
     {
         return null !== $this->get($key);
     }
@@ -51,7 +48,7 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function get($key)
+    public function get(string $key): ProfileInterface
     {
         return $this
             ->manager
@@ -62,7 +59,7 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function all(TableInterface $table)
+    public function all(TableInterface $table): array
     {
         return $this
             ->manager
@@ -78,7 +75,7 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function create(TableInterface $table, $name)
+    public function create(TableInterface $table, string $name)
     {
         if (null === $user = $this->userProvider->getUser()) {
             return;
@@ -100,7 +97,7 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function save(ProfileInterface $profile)
+    public function save(ProfileInterface $profile): void
     {
         $this->validateProfile($profile);
 
@@ -111,7 +108,7 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function remove(ProfileInterface $profile)
+    public function remove(ProfileInterface $profile): void
     {
         $this->validateProfile($profile);
 
@@ -127,23 +124,23 @@ class UserStorage implements StorageInterface
     private function validateProfile(ProfileInterface $profile)
     {
         if (!$profile instanceof TableProfile) {
-            throw new \InvalidArgumentException("Expected instance of " . Table::class);
+            throw new UnexpectedTypeException($profile, Table::class);
         }
 
         if (!$profile->getUser()) {
-            throw new \InvalidArgumentException("Profile's user must be set.");
+            throw new InvalidArgumentException("Profile's user must be set.");
         }
 
         if (empty($profile->getTableHash())) {
-            throw new \InvalidArgumentException("Profile's table hash must be set.");
+            throw new InvalidArgumentException("Profile's table hash must be set.");
         }
 
         if (empty($profile->getName())) {
-            throw new \InvalidArgumentException("Profile's name must be set.");
+            throw new InvalidArgumentException("Profile's name must be set.");
         }
 
         if (empty($profile->getData())) {
-            throw new \InvalidArgumentException("Profile's data must be set.");
+            throw new InvalidArgumentException("Profile's data must be set.");
         }
     }
 }

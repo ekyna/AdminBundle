@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Repository;
 
-use Ekyna\Component\Resource\Doctrine\ORM\ResourceRepository;
+use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
+use Ekyna\Component\Resource\Doctrine\ORM\Repository\ResourceRepository;
+use InvalidArgumentException;
 
 /**
  * Class GroupRepository
@@ -12,26 +16,41 @@ use Ekyna\Component\Resource\Doctrine\ORM\ResourceRepository;
 class GroupRepository extends ResourceRepository implements GroupRepositoryInterface
 {
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function findOneByRole($role)
+    public function findOneByName(string $name): ?GroupInterface
+    {
+        $qb = $this->createQueryBuilder('g');
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        return $qb
+            ->andWhere($qb->expr()->eq('g.name', ':name'))
+            ->getQuery()
+            ->setParameter('name', $name)
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function findOneByRole(string $role): ?GroupInterface
     {
         $this->validateRole($role);
 
         $qb = $this->createQueryBuilder('g');
 
+        /** @noinspection PhpUnhandledExceptionInspection */
         return $qb
             ->andWhere($qb->expr()->like('g.roles', $qb->expr()->literal('%"' . strtoupper($role) . '"%')))
             ->orderBy('g.position', 'DESC')
-            ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function findByRole($role)
+    public function findByRole(string $role): array
     {
         $this->validateRole($role);
 
@@ -45,9 +64,9 @@ class GroupRepository extends ResourceRepository implements GroupRepositoryInter
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function findByRoles(array $roles)
+    public function findByRoles(array $roles): array
     {
         if (empty($roles)) {
             return [];
@@ -73,12 +92,14 @@ class GroupRepository extends ResourceRepository implements GroupRepositoryInter
      *
      * @param string $role
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    private function validateRole($role)
+    private function validateRole(string $role): void
     {
-        if (!preg_match('~^ROLE_([A-Z_]+)~', $role)) {
-            throw new \InvalidArgumentException("Role must start with 'ROLE_'.");
+        if (preg_match('~^ROLE_([A-Z_]+)~', $role)) {
+            return;
         }
+
+        throw new InvalidArgumentException("Role must start with 'ROLE_'.");
     }
 }

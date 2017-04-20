@@ -1,16 +1,20 @@
 {{ show_row(settings.notification.from_name, 'text', {
-    'label': 'ekyna_admin.settings.notification.from_name',
+    'label': 'settings.notification.from_name',
+    'label_trans_domain': 'EkynaAdmin',
     'label_col': 3
 }) }}
 {{ show_row(settings.notification.from_email, 'text', {
-    'label': 'ekyna_admin.settings.notification.from_email',
+    'label': 'settings.notification.from_email',
+    'label_trans_domain': 'EkynaAdmin',
     'label_col': 3
 }) }}
 {{ show_row(settings.notification.no_reply, 'text', {
-    'label': 'ekyna_admin.settings.notification.no_reply',
+    'label': 'settings.notification.no_reply',
+    'label_trans_domain': 'EkynaAdmin',
     'label_col': 3
 }) }}
 {{ show_row(settings.notification.to_emails|join(', '), 'text', {
-    'label': 'ekyna_admin.settings.notification.to_emails',
+    'label': 'settings.notification.to_emails',
+    'label_trans_domain': 'EkynaAdmin',
     'label_col': 3
 }) }}

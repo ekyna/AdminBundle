@@ -13,11 +13,20 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
             return;
         }
 
-        var config = $element.data('side-detail'),
-            xhr = $.ajax({
-                url: Router.generate(config.route, config.parameters),
-                dataType: 'html'
-            });
+        var config = $element.data('side-detail'), url;
+
+        if (typeof config === 'object') {
+            url = Router.generate(config.route, config.parameters);
+        } else if (typeof config === 'string') {
+            url = config;
+        } else {
+            throw 'Unexpected summary config.';
+        }
+
+        var xhr = $.ajax({
+            url: url,
+            dataType: 'html'
+        });
 
         xhr.done(function (content) {
             $element.data('side-detail-content', content);

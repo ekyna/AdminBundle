@@ -1,41 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler;
 
-use Ekyna\Bundle\AdminBundle\Show\Extension\DependencyInjection\DependencyInjectionExtension;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\Compiler\ServiceLocatorTagPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Reference;
+
+use function call_user_func;
 
 /**
  * Class ShowRegistryPass
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class ShowRegistryPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container)
-    {
-        if (!$container->hasDefinition(DependencyInjectionExtension::class)) {
-            return;
-        }
+    private const TYPE_TAG = 'ekyna_admin.show.type';
 
-        $types = array();
-        foreach ($container->findTaggedServiceIds('ekyna_admin.show.type') as $serviceId => $tag) {
-            if (!isset($tag[0]['alias'])) {
-                throw new InvalidArgumentException(
-                    "Attribute 'alias' is missing on tag 'ekyna_admin.show.type' for service '$serviceId'."
-                );
-            }
-            $types[$tag[0]['alias']] = $serviceId;
+    /**
+     * @inheritDoc
+     */
+    public function process(ContainerBuilder $container): void
+    {
+        $types = [];
+        foreach ($container->findTaggedServiceIds(self::TYPE_TAG, true) as $serviceId => $tag) {
+            $name = call_user_func([$container->getDefinition($serviceId)->getClass(), 'getName']);
+            $types[$name] = new Reference($serviceId);
         }
 
         $container
-            ->getDefinition(DependencyInjectionExtension::class)
-            ->replaceArgument(1, $types);
+            ->getDefinition('ekyna_admin.show.dependency_injection_extension')
+            ->replaceArgument(0, ServiceLocatorTagPass::register($container, $types, 'admin_show_types'));
     }
 }

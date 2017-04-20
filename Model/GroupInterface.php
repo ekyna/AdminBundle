@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Model;
 
+use Ekyna\Bundle\ResourceBundle\Model\AclSubjectInterface;
 use Ekyna\Component\Resource\Model as RM;
 
 /**
@@ -9,14 +12,14 @@ use Ekyna\Component\Resource\Model as RM;
  * @package Ekyna\Bundle\AdminBundle\Model
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-interface GroupInterface extends RM\ResourceInterface, RM\SortableInterface
+interface GroupInterface extends RM\ResourceInterface, AclSubjectInterface, RM\SortableInterface
 {
     /**
      * Returns the name.
      *
-     * @return string
+     * @return string|null
      */
-    public function getName();
+    public function getName(): ?string;
 
     /**
      * Sets the name.
@@ -25,14 +28,14 @@ interface GroupInterface extends RM\ResourceInterface, RM\SortableInterface
      *
      * @return $this|GroupInterface
      */
-    public function setName($name);
+    public function setName(string $name): GroupInterface;
 
     /**
      * Returns the roles.
      *
      * @return array
      */
-    public function getRoles();
+    public function getRoles(): array;
 
     /**
      * Sets the roles.
@@ -41,5 +44,5 @@ interface GroupInterface extends RM\ResourceInterface, RM\SortableInterface
      *
      * @return $this|GroupInterface
      */
-    public function setRoles(array $roles);
+    public function setRoles(array $roles): GroupInterface;
 }

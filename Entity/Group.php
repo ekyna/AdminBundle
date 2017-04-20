@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Entity;
 
 use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
+use Ekyna\Bundle\ResourceBundle\Model\AclSubjectTrait;
 use Ekyna\Component\Resource\Model\SortableTrait;
 
 /**
@@ -12,22 +15,12 @@ use Ekyna\Component\Resource\Model\SortableTrait;
  */
 class Group implements GroupInterface
 {
+    use AclSubjectTrait;
     use SortableTrait;
 
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var array
-     */
-    private $roles;
+    private ?int    $id    = null;
+    private ?string $name  = null;
+    private array   $roles = [];
 
 
     /**
@@ -41,7 +34,7 @@ class Group implements GroupInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     public function getId(): ?int
     {
@@ -49,17 +42,17 @@ class Group implements GroupInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function setName($name)
+    public function setName(string $name): GroupInterface
     {
         $this->name = $name;
 
@@ -67,17 +60,17 @@ class Group implements GroupInterface
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function setRoles(array $roles)
+    public function setRoles(array $roles): GroupInterface
     {
         $this->roles = $roles;
 

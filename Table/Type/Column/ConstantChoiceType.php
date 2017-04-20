@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Table\Type\Column;
 
 use Ekyna\Bundle\ResourceBundle\Model\ConstantsInterface;
@@ -9,7 +11,13 @@ use Ekyna\Component\Table\Extension\Core\Type\Column\PropertyType;
 use Ekyna\Component\Table\Source\RowInterface;
 use Ekyna\Component\Table\View\CellView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatableInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+use function call_user_func;
+use function is_subclass_of;
+use function sprintf;
+use function Symfony\Component\Translation\t;
 
 /**
  * Class ConstantChoiceType
@@ -18,30 +26,21 @@ use Symfony\Component\Translation\TranslatorInterface;
  */
 class ConstantChoiceType extends AbstractColumnType
 {
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private TranslatorInterface $translator;
 
-
-    /**
-     * Constructor.
-     *
-     * @param TranslatorInterface $translator
-     */
     public function __construct(TranslatorInterface $translator)
     {
         $this->translator = $translator;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options)
+    public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options): void
     {
-        $label = $this->translator->trans(
-            call_user_func($options['class'] . '::getLabel', $view->vars['value'])
-        );
+        /**
+         * @var TranslatableInterface $label
+         * @see ConstantsInterface::getLabel()
+         */
+        $label = call_user_func($options['class'] . '::getLabel', $view->vars['value']);
+        $label = $label->trans($this->translator);
 
         if (!$options['theme']) {
             $view->vars['value'] = $label;
@@ -49,20 +48,18 @@ class ConstantChoiceType extends AbstractColumnType
             return;
         }
 
+        /** @see ConstantsInterface::getTheme() */
         $theme = call_user_func($options['class'] . '::getTheme', $view->vars['value']);
 
         $view->vars['value'] = sprintf('<span class="label label-%s">%s</span>', $theme, $label);
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setRequired('class')
             ->setDefaults([
-                'label' => 'ekyna_core.field.status',
+                'label' => t('field.status', [], 'EkynaUi'),
                 'theme' => false,
             ])
             ->setAllowedTypes('class', 'string')
@@ -72,18 +69,12 @@ class ConstantChoiceType extends AbstractColumnType
             });
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'text';
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getParent()
+    public function getParent(): ?string
     {
         return PropertyType::class;
     }

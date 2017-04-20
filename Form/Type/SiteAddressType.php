@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
-use Ekyna\Bundle\CoreBundle\Form\Util\FormUtil;
+use Ekyna\Bundle\AdminBundle\Model\SiteAddress;
 use Ekyna\Bundle\GoogleBundle\Form\Type\CoordinateType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
+use function Symfony\Component\Translation\t;
 
 /**
  * Class SiteAddressType
@@ -18,59 +20,56 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class SiteAddressType extends AbstractType
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('street', Type\TextType::class, [
-                'label' => 'ekyna_core.field.street',
+                'label' => t('field.street', [], 'EkynaUi'),
                 'attr'  => [
                     'class' => 'address-street',
                 ],
             ])
             ->add('supplement', Type\TextType::class, [
-                'label'    => 'ekyna_core.field.supplement',
+                'label'    => t('field.supplement', [], 'EkynaUi'),
                 'attr'     => [
                     'class' => 'address-supplement',
                 ],
                 'required' => false,
             ])
             ->add('postalCode', Type\TextType::class, [
-                'label' => 'ekyna_core.field.postal_code',
+                'label' => t('field.postal_code', [], 'EkynaUi'),
                 'attr'  => [
                     'class' => 'address-postal-code',
                 ],
             ])
             ->add('city', Type\TextType::class, [
-                'label' => 'ekyna_core.field.city',
+                'label' => t('field.city', [], 'EkynaUi'),
                 'attr'  => [
                     'class' => 'address-city',
                 ],
             ])
             ->add('country', Type\CountryType::class, [
-                'label' => 'ekyna_core.field.country',
+                'label' => t('field.country', [], 'EkynaUi'),
                 'attr'  => [
                     'class' => 'address-country',
                 ],
             ])
             ->add('state', Type\TextType::class, [
-                'label'    => 'ekyna_core.field.state',
+                'label'    => t('field.state', [], 'EkynaUi'),
                 'attr'     => [
                     'class' => 'address-state',
                 ],
                 'required' => false,
             ])
             ->add('phone', Type\TextType::class, [
-                'label'    => 'ekyna_core.field.phone',
+                'label'    => t('field.phone', [], 'EkynaUi'),
                 'attr'     => [
                     'class' => 'address-phone',
                 ],
                 'required' => false,
             ])
             ->add('mobile', Type\TextType::class, [
-                'label'    => 'ekyna_core.field.mobile',
+                'label'    => t('field.mobile', [], 'EkynaUi'),
                 'attr'     => [
                     'class' => 'address-mobile',
                 ],
@@ -79,14 +78,11 @@ class SiteAddressType extends AbstractType
             ->add('coordinate', CoordinateType::class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
-                'data_class' => 'Ekyna\Bundle\AdminBundle\Model\SiteAddress',
+                'data_class' => SiteAddress::class,
             ]);
     }
 }

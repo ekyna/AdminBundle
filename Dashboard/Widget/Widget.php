@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Dashboard\Widget;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type\WidgetTypeInterface;
@@ -11,20 +13,9 @@ use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type\WidgetTypeInterface;
  */
 class Widget implements WidgetInterface
 {
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var WidgetTypeInterface
-     */
-    protected $type;
-
-    /**
-     * @var array
-     */
-    protected $options;
+    protected string              $name;
+    protected WidgetTypeInterface $type;
+    protected array               $options;
 
 
     /**
@@ -34,33 +25,24 @@ class Widget implements WidgetInterface
      * @param WidgetTypeInterface $type
      * @param array               $options
      */
-    public function __construct($name, WidgetTypeInterface $type, array $options = [])
+    public function __construct(string $name, WidgetTypeInterface $type, array $options = [])
     {
         $this->name = $name;
         $this->type = $type;
         $this->options = $options;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getType()
+    public function getType(): WidgetTypeInterface
     {
         return $this->type;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setOptions($options)
+    public function setOptions(array $options): WidgetInterface
     {
         $this->options = $options;
 
@@ -68,9 +50,9 @@ class Widget implements WidgetInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function getOption($name, $default = null)
+    public function getOption(string $name, $default = null)
     {
         if (isset($this->options[$name])) {
             return $this->options[$name];
@@ -79,10 +61,7 @@ class Widget implements WidgetInterface
         return $default;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }

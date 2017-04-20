@@ -1,0 +1,63 @@
+{% extends '@EkynaAdmin/Entity/sided.html.twig' %}
+
+{% set resource = context.resource %}
+{% set resource_name = context.config.dashedName %}
+
+{% block page_title %}{{ resource|raw }}{% endblock page_title %}
+
+{% block title %}
+{{ admin_resource_pin(resource) }}
+<h1>{{ (context.config.transPrefix ~ '.header.show')|trans({'%name%': resource}, context.config.transDomain)|raw }}</h1>
+{% endblock title %}
+
+{% block actions %}
+{{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') }}
+{{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') }}
+{% endblock actions %}
+
+{% block main %}
+{% apply spaceless %}
+<div class="main-header">
+    <div class="infos">
+        {% block main_infos %}{% endblock main_infos %}
+    </div>
+    <div class="actions">
+        {% block main_actions -%}
+            {% if context.parent -%}
+                {{- admin_resource_btn(context.parent.resource, 'Ekyna\\Bundle\\AdminBundle\\Action\\ReadAction', {
+                    'label': t('button.back', [], 'EkynaUi'),
+                    'icon': 'arrow-left',
+                    'theme': 'default',
+                }) -}}
+            {%- endif %}
+            {{- admin_resource_btn(resource, 'Ekyna\\Bundle\\AdminBundle\\Action\\UpdateAction') -}}
+            {{- admin_resource_btn(resource, 'Ekyna\\Bundle\\AdminBundle\\Action\\DeleteAction') -}}
+        {%- endblock main_actions %}
+    </div>
+</div>
+<div class="show show-with-tabs">
+    <ul class="nav nav-tabs" data-tab-key="{{ resource_name }}">
+        {% block main_tabs -%}
+        <li class="active">
+            <a href="#{{ resource_name }}-general" id="toggle-general" data-toggle="tab">
+                {{- 'field.general'|trans({}, 'EkynaUi') -}}
+            </a>
+        </li>
+        {%- endblock main_tabs %}
+    </ul>
+    <div class="show-body">
+        <div class="tab-content">
+            {% block main_contents -%}
+            <div class="tab-pane active" id="{{ resource_name }}-general">
+                {{- show_row(resource, 'text', {
+                    'label': 'field.name',
+                    'label_trans_domain': 'EkynaUi'
+                }) -}}
+            </div>
+            {%- endblock main_contents %}
+        </div>
+    </div>
+</div>
+{% block post_main %}{% endblock post_main -%}
+{% endapply -%}
+{% endblock main %}

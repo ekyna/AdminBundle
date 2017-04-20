@@ -1,31 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Model;
+
+use InvalidArgumentException;
+use JsonSerializable;
+
+use function in_array;
 
 /**
  * Class BarcodeResult
  * @package Ekyna\Bundle\AdminBundle\Model
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class BarcodeResult implements \JsonSerializable
+class BarcodeResult implements JsonSerializable
 {
-    const TYPE_REDIRECT = 'redirect';
-    const TYPE_MODAL    = 'modal';
+    public const TYPE_REDIRECT = 'redirect';
+    public const TYPE_MODAL    = 'modal';
 
-    /**
-     * @var string
-     */
-    private $type;
-
-    /**
-     * @var string
-     */
-    private $title;
-
-    /**
-     * @var string
-     */
-    private $url;
+    private string $type;
+    private string $title;
+    private string $url;
 
 
     /**
@@ -38,7 +34,7 @@ class BarcodeResult implements \JsonSerializable
     public function __construct(string $type, string $title, string $url)
     {
         if (!in_array($type, [self::TYPE_REDIRECT, self::TYPE_MODAL], true)) {
-            throw new \InvalidArgumentException("Unexpected barcode result type.");
+            throw new InvalidArgumentException('Unexpected barcode result type.');
         }
 
         $this->type = $type;
@@ -79,7 +75,7 @@ class BarcodeResult implements \JsonSerializable
     /**
      * @inheritDoc
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type'  => $this->type,

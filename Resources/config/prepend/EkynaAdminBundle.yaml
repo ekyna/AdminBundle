@@ -1,0 +1,14 @@
+ekyna_admin:
+    menus:
+        admin:
+            label: administration
+            domain: EkynaAdmin
+            icon: lock
+            position: 101
+            entries:
+                groups:
+                    resource: ekyna_admin.group
+                    position: 1
+                users:
+                    resource: ekyna_admin.user
+                    position: 2

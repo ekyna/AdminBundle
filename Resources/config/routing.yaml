@@ -1,0 +1,47 @@
+admin:
+    path: '%ekyna_admin.routing_prefix%'
+    controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController::redirectAction
+    defaults:
+        route: admin_dashboard
+        permanent: true
+
+admin_dashboard:
+    path: '%ekyna_admin.routing_prefix%/dashboard'
+    methods: [ GET ]
+    controller: Ekyna\Bundle\AdminBundle\Controller\DashboardController
+
+admin_api_login:
+    path: '%ekyna_admin.routing_prefix%/api/login'
+    methods: [ GET ]
+    controller: Ekyna\Bundle\AdminBundle\Controller\ApiController
+    options:
+        expose: true
+
+admin_security_login:
+    path: '%ekyna_admin.routing_prefix%/login'
+    methods: [ GET, POST ]
+    controller: ekyna_admin.controller.security:login
+
+admin_security_check:
+    path: '%ekyna_admin.routing_prefix%/login/check'
+    controller: ekyna_admin.controller.security:check
+
+admin_security_logout:
+    path: '%ekyna_admin.routing_prefix%/logout'
+    controller: ekyna_admin.controller.security:logout
+
+admin_pin:
+    resource: routing/pin.yaml
+    prefix: '%ekyna_admin.routing_prefix%/pins'
+
+admin_toolbar:
+    resource: routing/toolbar.yaml
+    prefix: '%ekyna_admin.routing_prefix%/toolbar'
+
+admin_ekyna_oauth:
+    resource: .
+    type: ekyna_admin_oauth
+
+admin_ekyna_resource:
+    resource: .
+    type: admin_resource

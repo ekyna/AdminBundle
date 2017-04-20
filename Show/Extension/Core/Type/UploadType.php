@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 
+use Ekyna\Bundle\AdminBundle\Show\Exception\UnexpectedTypeException;
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
 use Ekyna\Bundle\AdminBundle\Show\View;
-use Ekyna\Bundle\CoreBundle\Model\UploadableInterface;
+use Ekyna\Component\Resource\Model\UploadableInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -17,10 +20,10 @@ class UploadType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function build(View $view, $value, array $options = [])
+    public function build(View $view, $value, array $options = []): void
     {
         if ($value && !$value instanceof UploadableInterface) {
-            throw new \InvalidArgumentException("Expected instance of " . UploadableInterface::class);
+            throw new UnexpectedTypeException($value, UploadableInterface::class);
         }
 
         parent::build($view, $value, $options);
@@ -29,7 +32,7 @@ class UploadType extends AbstractType
     /**
      * @inheritDoc
      */
-    protected function configureOptions(OptionsResolver $resolver)
+    protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
@@ -45,7 +48,7 @@ class UploadType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function getWidgetPrefix()
+    public static function getName(): string
     {
         return 'tinymce';
     }

@@ -1,9 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Service\Search;
 
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\Templating\EngineInterface;
+use Ekyna\Component\Resource\Search;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Environment;
+
+use function array_map;
+use function array_replace;
 
 /**
  * Class SearchHelper
@@ -12,67 +20,79 @@ use Symfony\Component\Templating\EngineInterface;
  */
 class SearchHelper
 {
-    private const SESSION_KEY = 'ekyna_resource.search';
+    private const SESSION_KEY   = 'ekyna_resource.search';
     private const DATA_DEFAULTS = [
         'expression' => '',
         'resources'  => [],
     ];
 
-    /**
-     * @var SessionInterface
-     */
-    private $session;
-
-    /**
-     * @var EngineInterface
-     */
-    private $engine;
-
-    /**
-     * @var string[]
-     */
-    private $resources;
+    private Search\Search         $search;
+    private RequestStack          $requestStack;
+    private UrlGeneratorInterface $urlGenerator;
+    private Environment           $twig;
 
 
-    /**
-     * Constructor.
-     *
-     * @param SessionInterface $session
-     * @param EngineInterface  $engine
-     * @param string[]         $resources
-     */
     public function __construct(
-        SessionInterface $session,
-        EngineInterface $engine,
-        array $resources
+        Search\Search         $search,
+        RequestStack          $requestStack,
+        UrlGeneratorInterface $urlGenerator,
+        Environment           $twig
     ) {
-        $this->session   = $session;
-        $this->engine    = $engine;
-        $this->resources = $resources;
+        $this->search = $search;
+        $this->requestStack = $requestStack;
+        $this->urlGenerator = $urlGenerator;
+        $this->twig = $twig;
     }
 
     /**
-     * Saves the user data.
-     *
-     * @param array $data
+     * Performs the toolbar search.
      */
-    public function saveUserData(array $data): void
+    public function search(Request $request): array
     {
-        $this->session->set(self::SESSION_KEY, array_replace(self::DATA_DEFAULTS, $data));
+        $data = array_replace([
+            'expression' => '',
+            'resources'  => [],
+        ], $request->request->get('search', []));
+
+        $this
+            ->requestStack
+            ->getSession()
+            ->set(self::SESSION_KEY, array_replace(self::DATA_DEFAULTS, $data));
+
+        $searchRequest = new Search\Request($data['expression']);
+        $searchRequest
+            ->setResources($data['resources'])
+            ->setPrivate(true);
+
+        $results = $this->search->search($searchRequest);
+
+        return array_map(function (Search\Result $result) {
+            $path = $this->urlGenerator->generate($result->getRoute(), $result->getParameters());
+
+            return [
+                'title' => $result->getTitle(),
+                'icon'  => $result->getIcon(),
+                'url'   => $path,
+            ];
+        }, $results);
     }
 
     /**
      * Renders the search bar.
-     *
-     * @return string
      */
     public function render(): string
     {
-        $data = array_replace(self::DATA_DEFAULTS, $this->session->get(self::SESSION_KEY, []));
+        $data = $this
+            ->requestStack
+            ->getSession()
+            ->get(self::SESSION_KEY, []);
 
-        return $this->engine->render('@EkynaAdmin/Layout/searchbar.html.twig', [
+        $data = array_replace(self::DATA_DEFAULTS, $data);
+
+        /** @noinspection PhpUnhandledExceptionInspection */
+        return $this->twig->render('@EkynaAdmin/Layout/searchbar.html.twig', [
             'data'      => $data,
-            'resources' => $this->resources,
+            'resources' => $this->search->getChoices(true),
         ]);
     }
 }

@@ -1,117 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Entity;
 
+use DateTimeInterface;
 use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
-use Ekyna\Component\Resource\Model\TimestampableTrait;
+use Ekyna\Bundle\ResourceBundle\Model\AclSubjectInterface;
+use Ekyna\Bundle\ResourceBundle\Model\AclSubjectTrait;
+use Ekyna\Component\User\Model\AbstractUser;
 
 /**
  * Class User
  * @package Ekyna\Bundle\AdminBundle\Entity
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class User implements UserInterface
+class User extends AbstractUser implements UserInterface
 {
-    use TimestampableTrait;
+    use AclSubjectTrait;
 
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var Group
-     */
-    private $group;
-
-    /**
-     * @var string
-     */
-    private $email;
-
-    /**
-     * @var string
-     */
-    private $password;
-
-    /**
-     * @var string
-     */
-    private $apiToken;
-
-    /**
-     * @var string
-     */
-    private $firstName;
-
-    /**
-     * @var string
-     */
-    private $lastName;
-
-    /**
-     * @var bool
-     */
-    private $active;
-
-    /**
-     * @var array
-     */
-    private $emailConfig;
-
-    /**
-     * @var string
-     */
-    private $emailSignature;
-
-    /**
-     * @var string
-     */
-    private $plainPassword;
+    protected ?GroupInterface    $group          = null;
+    protected ?string            $apiToken       = null;
+    protected ?DateTimeInterface $apiExpiresAt   = null;
+    protected ?string            $firstName      = null;
+    protected ?string            $lastName       = null;
+    protected ?array             $emailConfig    = null;
+    protected ?string            $emailSignature = null;
 
 
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        $this->active = false;
-    }
-
-    /**
-     * Returns the string representation.
-     *
-     * @return string
-     */
     public function __toString(): string
     {
         if (!empty($this->firstName) && !empty($this->lastName)) {
             return $this->firstName . ' ' . $this->lastName;
         }
 
-        return $this->email ?: 'New user';
+        return parent::__toString();
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getGroup(): ?GroupInterface
     {
         return $this->group;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setGroup(GroupInterface $group): UserInterface
     {
         $this->group = $group;
@@ -119,53 +50,11 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setEmail(string $email): UserInterface
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setPassword(string $password): UserInterface
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getApiToken(): ?string
     {
         return $this->apiToken;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setApiToken(string $token = null): UserInterface
     {
         $this->apiToken = $token;
@@ -173,17 +62,23 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
+    public function getApiExpiresAt(): ?DateTimeInterface
+    {
+        return $this->apiExpiresAt;
+    }
+
+    public function setApiExpiresAt(?DateTimeInterface $apiExpiresAt): UserInterface
+    {
+        $this->apiExpiresAt = $apiExpiresAt;
+
+        return $this;
+    }
+
     public function getFirstName(): ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setFirstName(string $firstName = null): UserInterface
     {
         $this->firstName = $firstName;
@@ -191,17 +86,11 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setLastName(string $lastName = null): UserInterface
     {
         $this->lastName = $lastName;
@@ -209,17 +98,11 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function hasFullName(): bool
     {
         return !empty($this->firstName) && !empty($this->lastName);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getFullName(): ?string
     {
         if ($this->hasFullName()) {
@@ -229,17 +112,11 @@ class User implements UserInterface
         return $this->email;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function hasShortName(): bool
     {
         return !empty($this->firstName) && !empty($this->lastName);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getShortName(): ?string
     {
         if (!empty($this->firstName) && !empty($this->lastName)) {
@@ -249,9 +126,6 @@ class User implements UserInterface
         return $this->email;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getRoles(): array
     {
         if ($this->group) {
@@ -261,53 +135,23 @@ class User implements UserInterface
         return ['ROLE_USER'];
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setActive(bool $active): UserInterface
-    {
-        $this->active = $active;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getEmailConfig(): ?array
     {
         return $this->emailConfig;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function setEmailConfig(array $emailConfig = null): UserInterface
+    public function setEmailConfig(array $config = null): UserInterface
     {
-        $this->emailConfig = $emailConfig;
+        $this->emailConfig = $config;
 
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getEmailSignature(): ?string
     {
         return $this->emailSignature;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setEmailSignature(string $signature = null): UserInterface
     {
         $this->emailSignature = $signature;
@@ -315,77 +159,8 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getPlainPassword(): ?string
+    public function getAclParentSubject(): ?AclSubjectInterface
     {
-        return $this->plainPassword;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setPlainPassword(string $plain = null): UserInterface
-    {
-        $this->plainPassword = $plain;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getSalt(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUsername(): ?string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function eraseCredentials(): void
-    {
-        $this->plainPassword = null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getSecurityId(): string
-    {
-        return sprintf('admin_%d', $this->getId());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function serialize()
-    {
-        return serialize([
-            $this->id,
-            $this->email,
-            $this->password,
-        ]);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function unserialize($serialized)
-    {
-        [
-            $this->id,
-            $this->email,
-            $this->password,
-        ] = unserialize($serialized, ['allowed_classes' => false]);
+        return $this->group;
     }
 }

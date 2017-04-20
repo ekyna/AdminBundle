@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Table\Type\Column;
 
-use Ekyna\Component\Resource\Model\Actions;
+use Ekyna\Component\Resource\Action\Permission;
 use Ekyna\Component\Table\Bridge\Doctrine\ORM\Type\Column\EntityType;
 use Ekyna\Component\Table\Column\ColumnInterface;
 use Ekyna\Component\Table\Extension\AbstractColumnTypeExtension;
@@ -11,6 +13,9 @@ use Ekyna\Component\Table\View\CellView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
+use function array_diff_key;
+use function count;
+
 /**
  * Class EntityTypeExtension
  * @package Ekyna\Bundle\AdminBundle\Table\Type\Column
@@ -18,10 +23,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  */
 class EntityTypeExtension extends AbstractColumnTypeExtension
 {
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorization;
+    private AuthorizationCheckerInterface $authorization;
 
 
     /**
@@ -37,7 +39,7 @@ class EntityTypeExtension extends AbstractColumnTypeExtension
     /**
      * @inheritDoc
      */
-    public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options)
+    public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options): void
     {
         $view->vars['block_prefix'] = 'entity';
 
@@ -50,7 +52,7 @@ class EntityTypeExtension extends AbstractColumnTypeExtension
 
         foreach ($viewChoices as &$viewChoice) {
             $value = $viewChoice['value'];
-            if (!$this->authorization->isGranted(Actions::VIEW, $value)) {
+            if (!$this->authorization->isGranted(Permission::READ, $value)) {
                 continue;
             }
 
@@ -77,7 +79,7 @@ class EntityTypeExtension extends AbstractColumnTypeExtension
     /**
      * @inheritDoc
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
@@ -93,8 +95,8 @@ class EntityTypeExtension extends AbstractColumnTypeExtension
     /**
      * @inheritDoc
      */
-    public function getExtendedType()
+    public static function getExtendedTypes(): array
     {
-        return EntityType::class;
+        return [EntityType::class];
     }
 }

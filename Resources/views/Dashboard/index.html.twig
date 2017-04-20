@@ -1,9 +1,11 @@
 {% extends '@EkynaAdmin/Layout/content.html.twig' %}
 
+{% block page_title %}{{ 'dashboard'|trans({}, 'EkynaAdmin') }}{% endblock page_title %}
+
 {% block content %}
     <div class="row">
         <div class="col-md-12">
-            <h2>{{ 'ekyna_admin.dashboard'|trans }}</h2>
+            <h2>{{ 'dashboard'|trans({}, 'EkynaAdmin') }}</h2>
         </div>
     </div>
     <hr>
@@ -17,7 +19,7 @@
                 {% if widget.options['title'] is not empty %}
                 <div class="panel-heading">
                     <a class="panel-title" data-toggle="collapse" data-target="#dashboard-widget-{{ count }}">
-                        {{ widget.options['title']|trans }}
+                        {{ widget.options['title']|trans({}, widget.options['trans_domain']) }}
                     </a>
                 </div>
                 <div id="dashboard-widget-{{ count }}" class="panel-collapse collapse in">

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
@@ -14,7 +16,7 @@ class CollectionType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function getWidgetPrefix()
+    public static function getName(): string
     {
         return 'collection';
     }

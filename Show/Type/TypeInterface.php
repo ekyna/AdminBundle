@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Type;
 
 use Ekyna\Bundle\AdminBundle\Show\View;
@@ -18,7 +20,7 @@ interface TypeInterface
      *
      * @return array The resolved options.
      */
-    public function resolveOptions(array $options = []);
+    public function resolveOptions(array $options = []): array;
 
     /**
      * Builds the view.
@@ -27,19 +29,26 @@ interface TypeInterface
      * @param mixed $value   The value to render
      * @param array $options The resolved options
      */
-    public function build(View $view, $value, array $options = []);
+    public function build(View $view, $value, array $options = []): void;
 
     /**
      * Returns the row prefix.
      *
-     * @return string
+     * @return string|null
      */
-    public function getRowPrefix();
+    public function getRowPrefix(): ?string;
 
     /**
      * Returns the widget prefix.
      *
+     * @return string|null
+     */
+    public function getWidgetPrefix(): ?string;
+
+    /**
+     * Returns the type name, which can be used in templates.
+     *
      * @return string
      */
-    public function getWidgetPrefix();
+    public static function getName(): string;
 }

@@ -1,0 +1,97 @@
+administration: Administration
+login_header: Authentification
+dashboard: Tableau de bord
+shortcuts: Raccourcis
+configuration: Configuration
+homepage: Page d'accueil
+acl: Permissions
+navbar:
+    go_to_front: Voir le site
+confirm:
+    delete: Êtes-vous sûr de vouloir supprimer cet élément ?
+settings:
+    general:
+        label: Général
+        site_name: Nom du site
+        site_address: Adresse de votre entreprise
+        admin_name: Nom du contact principal
+        admin_email: Email du contact principal
+    notification:
+        label: Notifications
+        from_name: Nom de l'expéditeur
+        from_email: Email de l'expéditeur
+        no_reply: Email sans réponse
+        to_emails: Emails des destinataires
+resource:
+    button:
+        show_admin: Fiche administration
+        show_front: Page publique
+        show_editor: Editer le contenu
+# TODO remove unused entries
+user:
+    label:
+        singular: Utilisateur
+        plural: Utilisateurs
+    header:
+        list: Utilisateurs <small>Liste des utilisateurs</small>
+        show: Détail de l'utilisateur <small>%name%</small>
+        new: Créer un nouvel utilisateur
+        edit: Modifier l'utilisateur <small>%name%</small>
+        remove: Supprimer l'utilisateur <small>%name%</small>
+    button:
+        list: Liste des utilisateurs
+        show: Détail de l'utilisateur
+        new: Nouvel utilisateur
+        edit: Modifier l'utilisateur
+        generate_password: Générer un nouveau mot de passe
+        generate_api_token: Générer un nouveau jeton d'API
+        remove: Supprimer l'utilisateur
+        impersonate: Utiliser la session
+    field:
+        email_config: Configuration email
+        email_signature: Signature email
+        api_token: API Token
+    alert:
+        empty_list: Aucun utilisateur configuré
+    message:
+        operation_denied: Vous n'êtes pas autorisé à créer, modifier ou supprimer les utilisateurs.
+        credentials_sent: Un e-mail contenant les informations de connection a été envoyé à l'utilisateur.
+group:
+    label:
+        singular: Groupe
+        plural: Groupes
+    header:
+        list: Groupes <small>Liste des groupes</small>
+        show: Détail du groupe <small>%name%</small>
+        new: Créer un nouveau groupe
+        edit: Modifier le groupe <small>%name%</small>
+        edit_permissions: Modifier les permissions du groupe <small>%name%</small>
+        remove: Supprimer le groupe <small>%name%</small>
+    button:
+        list: Liste des groupes
+        show: Détail du groupe
+        new: Nouveau groupe
+        edit: Modifier le groupe
+        edit_permissions: Modifier les permissions
+        remove: Supprimer le groupe
+    alert:
+        empty_list: Aucun groupe configuré
+    message:
+        operation_denied: Vous n'êtes pas autorisé à créer, modifier ou supprimer les groupes d'utilisateurs.
+email:
+    new_password:
+        subject: "[%sitename%] Nouveaux identifiants"
+        title : Nouveaux identifiants
+        message: |
+            <p>Bonjour,</p>
+            <p>Vous recevez cet email suite à la modification de votre mot de passe sur %sitename%.</p>
+            <p>Vous pouvez dès à présent <a href="%login_url%">vous connecter</a> en utilisant vos nouveaux identifiants :<br>
+            Nom d'utilisateur : <strong>%login%</strong><br>
+            Mot de passe : <strong>%password%</strong>.</p>
+    login_success:
+        subject: "[%sitename%] Notification de connexion"
+        title : Notification de connexion
+        message: |
+            <p>Bonjour,</p>
+            <p>Vous recevez cet email suite à une connexion réussie à votre compte client sur %sitename% le %date%.<br>
+            Si vous n'êtes pas à l'origine de cette connexion, veuillez s'il vous plait changer votre mot de passe et avertir notre adminitrateur.</p>

@@ -3,11 +3,11 @@
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">Filters <span class="caret"></span></button>
         <ul class="dropdown-menu">
-            {% for resource in resources -%}
+            {% for id, label in resources -%}
             <li>
                 <label>
-                    <input type="checkbox" name="search[resources][]" value="{{ resource }}"{% if resource in data.resources %} checked="checked"{% endif %}>
-                    {{ (resource ~ '.label.plural')|trans -}}
+                    <input type="checkbox" name="search[resources][]" value="{{ id }}"{% if id in data.resources %} checked="checked"{% endif %}>
+                    {{ label[0]|trans({}, label[1]) -}}
                 </label>
             </li>
             {%- endfor %}

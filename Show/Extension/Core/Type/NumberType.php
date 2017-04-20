@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 
+use Decimal\Decimal;
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
 use Ekyna\Bundle\AdminBundle\Show\View;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,9 +19,13 @@ class NumberType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function build(View $view, $value, array $options = [])
+    public function build(View $view, $value, array $options = []): void
     {
         parent::build($view, $value, $options);
+
+        if ($value instanceof Decimal) {
+            $view->vars['value'] = $value->toString();
+        }
 
         $view->vars['append'] = $options['append'];
     }
@@ -26,7 +33,7 @@ class NumberType extends AbstractType
     /**
      * @inheritDoc
      */
-    protected function configureOptions(OptionsResolver $resolver)
+    protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefault('append', '')
@@ -36,7 +43,7 @@ class NumberType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function getWidgetPrefix()
+    public static function getName(): string
     {
         return 'number';
     }

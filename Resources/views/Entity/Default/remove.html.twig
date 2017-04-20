@@ -2,7 +2,7 @@
 
 {% set resource = _context[resource_name] %}
 
-{% block page_title %}{{ resource|raw }} - {{ parent() }}{% endblock page_title %}
+{% block page_title %}{{ resource|raw }}{% endblock page_title %}
 
 {% block title %}
 <h1>{{ (trans_prefix ~ '.header.remove')|trans({'%name%': resource})|raw }}</h1>

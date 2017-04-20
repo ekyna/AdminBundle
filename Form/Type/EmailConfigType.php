@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
@@ -19,7 +21,7 @@ class EmailConfigType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $smtp = $builder
             ->create('smtp', null, [
@@ -84,7 +86,10 @@ class EmailConfigType extends AbstractType
                 }
 
                 $imap = $data['imap'];
-                if (empty($imap['mailbox']) && empty($imap['folder']) && empty($imap['user']) && empty($imap['password'])) {
+                if (
+                    empty($imap['mailbox']) && empty($imap['folder'])
+                    && empty($imap['user']) && empty($imap['password'])
+                ) {
                     unset($data['imap']);
                 }
 
@@ -99,7 +104,7 @@ class EmailConfigType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'compound' => true,
@@ -109,7 +114,7 @@ class EmailConfigType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'ekyna_admin_email_config';
     }

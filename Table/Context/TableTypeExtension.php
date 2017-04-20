@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Table\Context;
 
 use Ekyna\Component\Table\Extension\AbstractTableTypeExtension;
@@ -13,10 +15,7 @@ use Ekyna\Component\Table\TableBuilderInterface;
  */
 class TableTypeExtension extends AbstractTableTypeExtension
 {
-    /**
-     * @var Profile\UserStorage
-     */
-    private $profileStorage;
+    private Profile\UserStorage $profileStorage;
 
 
     /**
@@ -32,7 +31,7 @@ class TableTypeExtension extends AbstractTableTypeExtension
     /**
      * @inheritDoc
      */
-    public function buildTable(TableBuilderInterface $builder, array $options)
+    public function buildTable(TableBuilderInterface $builder, array $options): void
     {
         $builder->setProfileStorage($this->profileStorage);
     }
@@ -40,8 +39,8 @@ class TableTypeExtension extends AbstractTableTypeExtension
     /**
      * @inheritDoc
      */
-    public function getExtendedType()
+    public static function getExtendedTypes(): array
     {
-        return TableType::class;
+        return [TableType::class];
     }
 }

@@ -7,7 +7,7 @@
     <meta name="robots" content="noindex, nofollow">
 
     <title>
-        {%- block page_title %}{{ 'ekyna_admin.title'|trans }}{% endblock page_title -%}
+        {% block page_title %}{% endblock page_title %} - {{ 'administration'|trans({}, 'EkynaAdmin') }}
     </title>
 
     <link rel="shortcut icon" href="{{ absolute_url(asset('bundles/ekynaadmin/img/favicon.ico')) }}">
@@ -16,17 +16,17 @@
         <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
               rel="stylesheet" type="text/css"/>
 
-        <link href="{{ absolute_url(asset('bundles/ekynacore/css/fontawesome.css')) }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ absolute_url(asset('bundles/ekynacore/css/glyphicons.css')) }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ absolute_url(asset('bundles/ekynacore/css/jquery-ui.css')) }}" rel="stylesheet" type="text/css"/>
-        <link href="{{ absolute_url(asset('bundles/ekynacore/css/ui.css')) }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ absolute_url(asset('bundles/ekynaui/css/fontawesome.css')) }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ absolute_url(asset('bundles/ekynaui/css/glyphicons.css')) }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ absolute_url(asset('bundles/ekynaui/css/jquery-ui.css')) }}" rel="stylesheet" type="text/css"/>
+        <link href="{{ absolute_url(asset('bundles/ekynaui/css/ui.css')) }}" rel="stylesheet" type="text/css"/>
         <link href="{{ absolute_url(asset('bundles/ekynaadmin/css/admin.css')) }}" rel="stylesheet" type="text/css"/>
 
         {{ admin_stylesheets() }}
         {{ ui_forms_stylesheets() }}
     {%- endblock stylesheets %}
 
-    {%- include '@EkynaCore/Ui/ie-fix.html.twig' -%}
+    {%- include '@EkynaUi/Fix/ie.html.twig' -%}
 
     {{- require_js(not app.debug) -}}
 </head>

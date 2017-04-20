@@ -1,34 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Dashboard;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\WidgetInterface;
+use InvalidArgumentException;
 
 /**
  * Class Dashboard
  * @package Ekyna\Bundle\AdminBundle\Dashboard
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class Dashboard
 {
     /**
      * @var WidgetInterface[]
      */
-    protected $widgets = [];
+    protected array $widgets = [];
 
     /**
      * @var WidgetInterface[]
      */
-    protected $sortedWidgets = null;
+    protected ?array $sortedWidgets = null;
 
 
     /**
      * Returns whether the dashboard has the widget or not.
      *
      * @param string|WidgetInterface $nameOrWidget
+     *
      * @return bool
      */
-    public function hasWidget($nameOrWidget)
+    public function hasWidget($nameOrWidget): bool
     {
         $name = $nameOrWidget instanceof WidgetInterface ? $nameOrWidget->getName() : $nameOrWidget;
 
@@ -39,12 +43,13 @@ class Dashboard
      * Adds the widget.
      *
      * @param WidgetInterface $widget
+     *
      * @return Dashboard
      */
-    public function addWidget(WidgetInterface $widget)
+    public function addWidget(WidgetInterface $widget): Dashboard
     {
         if ($this->hasWidget($widget)) {
-            throw new \InvalidArgumentException(sprintf('Widget "%s" is already registered.', $widget->getName()));
+            throw new InvalidArgumentException(sprintf('Widget "%s" is already registered.', $widget->getName()));
         }
 
         $this->widgets[$widget->getName()] = $widget;
@@ -58,7 +63,7 @@ class Dashboard
      *
      * @return array|Widget\WidgetInterface[]
      */
-    public function getWidgets()
+    public function getWidgets(): array
     {
         if (null !== $this->sortedWidgets) {
             return $this->sortedWidgets;
@@ -66,7 +71,7 @@ class Dashboard
 
         $widgets = $this->widgets;
 
-        usort($widgets, function(WidgetInterface $a, WidgetInterface $b) {
+        usort($widgets, function (WidgetInterface $a, WidgetInterface $b) {
             $aPos = $a->getOption('position');
             $bPos = $b->getOption('position');
 
@@ -81,42 +86,42 @@ class Dashboard
     }
 
     /**
-     * Returns the stylesheets paths.
+     * Returns the stylesheets files paths.
      *
-     * @return array
+     * @return string[]
      */
-    public function getStylesheets()
+    public function getStylesheets(): array
     {
-        $stylesheets = [];
+        $paths = [];
 
         foreach ($this->widgets as $widget) {
             if (!empty($path = $widget->getOption('css_path'))) {
-                if (!in_array($path, $stylesheets)) {
-                    $stylesheets[] = $path;
+                if (!in_array($path, $paths)) {
+                    $paths[] = $path;
                 }
             }
         }
 
-        return $stylesheets;
+        return $paths;
     }
 
     /**
-     * Returns the javascripts paths.
+     * Returns the javascript files paths.
      *
-     * @return array
+     * @return string[]
      */
-    public function getJavascripts()
+    public function getJavascripts(): array
     {
-        $javascripts = [];
+        $paths = [];
 
         foreach ($this->widgets as $widget) {
             if (!empty($path = $widget->getOption('js_path'))) {
-                if (!in_array($path, $javascripts)) {
-                    $javascripts[] = $path;
+                if (!in_array($path, $paths)) {
+                    $paths[] = $path;
                 }
             }
         }
 
-        return $javascripts;
+        return $paths;
     }
 }

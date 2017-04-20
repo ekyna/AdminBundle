@@ -19,11 +19,14 @@
         </id>
 
         <field name="email" type="string" column="email" length="255" nullable="false"/>
-        <field name="password" type="string" column="password" length="128" nullable="false"/>
+        <field name="password" type="string" column="password" length="128" nullable="true"/>
+
         <field name="apiToken" type="string" column="api_token" length="128" nullable="true"/>
+        <field name="apiExpiresAt" type="datetime" column="api_expires_at" nullable="true"/>
+
         <field name="firstName" type="string" column="first_name" length="32" nullable="true"/>
         <field name="lastName" type="string" column="last_name" length="32" nullable="true"/>
-        <field name="active" type="boolean" column="active"/>
+        <field name="enabled" type="boolean" column="enabled"/>
 
         <field name="emailConfig" type="encrypted_json" column="email_config" nullable="true"/>
         <field name="emailSignature" type="text" column="email_signature" nullable="true"/>
@@ -38,6 +41,7 @@
         <many-to-one target-entity="Ekyna\Bundle\AdminBundle\Model\GroupInterface" field="group">
             <join-column name="group_id" referenced-column-name="id" nullable="false"/>
         </many-to-one>
+
     </mapped-superclass>
 
 </doctrine-mapping>

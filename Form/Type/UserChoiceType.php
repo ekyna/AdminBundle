@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Doctrine\ORM\EntityRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Ekyna\Bundle\ResourceBundle\Form\Type\ResourceChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -15,32 +17,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class UserChoiceType extends AbstractType
 {
-    /**
-     * @var string
-     */
-    private $userClass;
-
-
-    /**
-     * Constructor.
-     *
-     * @param string $userClass
-     */
-    public function __construct($userClass)
-    {
-        $this->userClass = $userClass;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
-                'label'         => 'ekyna_admin.user.label.singular',
-                'placeholder'   => 'ekyna_core.value.choose',
-                'class'         => $this->userClass,
+                'resource'      => 'ekyna_admin.user',
                 'roles'         => ['ROLE_ADMIN'],
                 'select2'       => false,
                 'query_builder' => function (Options $options, $value) {
@@ -75,11 +56,8 @@ class UserChoiceType extends AbstractType
             ->setAllowedTypes('roles', 'array');
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function getParent()
+    public function getParent(): string
     {
-        return EntityType::class;
+        return ResourceChoiceType::class;
     }
 }

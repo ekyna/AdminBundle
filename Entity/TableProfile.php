@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Entity;
 
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
@@ -12,30 +14,11 @@ use Ekyna\Component\Table\Context\Profile\ProfileInterface;
  */
 class TableProfile implements ProfileInterface
 {
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var UserInterface
-     */
-    private $user;
-
-    /**
-     * @var string
-     */
-    private $tableHash;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var array
-     */
-    private $data;
+    private ?int $id = null;
+    private ?UserInterface $user = null;
+    private ?string $tableHash = null;
+    private ?string $name = null;
+    private array $data;
 
 
     /**
@@ -51,7 +34,7 @@ class TableProfile implements ProfileInterface
      *
      * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -59,9 +42,9 @@ class TableProfile implements ProfileInterface
     /**
      * @inheritDoc
      */
-    public function getKey()
+    public function getKey(): string
     {
-        return $this->id;
+        return (string)$this->id;
     }
 
     /**
@@ -71,7 +54,7 @@ class TableProfile implements ProfileInterface
      *
      * @return TableProfile
      */
-    public function setUser(UserInterface $user)
+    public function setUser(UserInterface $user): TableProfile
     {
         $this->user = $user;
 
@@ -81,9 +64,9 @@ class TableProfile implements ProfileInterface
     /**
      * Returns the user.
      *
-     * @return UserInterface
+     * @return UserInterface|null
      */
-    public function getUser()
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
@@ -91,7 +74,7 @@ class TableProfile implements ProfileInterface
     /**
      * @inheritDoc
      */
-    public function setTableHash($hash)
+    public function setTableHash(string $hash): ProfileInterface
     {
         $this->tableHash = $hash;
 
@@ -101,7 +84,7 @@ class TableProfile implements ProfileInterface
     /**
      * @inheritDoc
      */
-    public function getTableHash()
+    public function getTableHash(): string
     {
         return $this->tableHash;
     }
@@ -113,7 +96,7 @@ class TableProfile implements ProfileInterface
      *
      * @return TableProfile
      */
-    public function setName($name)
+    public function setName(string $name): ProfileInterface
     {
         $this->name = $name;
 
@@ -123,7 +106,7 @@ class TableProfile implements ProfileInterface
     /**
      * @inheritDoc
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -135,7 +118,7 @@ class TableProfile implements ProfileInterface
      *
      * @return TableProfile
      */
-    public function setData(array $data)
+    public function setData(array $data): ProfileInterface
     {
         $this->data = $data;
 
@@ -145,7 +128,7 @@ class TableProfile implements ProfileInterface
     /**
      * @inheritDoc
      */
-    public function getData()
+    public function getData(): array
     {
         return $this->data;
     }

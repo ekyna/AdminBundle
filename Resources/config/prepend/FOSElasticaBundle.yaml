@@ -1,0 +1,18 @@
+fos_elastica:
+    indexes:
+        ekyna_admin.user:
+            index_name: "%env(ELASTICSEARCH_NAME)%_admin_user"
+            serializer:
+                groups: [ Search ]
+            properties:
+                email: { type: text, fields: { analyzed: { type: text, analyzer: email, search_analyzer: search } } }
+                first_name: { type: text, fields: { analyzed: { type: text, analyzer: edge, search_analyzer: search } } }
+                last_name: { type: text, fields: { analyzed: { type: text, analyzer: edge, search_analyzer: search } } }
+                group: { type: long }
+                enabled: { type: boolean }
+            persistence:
+                driver: orm
+                model: "%ekyna_admin.class.user%"
+                provider: { batch_size: 25 }
+                listener: ~
+                finder: ~

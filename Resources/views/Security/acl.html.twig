@@ -1,0 +1,105 @@
+{%- apply spaceless -%}
+<style type="text/css">{{ ' ' -}}
+    .acl-list .panel-body { padding: 0 15px; }{{ ' ' -}}
+    .acl-list .form-group { margin-bottom: 10px; border-top: 1px dotted #ddd; }{{ ' ' -}}
+    .acl-list .form-group:first-child { border-top: none; }{{ ' ' -}}
+    .acl-list .control-label { padding-top: 12px; font-weight: bold; }{{ ' ' -}}
+    .acl-list .btn-group { margin: 10px 10px 0 0; }{{ ' ' -}}
+    .acl-list .btn-group:last-child { margin-right: 0; }{{ ' ' -}}
+    .acl-list .btn-group > span { pointer-events:none; }{{ ' ' -}}
+    .acl-list .btn-group i { font-size: 13px; }{{ ' ' -}}
+    .acl-list .control-buttons > .btn-group { text-align: right; min-width: 72px; }{{ ' ' -}}
+</style>
+<form class="form-horizontal acl-list" data-config='{{ config|json_encode|raw }}'>
+    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        {% for namespace in acl.namespaces -%}
+        <div class="panel panel-default acl-namespace" data-name="{{ namespace.name }}">
+            <div class="panel-heading" role="tab" id="head_{{ namespace.name }}">
+                {% if config.editable -%}
+                <div class="btn-group btn-group-xs pull-right control-buttons" style="margin: 0;">
+                    {% if acl.inheritance -%}
+                        <button class="btn btn-xs btn-default acl-namespace acl-inherit">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    {%- endif %}
+                    <button class="btn btn-xs btn-success acl-namespace acl-grant">
+                        <i class="fa fa-check"></i>
+                    </button>
+                    <button class="btn btn-xs btn-danger acl-namespace acl-deny">
+                        <i class="fa fa-remove"></i>
+                    </button>
+                </div>
+                {%- endif %}
+                <h4 class="panel-title">
+                    <a role="button" data-toggle="collapse" data-parent="#accordion"
+                       {{- '' }} href="#collapse_{{ namespace.name }}" aria-expanded="true" aria-controls="collapse_{{ namespace.name }}">
+                        {{- namespace.label|trans([], namespace.trans_domain) -}}
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse_{{ namespace.name }}" class="panel-collapse collapse{% if loop.first %} in{% endif %}"
+                    {{- '' }} role="tabpanel" aria-labelledby="head_{{ namespace.name }}">
+                <div class="panel-body">
+                    {% for resource in namespace.resources -%}
+                    <div class="form-group acl-resource" data-name="{{ resource.name }}">
+                        <span class="col-sm-2 control-label">
+                            {{- resource.label|trans([], resource.trans_domain) -}}
+                        </span>
+                        <div class="col-sm-{{ config.editable ? '9' : '10' }}">
+                            {% for permission in resource.permissions %}
+                            <div class="btn-group btn-group-xs acl-permission" data-name="{{ permission.name }}">
+                                {% if config.editable and acl.inheritance -%}
+                                    <span class="btn btn-default acl-inherited">
+                                    <i class="fa {{ permission.inherited ? 'fa-check text-success' : 'fa-remove text-danger' }}"></i>
+                                </span>
+                                {%- endif %}
+                                <span class="btn btn-{{ permission.granted ? 'success': 'danger' }} acl-label">
+                                    {{- permission.label|trans([], permission.trans_domain) -}}
+                                </span>
+                                {% if config.editable -%}
+                                    {% if acl.inheritance and not permission.inherited %}
+                                        <button class="btn btn-default" disabled>
+                                            <i class="fa fa-minus"></i>
+                                        </button>
+                                    {% elseif permission.value is same as(false) or (permission.inherited is null and permission.value is null) %}
+                                        <button class="btn btn-default acl-grant">
+                                            <i class="fa fa-check text-success"></i>
+                                        </button>
+                                    {% else %}
+                                        <button class="btn btn-default acl-deny">
+                                            <i class="fa fa-remove text-danger"></i>
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% if config.editable -%}
+                        <div class="col-sm-1 control-buttons">
+                            <div class="btn-group btn-group-xs pull-right">
+                                {% if acl.inheritance -%}
+                                    <button class="btn btn-default acl-resource acl-inherit">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                {%- endif %}
+                                <button class="btn btn-success acl-resource acl-grant">
+                                    <i class="fa fa-check"></i>
+                                </button>
+                                <button class="btn btn-danger acl-resource acl-deny">
+                                    <i class="fa fa-remove"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {%- endif %}
+                    </div>
+                    {%- endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</form>
+{% if config.editable -%}
+<script type="text/javascript">require(['ekyna-admin/acl']);</script>
+{%- endif %}
+{%- endapply -%}

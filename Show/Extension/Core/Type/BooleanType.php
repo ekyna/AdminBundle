@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
 use Ekyna\Bundle\AdminBundle\Show\View;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
+use function array_replace;
 
 /**
  * Class BooleanType
@@ -17,7 +21,7 @@ class BooleanType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function build(View $view, $value, array $options = [])
+    public function build(View $view, $value, array $options = []): void
     {
         parent::build($view, $value, $options);
 
@@ -37,7 +41,7 @@ class BooleanType extends AbstractType
     /**
      * @inheritDoc
      */
-    protected function configureOptions(OptionsResolver $resolver)
+    protected function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
 
@@ -45,12 +49,13 @@ class BooleanType extends AbstractType
             ->setDefaults([
                 'toggle_path' => null,
                 'color'       => false,
-                'null_label'  => 'ekyna_core.value.undefined',
+                'null_label'  => 'value.undefined',
                 'null_class'  => 'label label-default',
-                'true_label'  => 'ekyna_core.value.yes',
+                'true_label'  => 'value.yes',
                 'true_class'  => 'label label-success',
-                'false_label' => 'ekyna_core.value.no',
+                'false_label' => 'value.no',
                 'false_class' => 'label label-danger',
+                'trans_domain' => 'EkynaUi',
             ])
             ->setNormalizer('color', function (Options $options, $value) {
                 if (!empty($options['toggle_path'])) {
@@ -64,7 +69,7 @@ class BooleanType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function getWidgetPrefix()
+    public static function getName(): string
     {
         return 'boolean';
     }

@@ -1,12 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Command;
 
-use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
+use RuntimeException;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+
+use function filter_var;
+use function preg_match;
+use function sprintf;
 
 /**
  * Class ChangeUserPasswordCommand
@@ -17,20 +25,14 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
 {
     protected static $defaultName = 'ekyna:admin:change-user-password';
 
-    /**
-     * @inheritdoc
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription("Changes a admin user's password.");
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelperSet()->get('question');
 
 
@@ -38,10 +40,10 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
         $question = new Question('Email: ');
         $question->setValidator(function ($answer) {
             if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                throw new \RuntimeException('This is not a valid email address.');
+                throw new RuntimeException('This is not a valid email address.');
             }
             if (null === $this->userRepository->findOneByEmail($answer, false)) {
-                throw new \RuntimeException('No admin user found for this email.');
+                throw new RuntimeException('No admin user found for this email.');
             }
 
             return $answer;
@@ -57,7 +59,7 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
             $question = new Question('Password: ');
             $question->setValidator(function ($answer) {
                 if (!preg_match(self::PASSWORD_REGEX, $answer)) {
-                    throw new \RuntimeException('Password should be composed of at least 6 digits excluding white-space characters.');
+                    throw new RuntimeException('Password should be composed of at least 6 digits excluding white-space characters.');
                 }
 
                 return $answer;
@@ -68,36 +70,40 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
 
 
         // Fetch user ---------------------------------------------------------------
-        /** @var \Ekyna\Bundle\AdminBundle\Model\UserInterface $user */
+        /** @var UserInterface $user */
         $user = $this->userRepository->findOneByEmail($email, false);
         if (null === $user) {
             $output->writeln(sprintf('<error>No user found for email "%s".</error>', $email));
 
-            return;
+            return 1;
         }
 
         // Set or generate password
         if (empty($password)) {
-            $password = SecurityUtil::generatePassword($user);
+            $password = $this->securityUtil->generatePassword();
             $output->writeln(sprintf('<info>Generated password: %s</info>', $password));
-        } else {
-            $user->setPlainPassword($password);
         }
 
-        // Persist
-        $event = $this->userOperator->update($user);
+        $user
+            ->setPassword('TriggerPersistence')
+            ->setPlainPassword($password);
+
+        $event = $this->userManager->update($user);
+
         if ($event->hasErrors()) {
             $output->writeln(sprintf(
                 '<error>An error occurred while changing password of admin user "%s".</error>',
                 $user->getEmail()
             ));
 
-            return;
+            return 1;
         }
 
         $output->writeln(sprintf(
             '<info>Password has been successfully changed for admin user "%s".</info>',
             $user->getEmail()
         ));
+
+        return 0;
     }
 }

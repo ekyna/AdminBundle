@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Extension;
 
 use Ekyna\Bundle\AdminBundle\Show\Exception\InvalidArgumentException;
@@ -15,13 +17,13 @@ abstract class AbstractExtension implements ExtensionInterface
     /**
      * @var TypeInterface[]
      */
-    private $types = [];
+    private array $types = [];
 
 
     /**
      * @inheritDoc
      */
-    public function getType($name)
+    public function getType(string $name): TypeInterface
     {
         if (isset($this->types[$name])) {
             return $this->types[$name];
@@ -41,5 +43,5 @@ abstract class AbstractExtension implements ExtensionInterface
      *
      * @return TypeInterface
      */
-    abstract protected function loadType($name);
+    abstract protected function loadType(string $name): TypeInterface;
 }

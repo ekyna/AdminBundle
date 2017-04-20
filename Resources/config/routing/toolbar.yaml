@@ -1,0 +1,13 @@
+admin_toolbar_search:
+    path:  /search
+    methods: [POST]
+    controller: Ekyna\Bundle\AdminBundle\Controller\ToolbarController::search
+    options:
+        expose: true
+
+admin_toolbar_barcode:
+    path:  /barcode/{barcode}
+    methods: [GET]
+    controller: Ekyna\Bundle\AdminBundle\Controller\ToolbarController::barcode
+    options:
+        expose: true

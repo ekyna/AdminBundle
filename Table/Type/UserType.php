@@ -1,116 +1,96 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Table\Type;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use Ekyna\Bundle\AdminBundle\Service\Security\UserProviderInterface;
+use Ekyna\Bundle\AdminBundle\Action\DeleteAction;
+use Ekyna\Bundle\AdminBundle\Action\UpdateAction;
+use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
 use Ekyna\Bundle\ResourceBundle\Table\Filter\ResourceType;
+use Ekyna\Bundle\ResourceBundle\Table\Type\AbstractResourceType;
 use Ekyna\Bundle\TableBundle\Extension\Type as BType;
 use Ekyna\Component\Table\Bridge\Doctrine\ORM\Source\EntitySource;
 use Ekyna\Component\Table\Extension\Core\Type as CType;
 use Ekyna\Component\Table\TableBuilderInterface;
+use Ekyna\Component\User\Service\UserProvider;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
+use function Symfony\Component\Translation\t;
 
 /**
  * Class UserType
  * @package Ekyna\Bundle\AdminBundle\Table\Type
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class UserType extends ResourceTableType
+class UserType extends AbstractResourceType
 {
-    /**
-     * @var UserProviderInterface
-     */
-    protected $userProvider;
+    protected UserProvider $userProvider;
 
-
-    /**
-     * Constructor.
-     *
-     * @param UserProviderInterface $userProvider
-     * @param string                $userClass
-     */
-    public function __construct(UserProviderInterface $userProvider, string $userClass)
+    public function __construct(UserProvider $userProvider)
     {
-        parent::__construct($userClass);
-
         $this->userProvider = $userProvider;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function buildTable(TableBuilderInterface $builder, array $options)
+    public function buildTable(TableBuilderInterface $builder, array $options): void
     {
         $group = $this->getUserGroup();
 
         $builder
             ->addColumn('email', BType\Column\AnchorType::class, [
-                'label'                => 'ekyna_admin.user.label.singular',
-                'route_name'           => 'ekyna_admin_user_admin_show',
-                'route_parameters_map' => ['userId' => 'id'],
-                'position'             => 10,
+                'label'         => t('user.label.singular', [], 'EkynaAdmin'),
+                'property_path' => null,
+                'position'      => 10,
             ]);
 
         if (null !== $group) {
             $builder->addColumn('group', BType\Column\AnchorType::class, [
-                'label'                => 'ekyna_core.field.group',
-                'property_path'        => 'group.name',
-                'route_name'           => 'ekyna_admin_group_admin_show',
-                'route_parameters_map' => ['groupId' => 'group.id'],
-                'position'             => 20,
+                'label'         => t('field.group', [], 'EkynaUi'),
+                'property_path' => 'group',
+                'position'      => 20,
             ]);
         }
 
         $builder
-            ->addColumn('active', CType\Column\BooleanType::class, [
-                'label'                => 'ekyna_core.field.enabled',
-                'sortable'             => true,
-                'route_name'           => 'ekyna_admin_user_admin_toggle',
-                'route_parameters'     => ['field' => 'active'],
-                'route_parameters_map' => ['userId' => 'id'],
-                'position'             => 30,
+            ->addColumn('enabled', CType\Column\BooleanType::class, [
+                'label'          => t('field.enabled', [], 'EkynaUi'),
+                'sortable'       => true,
+                'route'          => 'ekyna_admin_user_admin_toggle',
+                'parameters'     => ['field' => 'enabled'],
+                'parameters_map' => ['userId' => 'id'],
+                'position'       => 30,
             ])
             ->addColumn('createdAt', CType\Column\DateTimeType::class, [
-                'label'    => 'ekyna_core.field.created_at',
+                'label'    => t('field.created_at', [], 'EkynaUi'),
                 'sortable' => true,
                 'position' => 40,
             ])
             ->addColumn('actions', BType\Column\ActionsType::class, [
-                'buttons' => [
-                    [
-                        'label'                => 'ekyna_core.button.edit',
-                        'class'                => 'warning',
-                        'route_name'           => 'ekyna_admin_user_admin_edit',
-                        'route_parameters_map' => ['userId' => 'id'],
-                        'permission'           => 'edit',
-                    ],
-                    [
-                        'label'                => 'ekyna_core.button.remove',
-                        'class'                => 'danger',
-                        'route_name'           => 'ekyna_admin_user_admin_remove',
-                        'route_parameters_map' => ['userId' => 'id'],
-                        'permission'           => 'delete',
-                    ],
+                'resource' => $this->dataClass,
+                'actions'  => [
+                    UpdateAction::class,
+                    DeleteAction::class,
                 ],
             ])
             ->addFilter('email', CType\Filter\TextType::class, [
-                'label'    => 'ekyna_core.field.email',
+                'label'    => t('field.email', [], 'EkynaUi'),
                 'position' => 10,
             ]);
 
         if (null !== $group) {
             $builder
                 ->addFilter('group', ResourceType::class, [
-                    //'label'         => 'ekyna_core.field.group',
                     'resource'      => 'ekyna_admin.group',
                     'entity_label'  => 'name',
-                    'query_builder' => function (EntityRepository $er) use ($group) {
-                        $qb = $er->createQueryBuilder('g');
+                    'query_builder' => function (EntityRepository $repository) use ($group) {
+                        $qb = $repository->createQueryBuilder('g');
 
-                        return $qb->andWhere($qb->expr()->gte('g.position', $group->getPosition()));
+                        return $qb
+                            ->andWhere($qb->expr()->gte('g.position', ':position'))
+                            ->setParameter('position', $group->getPosition());
                     },
                     'position'      => 20,
                 ]);
@@ -118,36 +98,37 @@ class UserType extends ResourceTableType
 
         $builder
             ->addFilter('enabled', CType\Filter\BooleanType::class, [
-                'label'    => 'ekyna_core.field.enabled',
+                'label'    => t('field.enabled', [], 'EkynaUi'),
                 'position' => 30,
             ])
             ->addFilter('createdAt', CType\Filter\DateTimeType::class, [
-                'label'    => 'ekyna_core.field.created_at',
+                'label'    => t('field.created_at', [], 'EkynaUi'),
                 'position' => 40,
             ]);
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
 
-        $resolver->setNormalizer('source', function (
-            /** @noinspection PhpUnusedParameterInspection */
-            Options $options,
-            $value
-        ) {
-            if (null !== $group = $this->getUserGroup()) {
-                if ($value instanceof EntitySource) {
-                    $value->setQueryBuilderInitializer(function (QueryBuilder $qb, $alias) use ($group) {
-                        $qb
-                            ->join($alias . '.group', 'g')
-                            ->andWhere($qb->expr()->gte('g.position', $group->getPosition()));
-                    });
-                }
+        $resolver->setNormalizer('source', function (Options $options, $value) {
+            if (!$value instanceof EntitySource) {
+                return $value;
             }
+
+            if (!$group = $this->getUserGroup()) {
+                return $value;
+            }
+
+            $value->setQueryBuilderInitializer(function (QueryBuilder $qb, string $alias) use ($group): void {
+                $qb
+                    ->join($alias . '.group', 'g')
+                    ->andWhere($qb->expr()->gte('g.position', ':position'))
+                    ->setParameter('position', $group->getPosition());
+            });
 
             return $value;
         });
@@ -156,14 +137,14 @@ class UserType extends ResourceTableType
     /**
      * Returns the current user's group.
      *
-     * @return \Ekyna\Bundle\AdminBundle\Model\GroupInterface|null
+     * @return GroupInterface|null
      */
-    private function getUserGroup()
+    private function getUserGroup(): ?GroupInterface
     {
-        if (null !== $user = $this->userProvider->getUser()) {
-            return $user->getGroup();
+        if (!$user = $this->userProvider->getUser()) {
+            return null;
         }
 
-        return null;
+        return $user->getGroup();
     }
 }

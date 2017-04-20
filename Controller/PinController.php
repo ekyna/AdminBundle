@@ -1,37 +1,63 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Ekyna\Bundle\AdminBundle\Entity\UserPin;
-use Ekyna\Bundle\AdminBundle\Helper\PinHelper;
-use Ekyna\Bundle\CoreBundle\Controller\Controller;
+use Ekyna\Bundle\AdminBundle\Service\Pin\PinHelper;
+use Ekyna\Component\Resource\Config\Registry\ResourceRegistryInterface;
+use Ekyna\Component\Resource\Model\ResourceInterface;
+use Ekyna\Component\Resource\Repository\RepositoryFactoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class PinController
  * @package Ekyna\Bundle\AdminBundle\Controller
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class PinController extends Controller
+class PinController
 {
+    private PinHelper                  $pinHelper;
+    private ResourceRegistryInterface  $resourceRegistry;
+    private RepositoryFactoryInterface $repositoryFactory;
+
+
+    /**
+     * Constructor.
+     *
+     * @param PinHelper                  $pinHelper
+     * @param ResourceRegistryInterface  $resourceRegistry
+     * @param RepositoryFactoryInterface $repositoryFactory
+     */
+    public function __construct(
+        PinHelper $pinHelper,
+        ResourceRegistryInterface $resourceRegistry,
+        RepositoryFactoryInterface $repositoryFactory
+    ) {
+        $this->pinHelper = $pinHelper;
+        $this->resourceRegistry = $resourceRegistry;
+        $this->repositoryFactory = $repositoryFactory;
+    }
+
     /**
      * Remove action.
      *
      * @param int $id
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function removeAction($id)
+    public function remove(int $id): Response
     {
-        $em = $this->getDoctrine()->getManager();
-
         $data = [];
 
-        if (null !== $pin = $em->getRepository(UserPin::class)->find($id)) {
-            $data['removed'] = $pin->toArray();
+        $userPin = $this->pinHelper->getRepository()->find($id);
+        if ($userPin instanceof UserPin) {
+            $data['removed'] = $userPin->toArray();
 
-            $em->remove($pin);
-            $em->flush();
+            $this->pinHelper->removePin($userPin);
         }
 
         return new JsonResponse($data);
@@ -41,17 +67,17 @@ class PinController extends Controller
      * Resource pin action.
      *
      * @param string $name
-     * @param string $identifier
+     * @param int    $identifier
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function resourcePinAction($name, $identifier)
+    public function resourcePin(string $name, int $identifier): Response
     {
         if (null === $resource = $this->findResource($name, $identifier)) {
-            throw $this->createNotFoundException('Resource not found.');
+            throw new NotFoundHttpException('Resource not found');
         }
 
-        $pinData = $this->get(PinHelper::class)->pinResource($resource);
+        $pinData = $this->pinHelper->pinResource($resource);
 
         return new JsonResponse([
             'added' => $pinData,
@@ -62,19 +88,19 @@ class PinController extends Controller
      * Resource unpin action.
      *
      * @param string $name
-     * @param string $identifier
+     * @param int    $identifier
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function resourceUnpinAction($name, $identifier)
+    public function resourceUnpin(string $name, int $identifier): Response
     {
         if (null === $resource = $this->findResource($name, $identifier)) {
-            throw $this->createNotFoundException('Resource not found.');
+            throw new NotFoundHttpException('Resource not found');
         }
 
         $data = [];
 
-        if (null !== $pinData = $this->get(PinHelper::class)->unpinResource($resource)) {
+        if (null !== $pinData = $this->pinHelper->unpinResource($resource)) {
             $data['removed'] = $pinData;
         }
 
@@ -85,18 +111,16 @@ class PinController extends Controller
      * Finds the resource.
      *
      * @param string $name
-     * @param string $identifier
+     * @param int    $id
      *
-     * @return \Ekyna\Component\Resource\Model\ResourceInterface|null
+     * @return ResourceInterface|null
      */
-    private function findResource($name, $identifier)
+    private function findResource(string $name, int $id): ?ResourceInterface
     {
-        $config = $this->get('ekyna_resource.configuration_registry')->findConfiguration($name);
+        $config = $this->resourceRegistry->find($name);
 
-        /** @var \Ekyna\Component\Resource\Doctrine\ORM\ResourceRepositoryInterface $repository */
-        $repository = $this->get($config->getServiceKey('repository'));
+        $repository = $this->repositoryFactory->getRepository($config->getEntityClass());
 
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $repository->find($identifier);
+        return $repository->find($id);
     }
 }

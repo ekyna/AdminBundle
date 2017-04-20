@@ -1,11 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Command;
 
-use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
-use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
-use Ekyna\Component\Resource\Operator\ResourceOperatorInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,23 +19,24 @@ class GenerateUserApiTokenCommand extends AbstractUserCommand
 {
     protected static $defaultName = 'ekyna:admin:generate-api-token';
 
+
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addOption('id', null, InputOption::VALUE_REQUIRED, 'The user id')
             ->addOption('email', null, InputOption::VALUE_REQUIRED, 'The user email')
-            ->setDescription("Generates user(s) api token(s).");
+            ->setDescription('Generates user(s) api token(s).');
     }
 
     /**
      * @inheritDoc
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        if (0 < $id = $input->getOption('id')) {
+        if (0 < $id = (int)$input->getOption('id')) {
             $user = $this->userRepository->find($id);
             if (!$user) {
                 throw new InvalidOptionException("Option 'id' does not match any user.");
@@ -56,7 +55,7 @@ class GenerateUserApiTokenCommand extends AbstractUserCommand
         $helper = $this->getHelper('question');
         $question = new ConfirmationQuestion(sprintf('Generate API token(s) for %s user(s) ?', count($users)), false);
         if (!$helper->ask($input, $output, $question)) {
-            return;
+            return 0;
         }
 
         foreach ($users as $user) {
@@ -67,8 +66,9 @@ class GenerateUserApiTokenCommand extends AbstractUserCommand
                 str_pad('.', 64 - mb_strlen($name), '.', STR_PAD_LEFT)
             ));
 
-            SecurityUtil::generateApiToken($user);
-            $event = $this->userOperator->update($user);
+            $this->securityUtil->generateToken($user);
+
+            $event = $this->userManager->update($user);
 
             if ($event->hasErrors()) {
                 $output->writeln('<error>error</error>');
@@ -77,5 +77,7 @@ class GenerateUserApiTokenCommand extends AbstractUserCommand
 
             $output->writeln('<info>done</info>');
         }
+
+        return 0;
     }
 }

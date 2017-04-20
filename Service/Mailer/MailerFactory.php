@@ -1,11 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Service\Mailer;
 
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
-use Ekyna\Bundle\AdminBundle\Service\Security\UserProviderInterface;
-use Symfony\Bundle\SwiftmailerBundle\DependencyInjection\SwiftmailerTransportFactory;
-use Symfony\Component\Routing\RequestContext;
+use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
+use Ekyna\Component\User\Service\UserProvider;
+use Symfony\Component\Mailer\Exception\ExceptionInterface;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Transport\Dsn;
+use Symfony\Component\Mime\Email;
+
+use function array_keys;
+use function reset;
 
 /**
  * Class MailerFactory
@@ -14,68 +24,36 @@ use Symfony\Component\Routing\RequestContext;
  */
 class MailerFactory
 {
-    /**
-     * @var \Swift_Mailer
-     */
-    private $defaultMailer;
+    private MailerInterface         $defaultMailer;
+    private Transport               $transportFactory;
+    private UserProvider            $userProvider;
+    private UserRepositoryInterface $userRepository;
 
-    /**
-     * @var \Swift_Events_EventDispatcher
-     */
-    private $eventDispatcher;
+    /** @var MailerInterface[] */
+    private array $userMailers;
 
-    /**
-     * @var UserProviderInterface
-     */
-    private $userProvider;
-
-    /**
-     * @var RequestContext
-     */
-    private $requestContext;
-
-    /**
-     * @var \Swift_Mailer[]
-     */
-    private $userMailers;
-
-
-    /**
-     * Constructor.
-     *
-     * @param \Swift_Mailer                 $defaultMailer
-     * @param \Swift_Events_EventDispatcher $eventDispatcher
-     * @param UserProviderInterface         $userProvider
-     * @param RequestContext                $requestContext
-     */
     public function __construct(
-        \Swift_Mailer $defaultMailer,
-        \Swift_Events_EventDispatcher $eventDispatcher,
-        UserProviderInterface $userProvider,
-        RequestContext $requestContext = null
+        MailerInterface         $defaultMailer,
+        Transport               $transportFactory,
+        UserProvider            $userProvider,
+        UserRepositoryInterface $userRepository
     ) {
         $this->defaultMailer = $defaultMailer;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->transportFactory = $transportFactory;
         $this->userProvider = $userProvider;
-        $this->requestContext = $requestContext;
+        $this->userRepository = $userRepository;
     }
 
     /**
      * Send the given Message like it would be sent in a mail client.
-     *
-     * @param \Swift_Mime_Message $message
-     * @param UserInterface       $sender
-     * @param array               $failedRecipients An array of failures by-reference
-     *
-     * @return int The number of successful recipients. Can be 0 which indicates failure
      */
-    public function send(\Swift_Mime_Message $message, &$failedRecipients = null, UserInterface $sender = null)
+    public function send(Email $message, UserInterface $sender = null): bool
     {
         $from = array_keys($message->getFrom());
         $from = reset($from);
 
         if (!$sender && $from) {
-            if (null !== $sender = $this->userProvider->findUserByEmail($from, false)) {
+            if ($sender = $this->userRepository->findOneByEmail($from, true)) {
                 $current = $this->userProvider->getUser();
 
                 if ($current && ($current !== $sender)) {
@@ -86,19 +64,19 @@ class MailerFactory
 
         $mailer = $this->getUserMailer($sender);
 
-        $sent = $mailer->send($message, $failedRecipients);
+        try {
+            $mailer->send($message);
+        } catch (ExceptionInterface $exception) {
+            return false;
+        }
 
-        return $sent;
+        return true;
     }
 
     /**
      * Returns the mailer for the given user.
-     *
-     * @param UserInterface $user
-     *
-     * @return \Swift_Mailer
      */
-    public function getUserMailer(UserInterface $user = null)
+    public function getUserMailer(?UserInterface $user): MailerInterface
     {
         if (!$user) {
             return $this->defaultMailer;
@@ -108,18 +86,31 @@ class MailerFactory
             return $this->userMailers[$user->getId()];
         }
 
-        $config = $user->getEmailConfig();
-
-        if (isset($config['smtp']) && !empty($config['smtp'])) {
-            $transport = SwiftmailerTransportFactory::createTransport(
-                array_replace(['transport' => 'smtp'], $config['smtp']),
-                $this->requestContext,
-                $this->eventDispatcher
-            );
-
-            return $this->userMailers[$user->getId()] = \Swift_Mailer::newInstance($transport);
+        if ($mailer = $this->createUserMailer($user->getEmailConfig())) {
+            return $this->userMailers[$user->getId()] = $mailer;
         }
 
         return $this->userMailers[$user->getId()] = $this->defaultMailer;
+    }
+
+    private function createUserMailer(array $config): ?Mailer
+    {
+        $scheme = $config['smtp'] === 'smtp.gmail.com' ? 'gmail' : 'smtp';
+
+        $dsn = new Dsn(
+            $scheme,
+            $config['host'],
+            $config['username'],
+            $config['password'],
+            $config['port']
+        );
+
+        try {
+            $transport = $this->transportFactory->fromDsnObject($dsn);
+        } catch (ExceptionInterface $exception) {
+            return null;
+        }
+
+        return new Mailer($transport); // TODO bus / dispatcher
     }
 }

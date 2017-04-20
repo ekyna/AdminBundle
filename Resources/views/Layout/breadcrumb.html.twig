@@ -2,6 +2,9 @@
 
 {% block label %}
 {% apply spaceless %}
-    {{ item.label|trans|raw }}
+    {{ item.label|trans(
+        item.extra('translation_params', {}),
+        item.extra('translation_domain', 'messages')
+    )|raw }}
 {% endapply %}
 {% endblock label %}

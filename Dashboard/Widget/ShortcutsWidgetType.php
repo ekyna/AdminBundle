@@ -1,16 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Dashboard\Widget;
 
+use Ekyna\Bundle\AdminBundle\Action\CreateAction;
+use Ekyna\Bundle\AdminBundle\Action\ListAction;
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type\AbstractWidgetType;
-use Ekyna\Bundle\AdminBundle\Menu\MenuPool;
-use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
-use Ekyna\Component\Resource\Model\Actions;
+use Ekyna\Bundle\AdminBundle\Service\Menu\MenuPool;
+use Ekyna\Bundle\ResourceBundle\Helper\ResourceHelper;
+use Ekyna\Component\Resource\Action\Permission;
+use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Routing\Exception\ExceptionInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Twig\Environment;
+
+use function array_pop;
+use function array_shift;
+use function ceil;
 
 /**
  * Class ShortcutsWidgetType
@@ -19,91 +25,43 @@ use Twig\Environment;
  */
 class ShortcutsWidgetType extends AbstractWidgetType
 {
-    /**
-     * @var MenuPool
-     */
-    private $menuPool;
+    public const NAME = 'admin_shortcuts';
 
-    /**
-     * @var ConfigurationRegistry
-     */
-    private $registry;
+    private MenuPool       $pool;
+    private ResourceHelper $helper;
 
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorization;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $urlGenerator;
-
-
-    /**
-     * Constructor.
-     *
-     * @param MenuPool                      $menuPool
-     * @param ConfigurationRegistry         $registry
-     * @param AuthorizationCheckerInterface $authorization
-     * @param UrlGeneratorInterface         $urlGenerator
-     */
-    public function __construct(
-        MenuPool $menuPool,
-        ConfigurationRegistry $registry,
-        AuthorizationCheckerInterface $authorization,
-        UrlGeneratorInterface $urlGenerator
-    ) {
-        $this->menuPool = $menuPool;
-        $this->registry = $registry;
-        $this->authorization = $authorization;
-        $this->urlGenerator = $urlGenerator;
+    public function __construct(MenuPool $pool, ResourceHelper $helper)
+    {
+        $this->pool = $pool;
+        $this->helper = $helper;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function render(WidgetInterface $widget, Environment $twig)
+    public function render(WidgetInterface $widget, Environment $twig): string
     {
+        /** @noinspection PhpUnhandledExceptionInspection */
         return $twig->render('@EkynaAdmin/Dashboard/widget_shortcuts.html.twig', [
             'columns' => $this->createColumns(),
         ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
 
-        $resolver
-            ->setDefaults([
-                'title'    => 'ekyna_admin.shortcuts',
-                'position' => -9999,
-            ]);
+        $resolver->setDefaults([
+            'title'        => 'shortcuts',
+            'trans_domain' => 'EkynaAdmin',
+            'position'     => -9999,
+        ]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'admin_shortcuts';
-    }
-
-    /**
-     * Creates the columns.
-     *
-     * @return array
-     */
-    private function createColumns()
+    private function createColumns(): array
     {
         $groups = $this->createGroups();
 
         // Sort groups by count desc
-        usort($groups, function ($gA, $gB) {
-            if ($gA['count'] == $gB['count']) {
+        usort($groups, function (array $gA, array $gB): int {
+            if ($gA['count'] === $gB['count']) {
                 return 0;
             }
 
@@ -120,7 +78,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
         $currentCount = 0;
         $columns = [];
         $columnGroups = [];
-        do {
+        while (!empty($groups)) {
             if (empty($columnGroups)) {
                 $group = array_shift($groups);
                 $columnGroups[] = $group;
@@ -139,46 +97,65 @@ class ShortcutsWidgetType extends AbstractWidgetType
             $columns[] = $columnGroups;
             $columnGroups = [];
             $currentCount = 0;
-        } while (!empty($groups));
+        }
 
         return $columns;
     }
 
-    /**
-     * Creates the groups.
-     *
-     * @return array
-     */
-    private function createGroups()
+    private function createGroups(): array
     {
         $groups = [];
 
-        foreach ($this->menuPool->getGroups() as $menuGroup) {
+        foreach ($this->pool->getGroups() as $menuGroup) {
             // Entries
             $entries = [];
             foreach ($menuGroup->getEntries() as $menuEntry) {
                 $entry = [
                     'label'  => $menuEntry->getLabel(),
                     'domain' => $menuEntry->getDomain(),
-                    'path'   => $this->urlGenerator->generate($menuEntry->getRoute()),
                 ];
+
                 if (null !== $resource = $menuEntry->getResource()) {
-                    if (null !== $config = $this->registry->findByName($resource)) {
-                        if (!$this->authorization->isGranted(Actions::VIEW, $resource)) {
-                            continue;
-                        }
-                        if (null !== $config->getParentId()) {
-                            continue;
-                        }
-                        if ($this->authorization->isGranted(Actions::CREATE, $resource)) {
-                            try {
-                                $path = $this->urlGenerator->generate($config->getRoute('new'));
-                                $entry['create_path'] = $path;
-                            } catch (ExceptionInterface $e) {
-                            }
+                    $config = $this->helper->getResourceConfig($resource);
+
+                    if (empty($entry['label'])) {
+                        $entry['label'] = $config->getResourceLabel(true);
+                        $entry['domain'] = $config->getTransDomain();
+                    }
+
+                    try {
+                        $entry['path'] = $this
+                            ->helper
+                            ->generateResourcePath($resource, ListAction::class);
+                    } catch (Exception $e) {
+                        continue;
+                    }
+
+                    // Skip if resource has a parent context
+                    if (null !== $config->getParentId()) {
+                        continue;
+                    }
+
+                    // Skip if read is not granted
+                    if (!$this->helper->isGranted(Permission::READ, $resource)) {
+                        continue;
+                    }
+
+                    // Add create button if granted
+                    if ($this->helper->isGranted(Permission::CREATE, $resource)) {
+                        try {
+                            $entry['create_path'] = $this
+                                ->helper
+                                ->generateResourcePath($resource, CreateAction::class);
+                        } catch (Exception $e) {
                         }
                     }
+                } elseif (!empty($route = $menuEntry->getRoute())) {
+                    $entry['path'] = $this->helper->getUrlGenerator()->generate($menuEntry->getRoute());
+                } else {
+                    continue;
                 }
+
                 $entries[] = $entry;
             }
 
@@ -192,7 +169,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
                 $group['entries'] = $entries;
                 $group['count'] = count($entries) + 2;
             } elseif (!empty($route = $menuGroup->getRoute())) {
-                $group['path'] = $this->urlGenerator->generate($route);
+                $group['path'] = $this->helper->getUrlGenerator()->generate($route);
                 $group['count'] = 2;
             } else {
                 continue;
@@ -202,5 +179,10 @@ class ShortcutsWidgetType extends AbstractWidgetType
         }
 
         return $groups;
+    }
+
+    public static function getName(): string
+    {
+        return self::NAME;
     }
 }

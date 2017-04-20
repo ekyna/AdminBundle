@@ -1,0 +1,19 @@
+{% extends '@EkynaAdmin/Entity/layout.html.twig' %}
+
+{% set resource_name = context.config.dashedName %}
+
+{% block page_title %}
+{{ context.config.resourceLabel(true)|trans({}, context.config.transDomain)|raw }}
+{% endblock page_title %}
+
+{% block title %}
+<h1>{{ (context.config.transPrefix ~ '.header.list')|trans({}, context.config.transDomain)|raw }}</h1>
+{% endblock title %}
+
+{% block actions %}
+{{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') }}
+{% endblock actions %}
+
+{% block main %}
+{{ ekyna_table_render(table) }}
+{% endblock main %}

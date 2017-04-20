@@ -1,0 +1,99 @@
+administration: Administration
+login_header: Authentification
+dashboard: Dashboard
+shortcuts: Shortcuts
+configuration: Configuration
+homepage: Home page
+acl: Permissions
+navbar:
+    go_to_front: To front office
+confirm:
+    delete: Are you sure you want to delete this element ?
+settings:
+    general:
+        label: General
+        site_name: Website name
+        site_address: Website address
+        admin_name: Main contact name
+        admin_email: Main contact email
+    notification:
+        label: Notifications
+        from_name: Sender name
+        from_email: Sender email
+        no_reply: No reply email
+        to_emails: Recipients emails
+resource:
+    button:
+        show_admin: Back office sheet
+        show_front: Front office page
+        show_editor: Edit content
+user:
+    label:
+        singular: User
+        plural: Users
+    header:
+        list: Users <small>List of the users</small>
+        show: Use details <small>%name%</small>
+        new: Create a new user
+        edit: Edit the user <small>%name%</small>
+        remove: Remove the user <small>%name%</small>
+    button:
+        list: Users list
+        show: User details
+        new: New user
+        edit: Edit the user
+        generate_password: Generate a new password
+        clear_password_request: Cancel the password reset request
+        generate_api_token: Generate API token
+        remove: Remove the suser
+        impersonate: Use the user session
+    field:
+        email_config: Email configuration
+        email_signature: Email signature
+        api_token: API Token
+    alert:
+        empty_list: No user configured
+        no_password_request: No password reset request found
+        password_request_cleared: Password reset request has been canceled
+    message:
+        operation_denied: You are not allowed to create, edit or delete users.
+        credentials_sent: An email with the sign in information has been sent to the user.
+group:
+    label:
+        singular: Users group
+        plural: Users groups
+    header:
+        list: User groups <small>List of the groups</small>
+        show: Users group details <small>%name%</small>
+        new: Create a new user group
+        edit: Edit the group <small>%name%</small>
+        edit_permissions: Edit group privileges <small>%name%</small>
+        remove: Remove the group <small>%name%</small>
+    button:
+        list: Groups list
+        show: Group details
+        new: New group
+        edit: Edit the group
+        edit_permissions: Edit the permissions
+        remove: Remove the group
+    alert:
+        empty_list: No group configured
+    message:
+        operation_denied: You are not allowed to create, edit or delete users groups.
+email:
+    new_password:
+        subject: "[%sitename%] New credentials"
+        title : New credentials
+        message: |
+            <p>Hi,</p>
+            <p>This email concerns your %sitename% password change.</p>
+            <p>Now you can <a href="%login_url%">sign in</a> using your new credentials:</p>
+            Username : <strong>%login%</strong><br>
+            Password : <strong>%password%</strong>.</p>
+    login_success:
+        subject: "[%sitename%] Notification de connexion"
+        title : Sign in notification
+        message: |
+            <p>Hi,</p>
+            <p>This email about a successfull sign in with your account credentials on %sitename% at %date%.<br>
+            If you did not perform this connection yourself, please change your password and warn our administrator.</p>

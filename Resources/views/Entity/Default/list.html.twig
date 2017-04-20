@@ -2,7 +2,7 @@
 
 {% set resources = _context[resource_name|pluralize] %}
 
-{% block page_title %}{{ (trans_prefix ~ '.label.plural')|trans|raw }} - {{ parent() }}{% endblock page_title %}
+{% block page_title %}{{ (trans_prefix ~ '.label.plural')|trans|raw }}{% endblock page_title %}
 
 {% block title %}
 <h1>{{ (trans_prefix ~ '.header.list')|trans|raw }}</h1>

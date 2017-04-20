@@ -1,0 +1,29 @@
+{% extends '@EkynaAdmin/Entity/Crud/read.html.twig' %}
+
+
+{% block main_tabs %}
+    <li class="active">
+        <a href="#group-general" id="toggle-general" data-toggle="tab">
+            {{ 'field.general'|trans({}, 'EkynaUi') }}
+        </a>
+    </li>
+    <li>
+        <a href="#group-acl" id="toggle-general" data-toggle="tab">
+            {{ 'acl'|trans({}, 'EkynaAdmin') }}
+        </a>
+    </li>
+{% endblock main_tabs %}
+
+
+{% block main_contents %}
+    <div class="tab-pane active" id="group-general">
+        {{ show_row(group.name, 'text', {
+            'label': 'field.name',
+            'label_trans_domain': 'EkynaUi'
+        }) }}
+    </div>
+    <div class="tab-pane" id="group-acl">
+        {{ resource_acl_list(group) }}
+    </div>
+{% endblock main_contents %}
+

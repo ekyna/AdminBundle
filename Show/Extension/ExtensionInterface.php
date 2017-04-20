@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Show\Extension;
 
 use Ekyna\Bundle\AdminBundle\Show\Type\TypeInterface;
@@ -18,7 +20,7 @@ interface ExtensionInterface
      *
      * @return bool
      */
-    public function hasType($name);
+    public function hasType(string $name): bool;
 
     /**
      * Returns the type for the given name.
@@ -27,5 +29,5 @@ interface ExtensionInterface
      *
      * @return TypeInterface
      */
-    public function getType($name);
+    public function getType(string $name): TypeInterface;
 }

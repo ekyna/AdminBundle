@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\WidgetInterface;
@@ -19,7 +21,7 @@ interface WidgetTypeInterface
      * @param WidgetInterface $widget
      * @param array           $options
      */
-    public function buildWidget(WidgetInterface $widget, array $options);
+    public function buildWidget(WidgetInterface $widget, array $options): void;
 
     /**
      * Renders the widget.
@@ -29,19 +31,19 @@ interface WidgetTypeInterface
      *
      * @return string
      */
-    public function render(WidgetInterface $widget, Environment $twig);
+    public function render(WidgetInterface $widget, Environment $twig): string;
 
     /**
      * Configures the options.
      *
      * @param OptionsResolver $resolver
      */
-    public function configureOptions(OptionsResolver $resolver);
+    public function configureOptions(OptionsResolver $resolver): void;
 
     /**
      * Returns the name.
      *
      * @return string
      */
-    public function getName();
+    public static function getName(): string;
 }

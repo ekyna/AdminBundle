@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Entity;
 
+use DateTime;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 
 /**
@@ -11,40 +14,13 @@ use Ekyna\Bundle\AdminBundle\Model\UserInterface;
  */
 class UserPin
 {
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var UserInterface
-     */
-    private $user;
-
-    /**
-     * @var string
-     */
-    private $path;
-
-    /**
-     * @var string
-     */
-    private $label;
-
-    /**
-     * @var string
-     */
-    private $resource;
-
-    /**
-     * @var string
-     */
-    private $identifier;
-
-    /**
-     * @var \DateTime
-     */
-    private $createdAt;
+    private ?int           $id         = null;
+    private ?UserInterface $user       = null;
+    private ?string        $path       = null;
+    private ?string        $label      = null;
+    private ?string        $resource   = null;
+    private ?string        $identifier = null;
+    private DateTime       $createdAt;
 
 
     /**
@@ -52,7 +28,7 @@ class UserPin
      */
     public function __construct()
     {
-        $this->createdAt = new \DateTime();
+        $this->createdAt = new DateTime();
     }
 
     /**
@@ -70,7 +46,7 @@ class UserPin
      *
      * @return int
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -80,7 +56,7 @@ class UserPin
      *
      * @return UserInterface
      */
-    public function getUser()
+    public function getUser(): ?UserInterface
     {
         return $this->user;
     }
@@ -92,7 +68,7 @@ class UserPin
      *
      * @return UserPin
      */
-    public function setUser(UserInterface $user)
+    public function setUser(UserInterface $user): UserPin
     {
         $this->user = $user;
 
@@ -104,7 +80,7 @@ class UserPin
      *
      * @return string
      */
-    public function getPath()
+    public function getPath(): ?string
     {
         return $this->path;
     }
@@ -116,7 +92,7 @@ class UserPin
      *
      * @return UserPin
      */
-    public function setPath($path)
+    public function setPath(string $path): UserPin
     {
         $this->path = $path;
 
@@ -128,7 +104,7 @@ class UserPin
      *
      * @return string
      */
-    public function getLabel()
+    public function getLabel(): ?string
     {
         return $this->label;
     }
@@ -140,7 +116,7 @@ class UserPin
      *
      * @return UserPin
      */
-    public function setLabel($label)
+    public function setLabel(string $label): UserPin
     {
         $this->label = $label;
 
@@ -152,7 +128,7 @@ class UserPin
      *
      * @return string
      */
-    public function getResource()
+    public function getResource(): ?string
     {
         return $this->resource;
     }
@@ -164,7 +140,7 @@ class UserPin
      *
      * @return UserPin
      */
-    public function setResource($resource)
+    public function setResource(string $resource): UserPin
     {
         $this->resource = $resource;
 
@@ -176,7 +152,7 @@ class UserPin
      *
      * @return string
      */
-    public function getIdentifier()
+    public function getIdentifier(): ?string
     {
         return $this->identifier;
     }
@@ -188,7 +164,7 @@ class UserPin
      *
      * @return UserPin
      */
-    public function setIdentifier($identifier)
+    public function setIdentifier(string $identifier): UserPin
     {
         $this->identifier = $identifier;
 
@@ -198,9 +174,9 @@ class UserPin
     /**
      * Returns the "created at" date.
      *
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreatedAt()
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
@@ -208,13 +184,13 @@ class UserPin
     /**
      * Sets the "created at" date.
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $date
      *
      * @return UserPin
      */
-    public function setCreatedAt(\DateTime $createdAt)
+    public function setCreatedAt(DateTime $date): UserPin
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt = $date;
 
         return $this;
     }
@@ -224,7 +200,7 @@ class UserPin
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'id'         => $this->getId(),

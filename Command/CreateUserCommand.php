@@ -1,12 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\Command;
 
+use Ekyna\Bundle\AdminBundle\Factory\UserFactoryInterface;
 use Ekyna\Bundle\AdminBundle\Repository\GroupRepositoryInterface;
 use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
-use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
-use Ekyna\Component\Resource\Operator\ResourceOperatorInterface;
+use Ekyna\Component\Resource\Manager\ResourceManagerInterface;
+use Ekyna\Component\User\Service\SecurityUtil;
 use RuntimeException;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -24,52 +28,39 @@ class CreateUserCommand extends AbstractUserCommand
 {
     protected static $defaultName = 'ekyna:admin:create-user';
 
-    /**
-     * @var GroupRepositoryInterface
-     */
-    protected $groupRepository;
+    protected GroupRepositoryInterface $groupRepository;
+    protected UserFactoryInterface     $userFactory;
 
-
-    /**
-     * Constructor.
-     *
-     * @param UserRepositoryInterface   $userRepository
-     * @param ResourceOperatorInterface $userOperator
-     * @param GroupRepositoryInterface  $groupRepository
-     */
     public function __construct(
         UserRepositoryInterface $userRepository,
-        ResourceOperatorInterface $userOperator,
+        ResourceManagerInterface $userManager,
+        SecurityUtil $securityUtil,
+        UserFactoryInterface $userFactory,
         GroupRepositoryInterface $groupRepository
     ) {
-        parent::__construct($userRepository, $userOperator);
+        parent::__construct($userRepository, $userManager, $securityUtil);
 
+        $this->userFactory = $userFactory;
         $this->groupRepository = $groupRepository;
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->addArgument('group', InputArgument::OPTIONAL, 'The user group id')
             ->addArgument('email', InputArgument::OPTIONAL, 'The user email')
             ->addArgument('password', InputArgument::OPTIONAL, 'The user password')
-            ->setDescription("Creates a new admin user.");
+            ->setDescription('Creates a new admin user.');
     }
 
-    /**
-     * @inheritdoc
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var \Symfony\Component\Console\Helper\QuestionHelper $helper */
+        /** @var QuestionHelper $helper */
         $helper = $this->getHelperSet()->get('question');
 
         // Group  ---------------------------------------------------------------
         $group = null;
-        if ($id = $input->getArgument('group')) {
+        if ($id = (int)$input->getArgument('group')) {
             $group = $this->groupRepository->find($id);
         }
         if (is_null($group)) {
@@ -80,7 +71,7 @@ class CreateUserCommand extends AbstractUserCommand
             if (empty($groups)) {
                 $output->writeln('<error>Please create groups first.</error>');
 
-                return;
+                return 1;
             }
 
             $question = new ChoiceQuestion('Please select the user group', array_keys($groups), 0);
@@ -104,7 +95,7 @@ class CreateUserCommand extends AbstractUserCommand
 
         try {
             $email = $emailValidator($input->getArgument('email'));
-        } catch (Throwable $e) {
+        } catch (Throwable $exception) {
             $email = null;
         }
         if (is_null($email)) {
@@ -128,7 +119,7 @@ class CreateUserCommand extends AbstractUserCommand
 
         try {
             $password = $passwordValidator($input->getArgument('password'));
-        } catch (Throwable $e) {
+        } catch (Throwable $exception) {
             $password = null;
         }
         if (is_null($password)) {
@@ -144,26 +135,25 @@ class CreateUserCommand extends AbstractUserCommand
         if (!($group && $email)) {
             $output->writeln('<info>Abort.</info>');
 
-            return;
+            return 0;
         }
 
         // Create user ---------------------------------------------------------------
-        /** @var \Ekyna\Bundle\AdminBundle\Model\UserInterface $user */
-        $user = $this->userRepository->createNew();
+        $user = $this->userFactory->create();
         $user
             ->setGroup($group)
             ->setEmail($email)
-            ->setActive(true);
+            ->setEnabled(true);
 
         // Set or generate password
         if (empty($password)) {
-            $password = SecurityUtil::generatePassword($user);
+            $password = $this->securityUtil->generatePassword();
             $output->writeln(sprintf('<info>Generated password: %s.</info>', $password));
-        } else {
-            $user->setPlainPassword($password);
         }
 
-        $event = $this->userOperator->create($user);
+        $user->setPlainPassword($password);
+
+        $event = $this->userManager->create($user);
 
         if ($event->hasErrors()) {
             $output->writeln(sprintf(
@@ -171,12 +161,14 @@ class CreateUserCommand extends AbstractUserCommand
                 $user->getEmail()
             ));
 
-            return;
+            return 1;
         }
 
         $output->writeln(sprintf(
             '<info>Admin user "%s" has been successfully created.</info>',
             $user->getEmail()
         ));
+
+        return 0;
     }
 }

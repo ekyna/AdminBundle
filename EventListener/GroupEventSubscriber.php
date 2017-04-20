@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Ekyna\Bundle\AdminBundle\EventListener;
 
 use Ekyna\Bundle\AdminBundle\Event\GroupEvents;
 use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
 use Ekyna\Component\Resource\Event\ResourceEventInterface;
 use Ekyna\Component\Resource\Event\ResourceMessage;
-use Ekyna\Component\Resource\Exception\InvalidArgumentException;
+use Ekyna\Component\Resource\Exception\UnexpectedTypeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -18,15 +20,8 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  */
 class GroupEventSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var TokenStorageInterface
-     */
-    protected $tokenStorage;
-
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    protected $authorization;
+    protected TokenStorageInterface         $tokenStorage;
+    protected AuthorizationCheckerInterface $authorization;
 
 
     /**
@@ -46,7 +41,7 @@ class GroupEventSubscriber implements EventSubscriberInterface
      *
      * @param ResourceEventInterface $event
      */
-    public function onPreCreate(ResourceEventInterface $event)
+    public function onPreCreate(ResourceEventInterface $event): void
     {
         $this->preventIfNotSupperAdmin($event);
     }
@@ -56,7 +51,7 @@ class GroupEventSubscriber implements EventSubscriberInterface
      *
      * @param ResourceEventInterface $event
      */
-    public function onPreUpdate(ResourceEventInterface $event)
+    public function onPreUpdate(ResourceEventInterface $event): void
     {
         $this->preventIfNotSupperAdmin($event);
     }
@@ -66,7 +61,7 @@ class GroupEventSubscriber implements EventSubscriberInterface
      *
      * @param ResourceEventInterface $event
      */
-    public function onPreDelete(ResourceEventInterface $event)
+    public function onPreDelete(ResourceEventInterface $event): void
     {
         $this->preventIfNotSupperAdmin($event);
     }
@@ -78,17 +73,19 @@ class GroupEventSubscriber implements EventSubscriberInterface
      *
      * @return bool
      */
-    private function preventIfNotSupperAdmin(ResourceEventInterface $event)
+    private function preventIfNotSupperAdmin(ResourceEventInterface $event): bool
     {
         if (null === $this->tokenStorage->getToken()) {
             return false;
         }
 
         if (!$this->authorization->isGranted('ROLE_SUPER_ADMIN')) {
-            $event->addMessage(new ResourceMessage(
-                'ekyna_admin.group.message.operation_denied',
-                ResourceMessage::TYPE_ERROR
-            ));
+            $event->addMessage(
+                ResourceMessage::create(
+                    'group.message.operation_denied',
+                    ResourceMessage::TYPE_ERROR
+                )->setDomain('EkynaAdmin')
+            );
 
             return true;
         }
@@ -103,12 +100,12 @@ class GroupEventSubscriber implements EventSubscriberInterface
      *
      * @return GroupInterface
      */
-    protected function getGroupFromEvent(ResourceEventInterface $event)
+    protected function getGroupFromEvent(ResourceEventInterface $event): GroupInterface
     {
         $group = $event->getResource();
 
         if (!$group instanceof GroupInterface) {
-            throw new InvalidArgumentException("Expected instance of " . GroupInterface::class);
+            throw new UnexpectedTypeException($group, GroupInterface::class);
         }
 
         return $group;
@@ -117,7 +114,7 @@ class GroupEventSubscriber implements EventSubscriberInterface
     /**
      * @inheritDoc
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             GroupEvents::PRE_CREATE => ['onPreCreate'],
