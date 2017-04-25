@@ -14,8 +14,13 @@ iframe {
 
 /* labels */
 .label, .badge {
+    margin-left: 6px;
     font-weight: lighter;
     font-size: 90%;
+}
+
+.label:first-child, .badge:first-child {
+    margin-left: 0;
 }
 
 .label-success, .badge-success {

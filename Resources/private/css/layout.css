@@ -629,6 +629,19 @@ input.search {
     border-bottom: 1px solid #eee;
 }
 
+.main-header {
+    overflow: hidden;
+}
+
+.main-header .infos {
+    float: left;
+    padding: 4px 0 12px 0;
+}
+
+.main-header .actions {
+    float: right;
+}
+
 .actions {
     text-align: right;
 }
