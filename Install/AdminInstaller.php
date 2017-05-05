@@ -81,9 +81,14 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
         }
 
         $this->userRepository = $this->container->get('ekyna_user.user.repository');
-        /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface $superAdmin */
-        if (null !== $superAdmin = $this->userRepository->findOneBy(['group' => $this->superAdminGroup])) {
-            $output->writeln(sprintf('Super admin already exists (<comment>%s</comment>).', $superAdmin->getEmail()));
+        /** @var \Ekyna\Bundle\UserBundle\Model\UserInterface[] $superAdmins */
+        $superAdmins = $this->userRepository->findBy(['group' => $this->superAdminGroup]);
+        if (0 < count($superAdmins)) {
+            $emails = [];
+            foreach ($superAdmins as $superAdmin) {
+                $emails[] = $superAdmin->getEmail();
+            }
+            $output->writeln(sprintf('Super admin already exists (<comment>%s</comment>).', implode(', ', $emails)));
             return;
         }
 

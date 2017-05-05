@@ -300,7 +300,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         $resource = $context->getResource();
 
-        $action = $this->generateResourcePath($resource, 'new');
+        if (isset($options['action'])) {
+            $action = $options['action'];
+        } else {
+            $action = $this->generateResourcePath($resource, 'new');
+        }
 
         $form = $this->createForm($this->config->getFormType(), $resource, array_merge([
             'action'            => $action,
