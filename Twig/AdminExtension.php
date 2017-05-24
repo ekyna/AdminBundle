@@ -4,7 +4,6 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 
 use Ekyna\Bundle\AdminBundle\Helper\ResourceHelper;
 use Ekyna\Bundle\CoreBundle\Twig\UiExtension;
-use Symfony\Bridge\Twig\Extension\AssetExtension;
 
 /**
  * Class AdminExtension

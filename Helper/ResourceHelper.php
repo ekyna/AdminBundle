@@ -22,7 +22,7 @@ class ResourceHelper
     private $em;
 
     /**
-     * @var \Ekyna\Component\Resource\Configuration\ConfigurationRegistry
+     * @var ConfigurationRegistry
      */
     private $registry;
 
@@ -40,10 +40,10 @@ class ResourceHelper
     /**
      * Constructor.
      *
-     * @param EntityManagerInterface                                        $em
-     * @param \Ekyna\Component\Resource\Configuration\ConfigurationRegistry $registry
-     * @param AclOperatorInterface                                          $aclOperator
-     * @param RouterInterface                                               $router
+     * @param EntityManagerInterface $em
+     * @param ConfigurationRegistry  $registry
+     * @param AclOperatorInterface   $aclOperator
+     * @param RouterInterface        $router
      */
     public function __construct(
         EntityManagerInterface $em,

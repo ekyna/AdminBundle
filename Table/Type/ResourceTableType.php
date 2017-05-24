@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Table\Type;
 
 use Ekyna\Component\Table\AbstractTableType;
+use Ekyna\Component\Table\Bridge\Doctrine\ORM\Source\EntitySource;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -33,11 +34,11 @@ abstract class ResourceTableType extends AbstractTableType
         parent::configureOptions($resolver);
 
         $resolver->setDefaults([
-            'data_class' => $this->dataClass,
-            'selector_config' => [
+            'source' => new EntitySource($this->dataClass),
+            /*'selector_config' => [
                 'property_path' => 'id',
                 'data_map' => ['id', 'name' => null],
-            ]
+            ]*/
         ]);
     }
 }

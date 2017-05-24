@@ -4,7 +4,6 @@ namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Doctrine\ORM\QueryBuilder;
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Ekyna\Component\Resource\Search\SearchRepositoryInterface;
@@ -73,13 +72,13 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $context = $this->loadContext($request);
 
-        $table = $this->getTableFactory()
-            ->createBuilder($this->config->getTableType(), [
-                'name'     => $this->config->getResourceId(),
-                'selector' => (bool)$request->get('selector', false), // TODO use constants (single/multiple)
-                'multiple' => (bool)$request->get('multiple', false),
-            ])
-            ->getTable($request);
+        $table = $this
+            ->getTableFactory()
+            ->createTable($this->config->getResourceName(), $this->config->getTableType());
+
+        if (null !== $response = $table->handleRequest($request)) {
+            return $response;
+        }
 
         if ($request->isXmlHttpRequest()) {
             $modal = $this->createModal('list');
@@ -114,8 +113,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             return $response;
         }
 
-        $this->fetchChildrenResources($data, $context);
-
         /* TODO if ($request->isXmlHttpRequest()) {
             $modal = $this->createModal('show');
             $modal->setVars($context->getTemplateVars($data));
@@ -143,70 +140,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         Context $context
     ) {
         return null;
-    }
-
-    /**
-     * Fetches children resources.
-     *
-     * @param array   $data
-     * @param Context $context
-     *
-     * @throws \Doctrine\ORM\Mapping\MappingException
-     */
-    protected function fetchChildrenResources(array &$data, Context $context)
-    {
-        $resourceName = $this->config->getResourceName();
-
-        $resource = $context->getResource($resourceName);
-        $accessor = PropertyAccess::createPropertyAccessor();
-
-        $childrenConfigurations = $this->get('ekyna_resource.configuration_registry')->getChildren($this->config);
-        foreach ($childrenConfigurations as $childConfig) {
-            $childResourceName = $childConfig->getResourceName(true);
-
-            // Skip if the parent has a children getter
-            if ($accessor->isReadable($resource, $childResourceName) || array_key_exists($childResourceName, $data)) {
-                continue;
-            }
-            // Skip if the child table type does not exists
-            if (!$this->getTableFactory()->getRegistry()->hasTableType($childConfig->getTableType())) {
-                continue;
-            }
-
-            $customizeQb = null;
-
-            /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata */
-            $metadata = $this->get($childConfig->getServiceKey('metadata'));
-
-            // Look for many to one
-            $associations = $metadata->getAssociationsByTargetClass($this->config->getResourceClass());
-            if (!empty($associations)) {
-                foreach ($associations as $mapping) {
-                    if ($mapping['type'] === ClassMetadataInfo::MANY_TO_ONE) {
-                        $propertyPath = $mapping['fieldName'];
-                        $customizeQb = function (QueryBuilder $qb, $alias) use ($propertyPath, $resource) {
-                            $qb
-                                ->andWhere(sprintf($alias . '.%s = :resource', $propertyPath))
-                                ->setParameter('resource', $resource);
-                        };
-                        break;
-                    }
-                }
-            }
-
-            if (!$customizeQb) {
-                throw new \RuntimeException(sprintf('Association "%s" not found or not supported.', $childResourceName));
-            }
-
-            $table = $this->getTableFactory()
-                ->createBuilder($childConfig->getTableType(), [
-                    'name'         => $childConfig->getResourceId(),
-                    'customize_qb' => $customizeQb,
-                ])
-                ->getTable($context->getRequest());
-
-            $data[$childResourceName] = $table->createView();
-        }
     }
 
     /**
@@ -854,7 +787,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Returns the table factory.
      *
-     * @return \Ekyna\Component\Table\TableFactory
+     * @return \Ekyna\Component\Table\Factory
      */
     protected function getTableFactory()
     {
@@ -892,7 +825,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      *
      * @throws \RuntimeException
      *
-     * @return ResourceInterface
+     * @return object|ResourceInterface
      */
     protected function createNew(Context $context)
     {

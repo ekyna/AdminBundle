@@ -66,14 +66,29 @@
         </service>
 
         <!-- Table types -->
-        <service id="ekyna_admin.table.actions_column" class="Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsType">
+        <service id="ekyna_admin.table.actions_column_type_extension"
+                 class="Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsTypeExtension">
             <argument type="service" id="ekyna_admin.acl_operator" />
-            <tag name="table.column_type" alias="admin_actions" />
+            <tag name="table.column_type_extension" extended_type="Ekyna\Bundle\TableBundle\Extension\Type\Column\ActionsType"/>
         </service>
-        <service id="ekyna_admin.table.nested_actions_column" class="Ekyna\Bundle\AdminBundle\Table\Type\Column\NestedActionsType">
+        <service id="ekyna_admin.table.entity_column_type_extension"
+                 class="Ekyna\Bundle\AdminBundle\Table\Type\Column\EntityTypeExtension">
             <argument type="service" id="ekyna_admin.acl_operator" />
-            <tag name="table.column_type" alias="admin_nested_actions" />
+            <tag name="table.column_type_extension" extended_type="Ekyna\Component\Table\Bridge\Doctrine\ORM\Type\Column\EntityType"/>
         </service>
+
+        <!-- Table profile storage -->
+        <service id="ekyna_admin.table.profile_storage"
+                 class="Ekyna\Bundle\AdminBundle\Table\Context\Profile\UserStorage">
+            <argument type="service" id="security.token_storage"/>
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+        </service>
+        <service id="ekyna_admin.user_storage.table_type_extension"
+                 class="Ekyna\Bundle\AdminBundle\Table\Context\TableTypeExtension">
+            <argument type="service" id="ekyna_admin.table.profile_storage"/>
+            <tag name="table.type_extension" extended_type="Ekyna\Component\Table\Extension\Core\Type\TableType"/>
+        </service>
+
 
         <!-- Resource Helper -->
         <service id="ekyna_admin.helper.resource_helper" class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper">
