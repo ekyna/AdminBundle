@@ -230,6 +230,14 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
     }
 
     /**
+     * @inheritDoc
+     */
+    public function getName()
+    {
+        return 'ekyna_admin';
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getOrder()
