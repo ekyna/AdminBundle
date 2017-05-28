@@ -31,14 +31,8 @@ abstract class ResourceTableType extends AbstractTableType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        parent::configureOptions($resolver);
-
         $resolver->setDefaults([
             'source' => new EntitySource($this->dataClass),
-            /*'selector_config' => [
-                'property_path' => 'id',
-                'data_map' => ['id', 'name' => null],
-            ]*/
         ]);
     }
 }

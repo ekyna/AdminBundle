@@ -1,34 +1,34 @@
 {
-    "name" : "ekyna/admin-bundle",
-    "description" : "Admin creation tools",
-    "type" : "symfony-bundle",
-    "authors" : [{
-            "name" : "Etienne Dauvergne",
-            "homepage" : "http://ekyna.com"
+    "name": "ekyna/admin-bundle",
+    "description": "Admin creation tools",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "Etienne Dauvergne",
+            "homepage": "http://ekyna.com"
         }
     ],
-    "keywords" : [
-        "symfony2",
+    "keywords": [
+        "symfony",
         "administration",
         "backend",
         "bundle"
     ],
-    "homepage" : "https://github.com/ekyna/AdminBundle",
-    "license" : [
-        "MIT"
-    ],
-    "require" : {
-        "php" : ">=5.5.9",
-        "ekyna/resource-bundle" : "0.6.x-dev",
-        "ekyna/user-bundle" : "0.6.x-dev",
-        "ekyna/google-bundle" : "0.6.x-dev",
-        "ekyna/setting-bundle" : "0.6.x-dev",
-        "ekyna/install-bundle" : "0.6.x-dev",
+    "homepage": "https://github.com/ekyna/AdminBundle",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.0",
+        "ekyna/resource-bundle": "0.7.x-dev",
+        "ekyna/table-bundle": "0.7.x-dev",
+        "ekyna/user-bundle": "0.7.x-dev",
+        "ekyna/google-bundle": "0.7.x-dev",
+        "ekyna/setting-bundle": "0.7.x-dev",
+        "ekyna/install-bundle": "0.7.x-dev",
         "symfony/security-acl": "^3.0"
     },
-    "autoload" : {
-        "psr-4" : {
-            "Ekyna\\Bundle\\AdminBundle\\" : ""
+    "autoload": {
+        "psr-4": {
+            "Ekyna\\Bundle\\AdminBundle\\": ""
         }
     }
 }
