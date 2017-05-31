@@ -141,6 +141,17 @@
     vertical-align: baseline;
 }
 
+.show-body .collection-item {
+    border-radius: 4px;
+    border: 1px dashed #ddd;
+    background-color: #f5f5f5;
+    padding: 15px 15px 1px 15px;
+    margin-bottom: 15px;
+}
+.show-body .collection-item .collection-item {
+    background-color: #ebebeb;
+}
+
 /**
  * ACL Table
  */
