@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class AdminInstaller
  * @package Ekyna\Bundle\AdminBundle\Install
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterface, ContainerAwareInterface
 {
@@ -58,10 +58,10 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
      * [name => [[roles], permission, default]]
      */
     protected $defaultGroups = [
-        'Super administrateur' => [['ROLE_SUPER_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'], 'MASTER', false],
+        'Super administrateur' => [['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'], 'MASTER', false],
         'Administrateur'       => [['ROLE_ADMIN'], 'OPERATOR', false],
         'Modérateur'           => [['ROLE_ADMIN'], 'EDIT', false],
-        'Utilisateur'          => [[], 'VIEW', true],
+        'Utilisateur'          => [['RULE_USER'], 'VIEW', true],
     ];
 
     /**
@@ -77,6 +77,7 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
         /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
         if (null === $this->superAdminGroup = $groupRepository->findOneBy(['name' => array_keys($this->defaultGroups)[0]])) {
             $output->writeln('Super admin group not found, aborting.');
+
             return;
         }
 
@@ -89,15 +90,16 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
                 $emails[] = $superAdmin->getEmail();
             }
             $output->writeln(sprintf('Super admin already exists (<comment>%s</comment>).', implode(', ', $emails)));
+
             return;
         }
 
-        $definition = new InputDefinition(array(
+        $definition = new InputDefinition([
             new InputArgument('email'),
             new InputArgument('password'),
             new InputArgument('firstName'),
             new InputArgument('lastName'),
-        ));
+        ]);
 
         $this->userDataInput = new ArrayInput([], $definition);
     }
@@ -156,17 +158,27 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
                 $name,
                 str_pad('.', 44 - mb_strlen($name), '.', STR_PAD_LEFT)
             ));
+
+            /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
             if (null !== $group = $repository->findOneBy(['name' => $name])) {
-                $output->writeln('already exists.');
+                if ($group->getRoles() === $options[0]) {
+                    $output->writeln('already exists.');
+                } else {
+                    $group->setRoles($options[0]);
+                    $em->persist($group);
+                    $output->writeln('updated.');
+                }
+
                 continue;
             }
+
             /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
             $group = $repository->createNew();
             $group
                 ->setDefault($options[2])
                 ->setName($name)
-                ->setRoles($options[0])
-            ;
+                ->setRoles($options[0]);
+
             $em->persist($group);
             $output->writeln('created.');
         }
@@ -206,7 +218,8 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
     /**
      * Creates the super admin user.
      *
-     * @param Command $command
+     * @param Command         $command
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     private function createSuperAdmin(Command $command, InputInterface $input, OutputInterface $output)
