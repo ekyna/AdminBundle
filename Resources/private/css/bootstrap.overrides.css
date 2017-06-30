@@ -365,7 +365,7 @@ textarea::-webkit-input-placeholder {
     padding-right: 10px !important;
 }
 
-table tr.first td {
+.table tr.first td {
     border-top: 0 none;
 }
 
@@ -378,7 +378,7 @@ table tr.first td {
     background-color: #f9f9f9;
 }
 
-table thead th:before {
+.table thead th:before {
     display: inline-block;
     position: absolute;
     top: 0;
@@ -389,7 +389,7 @@ table thead th:before {
     content: "";
 }
 
-table thead th:last-child:after {
+.table thead th:last-child:after {
     display: inline-block;
     position: absolute;
     top: 0;

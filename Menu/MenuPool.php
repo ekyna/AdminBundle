@@ -53,12 +53,12 @@ class MenuPool
         $this->groupOptionsResolver = new OptionsResolver();
         $this->groupOptionsResolver
             ->setDefaults([
-            	'name'     => null,
-            	'label'    => null,
-            	'icon'     => null,
-            	'position' => 1,
-            	'domain'   => 'messages',
-            	'route'    => null,
+                'name'     => null,
+                'label'    => null,
+                'icon'     => null,
+                'position' => 1,
+                'domain'   => 'messages',
+                'route'    => null,
             ])
             ->setAllowedTypes('name',     'string')
             ->setAllowedTypes('label',    'string')
@@ -71,12 +71,12 @@ class MenuPool
         $this->entryOptionsResolver = new OptionsResolver();
         $this->entryOptionsResolver
             ->setDefaults([
-            	'name'     => null,
-            	'label'    => null,
-            	'route'    => null,
-            	'position' => 1,
+                'name'     => null,
+                'label'    => null,
+                'route'    => null,
+                'position' => 1,
                 'domain'   => 'messages',
-            	'resource' => null,
+                'resource' => null,
             ])
             ->setAllowedTypes('name',     'string')
             ->setAllowedTypes('label',    'string')
@@ -89,9 +89,9 @@ class MenuPool
 
     /**
      * Creates a menu group.
-     * 
+     *
      * @param array $options
-     * 
+     *
      * @throws \RuntimeException
      */
     public function createGroup(array $options)
@@ -107,10 +107,10 @@ class MenuPool
 
     /**
      * Creates a menu entry.
-     * 
+     *
      * @param string $group_name
      * @param array $options
-     * 
+     *
      * @throws \RuntimeException
      */
     public function createEntry($group_name, array $options)
@@ -121,13 +121,14 @@ class MenuPool
 
         $entry = new MenuEntry($this->entryOptionsResolver->resolve($options));
 
-        $group = $this->getGroup($group_name);
-        $group->addEntry($entry);
+        if (null !== $group = $this->getGroup($group_name)) {
+            $group->addEntry($entry);
+        }
     }
 
     /**
      * Add group to menu
-     * 
+     *
      * @param MenuGroup $group
      */
     private function addGroup(MenuGroup $group)
@@ -139,9 +140,9 @@ class MenuPool
 
     /**
      * Check if menu group is allready defined
-     * 
+     *
      * @param string $group_name
-     * 
+     *
      * @return boolean
      */
     private function hasGroup($group_name)
@@ -151,9 +152,9 @@ class MenuPool
 
     /**
      * Get a menu group by his name
-     * 
+     *
      * @param string $group_name
-     * 
+     *
      * @return MenuGroup
      */
     private function getGroup($group_name)
@@ -162,12 +163,12 @@ class MenuPool
             return $this->groups[$group_name];
         }
 
-        return false;
+        return null;
     }
 
     /**
      * Returns the menu groups.
-     * 
+     *
      * @return MenuGroup[]
      */
     public function getGroups()
