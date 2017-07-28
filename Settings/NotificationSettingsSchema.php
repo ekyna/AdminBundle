@@ -99,12 +99,4 @@ class NotificationSettingsSchema extends AbstractSchema
     {
         return 'EkynaAdminBundle:Settings/Notification:form.html.twig';
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-        return 'ekyna_admin_settings_notification';
-    }
 }

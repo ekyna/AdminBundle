@@ -61,7 +61,7 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
         'Super administrateur' => [['ROLE_ADMIN', 'ROLE_SUPER_ADMIN', 'ROLE_ALLOWED_TO_SWITCH'], 'MASTER', false],
         'Administrateur'       => [['ROLE_ADMIN'], 'OPERATOR', false],
         'Modérateur'           => [['ROLE_ADMIN'], 'EDIT', false],
-        'Utilisateur'          => [['RULE_USER'], 'VIEW', true],
+        'Utilisateur'          => [['ROLE_USER'], 'VIEW', true],
     ];
 
     /**

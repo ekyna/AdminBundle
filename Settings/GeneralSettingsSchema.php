@@ -93,12 +93,4 @@ class GeneralSettingsSchema extends AbstractSchema
     {
         return 'EkynaAdminBundle:Settings/General:form.html.twig';
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-        return 'ekyna_admin_settings_general';
-    }
 }
