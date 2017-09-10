@@ -20,8 +20,12 @@ ekyna_admin_security_login:
 ekyna_admin_security_check:
     path: /login-check
     methods: [POST]
-    defaults: 
+    defaults:
         _controller: EkynaAdminBundle:Security:check
 
 ekyna_admin_security_logout:
     path: /logout
+
+ekyna_admin_pin:
+    resource: routing/pin.yml
+    prefix: /pin

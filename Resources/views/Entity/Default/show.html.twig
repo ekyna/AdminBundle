@@ -2,7 +2,10 @@
 
 {% set resource = _context[resource_name] %}
 
+{% block page_title %}{{ resource|raw }} - {{ parent() }}{% endblock page_title %}
+
 {% block title %}
+{{ admin_resource_pin(resource) }}
 <h1>{{ (resource_id ~ '.header.show')|trans({'%name%': resource})|raw }}</h1>
 {% endblock title %}
 

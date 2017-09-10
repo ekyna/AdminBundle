@@ -160,7 +160,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
 
         var $this = $(this), $target = $('#' + $this.data('toggle-details'));
 
-        if (1 == $target.size()) {
+        if (1 === $target.size()) {
             if ($target.is(':visible')) {
                 $target.hide();
             } else {
@@ -171,11 +171,76 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         return false;
     });
 
+    // Resource pin/unpin
+    $(document).on('click', 'a.user-pin', function(e) {
+        e.preventDefault();
+
+        var $this = $(this),
+            $list = $('.navbar li.user-pins > div'),
+            url = $this.attr('href');
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            dataType: 'json'
+        })
+        .done(function(data) {
+            if (data.hasOwnProperty('added')) {
+                var $span = $('<span data-id="' + data.added.id + '"></span>'),
+                    $link = $('<a href="' + data.added.path + '">' + data.added.label + '</a>'),
+                    $remove = ('<a href="' + router.generate('ekyna_admin_pin_remove', {id: data.added.id}) + '"><i class="fa fa-remove"></i></a>');
+
+                $span
+                    .append($link)
+                    .append($remove)
+                    .prependTo($list);
+
+                $this
+                    .addClass('unpin')
+                    .attr('href', router.generate('ekyna_admin_pin_resource_unpin', {
+                        name: data.added.resource,
+                        identifier: data.added.identifier
+                    }));
+            } else if (data.hasOwnProperty('removed')) {
+                $list
+                    .find('span[data-id=' + data.removed.id + ']')
+                    .remove();
+
+                $this
+                    .addClass('unpin')
+                    .attr('href', router.generate('ekyna_admin_pin_resource_pin', {
+                        name: data.removed.resource,
+                        identifier: data.removed.identifier
+                    }));
+            }
+        });
+
+        return false;
+    });
+
+    $('li.user-pins').on('click', 'a:last-child', function(e) {
+        e.preventDefault();
+
+        var $this = $(this), url = $this.attr('href');
+
+        $.ajax({
+            url: url,
+            method: 'GET'
+        })
+        .done(function() {
+            $this.parent().remove();
+
+            // TODO toggle resource pin link (show)
+        });
+
+        return false;
+    });
+
     /* Helpers */
     var $helperContent = $('#helper-content:visible');
     var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');
 
-    if ($helperContent.length == 1) {
+    if ($helperContent.length === 1) {
         function loadHelper(reference) {
             $helperContent.empty();
             if (reference) {
@@ -189,7 +254,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
                 .done(function(xmldata) {
                     $helperLoading.remove();
                     var $content = $(xmldata).find('content');
-                    if ($content.length == 1) {
+                    if ($content.length === 1) {
                         var $div = $('<div />');
                         $($content.text()).appendTo($div);
                         $div.appendTo($helperContent);

@@ -2,6 +2,8 @@
 
 {% set resource = _context[resource_name] %}
 
+{% block page_title %}{{ resource|raw }} - {{ parent() }}{% endblock page_title %}
+
 {% block title %}
 <h1>{{ (resource_id ~ '.header.edit')|trans({'%name%': resource})|raw }}</h1>
 {% endblock title %}

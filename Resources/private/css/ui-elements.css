@@ -60,7 +60,7 @@
 }
 
 #pad-wrapper .ctrls .pagination {
-    margin: 5px 0px;
+    margin: 5px 0;
 }
 
 #pad-wrapper .ctrls .pagination.inverse {
@@ -68,7 +68,7 @@
 }
 
 #pad-wrapper .ctrls h4 {
-    margin: 20px 0px 20px 0px;
+    margin: 20px 0 20px 0;
 }
 
 #pad-wrapper .ctrls .dropdown .dropdown-menu {
@@ -82,7 +82,7 @@
 }
 
 #pad-wrapper .ctrls .tab-content {
-    padding: 0px 10px;
+    padding: 0 10px;
     margin-bottom: 20px;
 }
 
@@ -94,7 +94,7 @@
     border-top: 1px solid #edeff1;
     margin-top: 100px;
     padding-top: 45px;
-    box-shadow: inset 0px 3px 4px -1px #fafafa;
+    box-shadow: inset 0 3px 4px -1px #fafafa;
 }
 
 /* Don't override bootstrap datetimepicker css */
@@ -112,12 +112,12 @@
 /* for menu dialog sample */
 .pop-dialog .menu {
     width: 200px;
-    margin: 5px -10px 0px -10px;
+    margin: 5px -10px 0 -10px;
 }
 
 .pop-dialog .menu .item {
     display: block;
-    padding: 5px 0px 5px 20px;
+    padding: 5px 0 5px 20px;
     font-weight: 600;
     color: #333;
     text-decoration: none;
@@ -132,8 +132,8 @@
 .pop-dialog .menu .footer {
     border-top: 1px solid #e6e8e9;
     background-color: #eff4f7;
-    margin: 15px 0px -10px 0px;
-    border-radius: 0px 0px 5px 5px;
+    margin: 15px 0 -10px 0;
+    border-radius: 0 0 5px 5px;
     padding: 12px 20px;
 }
 
@@ -149,7 +149,7 @@
 
 .pop-dialog .settings {
     width: auto;
-    margin: 5px -10px 0px -10px;
+    margin: 5px -10px 0 -10px;
     position: relative;
 }
 
@@ -172,7 +172,7 @@
 
 .pop-dialog .settings .items .item {
     display: block;
-    padding: 7px 0px 7px 20px;
+    padding: 7px 0 7px 20px;
     color: #333;
     font-size: 13px;
     font-weight: 600;
@@ -184,7 +184,7 @@
 }
 
 .pop-dialog .settings .items .item:first-child {
-    border-top: 0px;
+    border-top: 0;
 }
 
 .pop-dialog .settings .items .item .check {

@@ -2,12 +2,14 @@
 <!DOCTYPE html>
 <html lang="{{ app.request.locale }}">
 <head>
-    <title>
-        {% block page_title %}{{ 'ekyna_admin.title'|trans }}{% endblock page_title %}
-    </title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
+
+    <title>
+        {% block page_title %}{{ 'ekyna_admin.title'|trans }}{% endblock page_title %}
+    </title>
+
     <link rel="shortcut icon" href="/bundles/ekynaadmin/img/favicon.ico">
 
     {% block stylesheets %}

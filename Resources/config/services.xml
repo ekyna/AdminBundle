@@ -89,7 +89,6 @@
             <tag name="table.type_extension" extended_type="Ekyna\Component\Table\Extension\Core\Type\TableType"/>
         </service>
 
-
         <!-- Resource Helper -->
         <service id="ekyna_admin.helper.resource_helper" class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper">
             <argument type="service" id="doctrine.orm.default_entity_manager" />
@@ -98,9 +97,18 @@
             <argument type="service" id="router" />
         </service>
 
+        <!-- Pin Helper -->
+        <service id="ekyna_admin.helper.pin_helper" class="Ekyna\Bundle\AdminBundle\Helper\PinHelper">
+            <argument type="service" id="ekyna_resource.configuration_registry" />
+            <argument type="service" id="ekyna_user.user_provider" />
+            <argument type="service" id="ekyna_admin.helper.resource_helper" />
+            <argument type="service" id="doctrine.orm.default_entity_manager" />
+        </service>
+
         <!-- Twig Extensions -->
         <service id="ekyna_admin.twig.admin_extension" class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
             <argument type="service" id="ekyna_admin.helper.resource_helper" />
+            <argument type="service" id="ekyna_admin.helper.pin_helper" />
             <argument type="service" id="ekyna_core.twig.ui_extension" />
             <argument>%ekyna_admin.config.front%</argument>
             <tag name="twig.extension" />

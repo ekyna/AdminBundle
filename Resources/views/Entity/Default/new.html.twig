@@ -1,5 +1,7 @@
 {% extends "EkynaAdminBundle:Entity:sided.html.twig" %}
 
+{% block page_title %}{{ (resource_id ~ '.label.singular')|trans|raw }} - {{ parent() }}{% endblock page_title %}
+
 {% block title %}
 <h1>{{ (resource_id ~ '.header.new')|trans|raw }}</h1>
 {% endblock title %}

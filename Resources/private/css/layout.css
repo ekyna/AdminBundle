@@ -301,6 +301,65 @@ input.search {
     margin-top: 6px;
 }
 
+.navbar-inverse .nav > li.user-pins {
+    position: relative;
+    padding: 0;
+    max-width: 200px;
+    height: 46px;
+}
+
+.navbar-inverse .nav > li.user-pins > div {
+    height: 46px;
+    padding: 0 6px 6px 6px;
+    overflow: hidden;
+    background: #2c3742;
+    background: -moz-linear-gradient(top, #2c3742 0%, #28303a 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #2c3742), color-stop(100%, #28303a));
+    background: -webkit-linear-gradient(top, #2c3742 0%, #28303a 100%);
+    background: -o-linear-gradient(top, #2c3742 0%, #28303a 100%);
+    background: -ms-linear-gradient(top, #2c3742 0%, #28303a 100%);
+    background: linear-gradient(to bottom, #2c3742 0%, #28303a 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#2c3742', endColorstr='#28303a', GradientType=0);
+}
+
+.navbar-inverse .nav > li.user-pins:hover > div {
+    height: auto;
+    border-radius: 0 0 4px 4px;
+    min-height: 46px;
+}
+
+.navbar-inverse .nav > li.user-pins > div > span {
+    float: left;
+    display: inline-block;
+    margin: 2px;
+}
+
+.navbar-inverse .nav > li.user-pins > div > span > a {
+    padding: 2px 6px;
+    display: inline-block;
+    background: #34414d;
+    outline: 0;
+    color: #a8a8a8;
+    line-height: 15px;
+    height: auto;
+}
+
+.navbar-inverse .nav > li.user-pins > div > span > a:first-child {
+    border-radius: 3px 0 0 3px;
+}
+
+.navbar-inverse .nav > li.user-pins > div > span > a:last-child {
+    border-radius: 0 3px 3px 0;
+    border-left: 1px solid #2c3742;
+}
+
+.navbar-inverse .nav > li.user-pins > div > span > a:hover,
+.navbar-inverse .nav > li.user-pins > div > span > a:active {
+    background: #445566;
+    color: #d6d6d6;
+    text-decoration: none;
+}
+
 /* Sidebar */
 #sidebar-nav {
     position: absolute;
@@ -606,6 +665,27 @@ input.search {
 
 .page-header {
     margin-top: 0;
+}
+
+.page-header a.user-pin {
+    display: inline-block;
+    float: left;
+    color: #ccc;
+    font-size: 18px;
+    line-height: 36px;
+    margin-right: 6px;
+}
+.page-header a.user-pin:hover,
+.page-header a.user-pin:active {
+    color: #6187c0;
+}
+
+.page-header a.user-pin.unpin {
+    color: #6187c0;
+}
+.page-header a.user-pin.unpin:hover,
+.page-header a.user-pin.unpin:active {
+    color: #ccc;
 }
 
 .page-header h1 {

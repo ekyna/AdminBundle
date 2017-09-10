@@ -2,20 +2,28 @@
 
 namespace Ekyna\Bundle\AdminBundle\Twig;
 
+use Ekyna\Bundle\AdminBundle\Entity\UserPin;
 use Ekyna\Bundle\AdminBundle\Helper\ResourceHelper;
+use Ekyna\Bundle\AdminBundle\Helper\PinHelper;
 use Ekyna\Bundle\CoreBundle\Twig\UiExtension;
+use Ekyna\Component\Resource\Model\ResourceInterface;
 
 /**
  * Class AdminExtension
  * @package Ekyna\Bundle\AdminBundle\Twig
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class AdminExtension extends \Twig_Extension
 {
     /**
      * @var ResourceHelper
      */
-    private $helper;
+    private $resourceHelper;
+
+    /**
+     * @var PinHelper
+     */
+    private $pinHelper;
 
     /**
      * @var UiExtension
@@ -31,16 +39,19 @@ class AdminExtension extends \Twig_Extension
     /**
      * Constructor.
      *
-     * @param ResourceHelper $helper
+     * @param ResourceHelper $resourceHelper
+     * @param PinHelper      $pinHelper
      * @param UiExtension    $ui
      * @param array          $config
      */
     public function __construct(
-        ResourceHelper $helper,
+        ResourceHelper $resourceHelper,
+        PinHelper $pinHelper,
         UiExtension $ui,
         $config
     ) {
-        $this->helper = $helper;
+        $this->resourceHelper = $resourceHelper;
+        $this->pinHelper = $pinHelper;
         $this->ui = $ui;
         $this->config = $config;
     }
@@ -51,12 +62,14 @@ class AdminExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('admin_logo_path',       [$this, 'getLogoPath']),
-            new \Twig_SimpleFunction('admin_navbar_config',   [$this, 'getNavbarConfig']),
-            new \Twig_SimpleFunction('admin_stylesheets',     [$this, 'renderStylesheets'],    ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('admin_resource_btn',    [$this, 'renderResourceButton'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('admin_logo_path', [$this, 'getLogoPath']),
+            new \Twig_SimpleFunction('admin_navbar_config', [$this, 'getNavbarConfig']),
+            new \Twig_SimpleFunction('admin_stylesheets', [$this, 'renderStylesheets'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('admin_resource_btn', [$this, 'renderResourceButton'], ['is_safe' => ['html']]),
             new \Twig_SimpleFunction('admin_resource_access', [$this, 'hasResourceAccess']),
-            new \Twig_SimpleFunction('admin_resource_path',   [$this, 'generateResourcePath']),
+            new \Twig_SimpleFunction('admin_resource_path', [$this, 'generateResourcePath']),
+            new \Twig_SimpleFunction('admin_user_pins', [$this, 'getUserPins']),
+            new \Twig_SimpleFunction('admin_resource_pin', [$this, 'renderResourcePin'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -99,7 +112,7 @@ class AdminExtension extends \Twig_Extension
     /**
      * Renders a resource action button.
      *
-     * @param mixed $resource
+     * @param mixed  $resource
      * @param string $action
      * @param array  $options
      * @param array  $attributes
@@ -108,7 +121,7 @@ class AdminExtension extends \Twig_Extension
      */
     public function renderResourceButton($resource, $action = 'show', array $options = [], array $attributes = [])
     {
-        if ($this->helper->isGranted($resource, $action)) {
+        if ($this->resourceHelper->isGranted($resource, $action)) {
             $options = array_merge($this->getButtonOptions($action), $options);
 
             $label = null;
@@ -122,12 +135,12 @@ class AdminExtension extends \Twig_Extension
                 unset($options['short']);
             }
             if (null === $label) {
-                $config = $this->helper->getRegistry()->findConfiguration($resource);
+                $config = $this->resourceHelper->getRegistry()->findConfiguration($resource);
                 $label = sprintf('%s.button.%s', $config->getResourceId(), $action);
             }
 
             if (!array_key_exists('path', $options)) {
-                $options['path'] = $this->helper->generateResourcePath($resource, $action);
+                $options['path'] = $this->resourceHelper->generateResourcePath($resource, $action);
             }
             if (!array_key_exists('type', $options)) {
                 $options['type'] = 'link';
@@ -146,28 +159,71 @@ class AdminExtension extends \Twig_Extension
     /**
      * Returns whether the user has access granted or not on the given resource for the given action.
      *
-     * @param mixed $resource
+     * @param mixed  $resource
      * @param string $action
      *
      * @return bool
      */
     public function hasResourceAccess($resource, $action = 'view')
     {
-        return $this->helper->isGranted($resource, $action);
+        return $this->resourceHelper->isGranted($resource, $action);
     }
 
     /**
      * Returns the resource path.
      *
-     * @param mixed $resource
+     * @param mixed  $resource
      * @param string $action
-     * @param array $parameters
+     * @param array  $parameters
      *
      * @return string
      */
     public function generateResourcePath($resource, $action = 'show', array $parameters = [])
     {
-        return $this->helper->generateResourcePath($resource, $action, $parameters);
+        return $this->resourceHelper->generateResourcePath($resource, $action, $parameters);
+    }
+
+    /**
+     * Returns the user pins.
+     *
+     * @return UserPin[]
+     */
+    public function getUserPins()
+    {
+        return $this->pinHelper->getUserPins();
+    }
+
+    /**
+     * Renders the resource pin link.
+     *
+     * @param ResourceInterface $resource
+     *
+     * @return string
+     */
+    public function renderResourcePin(ResourceInterface $resource)
+    {
+        $config = $this->resourceHelper->getRegistry()->findConfiguration($resource);
+
+        $class = 'user-pin';
+        if ($this->pinHelper->isPinnedResource($resource)) {
+            $route = 'ekyna_admin_pin_resource_unpin';
+            $class .= ' unpin';
+        } else {
+            $route = 'ekyna_admin_pin_resource_pin';
+        }
+
+        $parameters = [
+            'name'       => $config->getResourceId(),
+            'identifier' => $resource->getId(),
+        ];
+
+        $path = $this->resourceHelper->getRouter()->generate($route, $parameters);
+
+        return <<<EOT
+<a href="$path" class="$class">
+    <span class="glyphicon glyphicon-pushpin"></span>
+</a>
+EOT;
     }
 
     /**
@@ -182,17 +238,17 @@ class AdminExtension extends \Twig_Extension
         if ($action == 'new') {
             return [
                 'theme' => 'primary',
-                'icon' => 'plus',
+                'icon'  => 'plus',
             ];
         } elseif ($action == 'edit') {
             return [
                 'theme' => 'warning',
-                'icon' => 'pencil',
+                'icon'  => 'pencil',
             ];
         } elseif ($action == 'remove') {
             return [
                 'theme' => 'danger',
-                'icon' => 'trash',
+                'icon'  => 'trash',
             ];
         } elseif ($action == 'show') {
             return [
@@ -203,6 +259,7 @@ class AdminExtension extends \Twig_Extension
                 'icon' => 'list',
             ];
         }
+
         return [];
     }
 
