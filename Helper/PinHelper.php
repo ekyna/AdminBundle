@@ -97,7 +97,7 @@ class PinHelper
      * @param ResourceInterface  $resource
      * @param UserInterface|null $user
      *
-     * @return UserPin
+     * @return array
      */
     public function pinResource(ResourceInterface $resource, UserInterface $user = null)
     {
@@ -118,7 +118,7 @@ class PinHelper
             $this->manager->flush();
         }
 
-        return $pin;
+        return $pin->toArray();
     }
 
     /**
@@ -127,7 +127,7 @@ class PinHelper
      * @param ResourceInterface  $resource
      * @param UserInterface|null $user
      *
-     * @return UserPin|null
+     * @return array|null
      */
     public function unpinResource(ResourceInterface $resource, UserInterface $user = null)
     {
@@ -135,10 +135,12 @@ class PinHelper
 
         /** @var UserPin $pin */
         if (null !== $pin = $this->findResource($resource, $user)) {
+            $data = $pin->toArray();
+
             $this->manager->remove($pin);
             $this->manager->flush();
 
-            return $pin;
+            return $data;
         }
 
         return null;

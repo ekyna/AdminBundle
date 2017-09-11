@@ -24,12 +24,16 @@ class PinController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
+        $data = [];
+
         if (null !== $pin = $em->getRepository(UserPin::class)->find($id)) {
+            $data['removed'] = $pin->toArray();
+
             $em->remove($pin);
             $em->flush();
         }
 
-        return new JsonResponse(['success' => true]);
+        return new JsonResponse($data);
     }
 
     /**
@@ -46,10 +50,10 @@ class PinController extends Controller
             throw $this->createNotFoundException('Resource not found.');
         }
 
-        $pin = $this->get('ekyna_admin.helper.pin_helper')->pinResource($resource);
+        $pinData = $this->get('ekyna_admin.helper.pin_helper')->pinResource($resource);
 
         return new JsonResponse([
-            'added' => $pin->toArray(),
+            'added' => $pinData,
         ]);
     }
 
@@ -69,8 +73,8 @@ class PinController extends Controller
 
         $data = [];
 
-        if (null !== $pin = $this->get('ekyna_admin.helper.pin_helper')->unpinResource($resource)) {
-            $data['removed'] = $pin->toArray();
+        if (null !== $pinData = $this->get('ekyna_admin.helper.pin_helper')->unpinResource($resource)) {
+            $data['removed'] = $pinData;
         }
 
         return new JsonResponse($data);
@@ -91,6 +95,7 @@ class PinController extends Controller
         /** @var \Ekyna\Component\Resource\Doctrine\ORM\ResourceRepositoryInterface $repository */
         $repository = $this->get($config->getServiceKey('repository'));
 
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $repository->find($identifier);
     }
 }

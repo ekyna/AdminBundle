@@ -171,49 +171,70 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         return false;
     });
 
-    // Resource pin/unpin
-    $(document).on('click', 'a.user-pin', function(e) {
-        e.preventDefault();
+    /* -----------------------------------------------------------------------------------------------------------------
+     * User Pins
+     */
+    var $pinList = $('.navbar li.user-pins > div');
 
-        var $this = $(this),
-            $list = $('.navbar li.user-pins > div'),
-            url = $this.attr('href');
+    function handlePinResponse(data) {
+        var $userPinLink;
 
-        $.ajax({
-            url: url,
-            method: 'GET',
-            dataType: 'json'
-        })
-        .done(function(data) {
-            if (data.hasOwnProperty('added')) {
-                var $span = $('<span data-id="' + data.added.id + '"></span>'),
-                    $link = $('<a href="' + data.added.path + '">' + data.added.label + '</a>'),
-                    $remove = ('<a href="' + router.generate('ekyna_admin_pin_remove', {id: data.added.id}) + '"><i class="fa fa-remove"></i></a>');
+        if (data.hasOwnProperty('added')) {
+            // Add new entry in user pins list
+            var $span = $('<span data-id="' + data.added.id + '"></span>'),
+                $link = $('<a href="' + data.added.path + '">' + data.added.label + '</a>'),
+                path = router.generate('ekyna_admin_pin_remove', {id: data.added.id}),
+                $remove = ('<a href="' + path + '"><i class="fa fa-remove"></i></a>');
 
-                $span
-                    .append($link)
-                    .append($remove)
-                    .prependTo($list);
+            $span
+                .append($link)
+                .append($remove)
+                .prependTo($pinList);
 
-                $this
+            // Toggle (resource) user pin link
+            $userPinLink = $(
+                'a.user-pin' +
+                '[data-resource="' + data.added.resource + '"]' +
+                '[data-identifier="' + data.added.identifier + '"]'
+            );
+            if (1 === $userPinLink.size()) {
+                $userPinLink
                     .addClass('unpin')
                     .attr('href', router.generate('ekyna_admin_pin_resource_unpin', {
                         name: data.added.resource,
                         identifier: data.added.identifier
                     }));
-            } else if (data.hasOwnProperty('removed')) {
-                $list
-                    .find('span[data-id=' + data.removed.id + ']')
-                    .remove();
+            }
+        } else if (data.hasOwnProperty('removed')) {
+            // Remove entry in user pins list
+            $pinList
+                .find('span[data-id=' + data.removed.id + ']')
+                .remove();
 
-                $this
-                    .addClass('unpin')
+            // Toggle (resource) user pin link
+            $userPinLink = $(
+                'a.user-pin' +
+                '[data-resource="' + data.removed.resource + '"]' +
+                '[data-identifier="' + data.removed.identifier + '"]'
+            );
+            if (1 === $userPinLink.size()) {
+                $userPinLink
+                    .removeClass('unpin')
                     .attr('href', router.generate('ekyna_admin_pin_resource_pin', {
                         name: data.removed.resource,
                         identifier: data.removed.identifier
                     }));
             }
-        });
+        }
+    }
+
+    $(document).on('click', 'a.user-pin', function(e) {
+        e.preventDefault();
+
+        var $this = $(this),
+            url = $this.attr('href');
+
+        $.ajax({url: url, method: 'GET', dataType: 'json'}).done(handlePinResponse);
 
         return false;
     });
@@ -223,18 +244,11 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
 
         var $this = $(this), url = $this.attr('href');
 
-        $.ajax({
-            url: url,
-            method: 'GET'
-        })
-        .done(function() {
-            $this.parent().remove();
-
-            // TODO toggle resource pin link (show)
-        });
+        $.ajax({url: url, method: 'GET', dataType: 'json'}).done(handlePinResponse);
 
         return false;
     });
+
 
     /* Helpers */
     var $helperContent = $('#helper-content:visible');

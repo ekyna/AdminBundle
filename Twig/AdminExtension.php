@@ -220,7 +220,7 @@ class AdminExtension extends \Twig_Extension
         $path = $this->resourceHelper->getRouter()->generate($route, $parameters);
 
         return <<<EOT
-<a href="$path" class="$class">
+<a href="$path" class="$class" data-resource="{$config->getResourceId()}" data-identifier="{$resource->getId()}">
     <span class="glyphicon glyphicon-pushpin"></span>
 </a>
 EOT;

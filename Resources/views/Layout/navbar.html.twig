@@ -109,12 +109,12 @@
         </a>
     </li>
     #}
-    <li class="user-pins">
+    <li class="user-pins hidden-xs">
         <div>
             {% for pin in admin_user_pins() %}
             <span data-id="{{ pin.id }}">
                 <a href="{{ pin.path }}">
-                    {{ pin.label }}
+                    {{ pin.label|raw }}
                 </a>
                 <a href="{{ path('ekyna_admin_pin_remove', {'id': pin.id}) }}">
                     <i class="fa fa-remove"></i>
@@ -124,13 +124,13 @@
         </div>
     </li>
     {% for button in config.buttons -%}
-    <li class="settings hidden-xs hidden-sm">
+    <li class="settings hidden-xs">
         <a href="{{ path(button.route) }}" role="button" title="{{ button.title|trans }}" target="{{ button.target }}">
             <i class="fa fa-{{ button.icon }}"></i>
         </a>
     </li>
     {%- endfor %}
-    <li class="settings hidden-xs hidden-sm">
+    <li class="settings hidden-xs">
         <a href="{{ path('ekyna_admin_security_logout') }}" role="button" title="{{ 'ekyna_core.button.logout'|trans }}">
             <i class="fa fa-power-off"></i>
         </a>

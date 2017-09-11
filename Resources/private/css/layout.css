@@ -304,7 +304,7 @@ input.search {
 .navbar-inverse .nav > li.user-pins {
     position: relative;
     padding: 0;
-    max-width: 200px;
+    max-width: 260px;
     height: 46px;
 }
 
@@ -833,5 +833,17 @@ div.mce-fullscreen {
     #main-stats .stat {
         width: 50%;
         float: left;
+    }
+}
+
+@media (min-width: 992px) {
+    .navbar-inverse .nav > li.user-pins {
+        max-width: 400px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .navbar-inverse .nav > li.user-pins {
+        max-width: 500px;
     }
 }
