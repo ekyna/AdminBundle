@@ -2,9 +2,8 @@ AdminBundle
 ==========
 
 Provides support for backend creation, but not a backend generator.
-Inspired by some SyliusResourceBundle and SonataAdmin mechanics.
 
-## Instation
+## Installation
 TODO
 
 ## Configuration

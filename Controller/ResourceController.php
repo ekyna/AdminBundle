@@ -158,6 +158,8 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $resourceName = $this->config->getResourceName();
         $context->addResource($resourceName, $resource);
 
+        $this->getOperator()->initialize($resource);
+
         $form = $this->createNewResourceForm($context, !$isXhr);
 
         $form->handleRequest($request);
@@ -236,7 +238,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         if (isset($options['action'])) {
             $action = $options['action'];
         } else {
-            $action = $this->generateResourcePath($resource, 'new');
+            $action = $this->generateResourcePath($resource, 'new', $context->getRequest()->query->all());
         }
 
         $form = $this->createForm($this->config->getFormType(), $resource, array_merge([
@@ -354,7 +356,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     {
         $resource = $context->getResource();
 
-        $action = $this->generateResourcePath($resource, 'edit');
+        if (isset($options['action'])) {
+            $action = $options['action'];
+        } else {
+            $action = $this->generateResourcePath($resource, 'edit', $context->getRequest()->query->all());
+        }
 
         $form = $this->createForm($this->config->getFormType(), $resource, array_merge([
             'action'            => $action,
@@ -463,7 +469,11 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $resource = $context->getResource();
 
-        $action = $this->generateResourcePath($resource, 'remove');
+        if (isset($options['action'])) {
+            $action = $options['action'];
+        } else {
+            $action = $this->generateResourcePath($resource, 'remove', $context->getRequest()->query->all());
+        }
 
         $form = $this
             ->createFormBuilder(null, array_merge([
