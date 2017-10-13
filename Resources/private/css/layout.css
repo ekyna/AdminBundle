@@ -562,7 +562,7 @@ input.search {
     content: "\e080";
 }
 
-.content {
+body > .content {
     min-width: 400px;
     min-height:100%;
     overflow: hidden;
@@ -581,12 +581,12 @@ input.search {
     /* end skin changer*/
 }
 
-.content.wide-content {
+body > .content.wide-content {
     margin-left: 0;
     border-radius: 0;
 }
 
-.content .skins-nav {
+body > .content .skins-nav {
     opacity: 1;
     -webkit-transition: right .3s;
     -moz-transition: right .3s;
@@ -600,11 +600,11 @@ input.search {
     z-index: 9999;
 }
 
-.content .skins-nav:hover {
+body > .content .skins-nav:hover {
     right: 0;
 }
 
-.content .skins-nav a {
+body > .content .skins-nav a {
     display: block;
     color: #fff;
     text-decoration: none;
@@ -621,23 +621,23 @@ input.search {
     transition: all .5s;
 }
 
-.content .skins-nav a.first_nav {
+body > .content .skins-nav a.first_nav {
     background: rgba(95, 175, 228, 0.8);
 }
 
-.content .skins-nav a.first_nav:hover {
+body > .content .skins-nav a.first_nav:hover {
     background: #5fafe4;
 }
 
-.content .skins-nav a.second_nav {
+body > .content .skins-nav a.second_nav {
     background: rgba(36, 43, 77, 0.8);
 }
 
-.content .skins-nav a.second_nav:hover {
+body > .content .skins-nav a.second_nav:hover {
     background: #242b4d;
 }
 
-.content .skins-nav a .icon {
+body > .content .skins-nav a .icon {
     float: left;
     width: 9px;
     height: 10px;
@@ -645,11 +645,11 @@ input.search {
     margin: 15px 15px 0 5px;
 }
 
-.content .skins-nav a.selected .icon {
+body > .content .skins-nav a.selected .icon {
     background-position: 0 -9px;
 }
 
-.content .skins-nav a .text {
+body > .content .skins-nav a .text {
     padding-right: 12px;
     white-space: nowrap;
     display: block;
