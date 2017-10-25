@@ -1,5 +1,12 @@
 require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, router) {
 
+    // XHR forbidden access handler
+    $(document).ajaxError(function (event, jqXHR) {
+        if (403 === jqXHR.status) {
+            window.location.reload();
+        }
+    });
+
     /*var $ = require('jquery'),
         router = require('routing');
     require('bootstrap');*/
