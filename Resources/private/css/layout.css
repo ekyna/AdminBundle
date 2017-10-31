@@ -785,7 +785,7 @@ div.mce-fullscreen {
         padding: 0 15px;
     }
 
-    .content {
+    body > .content {
         min-width: 0;
         margin: 0;
     }

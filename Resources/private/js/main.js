@@ -7,6 +7,51 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         }
     });
 
+    function storageAvailable(type) {
+        try {
+            var storage = window[type],
+                x = '__storage_test__';
+            storage.setItem(x, x);
+            storage.removeItem(x);
+            return true;
+        }
+        catch(e) {
+            return e instanceof DOMException && (
+                    // everything except Firefox
+                e.code === 22 ||
+                // Firefox
+                e.code === 1014 ||
+                // test name field too, because code might not be present
+                // everything except Firefox
+                e.name === 'QuotaExceededError' ||
+                // Firefox
+                e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+                // acknowledge QuotaExceededError only if there's something already stored
+                storage.length !== 0;
+        }
+    }
+
+    var $navTab = $('ul.nav-tabs[data-tab-key]');
+    if (1 === $navTab.size() && storageAvailable('localStorage')) {
+        var tabKey = $navTab.data('tab-key') + '.tab_id';
+
+        $navTab.on('click', 'a', function (e) {
+            e.preventDefault();
+            $(this).tab('show');
+
+            var id = $(this).attr('id');
+            if (id) {
+                localStorage.setItem(tabKey, id);
+            }
+        });
+
+        var tabId = localStorage.getItem(tabKey);
+        if (tabId) {
+            $navTab.find('a#' + tabId).trigger('click');
+        }
+    }
+
+
     /*var $ = require('jquery'),
         router = require('routing');
     require('bootstrap');*/
