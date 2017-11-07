@@ -89,8 +89,7 @@ trait NestedTrait
         $form = $this->createNewResourceForm($context, !$isXhr, ['action' => $action]);
 
         $form->handleRequest($request);
-        if ($form->isValid()) {
-
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->getRepository()->persistAsLastChildOf($child, $resource);
 
             // TODO use ResourceManager
