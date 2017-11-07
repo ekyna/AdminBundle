@@ -217,7 +217,7 @@ class AdminExtension extends \Twig_Extension
             'identifier' => $resource->getId(),
         ];
 
-        $path = $this->resourceHelper->getRouter()->generate($route, $parameters);
+        $path = $this->resourceHelper->getUrlGenerator()->generate($route, $parameters);
 
         return <<<EOT
 <a href="$path" class="$class" data-resource="{$config->getResourceId()}" data-identifier="{$resource->getId()}">

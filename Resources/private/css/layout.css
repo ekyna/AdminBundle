@@ -756,7 +756,7 @@ body > .content .skins-nav a .text {
 
 /* Helpers */
 #helper-content {
-    margin-top: 39px;
+    /*margin-top: 39px;*/
 }
 
 #helper-content > div {

@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -78,11 +79,11 @@ class ResourceHelper
     }
 
     /**
-     * Returns the router.
+     * Returns the url generator.
      *
-     * @return RouterInterface
+     * @return UrlGeneratorInterface
      */
-    public function getRouter()
+    public function getUrlGenerator()
     {
         return $this->router;
     }
