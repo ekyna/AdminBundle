@@ -1,6 +1,6 @@
 {% block show_row %}
 {% spaceless %}
-    {% if compound and label is same as(false) %}
+    {% if label is null %}
         {{ content|raw }}
     {% else %}
         <div class="row show-row">
@@ -15,7 +15,7 @@
 
 {% block show_label %}
 {% spaceless %}
-    {% if label is not same as(false) %}
+    {% if label is not null %}
         <div class="col-md-{{ label_nb_col }} show-label">{{ label|trans }}</div>
     {% endif %}
 {% endspaceless %}
@@ -23,19 +23,34 @@
 
 {% block show_widget_simple %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
-        {% if content is same as (null) %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {% if content is empty %}
             <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {% else %}
-            {{ content|default('&nbsp;')|raw }}
+            {{ content|raw }}
         {% endif %}
     </div>
 {% endspaceless %}
 {% endblock show_widget_simple %}
 
+{% block show_widget_number %}
+{% spaceless %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {% if content is empty %}
+            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+        {% else %}
+            {{ content|localizednumber }}{% if append is not empty %}&nbsp;{{ append }}{% endif %}
+        {% endif %}
+    </div>
+{% endspaceless %}
+{% endblock show_widget_number %}
+
 {% block show_widget_tel %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {%- if content is not empty -%}
             {{ content|phone_number_format }}
         {%- else -%}
@@ -47,7 +62,8 @@
 
 {% block show_widget_datetime %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if content is empty %}
             <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {% else %}
@@ -59,7 +75,8 @@
 
 {% block show_widget_color %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if content is empty %}
             <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {% else %}
@@ -71,7 +88,8 @@
 
 {% block show_widget_checkbox %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {%- if content is same as(true) -%}
             {{ 'ekyna_core.value.yes'|trans }}
         {%- else -%}
@@ -83,7 +101,8 @@
 
 {% block show_widget_entity %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if entities is same as(null) -%}
             <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {%- elseif entities|length > 0 %}
@@ -118,7 +137,8 @@
 
 {% block show_widget_url %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if content is empty %}
             <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {% else %}
@@ -130,7 +150,8 @@
 
 {% block show_widget_textarea %}
 {% spaceless %}
-    <div class="show-widget show-widget-block"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if content is empty %}
             <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {% elseif options.html %}
@@ -144,7 +165,8 @@
 
 {% block show_widget_tinymce %}
 {% spaceless %}
-    <div class="show-widget show-widget-block"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         <iframe src="{{ route }}" style="height:{{ height }}px"></iframe>
     </div>
 {% endspaceless %}
@@ -160,7 +182,8 @@
 
 {% block show_widget_upload %}
 {% spaceless %}
-    <div class="show-widget show-widget-inline"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if upload is same as(null) %}
             <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {% else %}
@@ -179,7 +202,8 @@
 
 {% block show_widget_medias %}
 {% spaceless %}
-    <div class="show-widget show-widget-block"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% for media in medias %}
             {{ media|media_thumb }}
         {% else %}
@@ -234,7 +258,8 @@
 
 {% block show_widget_key_value_collection %}
 {% spaceless %}
-    <div class="show-widget show-widget-block"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if content is empty -%}
             <em>{{ 'ekyna_core.value.none'|trans }}</em>
         {%- else -%}
@@ -251,7 +276,8 @@
 
 {% block show_widget_coordinate %}
 {% spaceless %}
-    <div class="show-widget show-widget-block"{{ block('widget_attributes') }}>
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
         {% if map is empty -%}
             <em>{{ 'ekyna_core.value.none'|trans }}</em>
         {%- else -%}
@@ -342,9 +368,4 @@
 {% endblock translations_content %}
 
 
-{% block widget_attributes -%}
-{% spaceless %}
-    {#id="{{ id }}" name="{{ full_name }}"{% if disabled %} disabled="disabled"{% endif %}#}
-    {%- for key, value in attr %} {{ key }}="{{ value }}"{% endfor %}
-{% endspaceless %}
-{% endblock widget_attributes %}
+{% block widget_attributes -%}{% for key, value in attr %} {{ key }}="{{ value }}"{% endfor -%}{% endblock widget_attributes %}

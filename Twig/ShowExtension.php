@@ -39,7 +39,7 @@ class ShowExtension extends \Twig_Extension
     /**
      * Constructor
      *
-     * @param array $locales
+     * @param array  $locales
      * @param string $template
      */
     public function __construct(array $locales, $template = 'EkynaAdminBundle:Show:show_div_layout.html.twig')
@@ -72,11 +72,81 @@ class ShowExtension extends \Twig_Extension
                 ['is_safe' => ['html']]
             ),
             new \Twig_SimpleFunction(
+                'show_widget',
+                [$this, 'renderWidget'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction(
                 'show_translations_row',
                 [$this, 'renderTranslationsRow'],
                 ['is_safe' => ['html']]
             ),
         ];
+    }
+
+    /**
+     * Renders the show widget.
+     *
+     * @param mixed  $content
+     * @param string $type
+     * @param array  $options
+     *
+     * @return string
+     */
+    public function renderWidget($content, $type = null, array $options = [])
+    {
+        if (!isset($options['attr'])) {
+            $options['attr'] = [];
+        }
+        if (isset($options['id'])) {
+            $options['attr']['id'] = $options['id'];
+            unset($options['id']);
+        }
+        if (isset($options['class'])) {
+            $options['attr']['class'] = $options['class'];
+            unset($options['class']);
+        }
+
+        switch (strtolower($type)) {
+            case 'checkbox':
+                return $this->renderCheckboxWidget($content, $options);
+            case 'number':
+                return $this->renderNumberWidget($content, $options);
+            case 'textarea':
+                return $this->renderTextareaWidget($content, $options);
+            case 'entity':
+                return $this->renderEntityWidget($content, $options);
+            case 'url':
+                return $this->renderUrlWidget($content, $options);
+            case 'datetime':
+                if ($type === 'date') {
+                    $options['time'] = false;
+                }
+
+                return $this->renderDatetimeWidget($content, $options);
+            case 'tel':
+                return $this->renderTelWidget($content, $options);
+            case 'color':
+                return $this->renderColorWidget($content, $options);
+            case 'tinymce':
+                return $this->renderTinymceWidget($content, $options);
+            case 'upload':
+                return $this->renderUploadWidget($content, $options);
+            case 'media':
+                return $this->renderMediaWidget($content, $options);
+            case 'medias':
+                return $this->renderMediasWidget($content, $options);
+            case 'translations':
+                return $this->renderTranslationsWidget($content, $options);
+            case 'seo':
+                return $this->renderSeoWidget($content, $options);
+            case 'key_value_collection':
+                return $this->renderKeyValueCollectionWidget($content, $options);
+            case 'coordinate':
+                return $this->renderCoordinateWidget($content, $options);
+            default:
+                return $this->renderSimpleWidget($content, $options);
+        }
     }
 
     /**
@@ -91,59 +161,9 @@ class ShowExtension extends \Twig_Extension
      */
     public function renderRow($content, $type = null, $label = null, array $options = [])
     {
-        $compound = false;
-
-        if (!isset($options['attr'])) {
-            $options['attr'] = [];
-        }
-        if (isset($options['id'])) {
-            $options['attr']['id'] = $options['id'];
-            unset($options['id']);
-        }
-
-        if ($type == 'checkbox') {
-            $content = $this->renderCheckboxWidget($content, $options);
-        } elseif ($type == 'number') {
-            $content = $this->renderNumberWidget($content, $options);
-        } elseif ($type == 'textarea') {
-            $content = $this->renderTextareaWidget($content, $options);
-        } elseif ($type == 'entity') {
-            $content = $this->renderEntityWidget($content, $options);
-        } elseif ($type == 'url') {
-            $content = $this->renderUrlWidget($content, $options);
-        } elseif ($type == 'datetime' || $type == 'date') {
-            if ($type == 'date') {
-                $options['time'] = false;
-            }
-            $content = $this->renderDatetimeWidget($content, $options);
-        } elseif ($type == 'tel') {
-            $content = $this->renderTelWidget($content, $options);
-        } elseif ($type == 'color') {
-            $content = $this->renderColorWidget($content, $options);
-        } elseif ($type == 'tinymce') {
-            $content = $this->renderTinymceWidget($content, $options);
-        } elseif ($type == 'upload') {
-            $content = $this->renderUploadWidget($content, $options);
-        } elseif ($type == 'media') {
-            $content = $this->renderMediaWidget($content, $options);
-        } elseif ($type == 'medias') {
-            $content = $this->renderMediasWidget($content, $options);
-        } elseif ($type == 'translations') {
-            $content = $this->renderTranslationsWidget($content, $options);
-        } elseif ($type == 'seo') {
-            $content = $this->renderSeoWidget($content, $options);
-        } elseif ($type == 'key_value_collection') {
-            $content = $this->renderKeyValueCollectionWidget($content, $options);
-        } elseif ($type == 'coordinate') {
-            $content = $this->renderCoordinateWidget($content, $options);
-        } else {
-            $content = $this->renderSimpleWidget($content, $options);
-        }
-
         $vars = [
-            'label'    => $label !== null ? $label : false,
-            'content'  => $content,
-            'compound' => $compound,
+            'label'   => empty($label) ? null : $label,
+            'content' => $this->renderWidget($content, $type, $options),
         ];
 
         /* Fix bootstrap columns */
@@ -204,20 +224,13 @@ class ShowExtension extends \Twig_Extension
     protected function renderNumberWidget($content, array $options = [])
     {
         $options = array_merge([
-            'precision' => 2,
+            //'precision' => 2, TODO no longer used
             'append'    => '',
         ], $options);
 
-        if (null !== $content) {
-            $content = trim(sprintf(
-                '%s %s',
-                number_format($content, $options['precision'], ',', ' '),
-                $options['append']
-            ));
-        }
-
-        return $this->renderBlock('show_widget_simple', [
+        return $this->renderBlock('show_widget_number', [
             'content' => $content,
+            'append'  => $options['append'],
             'attr'    => $options['attr'],
         ]);
     }
