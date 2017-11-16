@@ -119,6 +119,7 @@ class ShowExtension extends \Twig_Extension
             case 'url':
                 return $this->renderUrlWidget($content, $options);
             case 'datetime':
+            case 'date':
                 if ($type === 'date') {
                     $options['time'] = false;
                 }
