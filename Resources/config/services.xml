@@ -100,7 +100,7 @@
         <!-- Pin Helper -->
         <service id="ekyna_admin.helper.pin_helper" class="Ekyna\Bundle\AdminBundle\Helper\PinHelper">
             <argument type="service" id="ekyna_resource.configuration_registry" />
-            <argument type="service" id="ekyna_user.user_provider" />
+            <argument type="service" id="ekyna_user.user.provider" />
             <argument type="service" id="ekyna_admin.helper.resource_helper" />
             <argument type="service" id="doctrine.orm.default_entity_manager" />
         </service>
