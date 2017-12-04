@@ -12,6 +12,15 @@ iframe {
     border: none;
 }
 
+/* buttons */
+.btn-xs > .fa {
+    font-size: 14px;
+    line-height: 18px;
+}
+.btn-sm > .fa {
+    font-size: 14px;
+}
+
 /* labels */
 .label, .badge {
     margin-left: 6px;
