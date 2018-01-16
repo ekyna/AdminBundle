@@ -90,7 +90,9 @@
         </service>
 
         <!-- Resource Helper -->
-        <service id="ekyna_admin.helper.resource_helper" class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper">
+        <service id="ekyna_admin.helper.resource_helper"
+                 class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper"
+                 lazy="true">
             <argument type="service" id="doctrine.orm.default_entity_manager" />
             <argument type="service" id="ekyna_resource.configuration_registry" />
             <argument type="service" id="ekyna_admin.acl_operator" />
