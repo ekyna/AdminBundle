@@ -107,12 +107,13 @@ class ResourceHelper
      * @param object $resource
      * @param string $action
      * @param array  $parameters
+     * @param bool   $absolute
      *
      * @throws \RuntimeException
      *
      * @return string
      */
-    public function generateResourcePath($resource, $action = 'show', array $parameters = [])
+    public function generateResourcePath($resource, $action = 'show', array $parameters = [], $absolute = false)
     {
         $configuration = $this->registry->findConfiguration($resource);
         $routeName = $configuration->getRoute($action);
@@ -152,7 +153,9 @@ class ResourceHelper
             }
         }
 
-        return $this->router->generate($routeName, $parameters);
+        $type = $absolute ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
+
+        return $this->router->generate($routeName, $parameters, $type);
     }
 
     /**
