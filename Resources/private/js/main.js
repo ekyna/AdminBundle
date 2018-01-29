@@ -206,7 +206,9 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         });
     }
 
-    // Toggle details
+    /* -----------------------------------------------------------------------------------------------------------------
+     * Toggle details
+     */
     $(document).on('click', 'a[data-toggle-details]', function(e) {
         e.preventDefault();
 
@@ -221,6 +223,13 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         }
 
         return false;
+    });
+
+    /* -----------------------------------------------------------------------------------------------------------------
+     * Resource summary
+     */
+    require(['ekyna-admin/summary'], function(Summary) {
+        Summary.init();
     });
 
     /* -----------------------------------------------------------------------------------------------------------------
@@ -301,8 +310,9 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         return false;
     });
 
-
-    /* Helpers */
+    /* -----------------------------------------------------------------------------------------------------------------
+     * Helpers
+     */
     var $helperContent = $('#helper-content:visible');
     var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');
 

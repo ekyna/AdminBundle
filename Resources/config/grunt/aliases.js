@@ -3,6 +3,6 @@ module.exports = {
         'clean:admin_pre',
         'copy:admin',
         'cssmin:admin',
-        'uglify:admin'
+        'uglify:admin_js'
     ]
 };
