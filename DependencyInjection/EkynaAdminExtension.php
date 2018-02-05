@@ -39,6 +39,13 @@ class EkynaAdminExtension extends Extension
             'stylesheets' => $config['stylesheets'],
             'navbar'      => $config['navbar'],
         ]);
+
+        $templates = $config['show']['templates'];
+        array_unshift($templates, $config['show']['default_template']);
+
+        $container
+            ->getDefinition('ekyna_admin.show.registry')
+            ->addMethodCall('registerTemplates', [$templates]);
     }
 
     /**

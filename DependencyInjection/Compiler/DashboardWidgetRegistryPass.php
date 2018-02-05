@@ -7,11 +7,11 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
- * Class DashboardWidgetTypeRegistryPass
+ * Class DashboardWidgetRegistryPass
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler
  * @author Étienne Dauvergne <contact@ekyna.com>
  */
-class DashboardWidgetTypeRegistryPass implements CompilerPassInterface
+class DashboardWidgetRegistryPass implements CompilerPassInterface
 {
     /**
      * {@inheritdoc}

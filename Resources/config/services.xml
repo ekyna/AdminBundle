@@ -5,10 +5,6 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services
                         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-    <parameters>
-        <parameter key="ekyna_admin.twig.show_extension.template">EkynaAdminBundle:Show:show_div_layout.html.twig</parameter>
-    </parameters>
-
     <services>
         <!-- Settings Schema -->
         <service id="ekyna_admin.settings.general" class="Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema">
@@ -107,6 +103,32 @@
             <argument type="service" id="doctrine.orm.default_entity_manager" />
         </service>
 
+        <!-- Show -->
+        <service id="ekyna_admin.show.extension.core"
+                 class="Ekyna\Bundle\AdminBundle\Show\Extension\Core\CoreExtension"
+                 public="false"/>
+        <service id="ekyna_admin.show.extension.dependency_injection"
+                 class="Ekyna\Bundle\AdminBundle\Show\Extension\DependencyInjection\DependencyInjectionExtension"
+                 lazy="true"
+                 public="false">
+            <argument type="service" id="service_container"/>
+            <argument type="collection"/><!-- Replaced by compiler pass -->
+        </service>
+        <service id="ekyna_admin.show.registry"
+                 class="Ekyna\Bundle\AdminBundle\Show\Registry"
+                 public="false">
+            <argument type="collection">
+                <argument type="service" id="ekyna_admin.show.extension.core"/>
+                <argument type="service" id="ekyna_admin.show.extension.dependency_injection"/>
+            </argument>
+        </service>
+        <service id="ekyna_admin.show.renderer"
+                 class="Ekyna\Bundle\AdminBundle\Show\Renderer"
+                 public="false">
+            <argument type="service" id="ekyna_admin.show.registry"/>
+            <argument type="service" id="twig"/>
+        </service>
+
         <!-- Twig Extensions -->
         <service id="ekyna_admin.twig.admin_extension" class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
             <argument type="service" id="ekyna_admin.helper.resource_helper" />
@@ -116,8 +138,7 @@
             <tag name="twig.extension" />
         </service>
         <service id="ekyna_admin.twig.show_extension" class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
-            <argument>%locales%</argument>
-            <argument>%ekyna_admin.twig.show_extension.template%</argument>
+            <argument type="service" id="ekyna_admin.show.renderer"/>
             <tag name="twig.extension" />
         </service>
         <service id="ekyna_dashboard_extension" class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">

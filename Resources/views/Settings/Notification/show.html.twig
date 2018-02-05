@@ -1,3 +1,12 @@
-{{ show_row(settings.notification.from_name, 'text', 'ekyna_admin.settings.notification.from_name', {'label_nb_col': 3}) }}
-{{ show_row(settings.notification.from_email, 'text', 'ekyna_admin.settings.notification.from_email', {'label_nb_col': 3}) }}
-{{ show_row(settings.notification.to_emails|join(', '), 'text', 'ekyna_admin.settings.notification.to_emails', {'label_nb_col': 3}) }}
+{{ show_row(settings.notification.from_name, 'text', {
+    'label': 'ekyna_admin.settings.notification.from_name',
+    'label_col': 3
+}) }}
+{{ show_row(settings.notification.from_email, 'text', {
+    'label': 'ekyna_admin.settings.notification.from_email',
+    'label_col': 3
+}) }}
+{{ show_row(settings.notification.to_emails|join(', '), 'text', {
+    'label': 'ekyna_admin.settings.notification.to_emails',
+    'label_col': 3
+}) }}

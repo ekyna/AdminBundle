@@ -26,6 +26,7 @@ class Configuration implements ConfigurationInterface
                 /*->scalarNode('output_dir')->defaultValue('')->end()*/
                 ->append($this->getMenusSection())
                 ->append($this->getDashboardSection())
+                ->append($this->getShowSection())
                 ->arrayNode('navbar')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -112,6 +113,30 @@ class Configuration implements ConfigurationInterface
                         ->prototype('scalar')->end()
                         ->defaultValue(array())
                     ->end()
+                ->end()
+            ->end()
+        ;
+
+        return $node;
+    }
+
+    /**
+     * Returns the show configuration definition.
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\NodeDefinition
+     */
+    private function getShowSection()
+    {
+        $builder = new TreeBuilder();
+        $node = $builder->root('show');
+
+        $node
+            ->addDefaultsIfNotSet()
+            ->children()
+                ->scalarNode('default_template')->defaultValue('EkynaAdminBundle:Show:show_div_layout.html.twig')->end()
+                ->arrayNode('templates')
+                    ->defaultValue([])
+                    ->scalarPrototype()->end()
                 ->end()
             ->end()
         ;

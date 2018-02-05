@@ -1,131 +1,137 @@
-{% block show_row %}
+{% block widget_attributes -%}{% for key, value in attr %} {{ key }}="{{ value }}"{% endfor -%}{% endblock widget_attributes %}
+
+
+{% block label %}
+    {% spaceless %}
+        {% if label is not null %}
+            <div class="col-md-{{ label_col }} show-label">{{ label|trans }}</div>
+        {% endif %}
+    {% endspaceless %}
+{% endblock label %}
+
+
+{% block undefined %}
+    {% spaceless %}
+        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+    {% endspaceless %}
+{% endblock undefined %}
+
+
+{% block default_row %}
 {% spaceless %}
     {% if label is null %}
-        {{ content|raw }}
+        {{ show_widget(view) }}
     {% else %}
         <div class="row show-row">
-            {{ block('show_label') }}
-            <div class="col-md-{{ nb_col }}">
-                {{ content|raw }}
+            {{ block('label') }}
+            <div class="col-md-{{ widget_col }}">
+                {{ show_widget(view) }}
             </div>
         </div>
     {% endif %}
 {% endspaceless %}
-{% endblock show_row %}
+{% endblock default_row %}
 
-{% block show_label %}
-{% spaceless %}
-    {% if label is not null %}
-        <div class="col-md-{{ label_nb_col }} show-label">{{ label|trans }}</div>
-    {% endif %}
-{% endspaceless %}
-{% endblock show_label %}
 
-{% block show_widget_simple %}
+{% block default_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if content is empty %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+        {% if value is empty %}
+            {{ block('undefined') }}
         {% else %}
-            {{ content|raw }}
+            {{ value|raw }}
         {% endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_simple %}
+{% endblock default_widget %}
 
-{% block show_widget_number %}
+
+{% block text_widget %}{{ block('default_widget') }}{% endblock text_widget %}
+
+
+{% block number_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if content is empty %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-        {% else %}
-            {{ content|localizednumber }}{% if append is not empty %}&nbsp;{{ append }}{% endif %}
-        {% endif %}
-    </div>
-{% endspaceless %}
-{% endblock show_widget_number %}
-
-{% block show_widget_tel %}
-{% spaceless %}
-    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
-    <div{{ block('widget_attributes') }}>
-        {%- if content is not empty -%}
-            {{ content|phone_number_format }}
+        {% if value is null -%}
+            {{ block('undefined') }}
         {%- else -%}
-            &nbsp;
-        {%- endif -%}
+            {{ value|localizednumber }}{% if append is not empty %}&nbsp;{{ append }}{% endif %}
+        {%- endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_tel %}
+{% endblock number_widget %}
 
-{% block show_widget_datetime %}
+
+{% block datetime_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if content is empty %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-        {% else %}
-            {{ content|localizeddate(options['date_format'], options['time_format'], options['locale'], options['timezone'], options['format'])|capitalize }}
-        {% endif %}
+        {% if value is null -%}
+            {{ block('undefined') }}
+        {%- else -%}
+            {{ value|localizeddate(date_format, time_format, locale, timezone, format)|capitalize }}
+        {%- endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_datetime %}
+{% endblock datetime_widget %}
 
-{% block show_widget_color %}
+
+{% block color_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if content is empty %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-        {% else %}
-            <span class="show-color" style="background-color: {{ content }};"></span> {{ content }}
-        {% endif %}
+        {% if value is empty -%}
+            {{ block('undefined') }}
+        {%- else -%}
+            <span class="show-color" style="background-color: {{ value }};"></span> {{ value }}
+        {%- endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_color %}
+{% endblock color_widget %}
 
-{% block show_widget_checkbox %}
+
+{% block boolean_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {%- if content is same as(true) -%}
+        {%- if value -%}
             {{ 'ekyna_core.value.yes'|trans }}
         {%- else -%}
             {{ 'ekyna_core.value.no'|trans }}
         {%- endif -%}
     </div>
 {% endspaceless %}
-{% endblock show_widget_checkbox %}
+{% endblock boolean_widget %}
 
-{% block show_widget_entity %}
+
+{% block entity_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if entities is same as(null) -%}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-        {%- elseif entities|length > 0 %}
-            {% for entity in entities %}
+        {% if value is empty -%}
+            {{ block('undefined') }}
+        {%- else -%}
+            {% for entity in value %}
                 {% if route is not same as(null) %}
-                    {% set params = route_params %}
-                    {% for param, property_path in route_params_map %}
+                    {% set params = route_parameters %}
+                    {% for param, property_path in route_parameters_map %}
                         {% set params = params|merge({(param): attribute(entity, property_path)}) %}
                     {% endfor %}
                     <a href="{{ path(route, params) }}"
-                       class="show-entity">{{ block('show_widget_entity_value') }}</a>
+                       class="show-entity">{{ block('entity_widget_value') }}</a>
                 {% else %}
-                    <span class="show-entity">{{ block('show_widget_entity_value') }}</span>
+                    <span class="show-entity">{{ block('entity_widget_value') }}</span>
                 {% endif %}
             {% endfor %}
-        {%- else %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
         {% endif -%}
     </div>
 {% endspaceless %}
-{% endblock show_widget_entity %}
+{% endblock entity_widget %}
 
-{% block show_widget_entity_value %}
+
+{% block entity_widget_value %}
 {% spaceless %}
     {% if field -%}
         {{ attribute(entity, field)|raw }}
@@ -133,174 +139,98 @@
         {{ entity|raw }}
     {%- endif %}
 {% endspaceless %}
-{% endblock show_widget_entity_value %}
+{% endblock entity_widget_value %}
 
-{% block show_widget_url %}
+
+{% block url_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if content is empty %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+        {% if value is empty %}
+            {{ block('undefined') }}
         {% else %}
-            <a href="{{ content }}" target="{{ target }}">{{ content }}</a>
+            <a href="{{ value }}"{% if target is not empty %} target="{{ target }}"{% endif %}>{{ value }}</a>
         {% endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_url %}
+{% endblock url_widget %}
 
-{% block show_widget_textarea %}
+
+{% block textarea_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if content is empty %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-        {% elseif options.html %}
-            {{ content|raw }}
+        {% if value is empty %}
+            {{ block('undefined') }}
+        {% elseif html %}
+            {{ value|raw }}
         {% else %}
-            {{ content|nl2br|raw }}
+            {{ value|nl2br|raw }}
         {% endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_textarea %}
+{% endblock textarea_widget %}
 
-{% block show_widget_tinymce %}
+
+{% block tinymce_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        <iframe src="{{ route }}" style="height:{{ height }}px"></iframe>
+        <iframe src="{{ value }}" style="height:{{ height }}px"></iframe>
     </div>
 {% endspaceless %}
-{% endblock show_widget_tinymce %}
+{% endblock tinymce_widget %}
 
-{% block render_image %}
-{% spaceless %}
-    <a class="thumbnail" href="{{ image.path|imagine_filter('admin_modal') }}" title="{{ image.alt }}">
-        <img alt="{{ image.alt }}" src="{{ image.path|imagine_filter('admin_thumb') }}"/>
-    </a>
-{% endspaceless %}
-{% endblock render_image %}
 
-{% block show_widget_upload %}
+{% block upload_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if upload is same as(null) %}
-            <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-        {% else %}
-            <a href="{{ path('ekyna_core_download', {'key': upload.path}) }}" class="show-entity"
-               target="_blank">{{ upload.guessFilename }}</a>
-        {% endif %}
+        {% if value is same as(null) -%}
+            {{ block('undefined') }}
+        {%- else -%}
+            <a href="{{ path('ekyna_core_download', {'key': value.path}) }}" class="show-entity" target="_blank">
+                {{ value.guessFilename }}
+            </a>
+        {%- endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_upload %}
+{% endblock upload_widget %}
 
-{% block show_widget_media %}
-{% spaceless %}
-    {{ media|media_thumb }}
-{% endspaceless %}
-{% endblock show_widget_media %}
 
-{% block show_widget_medias %}
+{% block map_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% for media in medias %}
-            {{ media|media_thumb }}
-        {% else %}
-            {{ null|media_thumb }}
-        {% endfor %}
-    </div>
-{% endspaceless %}
-{% endblock show_widget_medias %}
-
-{% block show_widget_seo %}
-{% spaceless %}
-    {{ show_translations_row(seo.translations, {
-        'id': prefix ~'_translations',
-        'fields': {
-            'title': {'label': 'ekyna_core.field.title'},
-            'description': {'label': 'ekyna_core.field.description', 'type': 'textarea'},
-        },
-    }) }}
-    <div class="row">
-        <div class="col-md-6">
-            {{ show_row(seo.changefreq, 'text', 'ekyna_core.field.changefreq', {
-                'label_nb_col': 4,
-                'attr': {'id': prefix ~ '_changeFreq'}
-            }) }}
-        </div>
-        <div class="col-md-6">
-            {{ show_row(seo.priority, 'text', 'ekyna_core.field.priority', {
-                'label_nb_col': 4,
-                'attr': {'id': prefix ~ '_priority'}
-            }) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            {{ show_row(seo.follow, 'checkbox', 'ekyna_core.field.follow', {
-                'label_nb_col': 4,
-                'attr': {'id': prefix ~ '_follow'}
-            }) }}
-        </div>
-        <div class="col-md-6">
-            {{ show_row(seo.index, 'checkbox', 'ekyna_core.field.index', {
-                'label_nb_col': 4,
-                'attr': {'id': prefix ~ '_index'}
-            }) }}
-        </div>
-    </div>
-    {{ show_row(seo.canonical, 'url', 'ekyna_core.field.canonical_url', {
-        'attr': {'id': prefix ~ '_canonicalUrl'}
-    }) }}
-{% endspaceless %}
-{% endblock show_widget_seo %}
-
-{% block show_widget_key_value_collection %}
-{% spaceless %}
-    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
-    <div{{ block('widget_attributes') }}>
-        {% if content is empty -%}
+        {% if value is empty -%}
             <em>{{ 'ekyna_core.value.none'|trans }}</em>
         {%- else -%}
             <dl class="dl-horizontal">
-                {% for key, value in content %}
+                {% for key, val in value %}
                     <dt>{{ key }}</dt>
-                    <dd>{{ value }}</dd>
+                    <dd>{{ val }}</dd>
                 {% endfor %}
             </dl>
         {%- endif %}
     </div>
 {% endspaceless %}
-{% endblock show_widget_key_value_collection %}
+{% endblock map_widget %}
 
-{% block show_widget_coordinate %}
-{% spaceless %}
-    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
-    <div{{ block('widget_attributes') }}>
-        {% if map is empty -%}
-            <em>{{ 'ekyna_core.value.none'|trans }}</em>
-        {%- else -%}
-            {{ google_map(map) }}
-        {%- endif %}
-    </div>
-{% endspaceless %}
-{% endblock show_widget_coordinate %}
 
-{% block show_row_translations %}
+{% block translations_row %}
 {% spaceless %}
     <div class="translations-forms show-row">
         <ul class="translations-locales nav nav-tabs">
-            {% for locale, translation in translations -%}
+            {% for locale, translation in value -%}
                 <li{% if loop.first %} class="active"{% endif %}>
-                    <a href="#{{ vars.name }}-{{ locale }}" data-toggle="tab">
+                    <a href="#{{ name }}-{{ locale }}" data-toggle="tab">
                         {{- locale|language|capitalize -}}
                     </a>
                 </li>
             {%- else -%}
                 <li class="active">
-                    <a href="#{{ vars.name }}-{{ vars.locales|first }}" data-toggle="tab">
-                        {{- vars.locales|first|language|capitalize -}}
+                    <a href="#{{ name }}-{{ locales|first }}" data-toggle="tab">
+                        {{- locales|first|language|capitalize -}}
                     </a>
                 </li>
             {%- endfor %}
@@ -310,25 +240,25 @@
         </div>
     </div>
 {% endspaceless %}
-{% endblock show_row_translations %}
+{% endblock translations_row %}
 
-{% block show_widget_translations %}
+{% block translations_widget %}
 {% spaceless %}
     <ul class="nav nav-tabs">
-        {% for locale, translation in translations -%}
+        {% for locale, translation in value -%}
             <li{% if loop.first %} class="active"{% endif %}>
-                <a href="#{{ vars.name }}-{{ locale }}"
-                   id="toggle-{{ vars.name }}-{{ locale }}"
+                <a href="#{{ name }}-{{ locale }}"
+                   id="toggle-{{ name }}-{{ locale }}"
                    data-toggle="tab">
                     {{- locale|language|capitalize -}}
                 </a>
             </li>
         {%- else -%}
             <li class="active">
-                <a href="#{{ vars.name }}-{{ vars.locales|first }}"
-                   id="toggle-{{ vars.name }}-{{ vars.locales|first }}"
+                <a href="#{{ name }}-{{ locales|first }}"
+                   id="toggle-{{ name }}-{{ locales|first }}"
                    data-toggle="tab">
-                    {{- vars.locales|first|language|capitalize -}}
+                    {{- locales|first|language|capitalize -}}
                 </a>
             </li>
         {%- endfor %}
@@ -340,26 +270,28 @@
         </div>
     </div>
 {% endspaceless %}
-{% endblock show_widget_translations %}
+{% endblock translations_widget %}
 
 {% block translations_content %}
 {% spaceless %}
-    {% for locale, translation in translations -%}
+    {% for locale, translation in value -%}
         <div class="tab-pane{% if loop.first %} active{% endif %}"
-             id="{{ vars.name }}-{{ locale }}">
-            {% for field in vars.fields -%}
-                {% set content = field.content is defined ? field.content : attribute(translation, field.property_path) %}
-                {{ show_row(content, field.type, field.label, field.options|merge({
-                    'attr': {'id': vars.name ~ '_' ~ locale ~ '_' ~ field.property_path}
+             id="{{ name }}-{{ locale }}">
+            {% for field in fields -%}
+                {% set content = field.value is not null ? field.value : attribute(translation, field.property_path) %}
+                {{ show_row(content, field.type, field.options|merge({
+                    'label': field.label,
+                    'id': name ~ '_' ~ locale ~ '_' ~ field.property_path
                 })) }}
             {%- endfor %}
         </div>
     {%- else -%}
         <div class="tab-pane active"
-             id="{{ vars.name }}-translation-{{ vars.locales|first }}">
-            {% for field in vars.fields -%}
-                {{ show_row(null, field.type, field.label, field.options|merge({
-                    'attr': {'id': vars.name ~ '_' ~ (vars.locales|first) ~ '_' ~ field.property_path}
+             id="{{ name }}-translation-{{ locales|first }}">
+            {% for field in fields -%}
+                {{ show_row(null, field.type, field.options|merge({
+                    'label': field.label,
+                    'id': name ~ '_' ~ (locales|first) ~ '_' ~ field.property_path
                 })) }}
             {%- endfor %}
         </div>
@@ -367,5 +299,3 @@
 {% endspaceless %}
 {% endblock translations_content %}
 
-
-{% block widget_attributes -%}{% for key, value in attr %} {{ key }}="{{ value }}"{% endfor -%}{% endblock widget_attributes %}

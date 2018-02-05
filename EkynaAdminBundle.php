@@ -20,6 +20,7 @@ class EkynaAdminBundle extends Bundle
     {
         parent::build($container);
 
-        $container->addCompilerPass(new Pass\DashboardWidgetTypeRegistryPass());
+        $container->addCompilerPass(new Pass\DashboardWidgetRegistryPass());
+        $container->addCompilerPass(new Pass\ShowRegistryPass());
     }
 }
