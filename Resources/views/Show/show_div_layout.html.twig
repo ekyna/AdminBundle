@@ -198,6 +198,20 @@
 {% endblock upload_widget %}
 
 
+{% block collection_widget %}
+{% spaceless %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {% if value is empty -%}
+            <em>{{ 'ekyna_core.value.none'|trans }}</em>
+        {%- else -%}
+            {% for val in value %}{{ val|raw }}<br>{% endfor %}
+        {%- endif %}
+    </div>
+{% endspaceless %}
+{% endblock collection_widget %}
+
+
 {% block map_widget %}
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}

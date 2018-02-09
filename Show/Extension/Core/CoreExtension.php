@@ -29,6 +29,7 @@ class CoreExtension extends AbstractExtension
             'color'        => Type\ColorType::class,
             'datetime'     => Type\DateTimeType::class,
             'entity'       => Type\EntityType::class,
+            'collection'   => Type\CollectionType::class,
             'map'          => Type\MapType::class,
             'number'       => Type\NumberType::class,
             'text'         => Type\TextType::class,
