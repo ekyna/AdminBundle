@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -86,7 +87,14 @@ class ResourceType extends AbstractType
             ->setAllowedTypes('list_route', ['null', 'string'])
             ->setAllowedTypes('list_route_params', 'array')
             ->setAllowedTypes('allow_new', 'bool')
-            ->setAllowedTypes('allow_list', 'bool');
+            ->setAllowedTypes('allow_list', 'bool')
+            ->setNormalizer('placeholder', function(Options $options, $value) {
+                if (empty($value) && !$options['required']) {
+                    $value = 'ekyna_core.value.none';
+                }
+
+                return $value;
+            });
     }
 
     /**
