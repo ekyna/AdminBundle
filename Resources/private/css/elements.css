@@ -507,11 +507,22 @@
 /* Popover */
 
 .popover.summary {
-    max-width: 500px;
+    max-width: 90%;
     font-size: 12px;
 }
 
-.popover.summary table {
+.popover.summary dl {
+    margin-bottom: 0;
+}
+
+.popover.summary > .popover-content > table,
+.popover.summary > .popover-content > div
+{
+    margin-bottom: 16px;
+}
+.popover.summary > .popover-content > table:last-child,
+.popover.summary > .popover-content > div:last-child
+{
     margin-bottom: 0;
 }
 

@@ -34,16 +34,14 @@ define(['jquery', 'routing', 'bootstrap'], function($, Router) {
             return;
         }
 
-        $('[data-summary]').each(function() {
+        $(document).on('mouseenter', '[data-summary]', function() {
             var $this = $(this);
 
-            $this.on('mouseenter', function () {
-                if ($this.data('summary-xhr')) {
-                    return;
-                }
+            if ($this.data('summary-xhr')) {
+                return;
+            }
 
-                Summary.load($this);
-            });
+            Summary.load($this);
         });
     };
 
