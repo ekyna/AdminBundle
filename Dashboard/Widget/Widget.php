@@ -7,7 +7,7 @@ use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type\WidgetTypeInterface;
 /**
  * Class Widget
  * @package Ekyna\Bundle\AdminBundle\Dashboard\Widget
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class Widget implements WidgetInterface
 {
@@ -34,10 +34,10 @@ class Widget implements WidgetInterface
      * @param WidgetTypeInterface $type
      * @param array               $options
      */
-    public function __construct($name, WidgetTypeInterface $type, array $options = array())
+    public function __construct($name, WidgetTypeInterface $type, array $options = [])
     {
-        $this->name    = $name;
-        $this->type    = $type;
+        $this->name = $name;
+        $this->type = $type;
         $this->options = $options;
     }
 
@@ -63,7 +63,20 @@ class Widget implements WidgetInterface
     public function setOptions($options)
     {
         $this->options = $options;
+
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOption($name, $default = null)
+    {
+        if (isset($this->options[$name])) {
+            return $this->options[$name];
+        }
+
+        return $default;
     }
 
     /**

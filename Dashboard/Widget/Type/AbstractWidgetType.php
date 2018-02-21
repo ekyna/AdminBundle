@@ -20,7 +20,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
     {
         $attr = ['name' => $options['name']];
         $classes = [];
-        foreach (array('xs', 'sm', 'md', 'lg') as $sizing) {
+        foreach (['xs', 'sm', 'md', 'lg'] as $sizing) {
             $size = $options['col_' . $sizing];
             if (0 < $size && $size < 12) {
                 $classes[] = 'col-' . $sizing . '-' . $options['col_' . $sizing];
@@ -29,9 +29,12 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
         if (empty($classes)) {
             $classes[] = 'col-md-12';
         }
+        if (!empty($options['class'])) {
+            $classes[] = $options['class'];
+        }
         $attr['class'] = implode(' ', $classes);
 
-        $widget->setOptions(array_merge($options, array('attr' => $attr)));
+        $widget->setOptions(array_merge($options, ['attr' => $attr]));
     }
 
     /**
@@ -64,10 +67,12 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
 
         /** @noinspection PhpUnusedParameterInspection */
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
                 'name'       => null,
                 'title'      => null,
+                'frame'      => true,
                 'theme'      => 'default',
+                'class'      => null,
                 'col_xs_min' => 12,
                 'col_sm_min' => 12,
                 'col_md_min' => 6,
@@ -79,12 +84,13 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
                 'position'   => 0,
                 'css_path'   => null,
                 'js_path'    => null,
-            ))
-            ->setRequired(array('name', 'title'))
-
+            ])
+            ->setRequired(['name', 'title'])
             ->setAllowedTypes('name', 'string')
-            ->setAllowedTypes('title', array('null', 'string'))
-            ->setAllowedTypes('theme', array('null', 'string'))
+            ->setAllowedTypes('title', ['null', 'string'])
+            ->setAllowedTypes('frame', 'bool')
+            ->setAllowedTypes('theme', ['null', 'string'])
+            ->setAllowedTypes('class', ['null', 'string'])
             ->setAllowedTypes('col_xs_min', 'int')
             ->setAllowedTypes('col_sm_min', 'int')
             ->setAllowedTypes('col_md_min', 'int')
@@ -94,23 +100,23 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
             ->setAllowedTypes('col_md', 'int')
             ->setAllowedTypes('col_lg', 'int')
             ->setAllowedTypes('position', 'int')
-            ->setAllowedTypes('css_path', array('null', 'string'))
-            ->setAllowedTypes('js_path', array('null', 'string'))
+            ->setAllowedTypes('css_path', ['null', 'string'])
+            ->setAllowedTypes('js_path', ['null', 'string'])
             ->setAllowedValues('theme', function ($value) {
-                return null === $value || in_array($value, array(
-                    'default',
-                    'primary',
-                    'success',
-                    'info',
-                    'warning',
-                    'danger',
-                ));
+                return null === $value
+                    || in_array($value, [
+                        'default',
+                        'primary',
+                        'success',
+                        'info',
+                        'warning',
+                        'danger',
+                    ]);
             })
             ->setAllowedValues('col_xs_min', $minSizeValidator)
             ->setAllowedValues('col_sm_min', $minSizeValidator)
             ->setAllowedValues('col_md_min', $minSizeValidator)
             ->setAllowedValues('col_lg_min', $minSizeValidator)
-
             ->setNormalizer('col_xs', function (Options $options, $value) use ($sizeNormalizer) {
                 return $sizeNormalizer($options['col_xs_min'], $value);
             })
@@ -125,7 +131,6 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
             })
             ->setNormalizer('position', function (Options $options, $value) use ($sizeNormalizer) {
                 return 0 > $value ? 0 : $value;
-            })
-        ;
+            });
     }
 }

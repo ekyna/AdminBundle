@@ -12,6 +12,7 @@
     {% for widget in dashboard.widgets %}
         {% if col % 12 == 0 or loop.first %}<div class="row">{% endif %}
         <div{% for attrname, attrvalue in widget.options.attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+            {% if widget.options['frame'] -%}
             <div class="panel panel-dashboard{% if widget.options.theme is not same as(null) %} panel-{{ widget.options.theme }}{% endif %}">
                 {% if widget.options['title'] is not empty %}
                 <div class="panel-heading">
@@ -22,10 +23,15 @@
                 <div id="dashboard-widget-{{ count }}" class="panel-collapse collapse in">
                 {% endif %}
                 {% if widget.options.theme is not same as(null) %}<div class="panel-body">{% endif %}
+            {% endif %}
+
                     {{ render_dashboard_widget(widget) }}
+
+            {% if widget.options['frame'] -%}
                 {% if widget.options.theme is not same as(null) %}</div>{% endif %}
                 {% if widget.options['title'] is not empty %}</div>{% endif %}
             </div>
+            {% endif %}
         </div>
         {% set count = count + 1 %}
         {% set col = col + widget.options['col_md'] %}
@@ -35,18 +41,14 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    {% for widget in dashboard.widgets -%}
-        {% if widget.options['css_path'] -%}
-            <link href="{{ widget.options['css_path'] }}" rel="stylesheet" type="text/css" />
-        {%- endif %}
+    {% for path in dashboard.stylesheets -%}
+        <link href="{{ path }}" rel="stylesheet" type="text/css" />
     {%- endfor %}
 {% endblock stylesheets %}
 
-{#{% block javascripts %}
+{% block javascripts %}
     {{ parent() }}
-    {% for widget in dashboard.widgets -%}
-        {% if widget.options['js_path'] -%}
-            <script type="text/javascript" src="{{ widget.options['js_path'] }}"></script>
-        {%- endif %}
+    {% for path in dashboard.javascripts -%}
+        <script type="text/javascript" src="{{ path }}"></script>
     {%- endfor %}
-{% endblock javascripts %}#}
+{% endblock javascripts %}

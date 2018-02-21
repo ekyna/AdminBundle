@@ -14,16 +14,13 @@ class Dashboard
     /**
      * @var WidgetInterface[]
      */
-    protected $widgets;
-
+    protected $widgets = [];
 
     /**
-     * Constructor.
+     * @var WidgetInterface[]
      */
-    public function __construct()
-    {
-        $this->widgets = [];
-    }
+    protected $sortedWidgets = null;
+
 
     /**
      * Returns whether the dashboard has the widget or not.
@@ -51,6 +48,7 @@ class Dashboard
         }
 
         $this->widgets[$widget->getName()] = $widget;
+        $this->sortedWidgets = null;
 
         return $this;
     }
@@ -62,6 +60,63 @@ class Dashboard
      */
     public function getWidgets()
     {
-        return $this->widgets;
+        if (null !== $this->sortedWidgets) {
+            return $this->sortedWidgets;
+        }
+
+        $widgets = $this->widgets;
+
+        usort($widgets, function(WidgetInterface $a, WidgetInterface $b) {
+            $aPos = $a->getOption('position');
+            $bPos = $b->getOption('position');
+
+            if ($aPos === $bPos) {
+                return 0;
+            }
+
+            return $aPos > $bPos ? -1 : 1;
+        });
+
+        return $this->sortedWidgets = $widgets;
+    }
+
+    /**
+     * Returns the stylesheets paths.
+     *
+     * @return array
+     */
+    public function getStylesheets()
+    {
+        $stylesheets = [];
+
+        foreach ($this->widgets as $widget) {
+            if (!empty($path = $widget->getOption('css_path'))) {
+                if (!in_array($path, $stylesheets)) {
+                    $stylesheets[] = $path;
+                }
+            }
+        }
+
+        return $stylesheets;
+    }
+
+    /**
+     * Returns the javascripts paths.
+     *
+     * @return array
+     */
+    public function getJavascripts()
+    {
+        $javascripts = [];
+
+        foreach ($this->widgets as $widget) {
+            if (!empty($path = $widget->getOption('js_path'))) {
+                if (!in_array($path, $javascripts)) {
+                    $javascripts[] = $path;
+                }
+            }
+        }
+
+        return $javascripts;
     }
 }

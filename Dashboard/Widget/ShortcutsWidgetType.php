@@ -63,9 +63,9 @@ class ShortcutsWidgetType extends AbstractWidgetType
      */
     public function render(WidgetInterface $widget, \Twig_Environment $twig)
     {
-        return $twig->render('EkynaAdminBundle:Dashboard:widget_shortcuts.html.twig', array(
+        return $twig->render('EkynaAdminBundle:Dashboard:widget_shortcuts.html.twig', [
             'columns' => $this->createColumns(),
-        ));
+        ]);
     }
 
     /**
@@ -76,9 +76,10 @@ class ShortcutsWidgetType extends AbstractWidgetType
         parent::configureOptions($resolver);
 
         $resolver
-            ->setDefaults(array(
+            ->setDefaults([
+                'position' => -9999,
                 'css_path' => '/bundles/ekynaadmin/css/dashboard-shortcuts.css',
-            ));
+            ]);
     }
 
     private function createColumns()
@@ -90,6 +91,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
             if ($gA['count'] == $gB['count']) {
                 return 0;
             }
+
             return $gA['count'] < $gB['count'] ? 1 : -1;
         });
 
@@ -136,11 +138,11 @@ class ShortcutsWidgetType extends AbstractWidgetType
             // Entries
             $entries = [];
             foreach ($menuGroup->getEntries() as $menuEntry) {
-                $entry = array(
+                $entry = [
                     'label'  => $menuEntry->getLabel(),
                     'domain' => $menuEntry->getDomain(),
                     'path'   => $this->urlGenerator->generate($menuEntry->getRoute()),
-                );
+                ];
                 if (null !== $resource = $menuEntry->getResource()) {
                     if (null !== $config = $this->registry->get($resource)) {
                         if (!$this->aclOperator->isAccessGranted($resource, 'VIEW')) {
@@ -162,11 +164,11 @@ class ShortcutsWidgetType extends AbstractWidgetType
             }
 
             // Group
-            $group = array(
+            $group = [
                 'label'  => $menuGroup->getLabel(),
                 'domain' => $menuGroup->getDomain(),
                 'icon'   => $menuGroup->getIcon(),
-            );
+            ];
             if (!empty($entries)) {
                 $group['entries'] = $entries;
                 $group['count'] = count($entries) + 2;
