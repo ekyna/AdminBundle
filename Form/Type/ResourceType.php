@@ -48,6 +48,10 @@ class ResourceType extends AbstractType
     {
         $configuration = $this->configurationRegistry->findConfiguration($options['class']);
 
+        if ($options['disabled']) {
+            return;
+        }
+
         if ($options['new_route']) {
             $view->vars['new_route'] = $options['new_route'];
             $view->vars['new_route_params'] = $options['new_route_params'];

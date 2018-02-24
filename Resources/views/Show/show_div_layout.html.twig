@@ -47,7 +47,20 @@
 {% endblock default_widget %}
 
 
-{% block text_widget %}{{ block('default_widget') }}{% endblock text_widget %}
+{% block text_widget %}
+{% spaceless %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {% if value is empty %}
+            {{ block('undefined') }}
+        {% elseif trans_params is not sameas(false) %}
+            {{ value|trans(trans_params, trans_domain)|raw }}
+        {% else %}
+            {{ value|raw }}
+        {% endif %}
+    </div>
+{% endspaceless %}
+{% endblock text_widget %}
 
 
 {% block number_widget %}
@@ -312,4 +325,3 @@
     {%- endfor %}
 {% endspaceless %}
 {% endblock translations_content %}
-
