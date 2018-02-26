@@ -1,8 +1,8 @@
-define(['jquery', 'routing', 'bootstrap'], function($, Router) {
+define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
 
     var Summary = {};
 
-    Summary.load = function($element) {
+    Summary.load = function ($element) {
         var config = $element.data('summary');
 
         var xhr = $.ajax({
@@ -26,23 +26,40 @@ define(['jquery', 'routing', 'bootstrap'], function($, Router) {
         });
 
         $element.data('summary-xhr', xhr);
+        $element.removeData('summary-timeout');
     };
 
-    Summary.init = function() {
+    Summary.init = function () {
         // Abort if mobile device
         if ('ontouchstart' in window) {
             return;
         }
 
-        $(document).on('mouseenter', '[data-summary]', function() {
-            var $this = $(this);
+        $(document)
+            .on('mouseenter', '[data-summary]', function () {
+                var $this = $(this);
 
-            if ($this.data('summary-xhr')) {
-                return;
-            }
+                if ($this.data('summary-xhr') || $this.data('summary-timeout')) {
+                    return;
+                }
 
-            Summary.load($this);
-        });
+                var timeout = setTimeout(function() {
+                    Summary.load($this);
+                }, 300);
+
+                $this.data('summary-timeout', timeout);
+            })
+            .on('mouseleave', '[data-summary]', function () {
+                var $this = $(this);
+
+                if ($this.data('summary-xhr')) {
+                    return;
+                }
+
+                var timeout = $this.data('summary-timeout');
+                clearTimeout(timeout);
+                $this.removeData('summary-timeout');
+            });
     };
 
     return Summary;
