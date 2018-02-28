@@ -1,26 +1,20 @@
 module.exports = function (grunt, options) {
     return {
-        admin: {
-            files: [
-                {
-                    expand: true,
-                    cwd: 'src/Ekyna/Bundle/AdminBundle/Resources/private',
-                    src: ['img/**'],
-                    dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public'
-                }
-            ]
+        admin_img: {
+            expand: true,
+            cwd: 'src/Ekyna/Bundle/AdminBundle/Resources/private/img',
+            src: ['**'],
+            dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public/img'
+        },
+        admin_less: { // For watch:app_less
+            src: 'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/css/bootstrap.css',
+            dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public/css/bootstrap.css'
         },
         admin_js: { // for watch:admin_js
             expand: true,
             cwd: 'src/Ekyna/Bundle/AdminBundle/Resources/private/js',
             src: ['**'],
             dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public/js'
-        },
-        admin_css: { // for watch:admin_css
-            expand: true,
-            cwd: 'src/Ekyna/Bundle/AdminBundle/Resources/private/css',
-            src: ['browser.css', 'form.css'],
-            dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public/css'
         }
     }
 };

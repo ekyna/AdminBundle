@@ -322,7 +322,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         if ($isXhr) {
-            $modal = $this->createModal('edit');
+            $modal = $this->createModal('edit', null, $resource);
             $modal
                 ->setContent($form->createView())
                 ->setVars($context->getTemplateVars());
@@ -426,7 +426,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         }
 
         if ($isXhr) {
-            $modal = $this->createModal('remove');
+            $modal = $this->createModal('remove', null, $resource);
             $vars = $context->getTemplateVars();
             unset($vars['form_template']);
             $modal
@@ -807,7 +807,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Generates the resource path.
      *
-     * @param mixed $resource
+     * @param mixed  $resource
      * @param string $action
      * @param array  $parameters
      *
@@ -877,15 +877,20 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     /**
      * Creates a modal object.
      *
-     * @param string $action
-     * @param string $title
+     * @param string            $action
+     * @param string            $title
+     * @param ResourceInterface $resource
      *
      * @return Modal
      */
-    protected function createModal($action, $title = null)
+    protected function createModal($action, $title = null, ResourceInterface $resource = null)
     {
         if (!$title) {
             $title = sprintf('%s.header.%s', $this->config->getResourceId(), $action);
+        }
+
+        if ($resource && in_array($action, ['edit', 'remove'])) {
+            $title = $this->getTranslator()->trans($title, ['%name%' => (string)$resource]);
         }
 
         $modal = new Modal($title);
