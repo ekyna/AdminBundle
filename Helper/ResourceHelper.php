@@ -148,8 +148,9 @@ class ResourceHelper
         }
 
         foreach ($entities as $name => $resource) {
-            if (array_key_exists($name . 'Id', $requirements)) {
-                $parameters[$name . 'Id'] = $accessor->getValue($resource, 'id');
+            $parameter = $name . 'Id';
+            if (array_key_exists($parameter, $requirements) && !isset($parameters[$parameter])) {
+                $parameters[$parameter] = $accessor->getValue($resource, 'id');
             }
         }
 
