@@ -53,7 +53,7 @@
     <div{{ block('widget_attributes') }}>
         {% if value is empty %}
             {{ block('undefined') }}
-        {% elseif trans_params is not sameas(false) %}
+        {% elseif trans_domain is not sameas(false) %}
             {{ value|trans(trans_params, trans_domain)|raw }}
         {% else %}
             {{ value|raw }}
