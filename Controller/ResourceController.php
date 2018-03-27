@@ -229,7 +229,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param bool    $footer
      * @param array   $options
      *
-     * @return \Symfony\Component\Form\Form
+     * @return \Symfony\Component\Form\FormInterface
      */
     protected function createNewResourceForm(Context $context, $footer = true, array $options = [])
     {
@@ -350,7 +350,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param bool    $footer
      * @param array   $options
      *
-     * @return \Symfony\Component\Form\Form
+     * @return \Symfony\Component\Form\FormInterface
      */
     protected function createEditResourceForm(Context $context, $footer = true, array $options = [])
     {
@@ -458,7 +458,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      * @param bool    $footer
      * @param array   $options
      *
-     * @return \Symfony\Component\Form\Form
+     * @return \Symfony\Component\Form\FormInterface
      * @deprecated
      */
     protected function createRemoveResourceForm(Context $context, $message = null, $footer = true, array $options = [])

@@ -109,11 +109,13 @@
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
+        {%- if color %}<label class="{{ value ? true_class : false_class }}">{% endif -%}
         {%- if value -%}
             {{ 'ekyna_core.value.yes'|trans }}
         {%- else -%}
             {{ 'ekyna_core.value.no'|trans }}
         {%- endif -%}
+        {%- if color %}</label>{% endif -%}
     </div>
 {% endspaceless %}
 {% endblock boolean_widget %}
