@@ -13,11 +13,17 @@
                 <option name="max">255</option>
             </constraint>
         </property>
+        <property name="supplement">
+            <constraint name="Length">
+                <option name="min">3</option>
+                <option name="max">255</option>
+            </constraint>
+        </property>
         <property name="postalCode">
             <constraint name="NotBlank" />
             <constraint name="Length">
-                <option name="min">5</option>
-                <option name="max">5</option>
+                <option name="min">3</option>
+                <option name="max">16</option>
             </constraint>
         </property>
         <property name="city">
@@ -36,10 +42,6 @@
                 <option name="min">3</option>
                 <option name="max">64</option>
             </constraint>
-        </property>
-        <property name="coordinate">
-            <constraint name="NotNull" />
-            <constraint name="Valid" />
         </property>
     </class>
 

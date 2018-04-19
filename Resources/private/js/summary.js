@@ -14,7 +14,7 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
             $element.popover({
                 content: content,
                 template: '<div class="popover summary" role="tooltip"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div></div>',
-                container: 'body > div.content',
+                container: 'body',
                 html: true,
                 placement: 'auto',
                 trigger: 'hover'
@@ -36,7 +36,10 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
         }
 
         $(document)
-            .on('mouseenter', '[data-summary]', function () {
+            .on('mouseenter', '[data-summary]', function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+
                 var $this = $(this);
 
                 if ($this.data('summary-xhr') || $this.data('summary-timeout')) {

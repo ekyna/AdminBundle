@@ -29,3 +29,4 @@
     </div>
 </div>
 {{ form_row(form.general.site_address.coordinate, {'label_col': 3, 'widget_col': 9}) }}
+{{ ivory_google_api([form.general.site_address.coordinate.vars.map]) }}
