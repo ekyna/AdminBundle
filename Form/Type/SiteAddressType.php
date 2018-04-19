@@ -80,14 +80,6 @@ class SiteAddressType extends AbstractType
     }
 
     /**
-     * @inheritDoc
-     */
-    public function finishView(FormView $view, FormInterface $form, array $options)
-    {
-        FormUtil::addClass($view, '.address');
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)

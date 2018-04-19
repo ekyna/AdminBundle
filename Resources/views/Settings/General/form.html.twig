@@ -2,6 +2,7 @@
 {{ form_row(form.general.admin_name, {'label_col': 3, 'widget_col': 9}) }}
 {{ form_row(form.general.admin_email, {'label_col': 3, 'widget_col': 9}) }}
 <hr>
+<div class="address">
 {{ form_row(form.general.site_address.street, {'label_col': 3, 'widget_col': 9}) }}
 {{ form_row(form.general.site_address.supplement, {'label_col': 3, 'widget_col': 9}) }}
 <div class="row">
@@ -30,3 +31,4 @@
 </div>
 {{ form_row(form.general.site_address.coordinate, {'label_col': 3, 'widget_col': 9}) }}
 {{ ivory_google_api([form.general.site_address.coordinate.vars.map]) }}
+</div>
