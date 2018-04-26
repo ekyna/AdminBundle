@@ -9,6 +9,11 @@
     padding: 15px 15px 1px 15px;
 }
 
+.show-body.borderless {
+    border: none;
+    padding: 0;
+}
+
 .show-with-tabs .show-body {
     border-top: none;
     border-radius: 0 0 4px 4px;
