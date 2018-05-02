@@ -1,76 +1,86 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <container
-    xmlns="http://symfony.com/schema/dic/services"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://symfony.com/schema/dic/services
+        xmlns="http://symfony.com/schema/dic/services"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://symfony.com/schema/dic/services
                         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
         <!-- Settings Schema -->
-        <service id="ekyna_admin.settings.general" class="Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema">
-            <tag name="ekyna_setting.schema" namespace="general" position="0" />
+        <service id="ekyna_admin.settings.general"
+                 class="Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema">
+            <tag name="ekyna_setting.schema" namespace="general" position="0"/>
         </service>
-        <service id="ekyna_admin.settings.notification" class="Ekyna\Bundle\AdminBundle\Settings\NotificationSettingsSchema">
-            <tag name="ekyna_setting.schema" namespace="notification" position="1" />
+        <service id="ekyna_admin.settings.notification"
+                 class="Ekyna\Bundle\AdminBundle\Settings\NotificationSettingsSchema">
+            <tag name="ekyna_setting.schema" namespace="notification" position="1"/>
         </service>
 
         <!-- Acl Operator -->
-        <service id="ekyna_admin.acl_operator" class="Ekyna\Bundle\AdminBundle\Acl\AclOperator">
-            <argument type="service" id="security.acl.provider" />
-            <argument type="service" id="security.acl.permission.map" />
-            <argument type="service" id="ekyna_resource.configuration_registry" />
-            <argument type="service" id="security.authorization_checker" />
+        <service id="ekyna_admin.acl_operator"
+                 class="Ekyna\Bundle\AdminBundle\Acl\AclOperator">
+            <argument type="service" id="security.acl.provider"/>
+            <argument type="service" id="security.acl.permission.map"/>
+            <argument type="service" id="ekyna_resource.configuration_registry"/>
+            <argument type="service" id="security.authorization_checker"/>
         </service>
 
         <!-- Kernel controller event listener -->
-        <service id="ekyna_admin.admin_listener" class="Ekyna\Bundle\AdminBundle\EventListener\AdminListener">
-            <argument type="service" id="ekyna_admin.acl_operator" />
-            <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController" />
+        <service id="ekyna_admin.admin_listener"
+                 class="Ekyna\Bundle\AdminBundle\EventListener\AdminListener">
+            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController"/>
         </service>
 
         <!-- Admin Menus -->
-        <service id="ekyna_admin.menu.pool" class="Ekyna\Bundle\AdminBundle\Menu\MenuPool" />
-        <service id="ekyna_admin.menu.builder" class="Ekyna\Bundle\AdminBundle\Menu\MenuBuilder">
-            <argument type="service" id="knp_menu.factory" />
-            <argument type="service" id="translator" />
-            <argument type="service" id="ekyna_admin.menu.pool" />
-            <argument type="service" id="ekyna_admin.acl_operator" />
+        <service id="ekyna_admin.menu.pool"
+                 class="Ekyna\Bundle\AdminBundle\Menu\MenuPool"/>
+        <service id="ekyna_admin.menu.builder"
+                 class="Ekyna\Bundle\AdminBundle\Menu\MenuBuilder">
+            <argument type="service" id="knp_menu.factory"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="ekyna_admin.menu.pool"/>
+            <argument type="service" id="ekyna_admin.acl_operator"/>
         </service>
         <service id="ekyna_admin.menu.side"
-            class="Knp\Menu\MenuItem">
-            <factory service="ekyna_admin.menu.builder" method="createSideMenu" />
-            <argument type="service" id="request_stack" />
-            <tag name="knp_menu.menu" alias="ekyna_admin.side" />
+                 class="Knp\Menu\MenuItem">
+            <factory service="ekyna_admin.menu.builder" method="createSideMenu"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="knp_menu.menu" alias="ekyna_admin.side"/>
         </service>
         <service id="ekyna_admin.menu.breadcrumb"
-            class="Knp\Menu\MenuItem">
-            <factory service="ekyna_admin.menu.builder" method="createBreadcrumb" />
-            <argument type="service" id="request_stack" />
-            <tag name="knp_menu.menu" alias="ekyna_admin.breadcrumb" />
+                 class="Knp\Menu\MenuItem">
+            <factory service="ekyna_admin.menu.builder" method="createBreadcrumb"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="knp_menu.menu" alias="ekyna_admin.breadcrumb"/>
         </service>
 
         <!-- Form Types Extensions -->
-        <service id="ekyna_admin.form.admin_extension" class="Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension">
-            <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType" />
+        <service id="ekyna_admin.form.admin_extension"
+                 class="Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension">
+            <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
         </service>
 
         <!-- Form Types -->
-        <service id="ekyna_admin.resource.form_type" class="Ekyna\Bundle\AdminBundle\Form\Type\ResourceType">
-            <argument type="service" id="ekyna_resource.configuration_registry" />
-            <argument type="service" id="ekyna_admin.acl_operator" />
-            <tag name="form.type" />
+        <service id="ekyna_admin.resource.form_type"
+                 class="Ekyna\Bundle\AdminBundle\Form\Type\ResourceType">
+            <argument type="service" id="ekyna_resource.configuration_registry"/>
+            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <tag name="form.type"/>
         </service>
 
         <!-- Table types -->
         <service id="ekyna_admin.table.actions_column_type_extension"
                  class="Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsTypeExtension">
-            <argument type="service" id="ekyna_admin.acl_operator" />
-            <tag name="table.column_type_extension" extended_type="Ekyna\Bundle\TableBundle\Extension\Type\Column\ActionsType"/>
+            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <tag name="table.column_type_extension"
+                 extended_type="Ekyna\Bundle\TableBundle\Extension\Type\Column\ActionsType"/>
         </service>
         <service id="ekyna_admin.table.entity_column_type_extension"
                  class="Ekyna\Bundle\AdminBundle\Table\Type\Column\EntityTypeExtension">
-            <argument type="service" id="ekyna_admin.acl_operator" />
-            <tag name="table.column_type_extension" extended_type="Ekyna\Component\Table\Bridge\Doctrine\ORM\Type\Column\EntityType"/>
+            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <tag name="table.column_type_extension"
+                 extended_type="Ekyna\Component\Table\Bridge\Doctrine\ORM\Type\Column\EntityType"/>
         </service>
 
         <!-- Table profile storage -->
@@ -89,18 +99,20 @@
         <service id="ekyna_admin.helper.resource_helper"
                  class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper"
                  lazy="true">
-            <argument type="service" id="doctrine.orm.default_entity_manager" />
-            <argument type="service" id="ekyna_resource.configuration_registry" />
-            <argument type="service" id="ekyna_admin.acl_operator" />
-            <argument type="service" id="router" />
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <argument type="service" id="ekyna_resource.configuration_registry"/>
+            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="ekyna_resource.event_dispatcher"/>
         </service>
 
         <!-- Pin Helper -->
-        <service id="ekyna_admin.helper.pin_helper" class="Ekyna\Bundle\AdminBundle\Helper\PinHelper">
-            <argument type="service" id="ekyna_resource.configuration_registry" />
-            <argument type="service" id="ekyna_user.user.provider" />
-            <argument type="service" id="ekyna_admin.helper.resource_helper" />
-            <argument type="service" id="doctrine.orm.default_entity_manager" />
+        <service id="ekyna_admin.helper.pin_helper"
+                 class="Ekyna\Bundle\AdminBundle\Helper\PinHelper">
+            <argument type="service" id="ekyna_resource.configuration_registry"/>
+            <argument type="service" id="ekyna_user.user.provider"/>
+            <argument type="service" id="ekyna_admin.helper.resource_helper"/>
+            <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
 
         <!-- Show -->
@@ -130,41 +142,50 @@
         </service>
 
         <!-- Twig Extensions -->
-        <service id="ekyna_admin.twig.admin_extension" class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
-            <argument type="service" id="ekyna_admin.helper.resource_helper" />
-            <argument type="service" id="ekyna_admin.helper.pin_helper" />
-            <argument type="service" id="ekyna_core.twig.ui_extension" />
+        <service id="ekyna_admin.twig.admin_extension"
+                 class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
+            <argument type="service" id="ekyna_admin.helper.resource_helper"/>
+            <argument type="service" id="ekyna_admin.helper.pin_helper"/>
+            <argument type="service" id="security.authorization_checker"/>
+            <argument type="service" id="ekyna_core.twig.ui_extension"/>
             <argument>%ekyna_admin.config.front%</argument>
-            <tag name="twig.extension" />
+            <tag name="twig.extension"/>
         </service>
-        <service id="ekyna_admin.twig.show_extension" class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
+        <service id="ekyna_admin.twig.show_extension"
+                 class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
             <argument type="service" id="ekyna_admin.show.renderer"/>
-            <tag name="twig.extension" />
+            <tag name="twig.extension"/>
         </service>
-        <service id="ekyna_dashboard_extension" class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
-            <tag name="twig.extension" />
+        <service id="ekyna_dashboard_extension"
+                 class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
+            <tag name="twig.extension"/>
         </service>
 
         <!-- Dashboard -->
-        <service id="ekyna_admin.dashboard.widget.registry" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\Registry">
-            <argument type="collection" />
+        <service id="ekyna_admin.dashboard.widget.registry"
+                 class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\Registry">
+            <argument type="collection"/>
         </service>
-        <service id="ekyna_admin.dashboard.widget.factory" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\Factory">
-            <argument id="ekyna_admin.dashboard.widget.registry" type="service" />
+        <service id="ekyna_admin.dashboard.widget.factory"
+                 class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\Factory">
+            <argument id="ekyna_admin.dashboard.widget.registry" type="service"/>
         </service>
-        <service id="ekyna_admin.dashboard.factory" class="Ekyna\Bundle\AdminBundle\Dashboard\Factory">
-            <argument id="ekyna_admin.dashboard.widget.factory" type="service" />
+        <service id="ekyna_admin.dashboard.factory"
+                 class="Ekyna\Bundle\AdminBundle\Dashboard\Factory">
+            <argument id="ekyna_admin.dashboard.widget.factory" type="service"/>
         </service>
-        <service id="ekyna_admin.dashboard.widget.shortcuts" class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\ShortcutsWidgetType">
-            <argument id="ekyna_admin.menu.pool" type="service" />
-            <argument id="ekyna_resource.configuration_registry" type="service" />
-            <argument id="ekyna_admin.acl_operator" type="service" />
-            <argument id="router" type="service" />
-            <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts" />
+        <service id="ekyna_admin.dashboard.widget.shortcuts"
+                 class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\ShortcutsWidgetType">
+            <argument id="ekyna_admin.menu.pool" type="service"/>
+            <argument id="ekyna_resource.configuration_registry" type="service"/>
+            <argument id="ekyna_admin.acl_operator" type="service"/>
+            <argument id="router" type="service"/>
+            <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts"/>
         </service>
 
-        <service id="ekyna_admin.dashboard" class="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard">
-            <factory service="ekyna_admin.dashboard.factory" method="create" />
+        <service id="ekyna_admin.dashboard"
+                 class="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard">
+            <factory service="ekyna_admin.dashboard.factory" method="create"/>
             <argument>%ekyna_admin.config.dashboard%</argument>
         </service>
 

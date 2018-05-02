@@ -6,6 +6,8 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
+use Ekyna\Component\Resource\Dispatcher\ResourceEventDispatcherInterface;
+use Ekyna\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -14,6 +16,8 @@ use Symfony\Component\Routing\RouterInterface;
  * Class ResourceHelper
  * @package Ekyna\Bundle\AdminBundle\Helper
  * @author  Étienne Dauvergne <contact@ekyna.com>
+ *
+ * @TODO move to resource bundle (or component) with new ACL system
  */
 class ResourceHelper
 {
@@ -37,25 +41,33 @@ class ResourceHelper
      */
     private $router;
 
+    /**
+     * @var ResourceEventDispatcherInterface
+     */
+    private $dispatcher;
+
 
     /**
      * Constructor.
      *
-     * @param EntityManagerInterface $em
-     * @param ConfigurationRegistry  $registry
-     * @param AclOperatorInterface   $aclOperator
-     * @param RouterInterface        $router
+     * @param EntityManagerInterface           $em
+     * @param ConfigurationRegistry            $registry
+     * @param AclOperatorInterface             $aclOperator
+     * @param RouterInterface                  $router
+     * @param ResourceEventDispatcherInterface $dispatcher
      */
     public function __construct(
         EntityManagerInterface $em,
         ConfigurationRegistry $registry,
         AclOperatorInterface $aclOperator,
-        RouterInterface $router
+        RouterInterface $router,
+        ResourceEventDispatcherInterface $dispatcher
     ) {
         $this->em = $em;
         $this->registry = $registry;
         $this->aclOperator = $aclOperator;
         $this->router = $router;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -157,6 +169,35 @@ class ResourceHelper
         $type = $absolute ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
 
         return $this->router->generate($routeName, $parameters, $type);
+    }
+
+    /**
+     * Returns the public url for the given resource.
+     *
+     * @param ResourceInterface $resource
+     * @param bool              $absolute
+     *
+     * @return string|null
+     */
+    public function generatePublicUrl(ResourceInterface $resource, $absolute = false)
+    {
+        if (null === $event = $this->dispatcher->createResourceEvent($resource, false)) {
+            return null;
+        }
+
+        $name = $this->dispatcher->getResourceEventName($resource, 'public_url');
+
+        $this->dispatcher->dispatch($name, $event);
+
+        if (!$event->hasData('route')) {
+            return null;
+        }
+
+        $type = $absolute ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
+
+        $parameters = $event->hasData('parameters') ? $event->getData('parameters') : [];
+
+        return $this->router->generate($event->getData('route'), $parameters, $type);
     }
 
     /**

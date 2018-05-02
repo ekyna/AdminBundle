@@ -24,6 +24,9 @@ ekyna_admin:
             from_email: Email de l'expéditeur
             to_emails: Emails des destinataires
     resource:
+        button:
+            show_admin: Fiche administration
+            show_front: Page publique
         message:
             persist:
                 success: La ressource a été sauvegardée avec succès.

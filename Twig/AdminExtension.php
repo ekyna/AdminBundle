@@ -7,6 +7,7 @@ use Ekyna\Bundle\AdminBundle\Helper\ResourceHelper;
 use Ekyna\Bundle\AdminBundle\Helper\PinHelper;
 use Ekyna\Bundle\CoreBundle\Twig\UiExtension;
 use Ekyna\Component\Resource\Model\ResourceInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Class AdminExtension
@@ -26,6 +27,11 @@ class AdminExtension extends \Twig_Extension
     private $pinHelper;
 
     /**
+     * @var AuthorizationCheckerInterface
+     */
+    private $authorizationChecker;
+
+    /**
      * @var UiExtension
      */
     private $ui;
@@ -39,19 +45,22 @@ class AdminExtension extends \Twig_Extension
     /**
      * Constructor.
      *
-     * @param ResourceHelper $resourceHelper
-     * @param PinHelper      $pinHelper
-     * @param UiExtension    $ui
-     * @param array          $config
+     * @param ResourceHelper                $resourceHelper
+     * @param PinHelper                     $pinHelper
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param UiExtension                   $ui
+     * @param array                         $config
      */
     public function __construct(
         ResourceHelper $resourceHelper,
         PinHelper $pinHelper,
+        AuthorizationCheckerInterface $authorizationChecker,
         UiExtension $ui,
         $config
     ) {
         $this->resourceHelper = $resourceHelper;
         $this->pinHelper = $pinHelper;
+        $this->authorizationChecker = $authorizationChecker;
         $this->ui = $ui;
         $this->config = $config;
     }
@@ -70,6 +79,7 @@ class AdminExtension extends \Twig_Extension
             new \Twig_SimpleFunction('admin_resource_path', [$this, 'generateResourcePath']),
             new \Twig_SimpleFunction('admin_user_pins', [$this, 'getUserPins']),
             new \Twig_SimpleFunction('admin_resource_pin', [$this, 'renderResourcePin'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction('admin_front_helper', [$this, 'renderFrontHelper'], ['is_safe' => ['html']]),
         ];
     }
 
@@ -121,6 +131,18 @@ class AdminExtension extends \Twig_Extension
      */
     public function renderResourceButton($resource, $action = 'show', array $options = [], array $attributes = [])
     {
+        if ($action === 'public') {
+            if (null !== $url = $this->resourceHelper->generatePublicUrl($resource)) {
+                return $this->ui->renderButton(
+                    'ekyna_admin.resource.button.show_front',
+                    ['type' => 'link', 'path' => $url],
+                    ['target' => '_blank']
+                );
+            }
+
+            return '';
+        }
+
         if ($this->resourceHelper->isGranted($resource, $action)) {
             $options = array_merge($this->getButtonOptions($action), $options);
 
@@ -224,6 +246,37 @@ class AdminExtension extends \Twig_Extension
     <span class="glyphicon glyphicon-pushpin"></span>
 </a>
 EOT;
+    }
+
+    /**
+     * Renders the front admin helper.
+     *
+     * @param ResourceInterface $resource
+     *
+     * @return string
+     */
+    public function renderFrontHelper(ResourceInterface $resource)
+    {
+        if (!$this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+            return '';
+        }
+
+        $buttons = [];
+
+        if ($this->hasResourceAccess($resource)) {
+            if (null !== $url = $this->resourceHelper->generateResourcePath($resource)) {
+                $buttons[] = $this->ui->renderButton(
+                    'ekyna_admin.resource.button.show_admin',
+                    ['path' => $url, 'type' => 'link']
+                );
+            }
+        }
+
+        if (empty($buttons)) {
+            return '';
+        }
+
+        return '<div id="admin-helper" class="panel panel-default">' . implode('', $buttons) . '</div>';
     }
 
     /**
