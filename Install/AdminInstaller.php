@@ -161,13 +161,13 @@ class AdminInstaller extends AbstractInstaller implements OrderedInstallerInterf
 
             /** @var \Ekyna\Bundle\UserBundle\Model\GroupInterface $group */
             if (null !== $group = $repository->findOneBy(['name' => $name])) {
-                if ($group->getRoles() === $options[0]) {
+                //if ($group->getRoles() === $options[0]) {
                     $output->writeln('already exists.');
-                } else {
+                /*} else {
                     $group->setRoles($options[0]);
                     $em->persist($group);
                     $output->writeln('updated.');
-                }
+                }*/
 
                 continue;
             }
