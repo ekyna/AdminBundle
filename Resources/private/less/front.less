@@ -1,16 +1,17 @@
 #admin-helper {
-    position: fixed;
-    top: 180px;
-    right: 10px;
-    min-width: 160px;
-    padding:10px;
-    box-shadow: 0 2px 4px #ddd;
+    display: none;
 }
 
 /* -------------------------------- RESPONSIVE -------------------------------- */
 
 @media (min-width: @screen-md) {
     #admin-helper {
-        display: none;
+        display: block;
+        position: fixed;
+        top: 180px;
+        right: 10px;
+        min-width: 160px;
+        padding:10px;
+        box-shadow: 0 2px 4px #ddd;
     }
 }
