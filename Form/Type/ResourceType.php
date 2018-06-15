@@ -93,7 +93,7 @@ class ResourceType extends AbstractType
             ->setAllowedTypes('allow_new', 'bool')
             ->setAllowedTypes('allow_list', 'bool')
             ->setNormalizer('placeholder', function(Options $options, $value) {
-                if (empty($value) && !$options['required']) {
+                if (empty($value) && !$options['required'] && !$options['multiple']) {
                     $value = 'ekyna_core.value.none';
                 }
 

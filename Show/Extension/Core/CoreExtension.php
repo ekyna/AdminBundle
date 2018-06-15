@@ -26,10 +26,11 @@ class CoreExtension extends AbstractExtension
     {
         $this->classes = [
             'boolean'      => Type\BooleanType::class,
+            'collection'   => Type\CollectionType::class,
             'color'        => Type\ColorType::class,
+            'choice'       => Type\ChoiceType::class,
             'datetime'     => Type\DateTimeType::class,
             'entity'       => Type\EntityType::class,
-            'collection'   => Type\CollectionType::class,
             'map'          => Type\MapType::class,
             'number'       => Type\NumberType::class,
             'text'         => Type\TextType::class,

@@ -51,16 +51,25 @@
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {% if value is empty %}
-            {{ block('undefined') }}
-        {% elseif trans_domain is not sameas(false) %}
-            {{ value|trans(trans_params, trans_domain)|raw }}
-        {% else %}
-            {{ value|raw }}
-        {% endif %}
+        {{ block('text_widget_value') }}
     </div>
 {% endspaceless %}
 {% endblock text_widget %}
+
+
+{% block text_widget_value %}
+{% spaceless %}
+    {% if value is empty -%}
+        {{ block('undefined') }}
+    {%- elseif trans_domain is null -%}
+        {{ value|trans|raw }}
+    {%- elseif trans_domain is sameas(false) -%}
+        {{ value|trans(trans_params, trans_domain)|raw }}
+    {%- else -%}
+        {{ value|raw }}
+    {%- endif %}
+{% endspaceless %}
+{% endblock text_widget_value %}
 
 
 {% block number_widget %}
@@ -109,8 +118,10 @@
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {%- if color %}<label class="{{ value ? true_class : false_class }}">{% endif -%}
-        {%- if value -%}
+        {%- if color %}<label class="{{ value is null ? null_class : (value ? true_class : false_class) }}">{% endif -%}
+        {%- if value is null -%}
+            {{ null_label|trans }}
+        {%- elseif value -%}
             {{ 'ekyna_core.value.yes'|trans }}
         {%- else -%}
             {{ 'ekyna_core.value.no'|trans }}
@@ -119,6 +130,31 @@
     </div>
 {% endspaceless %}
 {% endblock boolean_widget %}
+
+
+{% block choice_widget %}
+{% spaceless %}
+{% if multiple %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        <ul class="list-unstyled">
+        {% for val in values -%}
+            <li>{% with {value: val, trans_domain: trans_domain, trans_params: trans_params} -%}
+                {{ block('text_widget_value') }}
+            {%- endwith %}</li>
+        {%- endfor %}
+        </ul>
+    </div>
+{% else %}
+    {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
+    <div{{ block('widget_attributes') }}>
+        {% with {value: values|first, trans_domain: trans_domain, trans_params: trans_params} -%}
+            {{ block('text_widget_value') }}
+        {%- endwith %}
+    </div>
+{% endif %}
+{% endspaceless %}
+{% endblock choice_widget %}
 
 
 {% block entity_widget %}
