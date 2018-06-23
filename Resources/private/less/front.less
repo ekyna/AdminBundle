@@ -1,5 +1,18 @@
 #admin-helper {
     display: none;
+    position: fixed;
+    top: 200px;
+    right: -185px;
+    width: 200px;
+    padding: 18px;
+    box-shadow: 0 2px 5px #a8a8a8;
+    border-radius: 6px 0 0 6px;
+    background-color: #337ab7;
+    transition: right .2s;
+
+    &:hover {
+        right: 0;
+    }
 }
 
 /* -------------------------------- RESPONSIVE -------------------------------- */
@@ -7,11 +20,5 @@
 @media (min-width: @screen-md) {
     #admin-helper {
         display: block;
-        position: fixed;
-        top: 180px;
-        right: 10px;
-        min-width: 160px;
-        padding:10px;
-        box-shadow: 0 2px 4px #ddd;
     }
 }

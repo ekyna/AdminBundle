@@ -131,13 +131,27 @@ class AdminExtension extends \Twig_Extension
      */
     public function renderResourceButton($resource, $action = 'show', array $options = [], array $attributes = [])
     {
-        if ($action === 'public') {
+        if (in_array($action, ['public', 'editor'], true)) {
             if (null !== $url = $this->resourceHelper->generatePublicUrl($resource)) {
-                return $this->ui->renderButton(
-                    'ekyna_admin.resource.button.show_front',
-                    ['type' => 'link', 'path' => $url],
-                    ['target' => '_blank']
-                );
+                if ($action === 'public') {
+                    $label = 'ekyna_admin.resource.button.show_front';
+                    $icon = 'eye-open';
+                    $path = $url;
+                } else {
+                    $label = 'ekyna_admin.resource.button.show_editor';
+                    $icon = 'edit';
+                    $path = $this->resourceHelper->getUrlGenerator()->generate('ekyna_cms_editor_index', [
+                        'path' => $url,
+                    ]);
+                }
+
+                return $this->ui->renderButton($label, [
+                    'type' => 'link',
+                    'path' => $path,
+                    'icon' => $icon,
+                ], [
+                    'target' => '_blank',
+                ]);
             }
 
             return '';
@@ -276,7 +290,7 @@ EOT;
             return '';
         }
 
-        return '<div id="admin-helper" class="panel panel-default">' . implode('', $buttons) . '</div>';
+        return '<div id="admin-helper">' . implode('', $buttons) . '</div>';
     }
 
     /**
