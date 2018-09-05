@@ -4,7 +4,6 @@ namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 
-
 /**
  * Class DashboardController
  * @package Ekyna\Bundle\AdminBundle\Controller

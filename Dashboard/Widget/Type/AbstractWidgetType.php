@@ -23,7 +23,7 @@ abstract class AbstractWidgetType implements WidgetTypeInterface
         foreach (['xs', 'sm', 'md', 'lg'] as $sizing) {
             $size = $options['col_' . $sizing];
             if (0 < $size && $size < 12) {
-                $classes[] = 'col-' . $sizing . '-' . $options['col_' . $sizing];
+                $classes[] = 'col-' . $sizing . '-' . $size;
             }
         }
         if (empty($classes)) {

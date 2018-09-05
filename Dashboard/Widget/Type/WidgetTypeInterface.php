@@ -8,7 +8,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Interface WidgetTypeInterface
  * @package Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 interface WidgetTypeInterface
 {
@@ -25,6 +25,7 @@ interface WidgetTypeInterface
      *
      * @param WidgetInterface   $widget
      * @param \Twig_Environment $twig
+     *
      * @return string
      */
     public function render(WidgetInterface $widget, \Twig_Environment $twig);
