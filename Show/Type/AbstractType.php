@@ -32,7 +32,7 @@ abstract class AbstractType implements TypeInterface
      */
     public function build(View $view, $value, array $options = [])
     {
-        $attr = [];
+        $attr = $options['attr'];
         foreach (['id', 'class'] as $key) {
             if (isset($options[$key])) {
                 $attr[$key] = $options[$key];
@@ -97,6 +97,7 @@ abstract class AbstractType implements TypeInterface
                 'widget_col'    => 10,
                 'row_prefix'    => null,
                 'widget_prefix' => null,
+                'attr'          => [],
             ])
             ->setAllowedTypes('id', ['null', 'string'])
             ->setAllowedTypes('label', ['null', 'string'])
@@ -105,6 +106,7 @@ abstract class AbstractType implements TypeInterface
             ->setAllowedTypes('widget_col', 'int')
             ->setAllowedTypes('row_prefix', ['null', 'string'])
             ->setAllowedTypes('widget_prefix', ['null', 'string'])
+            ->setAllowedTypes('attr', 'array')
             ->setNormalizer('widget_col', function (Options $options, $value) {
                 if (12 != $options['label_col'] + $value) {
                     $value = 12 - $options['label_col'];
