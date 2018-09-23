@@ -9,6 +9,7 @@ use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Ekyna\Component\Resource\Dispatcher\ResourceEventDispatcherInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -17,14 +18,14 @@ use Symfony\Component\Routing\RouterInterface;
  * @package Ekyna\Bundle\AdminBundle\Helper
  * @author  Étienne Dauvergne <contact@ekyna.com>
  *
- * @TODO move to resource bundle (or component) with new ACL system
+ * @TODO    move to resource bundle (or component) with new ACL system
  */
 class ResourceHelper
 {
     /**
      * @var EntityManagerInterface
      */
-    private $em;
+    private $manager;
 
     /**
      * @var ConfigurationRegistry
@@ -50,24 +51,34 @@ class ResourceHelper
     /**
      * Constructor.
      *
-     * @param EntityManagerInterface           $em
+     * @param EntityManagerInterface           $manager
      * @param ConfigurationRegistry            $registry
      * @param AclOperatorInterface             $aclOperator
      * @param RouterInterface                  $router
      * @param ResourceEventDispatcherInterface $dispatcher
      */
     public function __construct(
-        EntityManagerInterface $em,
+        EntityManagerInterface $manager,
         ConfigurationRegistry $registry,
         AclOperatorInterface $aclOperator,
         RouterInterface $router,
         ResourceEventDispatcherInterface $dispatcher
     ) {
-        $this->em = $em;
+        $this->manager = $manager;
         $this->registry = $registry;
         $this->aclOperator = $aclOperator;
         $this->router = $router;
         $this->dispatcher = $dispatcher;
+    }
+
+    /**
+     * Returns the em.
+     *
+     * @return EntityManagerInterface
+     */
+    public function getEntityManager()
+    {
+        return $this->manager;
     }
 
     /**
@@ -142,7 +153,7 @@ class ResourceHelper
             while (null !== $parentId = $configuration->getParentId()) {
                 $parentConfiguration = $this->registry->findConfiguration($parentId);
 
-                $metadata = $this->em->getClassMetadata($configuration->getResourceClass());
+                $metadata = $this->manager->getClassMetadata($configuration->getResourceClass());
                 $associations = $metadata->getAssociationsByTargetClass($parentConfiguration->getResourceClass());
 
                 foreach ($associations as $mapping) {
@@ -176,14 +187,17 @@ class ResourceHelper
      *
      * @param ResourceInterface $resource
      * @param bool              $absolute
+     * @param string            $locale
      *
      * @return string|null
      */
-    public function generatePublicUrl(ResourceInterface $resource, $absolute = false)
+    public function generatePublicUrl(ResourceInterface $resource, $absolute = false, $locale = null)
     {
         if (null === $event = $this->dispatcher->createResourceEvent($resource, false)) {
             return null;
         }
+
+        $event->addData('_locale', $locale);
 
         $name = $this->dispatcher->getResourceEventName($resource, 'public_url');
 
@@ -197,7 +211,15 @@ class ResourceHelper
 
         $parameters = $event->hasData('parameters') ? $event->getData('parameters') : [];
 
-        return $this->router->generate($event->getData('route'), $parameters, $type);
+        if ($locale) {
+            $parameters['_locale'] = $locale;
+        }
+
+        try {
+            return $this->router->generate($event->getData('route'), $parameters, $type);
+        } catch (RoutingException $e) {
+            return null;
+        }
     }
 
     /**
