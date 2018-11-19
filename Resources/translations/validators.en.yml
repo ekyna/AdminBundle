@@ -1,0 +1,4 @@
+ekyna_admin:
+    settings:
+        notification:
+            at_least_one_email: You must enter at least one email address.
