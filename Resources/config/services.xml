@@ -217,7 +217,7 @@
             <argument type="service" id="ekyna_admin.helper.resource_helper"/>
             <argument type="service" id="ekyna_admin.helper.pin_helper"/>
             <argument type="service" id="security.authorization_checker"/>
-            <argument type="service" id="ekyna_core.twig.ui_extension"/>
+            <argument type="service" id="ekyna_core.ui.renderer"/>
             <argument>%ekyna_admin.config.front%</argument>
             <tag name="twig.extension"/>
         </service>

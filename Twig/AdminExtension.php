@@ -5,7 +5,7 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 use Ekyna\Bundle\AdminBundle\Entity\UserPin;
 use Ekyna\Bundle\AdminBundle\Helper\ResourceHelper;
 use Ekyna\Bundle\AdminBundle\Helper\PinHelper;
-use Ekyna\Bundle\CoreBundle\Twig\UiExtension;
+use Ekyna\Bundle\CoreBundle\Service\Ui\UiRenderer;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -32,9 +32,9 @@ class AdminExtension extends \Twig_Extension
     private $authorizationChecker;
 
     /**
-     * @var UiExtension
+     * @var UiRenderer
      */
-    private $ui;
+    private $uiRenderer;
 
     /**
      * @var array
@@ -48,20 +48,20 @@ class AdminExtension extends \Twig_Extension
      * @param ResourceHelper                $resourceHelper
      * @param PinHelper                     $pinHelper
      * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param UiExtension                   $ui
+     * @param UiRenderer                    $uiRenderer
      * @param array                         $config
      */
     public function __construct(
         ResourceHelper $resourceHelper,
         PinHelper $pinHelper,
         AuthorizationCheckerInterface $authorizationChecker,
-        UiExtension $ui,
+        UiRenderer $uiRenderer,
         $config
     ) {
         $this->resourceHelper = $resourceHelper;
         $this->pinHelper = $pinHelper;
         $this->authorizationChecker = $authorizationChecker;
-        $this->ui = $ui;
+        $this->uiRenderer = $uiRenderer;
         $this->config = $config;
     }
 
@@ -71,15 +71,46 @@ class AdminExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction('admin_logo_path', [$this, 'getLogoPath']),
-            new \Twig_SimpleFunction('admin_navbar_config', [$this, 'getNavbarConfig']),
-            new \Twig_SimpleFunction('admin_stylesheets', [$this, 'renderStylesheets'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('admin_resource_btn', [$this, 'renderResourceButton'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('admin_resource_access', [$this, 'hasResourceAccess']),
-            new \Twig_SimpleFunction('admin_resource_path', [$this, 'generateResourcePath']),
-            new \Twig_SimpleFunction('admin_user_pins', [$this, 'getUserPins']),
-            new \Twig_SimpleFunction('admin_resource_pin', [$this, 'renderResourcePin'], ['is_safe' => ['html']]),
-            new \Twig_SimpleFunction('admin_front_helper', [$this, 'renderFrontHelper'], ['is_safe' => ['html']]),
+            new \Twig_SimpleFunction(
+                'admin_logo_path',
+                [$this, 'getLogoPath']
+            ),
+            new \Twig_SimpleFunction(
+                'admin_navbar_config',
+                [$this, 'getNavbarConfig']
+            ),
+            new \Twig_SimpleFunction(
+                'admin_stylesheets',
+                [$this, 'renderStylesheets'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction(
+                'admin_resource_btn',
+                [$this, 'renderResourceButton'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction(
+                'admin_resource_access',
+                [$this, 'hasResourceAccess']
+            ),
+            new \Twig_SimpleFunction(
+                'admin_resource_path',
+                [$this, 'generateResourcePath']
+            ),
+            new \Twig_SimpleFunction(
+                'admin_user_pins',
+                [$this, 'getUserPins']
+            ),
+            new \Twig_SimpleFunction(
+                'admin_resource_pin',
+                [$this, 'renderResourcePin'],
+                ['is_safe' => ['html']]
+            ),
+            new \Twig_SimpleFunction(
+                'admin_front_helper',
+                [$this, 'renderFrontHelper'],
+                ['is_safe' => ['html']]
+            ),
         ];
     }
 
@@ -113,7 +144,7 @@ class AdminExtension extends \Twig_Extension
         $output = '';
 
         foreach ($this->config['stylesheets'] as $path) {
-            $output .= $this->ui->buildStylesheetTag($path);
+            $output .= $this->uiRenderer->buildStylesheetTag($path);
         }
 
         return $output;
@@ -145,7 +176,7 @@ class AdminExtension extends \Twig_Extension
                     ]);
                 }
 
-                return $this->ui->renderButton($label, [
+                return $this->uiRenderer->renderButton($label, [
                     'type' => 'link',
                     'path' => $path,
                     'icon' => $icon,
@@ -182,7 +213,7 @@ class AdminExtension extends \Twig_Extension
                 $options['type'] = 'link';
             }
 
-            return $this->ui->renderButton(
+            return $this->uiRenderer->renderButton(
                 $label,
                 $options,
                 $attributes
@@ -279,7 +310,7 @@ EOT;
 
         if ($this->hasResourceAccess($resource)) {
             if (null !== $url = $this->resourceHelper->generateResourcePath($resource)) {
-                $buttons[] = $this->ui->renderButton(
+                $buttons[] = $this->uiRenderer->renderButton(
                     'ekyna_admin.resource.button.show_admin',
                     ['path' => $url, 'type' => 'link']
                 );
