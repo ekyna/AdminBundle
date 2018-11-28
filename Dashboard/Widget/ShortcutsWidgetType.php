@@ -2,13 +2,14 @@
 
 namespace Ekyna\Bundle\AdminBundle\Dashboard\Widget;
 
-use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type\AbstractWidgetType;
 use Ekyna\Bundle\AdminBundle\Menu\MenuPool;
 use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
+use Ekyna\Component\Resource\Model\Actions;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Class ShortcutsWidgetType
@@ -28,9 +29,9 @@ class ShortcutsWidgetType extends AbstractWidgetType
     private $registry;
 
     /**
-     * @var AclOperatorInterface
+     * @var AuthorizationCheckerInterface
      */
-    private $aclOperator;
+    private $authorization;
 
     /**
      * @var UrlGeneratorInterface
@@ -41,20 +42,20 @@ class ShortcutsWidgetType extends AbstractWidgetType
     /**
      * Constructor.
      *
-     * @param MenuPool              $menuPool
-     * @param ConfigurationRegistry $registry
-     * @param AclOperatorInterface  $aclOperator
-     * @param UrlGeneratorInterface $urlGenerator
+     * @param MenuPool                      $menuPool
+     * @param ConfigurationRegistry         $registry
+     * @param AuthorizationCheckerInterface $authorization
+     * @param UrlGeneratorInterface         $urlGenerator
      */
     public function __construct(
         MenuPool $menuPool,
         ConfigurationRegistry $registry,
-        AclOperatorInterface $aclOperator,
+        AuthorizationCheckerInterface $authorization,
         UrlGeneratorInterface $urlGenerator
     ) {
         $this->menuPool = $menuPool;
         $this->registry = $registry;
-        $this->aclOperator = $aclOperator;
+        $this->authorization = $authorization;
         $this->urlGenerator = $urlGenerator;
     }
 
@@ -63,7 +64,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
      */
     public function render(WidgetInterface $widget, \Twig_Environment $twig)
     {
-        return $twig->render('EkynaAdminBundle:Dashboard:widget_shortcuts.html.twig', [
+        return $twig->render('@EkynaAdmin/Dashboard/widget_shortcuts.html.twig', [
             'columns' => $this->createColumns(),
         ]);
     }
@@ -144,14 +145,14 @@ class ShortcutsWidgetType extends AbstractWidgetType
                     'path'   => $this->urlGenerator->generate($menuEntry->getRoute()),
                 ];
                 if (null !== $resource = $menuEntry->getResource()) {
-                    if (null !== $config = $this->registry->get($resource)) {
-                        if (!$this->aclOperator->isAccessGranted($resource, 'VIEW')) {
+                    if (null !== $config = $this->registry->findByName($resource)) {
+                        if (!$this->authorization->isGranted(Actions::VIEW, $resource)) {
                             continue;
                         }
                         if (null !== $config->getParentId()) {
                             continue;
                         }
-                        if ($this->aclOperator->isAccessGranted($resource, 'CREATE')) {
+                        if ($this->authorization->isGranted(Actions::CREATE, $resource)) {
                             try {
                                 $path = $this->urlGenerator->generate($config->getRoute('new'));
                                 $entry['create_path'] = $path;
@@ -172,10 +173,13 @@ class ShortcutsWidgetType extends AbstractWidgetType
             if (!empty($entries)) {
                 $group['entries'] = $entries;
                 $group['count'] = count($entries) + 2;
-            } else {
-                $group['path'] = $this->urlGenerator->generate($menuGroup->getRoute());
+            } elseif (!empty($route = $menuGroup->getRoute())) {
+                $group['path'] = $this->urlGenerator->generate($route);
                 $group['count'] = 2;
+            } else {
+                continue;
             }
+
             $groups[] = $group;
         }
 

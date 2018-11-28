@@ -2,28 +2,22 @@
 
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
-use Ekyna\Bundle\CoreBundle\DependencyInjection\Extension;
-use Symfony\Component\Config\FileLocator;
+use Ekyna\Bundle\ResourceBundle\DependencyInjection\AbstractExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader;
 
 /**
  * Class EkynaAdminExtension
  * @package Ekyna\Bundle\AdminBundle\DependencyInjection
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class EkynaAdminExtension extends Extension
+class EkynaAdminExtension extends AbstractExtension
 {
     /**
-     * {@inheritDoc}
+     * @inheritdoc
      */
     public function load(array $configs, ContainerBuilder $container)
     {
-        $configuration = new Configuration();
-        $config = $this->processConfiguration($configuration, $configs);
-
-        $loader = new Loader\XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-        $loader->load('services.xml');
+        $config = $this->configure($configs, 'ekyna_admin', new Configuration(), $container);
 
         $this->configureMenus($config['menus'], $container);
 
@@ -46,6 +40,10 @@ class EkynaAdminExtension extends Extension
         $container
             ->getDefinition('ekyna_admin.show.registry')
             ->addMethodCall('registerTemplates', [$templates]);
+
+        $container
+            ->getDefinition('ekyna_admin.security.event_subscriber')
+            ->replaceArgument(3, $config['notification']);
     }
 
     /**

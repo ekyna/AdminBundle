@@ -10,7 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * @package Ekyna\Bundle\AdminBundle\Form\Type
  * @author  Étienne Dauvergne <contact@ekyna.com>
  *
- * @todo move to ResourceBundle
+ * @TODO Move to ResourceBundle
  */
 abstract class ResourceFormType extends AbstractType
 {

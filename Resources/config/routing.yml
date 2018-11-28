@@ -1,31 +1,31 @@
 ekyna_admin:
-    path: ""
+    path: /admin
     defaults:
         _controller: FrameworkBundle:Redirect:redirect
         route: ekyna_admin_dashboard
         permanent: true
 
 ekyna_admin_dashboard:
-    path:  /dashboard
+    path:  /admin/dashboard
     methods: [GET]
     defaults:
         _controller: EkynaAdminBundle:Dashboard:index
 
 ekyna_admin_security_login:
-    path: /login
+    path: /admin/login
     methods: [GET]
     defaults:
         _controller: EkynaAdminBundle:Security:login
 
 ekyna_admin_security_check:
-    path: /login-check
+    path: /admin/login-check
     methods: [POST]
     defaults:
         _controller: EkynaAdminBundle:Security:check
 
 ekyna_admin_security_logout:
-    path: /logout
+    path: /admin/logout
 
-ekyna_admin_pin:
-    resource: routing/pin.yml
-    prefix: /pin
+ekyna_admin_admin:
+    resource: "routing/admin.yml"
+    prefix: /admin

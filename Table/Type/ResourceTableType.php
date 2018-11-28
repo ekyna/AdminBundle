@@ -10,6 +10,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Class ResourceTableType
  * @package Ekyna\Bundle\AdminBundle\Table\Type
  * @author Étienne Dauvergne <contact@ekyna.com>
+ *
+ * @TODO Move to resource bundle
  */
 abstract class ResourceTableType extends AbstractTableType
 {

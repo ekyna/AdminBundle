@@ -1,12 +1,16 @@
-{% extends 'EkynaCoreBundle:Form:form_div_layout.html.twig' %}
+{% extends '@EkynaCore/Form/form_div_layout.html.twig' %}
+
 
 {% block ekyna_resource_widget %}
+{% spaceless %}
 {% if expanded %}
     {{ block('choice_widget_expanded') }}
 {% else %}
     {{ block('ekyna_resource_widget_collapsed') }}
 {% endif %}
+{% endspaceless %}
 {% endblock ekyna_resource_widget %}
+
 
 {% block ekyna_resource_widget_collapsed %}
 {% spaceless %}
@@ -31,6 +35,36 @@
 {% endif %}
 {% endspaceless %}
 {% endblock ekyna_resource_widget_collapsed %}
+
+
+{% block ekyna_admin_email_config_widget %}
+{% spaceless %}
+{{ bootstrap_backup_form_settings() }}
+{{ bootstrap_set_sizing('sm') }}
+{{ bootstrap_set_label_col(4) }}
+{{ bootstrap_set_widget_col(8) }}
+<div class="row">
+    <div class="col-md-6">
+        <p style="border-bottom:1px solid #ddd;padding-bottom:10px;font-weight:bold">SMTP</p>
+        {{ form_row(form.smtp.host) }}
+        {{ form_row(form.smtp.port) }}
+        {{ form_row(form.smtp.encryption) }}
+        {{ form_row(form.smtp.auth_mode) }}
+        {{ form_row(form.smtp.username) }}
+        {{ form_row(form.smtp.password) }}
+    </div>
+    <div class="col-md-6">
+        <p style="border-bottom:1px solid #ddd;padding-bottom:10px;font-weight:bold">IMAP</p>
+        {{ form_row(form.imap.mailbox) }}
+        {{ form_row(form.imap.folder) }}
+        {{ form_row(form.imap.user) }}
+        {{ form_row(form.imap.password) }}
+    </div>
+</div>
+{{ bootstrap_restore_form_settings() }}
+{% endspaceless %}
+{% endblock ekyna_admin_email_config_widget %}
+
 
 {% block form_widget_simple %}
 {% spaceless %}

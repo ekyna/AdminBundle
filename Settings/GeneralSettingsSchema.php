@@ -83,7 +83,7 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getShowTemplate()
     {
-        return 'EkynaAdminBundle:Settings/General:show.html.twig';
+        return '@EkynaAdmin/Settings/General/show.html.twig';
     }
 
     /**
@@ -91,6 +91,6 @@ class GeneralSettingsSchema extends AbstractSchema
      */
     public function getFormTemplate()
     {
-        return 'EkynaAdminBundle:Settings/General:form.html.twig';
+        return '@EkynaAdmin/Settings/General/form.html.twig';
     }
 }

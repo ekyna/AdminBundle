@@ -7,47 +7,34 @@ use Ekyna\Bundle\AdminBundle\Dashboard\Widget\WidgetInterface;
 /**
  * Class DashboardExtension
  * @package Ekyna\Bundle\AdminBundle\Twig
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class DashboardExtension extends \Twig_Extension
 {
-    private $twig;
-
-
-    /**
-     * {@inheritdoc}
-     */
-    public function initRuntime(\Twig_Environment $twig)
-    {
-        $this->twig = $twig;
-    }
-
     /**
      * {@inheritdoc}
      */
     public function getFunctions()
     {
-        return array(
-            new \Twig_SimpleFunction('render_dashboard_widget', array($this, 'renderDashboardWidget'), array('is_safe' => array('html'))),
-        );
+        return [
+            new \Twig_SimpleFunction(
+                'render_dashboard_widget',
+                [$this, 'renderDashboardWidget'],
+                ['is_safe' => ['html'], 'needs_environment' => true]
+            ),
+        ];
     }
 
     /**
      * Renders the widget.
      *
-     * @param WidgetInterface $widget
+     * @param \Twig_Environment $env
+     * @param WidgetInterface   $widget
+     *
      * @return string
      */
-    public function renderDashboardWidget(WidgetInterface $widget)
+    public function renderDashboardWidget(\Twig_Environment $env, WidgetInterface $widget)
     {
-        return $widget->getType()->render($widget, $this->twig);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'ekyna_dashboard_extension';
+        return $widget->getType()->render($widget, $env);
     }
 }

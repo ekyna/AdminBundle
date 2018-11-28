@@ -18,7 +18,7 @@ class DashboardController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('EkynaAdminBundle:Dashboard:index.html.twig', array(
+        return $this->render('@EkynaAdmin/Dashboard/index.html.twig', array(
             'dashboard' => $this->get('ekyna_admin.dashboard'),
         ));
     }

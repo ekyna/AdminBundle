@@ -37,7 +37,7 @@ trait TinymceTrait
         $propertyAcessor = PropertyAccess::createPropertyAccessor();
         $content = $propertyAcessor->getValue($resource, $field);
 
-        return $this->render('EkynaCoreBundle:Ui:tinymce.html.twig', [
+        return $this->render('@EkynaCore/Ui/tinymce.html.twig', [
             'content' => $content
         ]);
     }

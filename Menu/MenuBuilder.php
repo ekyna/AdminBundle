@@ -2,15 +2,16 @@
 
 namespace Ekyna\Bundle\AdminBundle\Menu;
 
-use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
+use Ekyna\Component\Resource\Model\Actions;
 use Knp\Menu\FactoryInterface;
 use Knp\Menu\ItemInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 /**
  * Class MenuBuilder
  * @package Ekyna\Bundle\AdminBundle\Menu
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class MenuBuilder
 {
@@ -30,9 +31,9 @@ class MenuBuilder
     private $pool;
 
     /**
-     * @var AclOperatorInterface
+     * @var AuthorizationCheckerInterface
      */
-    private $aclOperator;
+    private $authorization;
 
     /**
      * @var ItemInterface
@@ -43,21 +44,21 @@ class MenuBuilder
     /**
      * Constructor.
      *
-     * @param FactoryInterface     $factory
-     * @param TranslatorInterface  $translator
-     * @param MenuPool             $pool
-     * @param AclOperatorInterface $aclOperator
+     * @param FactoryInterface              $factory
+     * @param TranslatorInterface           $translator
+     * @param MenuPool                      $pool
+     * @param AuthorizationCheckerInterface $authorization
      */
     public function __construct(
-        FactoryInterface     $factory,
-        TranslatorInterface  $translator, 
-        MenuPool             $pool,
-        AclOperatorInterface $aclOperator
+        FactoryInterface $factory,
+        TranslatorInterface $translator,
+        MenuPool $pool,
+        AuthorizationCheckerInterface $authorization
     ) {
-        $this->factory     = $factory;
-        $this->translator  = $translator;
-        $this->pool        = $pool;
-        $this->aclOperator = $aclOperator;
+        $this->factory = $factory;
+        $this->translator = $translator;
+        $this->pool = $pool;
+        $this->authorization = $authorization;
     }
 
     /**
@@ -71,17 +72,16 @@ class MenuBuilder
 
         $menu = $this->factory->createItem('root', [
             'childrenAttributes' => [
-                'id' => 'sidebar-menu'
-            ]
+                'id' => 'sidebar-menu',
+            ],
         ]);
 
         $menu
             ->addChild('dashboard', [
-                'route' => 'ekyna_admin_dashboard',
+                'route'           => 'ekyna_admin_dashboard',
                 'labelAttributes' => ['icon' => 'dashboard'],
             ])
-            ->setLabel('ekyna_admin.dashboard')
-        ;
+            ->setLabel('ekyna_admin.dashboard');
 
         $this->appendChildren($menu);
 
@@ -98,8 +98,8 @@ class MenuBuilder
         foreach ($this->pool->getGroups() as $group) {
 
             $groupOptions = [
-                'labelAttributes' => ['icon' => $group->getIcon()],
-                'childrenAttributes' => ['class' => 'submenu']
+                'labelAttributes'    => ['icon' => $group->getIcon()],
+                'childrenAttributes' => ['class' => 'submenu'],
             ];
 
             if ($group->hasEntries()) {
@@ -112,12 +112,11 @@ class MenuBuilder
                     }
 
                     $groupEntry = $this->factory->createItem($entry->getName(), [
-                        'route' => $entry->getRoute()
+                        'route' => $entry->getRoute(),
                     ]);
                     $groupEntry
                         ->setLabel($entry->getLabel())
-                        ->setExtra('translation_domain', $entry->getDomain())
-                    ;
+                        ->setExtra('translation_domain', $entry->getDomain());
 
                     $groupEntries[] = $groupEntry;
                 }
@@ -126,8 +125,7 @@ class MenuBuilder
                     $menuGroup = $menu
                         ->addChild($group->getName(), $groupOptions)
                         ->setLabel($group->getLabel())
-                        ->setExtra('translation_domain', $group->getDomain())
-                    ;
+                        ->setExtra('translation_domain', $group->getDomain());
                     foreach ($groupEntries as $groupEntry) {
                         $menuGroup->addChild($groupEntry);
                     }
@@ -137,8 +135,7 @@ class MenuBuilder
                 $menu
                     ->addChild($group->getName(), $groupOptions)
                     ->setLabel($group->getLabel())
-                    ->setExtra('translation_domain', $group->getDomain())
-                ;
+                    ->setExtra('translation_domain', $group->getDomain());
             }
         }
     }
@@ -147,13 +144,13 @@ class MenuBuilder
      * Returns whether the user has access granted for the given entry.
      *
      * @param MenuEntry $entry
-     * 
+     *
      * @return boolean
      */
     private function entrySecurityCheck(MenuEntry $entry)
     {
         if (null !== $resource = $entry->getResource()) {
-            return $this->aclOperator->isAccessGranted($resource, 'VIEW');
+            return $this->authorization->isGranted(Actions::VIEW, $resource);
         }
 
         return true;
@@ -165,7 +162,7 @@ class MenuBuilder
      * @param string $name
      * @param string $label
      * @param string $route
-     * @param array $parameters
+     * @param array  $parameters
      */
     public function breadcrumbAppend($name, $label, $route = null, array $parameters = [])
     {
@@ -174,8 +171,7 @@ class MenuBuilder
         $this
             ->breadcrumb
             ->addChild($name, ['route' => $route, 'routeParameters' => $parameters])
-            ->setLabel($label)
-        ;
+            ->setLabel($label);
     }
 
     /**
@@ -186,13 +182,16 @@ class MenuBuilder
     public function createBreadcrumb()
     {
         if (null === $this->breadcrumb) {
-            $this->breadcrumb = $this->factory->createItem('root', [
-                'childrenAttributes' => [
-                    'class' => 'breadcrumb hidden-xs'
-                ]
-            ]);
-            $this->breadcrumb->addChild('dashboard', ['route' => 'ekyna_admin_dashboard'])->setLabel('ekyna_admin.dashboard');
+            $this->breadcrumb = $this
+                ->factory
+                ->createItem('root', ['childrenAttributes' => ['class' => 'breadcrumb hidden-xs']]);
+
+            $this
+                ->breadcrumb
+                ->addChild('dashboard', ['route' => 'ekyna_admin_dashboard'])
+                ->setLabel('ekyna_admin.dashboard');
         }
+
         return $this->breadcrumb;
     }
 }

@@ -2,43 +2,46 @@
 
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
-use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
+use Ekyna\Component\Resource\Model\Actions;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Class ResourceType
  * @package Ekyna\Bundle\AdminBundle\Form\Type
  * @author  Étienne Dauvergne <contact@ekyna.com>
+ *
+ * @TODO    Move to ResourceBundle
  */
 class ResourceType extends AbstractType
 {
     /**
      * @var \Ekyna\Component\Resource\Configuration\ConfigurationRegistry
      */
-    private $configurationRegistry;
+    private $registry;
 
     /**
-     * @var AclOperatorInterface
+     * @var AuthorizationCheckerInterface
      */
-    private $aclOperator;
+    private $authorization;
 
 
     /**
      * Constructor.
      *
-     * @param ConfigurationRegistry $configurationRegistry
-     * @param AclOperatorInterface  $aclOperator
+     * @param ConfigurationRegistry         $registry
+     * @param AuthorizationCheckerInterface $authorization
      */
-    public function __construct(ConfigurationRegistry $configurationRegistry, AclOperatorInterface $aclOperator)
+    public function __construct(ConfigurationRegistry $registry, AuthorizationCheckerInterface $authorization)
     {
-        $this->configurationRegistry = $configurationRegistry;
-        $this->aclOperator = $aclOperator;
+        $this->registry = $registry;
+        $this->authorization = $authorization;
     }
 
     /**
@@ -46,7 +49,7 @@ class ResourceType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $configuration = $this->configurationRegistry->findConfiguration($options['class']);
+        $configuration = $this->registry->findConfiguration($options['class']);
 
         if ($options['disabled']) {
             return;
@@ -55,7 +58,7 @@ class ResourceType extends AbstractType
         if ($options['new_route']) {
             $view->vars['new_route'] = $options['new_route'];
             $view->vars['new_route_params'] = $options['new_route_params'];
-        } elseif ($options['allow_new'] && $this->aclOperator->isAccessGranted($options['class'], 'CREATE')) {
+        } elseif ($options['allow_new'] && $this->authorization->isGranted(Actions::CREATE, $options['class'])) {
             $view->vars['new_route'] = $configuration->getRoute('new');
             $view->vars['new_route_params'] = $options['new_route_params']; // TODO
         }
@@ -63,7 +66,7 @@ class ResourceType extends AbstractType
         if ($options['list_route']) {
             $view->vars['list_route'] = $options['list_route'];
             $view->vars['list_route_params'] = $options['list_route_params'];
-        } elseif ($options['allow_list'] && $this->aclOperator->isAccessGranted($options['class'], 'VIEW')) {
+        } elseif ($options['allow_list'] && $this->authorization->isGranted(Actions::VIEW, $options['class'])) {
             $view->vars['list_route'] = $configuration->getRoute('list');
             $view->vars['list_route_params'] = array_merge(
                 $options['list_route_params'],
@@ -92,7 +95,7 @@ class ResourceType extends AbstractType
             ->setAllowedTypes('list_route_params', 'array')
             ->setAllowedTypes('allow_new', 'bool')
             ->setAllowedTypes('allow_list', 'bool')
-            ->setNormalizer('placeholder', function(Options $options, $value) {
+            ->setNormalizer('placeholder', function (Options $options, $value) {
                 if (empty($value) && !$options['required'] && !$options['multiple']) {
                     $value = 'ekyna_core.value.none';
                 }

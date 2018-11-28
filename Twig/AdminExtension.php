@@ -329,12 +329,4 @@ EOT;
 
         return [];
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getName()
-    {
-        return 'ekyna_admin';
-    }
 }

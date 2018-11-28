@@ -4,8 +4,8 @@ namespace Ekyna\Bundle\AdminBundle\Helper;
 
 use Doctrine\ORM\EntityManager;
 use Ekyna\Bundle\AdminBundle\Entity\UserPin;
-use Ekyna\Bundle\UserBundle\Model\UserInterface;
-use Ekyna\Bundle\UserBundle\Service\Provider\UserProviderInterface;
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
+use Ekyna\Bundle\AdminBundle\Service\Security\UserProviderInterface;
 use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 

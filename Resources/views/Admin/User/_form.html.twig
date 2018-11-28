@@ -1,0 +1,43 @@
+<ul class="nav nav-tabs" data-tab-key="{{ resource_id }}">
+    <li class="active">
+        <a href="#user-general" id="toggle-general" data-toggle="tab">
+            {{- 'ekyna_core.field.general'|trans -}}
+        </a>
+    </li>
+    <li>
+        <a href="#user-email" id="toggle-email" data-toggle="tab">
+            {{- 'ekyna_core.field.email'|trans -}}
+        </a>
+    </li>
+</ul>
+<div class="panel-body form-body">
+    {{ bootstrap_set_style('horizontal') }}
+    {{ bootstrap_set_col_size('md') }}
+    {{ form_errors(form) }}
+    <div class="tab-content">
+        <div class="tab-pane active" id="user-general">
+            {{ form_row(form.email) }}
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(form.firstName, {'label_col': 4, 'widget_col': 8}) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.lastName, {'label_col': 4, 'widget_col': 8}) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    {{ form_row(form.group, {'label_col': 4, 'widget_col': 8}) }}
+                </div>
+                <div class="col-md-6">
+                    {{ form_row(form.active, {'label_col': 4, 'widget_col': 8}) }}
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="user-email">
+            {{ form_row(form.emailConfig) }}
+            {{ form_row(form.emailSignature) }}
+        </div>
+    </div>
+    {{ form_rest(form) }}
+</div>

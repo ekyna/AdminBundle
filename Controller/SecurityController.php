@@ -50,10 +50,11 @@ class SecurityController extends Controller
             ? $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue()
             : null;
 
-        return $this->render('EkynaAdminBundle:Security:login.html.twig', [
+        return $this->render('@EkynaAdmin/Security/login.html.twig', [
             'last_username' => $lastUsername,
             'error'         => $error,
             'csrf_token'    => $csrfToken,
+            'remember_me'   => $this->getParameter('ekyna_admin.security.remember_me'),
         ]);
     }
 

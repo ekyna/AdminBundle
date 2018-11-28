@@ -156,22 +156,3 @@
 .show-body .collection-item .collection-item {
     background-color: #ebebeb;
 }
-
-/**
- * ACL Table
- */
-.acl-table thead th, .acl-table tbody td {
-    text-align: center;
-}
-
-.acl-table tbody th {
-    text-align: right;
-}
-
-.acl-table .glyphicon-ok {
-    color: #0C0;
-}
-
-.acl-table .glyphicon-remove {
-    color: #C00;
-}

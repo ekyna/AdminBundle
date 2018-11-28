@@ -1,4 +1,4 @@
-{% extends 'EkynaAdminBundle::base.html.twig' %}
+{% extends '@EkynaAdmin/base.html.twig' %}
 
 {% block body %}
 {% spaceless %}
@@ -15,14 +15,14 @@
                 <img src="{{ asset(admin_logo_path()) }}" height="21"/>
             </a>
         </div>
-        {% include 'EkynaAdminBundle:Layout:navbar.html.twig' %}
+        {% include '@EkynaAdmin/Layout/navbar.html.twig' %}
     </header>
     <!-- end navbar -->
 
     <!-- sidebar -->
     <div id="sidebar-nav">
         {{ knp_menu_render('ekyna_admin.side', {
-            'template': 'EkynaAdminBundle:Layout:sidemenu.html.twig',
+            'template': '@EkynaAdmin/Layout/sidemenu.html.twig',
             'currentClass': 'active',
             'ancestorClass': 'active'
         }) }}
@@ -32,10 +32,10 @@
     <!-- main container -->
     <div class="content">
         {{ knp_menu_render('ekyna_admin.breadcrumb', {
-            'template': 'EkynaAdminBundle:Layout:breadcrumb.html.twig'
+            'template': '@EkynaAdmin/Layout/breadcrumb.html.twig'
         }) }}
         <div id="pad-wrapper">
-            {% include 'EkynaCoreBundle:Ui:flashes.html.twig' %}
+            {% include '@EkynaCore/Ui/flashes.html.twig' %}
             {% block content %}{% endblock %}
         </div>
     </div>

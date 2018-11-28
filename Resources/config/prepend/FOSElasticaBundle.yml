@@ -1,0 +1,18 @@
+fos_elastica:
+    indexes:
+        search:
+            types:
+                ekyna_admin_user:
+                    serializer:
+                        groups: [Search]
+                    mappings:
+                        email: {type: string, search_analyzer: search, index_analyzer: index}
+                        group: {type: long}
+                    persistence:
+                        driver: orm
+                        model: "%ekyna_admin.user.class%"
+                        provider:
+                            batch_size: 25
+                        listener: ~
+                        finder: ~
+                        repository: "%ekyna_admin.user.search_repository.class%"

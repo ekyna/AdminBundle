@@ -744,10 +744,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     protected function isGranted($attributes, $object = null, $throwException = true)
     {
         if (is_null($object)) {
-            $object = $this->config->getObjectIdentity();
-        } else {
-            $object = $this->get('ekyna_resource.configuration_registry')->getObjectIdentity($object);
+            $object = $this->config->getAlias();
         }
+
         if (!$this->get('security.authorization_checker')->isGranted($attributes, $object)) {
             if ($throwException) {
                 throw new AccessDeniedHttpException('You are not allowed to view this resource.');

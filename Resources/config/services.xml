@@ -5,7 +5,54 @@
         xsi:schemaLocation="http://symfony.com/schema/dic/services
                         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
+
+    <parameters>
+        <parameter key="ekyna_admin.user.search_repository.class">Ekyna\Bundle\AdminBundle\Service\Search\UserRepository</parameter>
+        <parameter key="ekyna_admin.security.remember_me">_admin_remember_me</parameter>
+    </parameters>
+
     <services>
+
+        <!-- Event listeners -->
+        <service id="ekyna_admin.user.event_subscriber"
+                 class="Ekyna\Bundle\AdminBundle\EventListener\UserEventSubscriber">
+            <argument type="service" id="security.password_encoder"/>
+            <argument type="service" id="security.authorization_checker"/>
+            <tag name="resource.event_subscriber"/>
+        </service>
+        <service id="ekyna_admin.group.event_subscriber"
+                 class="Ekyna\Bundle\AdminBundle\EventListener\GroupEventSubscriber">
+            <argument type="service" id="security.authorization_checker"/>
+            <tag name="resource.event_subscriber"/>
+        </service>
+        <service id="ekyna_admin.security.event_subscriber"
+                 class="Ekyna\Bundle\AdminBundle\EventListener\SecurityEventSubscriber">
+            <argument type="service" id="security.authorization_checker"/>
+            <argument type="service" id="ekyna_admin.security.user_provider"/>
+            <argument type="service" id="ekyna_admin.admin_mailer"/>
+            <argument type="collection"/><!-- Replaced by DI extension -->
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- User mailer registry -->
+        <service id="ekyna_admin.mailer_factory"
+                 class="Ekyna\Bundle\AdminBundle\Service\Mailer\MailerFactory">
+            <argument type="service" id="swiftmailer.mailer.default"/>
+            <argument type="service" id="swiftmailer.mailer.default.transport.eventdispatcher"/>
+            <argument type="service" id="ekyna_admin.security.user_provider"/>
+            <argument type="service" id="router.request_context" on-invalid="null"/>
+        </service>
+
+        <!-- Admin mailer -->
+        <service id="ekyna_admin.admin_mailer"
+                 class="Ekyna\Bundle\AdminBundle\Service\Mailer\AdminMailer">
+            <argument type="service" id="ekyna_setting.manager"/>
+            <argument type="service" id="translator"/>
+            <argument type="service" id="templating"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="swiftmailer.mailer.default"/>
+        </service>
+
         <!-- Settings Schema -->
         <service id="ekyna_admin.settings.general"
                  class="Ekyna\Bundle\AdminBundle\Settings\GeneralSettingsSchema">
@@ -16,20 +63,11 @@
             <tag name="ekyna_setting.schema" namespace="notification" position="1"/>
         </service>
 
-        <!-- Acl Operator -->
-        <service id="ekyna_admin.acl_operator"
-                 class="Ekyna\Bundle\AdminBundle\Acl\AclOperator">
-            <argument type="service" id="security.acl.provider"/>
-            <argument type="service" id="security.acl.permission.map"/>
-            <argument type="service" id="ekyna_resource.configuration_registry"/>
-            <argument type="service" id="security.authorization_checker"/>
-        </service>
-
-        <!-- Kernel controller event listener -->
-        <service id="ekyna_admin.admin_listener"
-                 class="Ekyna\Bundle\AdminBundle\EventListener\AdminListener">
-            <argument type="service" id="ekyna_admin.acl_operator"/>
-            <tag name="kernel.event_listener" event="kernel.controller" method="onKernelController"/>
+        <!-- Security user provider -->
+        <service id="ekyna_admin.security.user_provider"
+                 class="Ekyna\Bundle\AdminBundle\Service\Security\UserProvider">
+            <argument type="service" id="ekyna_admin.user.repository"/>
+            <argument type="service" id="security.token_storage"/>
         </service>
 
         <!-- Admin Menus -->
@@ -40,7 +78,7 @@
             <argument type="service" id="knp_menu.factory"/>
             <argument type="service" id="translator"/>
             <argument type="service" id="ekyna_admin.menu.pool"/>
-            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <argument type="service" id="security.authorization_checker"/>
         </service>
         <service id="ekyna_admin.menu.side"
                  class="Knp\Menu\MenuItem">
@@ -65,20 +103,44 @@
         <service id="ekyna_admin.resource.form_type"
                  class="Ekyna\Bundle\AdminBundle\Form\Type\ResourceType">
             <argument type="service" id="ekyna_resource.configuration_registry"/>
-            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <argument type="service" id="security.authorization_checker"/>
+            <tag name="form.type"/>
+        </service>
+        <service id="ekyna_admin.user.form_type"
+                 class="Ekyna\Bundle\AdminBundle\Form\Type\UserType">
+            <argument type="service" id="security.authorization_checker"/>
+            <argument>%ekyna_admin.user.class%</argument>
+            <argument>%ekyna_admin.group.class%</argument>
+            <tag name="form.type"/>
+        </service>
+        <service id="ekyna_admin.user_choice.form_type"
+                 class="Ekyna\Bundle\AdminBundle\Form\Type\UserChoiceType">
+            <argument>%ekyna_admin.user.class%</argument>
+            <tag name="form.type"/>
+        </service>
+        <service id="ekyna_admin.user_search.form_type"
+                 class="Ekyna\Bundle\AdminBundle\Form\Type\UserSearchType">
+            <argument>%ekyna_admin.user.class%</argument>
             <tag name="form.type"/>
         </service>
 
         <!-- Table types -->
+        <service id="ekyna_admin.user.table_type"
+                 class="Ekyna\Bundle\AdminBundle\Table\Type\UserType">
+            <argument type="service" id="ekyna_admin.security.user_provider"/>
+            <argument>%ekyna_admin.user.class%</argument>
+            <argument>%ekyna_admin.group.class%</argument>
+            <tag name="table.type"/>
+        </service>
         <service id="ekyna_admin.table.actions_column_type_extension"
                  class="Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsTypeExtension">
-            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <argument type="service" id="security.authorization_checker"/>
             <tag name="table.column_type_extension"
                  extended_type="Ekyna\Bundle\TableBundle\Extension\Type\Column\ActionsType"/>
         </service>
         <service id="ekyna_admin.table.entity_column_type_extension"
                  class="Ekyna\Bundle\AdminBundle\Table\Type\Column\EntityTypeExtension">
-            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <argument type="service" id="security.authorization_checker"/>
             <tag name="table.column_type_extension"
                  extended_type="Ekyna\Component\Table\Bridge\Doctrine\ORM\Type\Column\EntityType"/>
         </service>
@@ -86,7 +148,7 @@
         <!-- Table profile storage -->
         <service id="ekyna_admin.table.profile_storage"
                  class="Ekyna\Bundle\AdminBundle\Table\Context\Profile\UserStorage">
-            <argument type="service" id="security.token_storage"/>
+            <argument type="service" id="ekyna_admin.security.user_provider"/>
             <argument type="service" id="doctrine.orm.entity_manager"/>
         </service>
         <service id="ekyna_admin.user_storage.table_type_extension"
@@ -101,7 +163,7 @@
                  lazy="true">
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
             <argument type="service" id="ekyna_resource.configuration_registry"/>
-            <argument type="service" id="ekyna_admin.acl_operator"/>
+            <argument type="service" id="security.authorization_checker"/>
             <argument type="service" id="router"/>
             <argument type="service" id="ekyna_resource.event_dispatcher"/>
         </service>
@@ -110,7 +172,7 @@
         <service id="ekyna_admin.helper.pin_helper"
                  class="Ekyna\Bundle\AdminBundle\Helper\PinHelper">
             <argument type="service" id="ekyna_resource.configuration_registry"/>
-            <argument type="service" id="ekyna_user.user.provider"/>
+            <argument type="service" id="ekyna_admin.security.user_provider"/>
             <argument type="service" id="ekyna_admin.helper.resource_helper"/>
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
         </service>
@@ -139,6 +201,14 @@
                  public="false">
             <argument type="service" id="ekyna_admin.show.registry"/>
             <argument type="service" id="twig"/>
+        </service>
+
+        <!-- Serialization -->
+        <service id="ekyna_admin.user.normalizer"
+                 class="Ekyna\Bundle\AdminBundle\Service\Serializer\UserNormalizer"
+                 parent="ekyna_resource.serializer.resource_normalizer">
+            <tag name="serializer.normalizer"/>
+            <tag name="serializer.denormalizer"/>
         </service>
 
         <!-- Twig Extensions -->
@@ -178,7 +248,7 @@
                  class="Ekyna\Bundle\AdminBundle\Dashboard\Widget\ShortcutsWidgetType">
             <argument id="ekyna_admin.menu.pool" type="service"/>
             <argument id="ekyna_resource.configuration_registry" type="service"/>
-            <argument id="ekyna_admin.acl_operator" type="service"/>
+            <argument id="security.authorization_checker" type="service"/>
             <argument id="router" type="service"/>
             <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts"/>
         </service>
@@ -187,6 +257,15 @@
                  class="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard">
             <factory service="ekyna_admin.dashboard.factory" method="create"/>
             <argument>%ekyna_admin.config.dashboard%</argument>
+        </service>
+
+        <!-- Commands -->
+        <service id="ekyna_admin.command.create_user"
+                 class="Ekyna\Bundle\AdminBundle\Command\CreateUserCommand">
+            <argument type="service" id="ekyna_admin.user.repository"/>
+            <argument type="service" id="ekyna_admin.group.repository"/>
+            <argument type="service" id="ekyna_admin.user.operator"/>
+            <tag name="console.command"/>
         </service>
 
     </services>

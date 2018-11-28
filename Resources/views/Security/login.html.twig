@@ -1,4 +1,4 @@
-{% extends 'EkynaAdminBundle::base.html.twig' %}
+{% extends '@EkynaAdmin/base.html.twig' %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -22,7 +22,7 @@
                 <input name="_password" class="form-control" type="password"
                        placeholder="{{ 'ekyna_core.field.password'|trans }}">
                 <div class="remember">
-                    <input name="_remember_me" id="remember_me" type="checkbox">
+                    <input name="{{ remember_me }}" id="remember_me" type="checkbox">
                     <label for="remember_me">{{ 'ekyna_core.field.remember_me'|trans }}</label>
                 </div>
                 {% if csrf_token %}

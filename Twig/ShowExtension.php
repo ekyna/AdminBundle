@@ -45,12 +45,4 @@ class ShowExtension extends \Twig_Extension
             ),
         ];
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'ekyna_show_extension';
-    }
 }

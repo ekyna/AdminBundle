@@ -1,0 +1,11 @@
+ekyna_admin_user_admin:
+    resource: admin/user.yml
+    prefix: /users
+
+ekyna_admin_group_admin:
+    resource: admin/group.yml
+    prefix: /groups
+
+ekyna_admin_pin:
+    resource: admin/pin.yml
+    prefix: /pins

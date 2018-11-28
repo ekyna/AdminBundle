@@ -20,11 +20,9 @@
         "php": ">=7.0",
         "ekyna/resource-bundle": "0.7.x-dev",
         "ekyna/table-bundle": "0.7.x-dev",
-        "ekyna/user-bundle": "0.7.x-dev",
         "ekyna/google-bundle": "0.7.x-dev",
         "ekyna/setting-bundle": "0.7.x-dev",
         "ekyna/install-bundle": "0.7.x-dev",
-        "symfony/security-acl": "^3.0",
         "misd/phone-number-bundle": "^1.2"
     },
     "autoload": {

@@ -2,7 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Entity;
 
-use Ekyna\Bundle\UserBundle\Model\UserInterface;
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Component\Table\Context\Profile\ProfileInterface;
 
 /**

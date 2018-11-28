@@ -4,11 +4,11 @@ namespace Ekyna\Bundle\AdminBundle\Table\Context\Profile;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Ekyna\Bundle\AdminBundle\Entity\TableProfile;
+use Ekyna\Bundle\AdminBundle\Service\Security\UserProviderInterface;
 use Ekyna\Component\Table\Context\Profile\ProfileInterface;
 use Ekyna\Component\Table\Context\Profile\StorageInterface;
 use Ekyna\Component\Table\Table;
 use Ekyna\Component\Table\TableInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class UserStorage
@@ -18,9 +18,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class UserStorage implements StorageInterface
 {
     /**
-     * @var TokenStorageInterface
+     * @var UserProviderInterface
      */
-    private $tokenStorage;
+    private $userProvider;
 
     /**
      * @var EntityManagerInterface
@@ -31,12 +31,12 @@ class UserStorage implements StorageInterface
     /**
      * Constructor.
      *
-     * @param TokenStorageInterface  $tokenStorage
+     * @param UserProviderInterface  $userProvider
      * @param EntityManagerInterface $manager
      */
-    public function __construct(TokenStorageInterface $tokenStorage, EntityManagerInterface $manager)
+    public function __construct(UserProviderInterface $userProvider, EntityManagerInterface $manager)
     {
-        $this->tokenStorage = $tokenStorage;
+        $this->userProvider = $userProvider;
         $this->manager = $manager;
     }
 
@@ -68,7 +68,7 @@ class UserStorage implements StorageInterface
             ->manager
             ->getRepository(TableProfile::class)
             ->findBy([
-                'user'      => $this->getUser(),
+                'user'      => $this->userProvider->getUser(),
                 'tableHash' => $table->getHash(),
             ], [
                 'name' => 'ASC',
@@ -80,13 +80,13 @@ class UserStorage implements StorageInterface
      */
     public function create(TableInterface $table, $name)
     {
-        if (null === $user = $this->getUser()) {
+        if (null === $user = $this->userProvider->getUser()) {
             return;
         }
 
         $profile = new TableProfile();
         $profile
-            ->setUser($this->getUser())
+            ->setUser($this->userProvider->getUser())
             ->setTableHash($table->getHash())
             ->setData($table->getContext()->toArray())
             ->setName($name);
@@ -145,21 +145,5 @@ class UserStorage implements StorageInterface
         if (empty($profile->getData())) {
             throw new \InvalidArgumentException("Profile's data must be set.");
         }
-    }
-
-    /**
-     * Returns the current user.
-     *
-     * @return \Ekyna\Bundle\UserBundle\Model\UserInterface
-     */
-    private function getUser()
-    {
-        if (null !== $token = $this->tokenStorage->getToken()) {
-            if (is_object($user = $token->getUser())) {
-                return $user;
-            }
-        }
-
-        return null;
     }
 }

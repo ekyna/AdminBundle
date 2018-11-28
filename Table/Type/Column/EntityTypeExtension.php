@@ -2,13 +2,14 @@
 
 namespace Ekyna\Bundle\AdminBundle\Table\Type\Column;
 
-use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
+use Ekyna\Component\Resource\Model\Actions;
 use Ekyna\Component\Table\Bridge\Doctrine\ORM\Type\Column\EntityType;
 use Ekyna\Component\Table\Column\ColumnInterface;
 use Ekyna\Component\Table\Extension\AbstractColumnTypeExtension;
 use Ekyna\Component\Table\Source\RowInterface;
 use Ekyna\Component\Table\View\CellView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Class EntityTypeExtension
@@ -18,19 +19,19 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class EntityTypeExtension extends AbstractColumnTypeExtension
 {
     /**
-     * @var AclOperatorInterface
+     * @var AuthorizationCheckerInterface
      */
-    private $aclOperator;
+    private $authorization;
 
 
     /**
      * Constructor.
      *
-     * @param AclOperatorInterface $aclOperator
+     * @param AuthorizationCheckerInterface $authorization
      */
-    public function __construct(AclOperatorInterface $aclOperator)
+    public function __construct(AuthorizationCheckerInterface $authorization)
     {
-        $this->aclOperator = $aclOperator;
+        $this->authorization = $authorization;
     }
 
     /**
@@ -49,7 +50,7 @@ class EntityTypeExtension extends AbstractColumnTypeExtension
 
         foreach ($viewChoices as &$viewChoice) {
             $value = $viewChoice['value'];
-            if (!$this->aclOperator->isAccessGranted($value, 'VIEW')) {
+            if (!$this->authorization->isGranted(Actions::VIEW, $value)) {
                 continue;
             }
 

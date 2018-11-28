@@ -4,21 +4,22 @@ namespace Ekyna\Bundle\AdminBundle\Helper;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
-use Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface;
 use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Ekyna\Component\Resource\Dispatcher\ResourceEventDispatcherInterface;
+use Ekyna\Component\Resource\Model\Actions;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
  * Class ResourceHelper
  * @package Ekyna\Bundle\AdminBundle\Helper
  * @author  Étienne Dauvergne <contact@ekyna.com>
  *
- * @TODO    move to resource bundle (or component) with new ACL system
+ * @TODO    move to resource bundle (or component)
  */
 class ResourceHelper
 {
@@ -33,9 +34,9 @@ class ResourceHelper
     private $registry;
 
     /**
-     * @var \Ekyna\Bundle\AdminBundle\Acl\AclOperatorInterface
+     * @var AuthorizationCheckerInterface
      */
-    private $aclOperator;
+    private $authorization;
 
     /**
      * @var RouterInterface|\JMS\I18nRoutingBundle\Router\I18nRouter
@@ -53,20 +54,20 @@ class ResourceHelper
      *
      * @param EntityManagerInterface           $manager
      * @param ConfigurationRegistry            $registry
-     * @param AclOperatorInterface             $aclOperator
+     * @param AuthorizationCheckerInterface    $authorization
      * @param RouterInterface                  $router
      * @param ResourceEventDispatcherInterface $dispatcher
      */
     public function __construct(
         EntityManagerInterface $manager,
         ConfigurationRegistry $registry,
-        AclOperatorInterface $aclOperator,
+        AuthorizationCheckerInterface $authorization,
         RouterInterface $router,
         ResourceEventDispatcherInterface $dispatcher
     ) {
         $this->manager = $manager;
         $this->registry = $registry;
-        $this->aclOperator = $aclOperator;
+        $this->authorization = $authorization;
         $this->router = $router;
         $this->dispatcher = $dispatcher;
     }
@@ -92,16 +93,6 @@ class ResourceHelper
     }
 
     /**
-     * Returns the aclOperator.
-     *
-     * @return AclOperatorInterface
-     */
-    public function getAclOperator()
-    {
-        return $this->aclOperator;
-    }
-
-    /**
      * Returns the url generator.
      *
      * @return UrlGeneratorInterface
@@ -121,7 +112,7 @@ class ResourceHelper
      */
     public function isGranted($resource, $action = 'view')
     {
-        return $this->aclOperator->isAccessGranted($resource, $this->getPermission($action));
+        return $this->authorization->isGranted($this->getPermission($action), $resource);
     }
 
     /**
@@ -232,16 +223,17 @@ class ResourceHelper
     public function getPermission($action)
     {
         $action = strtoupper($action);
+
         if ($action == 'LIST') {
-            return 'VIEW';
+            return Actions::LIST; // TODO or VIEW ?
         } elseif ($action == 'SHOW') {
-            return 'VIEW';
+            return Actions::VIEW;
         } elseif ($action == 'NEW') {
-            return 'CREATE';
+            return Actions::CREATE;
         } elseif ($action == 'EDIT') {
-            return 'EDIT';
+            return Actions::EDIT;
         } elseif ($action == 'REMOVE') {
-            return 'DELETE';
+            return Actions::DELETE;
         }
 
         return $action;

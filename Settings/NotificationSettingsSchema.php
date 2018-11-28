@@ -89,7 +89,7 @@ class NotificationSettingsSchema extends AbstractSchema
      */
     public function getShowTemplate()
     {
-        return 'EkynaAdminBundle:Settings/Notification:show.html.twig';
+        return '@EkynaAdmin/Settings/Notification/show.html.twig';
     }
 
     /**
@@ -97,6 +97,6 @@ class NotificationSettingsSchema extends AbstractSchema
      */
     public function getFormTemplate()
     {
-        return 'EkynaAdminBundle:Settings/Notification:form.html.twig';
+        return '@EkynaAdmin/Settings/Notification/form.html.twig';
     }
 }

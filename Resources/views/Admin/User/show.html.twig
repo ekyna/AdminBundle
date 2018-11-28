@@ -1,0 +1,109 @@
+{% extends '@EkynaAdmin/Entity/Default/show.html.twig' %}
+
+
+{% block main %}
+<div class="actions">
+    {% if admin_resource_access(user, 'EDIT') -%}
+        {{ ui_button('ekyna_admin.user.button.generate_password', {
+            'path': path('ekyna_admin_user_admin_generate_password', {'userId': user.id}),
+            'type': 'link', 'size': 'sm', 'theme': 'warning'
+        }) }}
+    {%- endif %}
+    {{ admin_resource_btn(user, 'edit') }}
+    {{ admin_resource_btn(user, 'remove') }}
+</div>
+<div class="show show-with-tabs">
+    <ul class="nav nav-tabs" data-tab-key="{{ resource_id }}">
+        <li class="active">
+            <a href="#menu-general" id="toggle-general" data-toggle="tab">
+                {{- 'ekyna_core.field.general'|trans -}}
+            </a>
+        </li>
+        <li>
+            <a href="#menu-email" id="toggle-email" data-toggle="tab">
+                {{- 'ekyna_core.field.email'|trans -}}
+            </a>
+        </li>
+    </ul>
+    <div class="show-body">
+        <div class="tab-content">
+            <div class="tab-pane active" id="menu-general">
+                {{ show_row(user.email, 'text', {
+                    'label': 'ekyna_core.field.name'
+                }) }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ show_row(user.firstName, 'text', {
+                            'label': 'ekyna_core.field.first_name',
+                            'label_col': 4
+                        }) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ show_row(user.lastName, 'text', {
+                            'label': 'ekyna_core.field.first_name',
+                            'label_col': 4
+                        }) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ show_row(user.group, 'entity', {
+                            'label': 'ekyna_admin.group.label.singular',
+                            'field': 'name',
+                            'route': 'ekyna_admin_group_admin_show',
+                            'route_parameters_map': {'groupId': 'id'},
+                            'label_col': 4
+                        }) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ show_row(user.active, 'boolean', {
+                            'label': 'ekyna_core.field.enabled',
+                            'color': true,
+                            'label_col': 4
+                        }) }}
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="menu-email">
+                {% set config = {
+                    'smtp': {'host': null, 'port': null, 'encryption': null, 'auth_mode': null, 'username': null, 'password': null},
+                    'imap': {'mailbox': null, 'folder': null, 'user': null, 'password': null }
+                }|merge(user.emailConfig) %}
+                <div class="row show-row">
+                    <div class="col-md-2 show-label">{{ 'ekyna_admin.user.field.email_config'|trans }}</div>
+                    <div class="col-md-10">
+                        <div class="show-widget show-widget-block">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p style="border-bottom:1px solid #ddd;padding-bottom:10px;font-weight:bold">SMTP</p>
+                                    <dl class="dl-horizontal">
+                                        <dt>Host</dt><dd>{{ config.smtp.host }}</dd>
+                                        <dt>Port</dt><dd>{{ config.smtp.port }}</dd>
+                                        <dt>Encryption</dt><dd>{{ config.smtp.encryption }}</dd>
+                                        <dt>Auth mode</dt><dd>{{ config.smtp.auth_mode }}</dd>
+                                        <dt>Username</dt><dd>{{ config.smtp.username }}</dd>
+                                        <dt>Password</dt><dd>******</dd>
+                                    </dl>
+                                </div>
+                                <div class="col-md-6">
+                                    <p style="border-bottom:1px solid #ddd;padding-bottom:10px;font-weight:bold">IMAP</p>
+                                    <dl class="dl-horizontal">
+                                        <dt>Mailbox</dt><dd>{{ config.imap.mailbox }}</dd>
+                                        <dt>Folder</dt><dd>{{ config.imap.folder }}</dd>
+                                        <dt>User</dt><dd>{{ config.imap.user }}</dd>
+                                        <dt>Password</dt><dd>{{ config.imap.password }}</dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{ show_row(user.emailSignature, 'textarea', {
+                    'label': 'ekyna_admin.user.field.email_signature',
+                    'html': true
+                }) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
