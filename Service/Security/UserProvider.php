@@ -41,7 +41,7 @@ class UserProvider implements UserProviderInterface
      * Constructor.
      *
      * @param UserRepositoryInterface $userRepository
-     * @param TokenStorageInterface $tokenStorage
+     * @param TokenStorageInterface   $tokenStorage
      */
     public function __construct(UserRepositoryInterface $userRepository, TokenStorageInterface $tokenStorage)
     {
@@ -112,24 +112,22 @@ class UserProvider implements UserProviderInterface
     }
 
     /**
-     * Finds one user for the given email.
-     *
-     * @param string $email
-     *
-     * @return UserInterface|null
+     * @inheritdoc
      */
-    public function findUserByEmail(string $email)
+    public function findUserByEmail(string $email, bool $throwException = true)
     {
         /** @var UserInterface $user */
-        $user = $this->userRepository->findOneByEmail($email);
+        if (null !== $user = $this->userRepository->findOneByEmail($email)) {
+            return $user;
+        }
 
-        if (!$user) {
+        if ($throwException) {
             throw new UsernameNotFoundException(
                 sprintf('No user registered for email "%s".', $email)
             );
         }
 
-        return $user;
+        return null;
     }
 
     /**

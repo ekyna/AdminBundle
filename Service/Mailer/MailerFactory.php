@@ -75,11 +75,12 @@ class MailerFactory
         $from = reset($from);
 
         if (!$sender && $from) {
-            $sender = $this->userProvider->findUserByEmail($from);
-            $current = $this->userProvider->getUser();
+            if (null !== $sender = $this->userProvider->findUserByEmail($from, false)) {
+                $current = $this->userProvider->getUser();
 
-            if ($current && ($current !== $sender)) {
-                $message->getHeaders()->addTextHeader('X-Ekyna-User', $current->getEmail());
+                if ($current && ($current !== $sender)) {
+                    $message->getHeaders()->addTextHeader('X-Ekyna-User', $current->getEmail());
+                }
             }
         }
 

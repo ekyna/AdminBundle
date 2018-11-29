@@ -29,12 +29,14 @@ interface UserProviderInterface extends SymfonyProvider
      * Resets the user provider.
      */
     public function reset();
+
     /**
      * Finds one user for the given email.
      *
      * @param string $email
+     * @param bool   $throwException
      *
      * @return \Ekyna\Bundle\AdminBundle\Model\UserInterface|null
      */
-    public function findUserByEmail(string $email);
+    public function findUserByEmail(string $email, bool $throwException = true);
 }
