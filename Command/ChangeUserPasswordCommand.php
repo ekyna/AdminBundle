@@ -68,7 +68,7 @@ class ChangeUserPasswordCommand extends Command
             if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
                 throw new \RuntimeException('This is not a valid email address.');
             }
-            if (null === $this->userRepository->findOneBy(['email' => $answer])) {
+            if (null === $this->userRepository->findOneByEmail($answer, false)) {
                 throw new \RuntimeException('No admin user found for this email.');
             }
 
@@ -95,14 +95,11 @@ class ChangeUserPasswordCommand extends Command
         }
 
 
-        // Create user ---------------------------------------------------------------
+        // Fetch user ---------------------------------------------------------------
         /** @var \Ekyna\Bundle\AdminBundle\Model\UserInterface $user */
-        $user = $this->userRepository->findOneByEmail($email);
+        $user = $this->userRepository->findOneByEmail($email, false);
         if (null === $user) {
-            $output->writeln(sprintf(
-                '<error>No user found for email "%s".</error>',
-                $user->getEmail()
-            ));
+            $output->writeln(sprintf('<error>No user found for email "%s".</error>', $email));
 
             return;
         }

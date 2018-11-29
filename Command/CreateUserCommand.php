@@ -96,7 +96,7 @@ class CreateUserCommand extends Command
             if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
                 throw new \RuntimeException('This is not a valid email address.');
             }
-            if (null !== $this->userRepository->findOneBy(['email' => $answer])) {
+            if (null !== $this->userRepository->findOneByEmail($answer, false)) {
                 throw new \RuntimeException('This email address is already used.');
             }
 
