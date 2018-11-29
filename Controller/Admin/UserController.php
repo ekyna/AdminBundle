@@ -6,6 +6,7 @@ use Ekyna\Bundle\AdminBundle\Controller\Resource\ToggleableTrait;
 use Ekyna\Bundle\AdminBundle\Controller\ResourceController;
 use Ekyna\Bundle\AdminBundle\Event\UserEvents;
 use Ekyna\Bundle\AdminBundle\Service\Search\UserRepository;
+use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Component\Resource\Event\ResourceMessage;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -89,9 +90,7 @@ class UserController extends ResourceController
             return $this->redirect($redirect);
         }
 
-        // New password
-        $password = bin2hex(random_bytes(4));
-        $resource->setPlainPassword($password);
+        $password = SecurityUtil::generatePassword($resource);
 
         $event->addMessage(new ResourceMessage(
             sprintf('Generated password : "%s".', $password),

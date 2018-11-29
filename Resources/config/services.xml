@@ -17,11 +17,13 @@
         <service id="ekyna_admin.user.event_subscriber"
                  class="Ekyna\Bundle\AdminBundle\EventListener\UserEventSubscriber">
             <argument type="service" id="security.password_encoder"/>
+            <argument type="service" id="security.token_storage"/>
             <argument type="service" id="security.authorization_checker"/>
             <tag name="resource.event_subscriber"/>
         </service>
         <service id="ekyna_admin.group.event_subscriber"
                  class="Ekyna\Bundle\AdminBundle\EventListener\GroupEventSubscriber">
+            <argument type="service" id="security.token_storage"/>
             <argument type="service" id="security.authorization_checker"/>
             <tag name="resource.event_subscriber"/>
         </service>
@@ -264,6 +266,12 @@
                  class="Ekyna\Bundle\AdminBundle\Command\CreateUserCommand">
             <argument type="service" id="ekyna_admin.user.repository"/>
             <argument type="service" id="ekyna_admin.group.repository"/>
+            <argument type="service" id="ekyna_admin.user.operator"/>
+            <tag name="console.command"/>
+        </service>
+        <service id="ekyna_admin.command.change_user_password"
+                 class="Ekyna\Bundle\AdminBundle\Command\ChangeUserPasswordCommand">
+            <argument type="service" id="ekyna_admin.user.repository"/>
             <argument type="service" id="ekyna_admin.user.operator"/>
             <tag name="console.command"/>
         </service>

@@ -4,10 +4,12 @@ namespace Ekyna\Bundle\AdminBundle\EventListener;
 
 use Ekyna\Bundle\AdminBundle\Event\UserEvents;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
+use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Component\Resource\Event\ResourceEventInterface;
 use Ekyna\Component\Resource\Event\ResourceMessage;
 use Ekyna\Component\Resource\Exception\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -24,6 +26,11 @@ class UserEventSubscriber implements EventSubscriberInterface
     protected $encoder;
 
     /**
+     * @var TokenStorageInterface
+     */
+    protected $tokenStorage;
+
+    /**
      * @var AuthorizationCheckerInterface
      */
     protected $authorization;
@@ -33,13 +40,16 @@ class UserEventSubscriber implements EventSubscriberInterface
      * Constructor.
      *
      * @param UserPasswordEncoderInterface  $encoder
+     * @param TokenStorageInterface         $tokenStorage
      * @param AuthorizationCheckerInterface $authorization
      */
     public function __construct(
         UserPasswordEncoderInterface $encoder,
+        TokenStorageInterface $tokenStorage,
         AuthorizationCheckerInterface $authorization
     ) {
         $this->encoder = $encoder;
+        $this->tokenStorage = $tokenStorage;
         $this->authorization = $authorization;
     }
 
@@ -57,8 +67,7 @@ class UserEventSubscriber implements EventSubscriberInterface
         $user = $this->getUserFromEvent($event);
 
         if (empty($user->getPlainPassword())) {
-            $password = bin2hex(random_bytes(4));
-            $user->setPlainPassword($password);
+            $password = SecurityUtil::generatePassword($user);
 
             $event
                 ->addMessage(new ResourceMessage(
@@ -134,6 +143,10 @@ class UserEventSubscriber implements EventSubscriberInterface
      */
     private function preventIfNotSupperAdmin(ResourceEventInterface $event)
     {
+        if (null === $this->tokenStorage->getToken()) {
+            return false;
+        }
+
         if (!$this->authorization->isGranted('ROLE_SUPER_ADMIN')) {
             $event->addMessage(new ResourceMessage(
                 'ekyna_admin.user.message.operation_denied',
@@ -170,9 +183,9 @@ class UserEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            UserEvents::PRE_CREATE => ['onPreCreate'],
-            UserEvents::PRE_UPDATE => ['onPreUpdate'],
-            UserEvents::PRE_DELETE => ['onPreDelete'],
+            UserEvents::PRE_CREATE            => ['onPreCreate'],
+            UserEvents::PRE_UPDATE            => ['onPreUpdate'],
+            UserEvents::PRE_DELETE            => ['onPreDelete'],
             UserEvents::PRE_GENERATE_PASSWORD => ['onPreGeneratePassword'],
         ];
     }

@@ -22,7 +22,7 @@ class Renderer implements RendererInterface
     private $environment;
 
     /**
-     * @var \Twig_Template[]
+     * @var \Twig_TemplateWrapper[]
      */
     private $templates = [];
 
@@ -54,7 +54,6 @@ class Renderer implements RendererInterface
         $block = $view->vars['row_prefix'] . '_row';
         $template = $this->getTemplateForBlock($block);
 
-        /** @noinspection PhpInternalEntityUsedInspection */
         return $template->renderBlock($block, array_replace($view->vars, ['view' => $view]));
     }
 
@@ -68,7 +67,6 @@ class Renderer implements RendererInterface
         $block = $view->vars['widget_prefix'] . '_widget';
         $template = $this->getTemplateForBlock($block);
 
-        /** @noinspection PhpInternalEntityUsedInspection */
         return $template->renderBlock($block, $view->vars);
     }
 
@@ -103,7 +101,7 @@ class Renderer implements RendererInterface
      *
      * @param string $name
      *
-     * @return \Twig_Template
+     * @return \Twig_TemplateWrapper
      */
     private function getTemplate($name)
     {
@@ -111,9 +109,7 @@ class Renderer implements RendererInterface
             return $this->templates[$name];
         }
 
-        /** @var \Twig_Template $template */
-        /** @noinspection PhpInternalEntityUsedInspection */
-        $template = $this->environment->loadTemplate($name);
+        $template = $this->environment->load($name);
 
         return $this->templates[$name] = $template;
     }
@@ -123,7 +119,7 @@ class Renderer implements RendererInterface
      *
      * @param string $block
      *
-     * @return \Twig_Template
+     * @return \Twig_TemplateWrapper
      */
     private function getTemplateForBlock($block)
     {
@@ -134,7 +130,6 @@ class Renderer implements RendererInterface
         foreach ($this->registry->getTemplates() as $templateName) {
             $template = $this->getTemplate($templateName);
 
-            /** @noinspection PhpInternalEntityUsedInspection */
             if ($template->hasBlock($block)) {
                 $this->blocks[$block] = $templateName;
 

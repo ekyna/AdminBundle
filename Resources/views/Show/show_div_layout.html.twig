@@ -63,7 +63,7 @@
         {{ block('undefined') }}
     {%- elseif trans_domain is null -%}
         {{ value|trans|raw }}
-    {%- elseif trans_domain is sameas(false) -%}
+    {%- elseif trans_domain is same as(false) -%}
         {{ value|trans(trans_params, trans_domain)|raw }}
     {%- else -%}
         {{ value|raw }}

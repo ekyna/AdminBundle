@@ -8,6 +8,7 @@ use Ekyna\Component\Resource\Event\ResourceEventInterface;
 use Ekyna\Component\Resource\Event\ResourceMessage;
 use Ekyna\Component\Resource\Exception\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 /**
@@ -18,6 +19,11 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 class GroupEventSubscriber implements EventSubscriberInterface
 {
     /**
+     * @var TokenStorageInterface
+     */
+    protected $tokenStorage;
+
+    /**
      * @var AuthorizationCheckerInterface
      */
     protected $authorization;
@@ -26,10 +32,12 @@ class GroupEventSubscriber implements EventSubscriberInterface
     /**
      * Constructor.
      *
+     * @param TokenStorageInterface         $tokenStorage
      * @param AuthorizationCheckerInterface $authorization
      */
-    public function __construct(AuthorizationCheckerInterface $authorization)
+    public function __construct(TokenStorageInterface $tokenStorage, AuthorizationCheckerInterface $authorization)
     {
+        $this->tokenStorage = $tokenStorage;
         $this->authorization = $authorization;
     }
 
@@ -72,6 +80,10 @@ class GroupEventSubscriber implements EventSubscriberInterface
      */
     private function preventIfNotSupperAdmin(ResourceEventInterface $event)
     {
+        if (null === $this->tokenStorage->getToken()) {
+            return false;
+        }
+
         if (!$this->authorization->isGranted('ROLE_SUPER_ADMIN')) {
             $event->addMessage(new ResourceMessage(
                 'ekyna_admin.group.message.operation_denied',
