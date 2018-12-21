@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints;
 /**
  * Class GeneralSettingsSchema
  * @package Ekyna\Bundle\AdminBundle\Settings
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class GeneralSettingsSchema extends AbstractSchema
 {
@@ -24,16 +24,15 @@ class GeneralSettingsSchema extends AbstractSchema
     {
         $builder
             ->setDefaults(array_merge([
-                'site_name'         => 'Default website name',
-                'admin_name'        => 'Default admin name',
-                'admin_email'       => 'contact@example.org',
-                'site_address'      => new SiteAddress(),
+                'site_name'    => 'Default website name',
+                'admin_name'   => 'Default admin name',
+                'admin_email'  => 'contact@example.org',
+                'site_address' => new SiteAddress(),
             ], $this->defaults))
-            ->setAllowedTypes('site_name',    'string')
-            ->setAllowedTypes('admin_name',   'string')
-            ->setAllowedTypes('admin_email',  'string')
-            ->setAllowedTypes('site_address', 'Ekyna\Bundle\AdminBundle\Model\SiteAddress')
-        ;
+            ->setAllowedTypes('site_name', 'string')
+            ->setAllowedTypes('admin_name', 'string')
+            ->setAllowedTypes('admin_email', 'string')
+            ->setAllowedTypes('site_address', 'Ekyna\Bundle\AdminBundle\Model\SiteAddress');
     }
 
     /**
@@ -43,31 +42,30 @@ class GeneralSettingsSchema extends AbstractSchema
     {
         $builder
             ->add('site_name', TextType::class, [
-                'label' => 'ekyna_admin.settings.general.site_name',
+                'label'       => 'ekyna_admin.settings.general.site_name',
                 'constraints' => [
-                    new Constraints\NotBlank()
-                ]
+                    new Constraints\NotBlank(),
+                ],
             ])
             ->add('admin_name', TextType::class, [
-                'label' => 'ekyna_admin.settings.general.admin_name',
+                'label'       => 'ekyna_admin.settings.general.admin_name',
                 'constraints' => [
-                    new Constraints\NotBlank()
-                ]
+                    new Constraints\NotBlank(),
+                ],
             ])
             ->add('admin_email', TextType::class, [
-                'label' => 'ekyna_admin.settings.general.admin_email',
+                'label'       => 'ekyna_admin.settings.general.admin_email',
                 'constraints' => [
                     new Constraints\NotBlank(),
                     new Constraints\Email(),
-                ]
+                ],
             ])
             ->add('site_address', SiteAddressType::class, [
-                'label' => 'ekyna_admin.settings.general.siteaddress',
+                'label'       => 'ekyna_admin.settings.general.siteaddress',
                 'constraints' => [
-                    new Constraints\Valid()
-                ]
-            ])
-        ;
+                    new Constraints\Valid(),
+                ],
+            ]);
     }
 
     /**

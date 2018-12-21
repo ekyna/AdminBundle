@@ -19,16 +19,12 @@
 
 {% block default_row %}
 {% spaceless %}
-    {% if label is null %}
-        {{ show_widget(view) }}
-    {% else %}
-        <div class="row show-row">
-            {{ block('label') }}
-            <div class="col-md-{{ widget_col }}">
-                {{ show_widget(view) }}
-            </div>
+    <div class="row show-row">
+        {{ block('label') }}
+        <div class="col-md-{{ widget_col }}">
+            {{ show_widget(view) }}
         </div>
-    {% endif %}
+    </div>
 {% endspaceless %}
 {% endblock default_row %}
 
