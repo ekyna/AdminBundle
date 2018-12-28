@@ -35,7 +35,7 @@ class AdminTypeExtension extends AbstractTypeExtension
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         if (0 < strlen($options['admin_helper'])) {
-            $view->vars['admin_helper'] = $options['admin_helper'];
+            $view->vars['attr']['data-helper'] = $options['admin_helper'];
         }
     }
 

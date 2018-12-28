@@ -1,11 +1,5 @@
 module.exports = function (grunt, options) {
     return {
-        admin_img: {
-            expand: true,
-            cwd: 'src/Ekyna/Bundle/AdminBundle/Resources/private/img',
-            src: ['**'],
-            dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public/img'
-        },
         admin_less: { // For watch:app_less
             src: 'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/css/bootstrap.css',
             dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public/css/bootstrap.css'

@@ -22,8 +22,7 @@
         "ekyna/table-bundle": "0.7.x-dev",
         "ekyna/google-bundle": "0.7.x-dev",
         "ekyna/setting-bundle": "0.7.x-dev",
-        "ekyna/install-bundle": "0.7.x-dev",
-        "misd/phone-number-bundle": "^1.2"
+        "ekyna/install-bundle": "0.7.x-dev"
     },
     "autoload": {
         "psr-4": {
