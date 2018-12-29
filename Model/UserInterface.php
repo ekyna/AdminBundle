@@ -86,6 +86,13 @@ interface UserInterface extends RC\ResourceInterface, RB\UserInterface, RC\Times
     public function setLastName($lastName);
 
     /**
+     * Returns the user short name.
+     *
+     * @return string
+     */
+    public function getShortName();
+
+    /**
      * Returns the imap.
      *
      * @return array

@@ -179,6 +179,18 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
+    public function getShortName()
+    {
+        if (!empty($this->firstName) && !empty($this->lastName)) {
+            return $this->firstName . ' ' . $this->lastName[0];
+        }
+
+        return $this->email;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getRoles()
     {
         if ($this->group) {
