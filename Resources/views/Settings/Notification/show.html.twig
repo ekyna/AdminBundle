@@ -6,6 +6,10 @@
     'label': 'ekyna_admin.settings.notification.from_email',
     'label_col': 3
 }) }}
+{{ show_row(settings.notification.no_reply, 'text', {
+    'label': 'ekyna_admin.settings.notification.no_reply',
+    'label_col': 3
+}) }}
 {{ show_row(settings.notification.to_emails|join(', '), 'text', {
     'label': 'ekyna_admin.settings.notification.to_emails',
     'label_col': 3

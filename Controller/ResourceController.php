@@ -4,20 +4,20 @@ namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Ekyna\Bundle\CoreBundle\Controller\Controller;
+use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Ekyna\Component\Resource\Search\SearchRepositoryInterface;
-use Ekyna\Bundle\CoreBundle\Controller\Controller;
-use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Validator\Constraints;
 
 /**
@@ -172,11 +172,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
             if (!$event->hasErrors()) {
                 if ($isXhr) {
-                    // TODO use resource serializer
-                    return JsonResponse::create([
-                        'id'   => $resource->getId(),
-                        'name' => (string)$resource,
-                    ]);
+                    return JsonResponse::create($this->normalize($resource));
                 }
 
                 $redirectPath = null;
@@ -293,11 +289,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
             if (!$event->hasErrors()) {
                 if ($isXhr) {
-                    // TODO Default serialization
-                    return JsonResponse::create([
-                        'id'   => $resource->getId(),
-                        'name' => (string)$resource,
-                    ]);
+                    return JsonResponse::create($this->normalize($resource));
                 }
 
                 $redirectPath = null;
@@ -557,7 +549,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
         $data = $this->container->get('serializer')->serialize([
             'results'     => $results,
             'total_count' => count($results),
-        ], 'json', ['groups' => ['Default']]);
+        ], 'json');
 
         $response = new Response($data);
         $response->headers->set('Content-Type', 'text/javascript');
@@ -828,6 +820,25 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
+     * Normalize the given data.
+     *
+     * @param mixed      $data
+     * @param string     $format
+     * @param array|null $context
+     *
+     * @return mixed
+     */
+    protected function normalize($data, $format = 'json', array $context = null)
+    {
+        if (null === $context) {
+            $class = $this->getConfiguration()->getResourceClass();
+            $context = ['groups' => substr($class, strrpos($class, '\\') + 1)];
+        }
+
+        return $this->get('serializer')->normalize($data, $format, $context);
+    }
+
+    /**
      * Creates a new resource.
      *
      * @param Context $context
@@ -885,7 +896,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     protected function createModal($action, $title = null, ResourceInterface $resource = null)
     {
         if (!$title) {
-            $title = sprintf('%s.header.%s', $this->config->getResourceId(), $action);
+            $title = sprintf('%s.header.%s', $this->config->getTranslationPrefix(), $action);
         }
 
         if ($resource && in_array($action, ['edit', 'remove'])) {
@@ -896,7 +907,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
         $buttons = [];
 
-        if (in_array($action, ['new', 'new_child', 'edit', 'remove'])) {
+        if (in_array($action, ['new', 'new_child', 'edit', 'remove', 'confirm'])) {
             $submitButton = [
                 'id'       => 'submit',
                 'label'    => 'ekyna_core.button.save',
@@ -907,6 +918,9 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             if ($action === 'edit') {
                 $submitButton['icon'] = 'glyphicon glyphicon-ok';
                 $submitButton['cssClass'] = 'btn-warning';
+            } elseif ($action === 'confirm') {
+                $submitButton['label'] = 'ekyna_core.button.confirm';
+                $submitButton['cssClass'] = 'btn-danger';
             } elseif ($action === 'remove') {
                 $submitButton['label'] = 'ekyna_core.button.remove';
                 $submitButton['icon'] = 'glyphicon glyphicon-trash';

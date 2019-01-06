@@ -2,6 +2,7 @@ ekyna_admin:
     title: Administration
     login_header: Authentification
     dashboard: Dashboard
+    shortcuts: Shortcuts
     configuration: Configuration
     homepage: Home page
     navbar:
@@ -19,6 +20,7 @@ ekyna_admin:
             label: Notifications
             from_name: Sender name
             from_email: Sender email
+            no_reply: No reply email
             to_emails: Recipients emails
     resource:
         button:

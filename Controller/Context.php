@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class Context
  * @package Ekyna\Bundle\AdminBundle\Controller
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class Context
 {
@@ -67,6 +67,7 @@ class Context
      *
      * @param string $name
      * @param object $resource
+     *
      * @return Context
      */
     public function addResource($name, $resource)
@@ -80,6 +81,7 @@ class Context
      * Returns a resource by name.
      *
      * @param string $name
+     *
      * @return ResourceInterface|null
      */
     public function getResource($name = null)
@@ -90,6 +92,7 @@ class Context
         if (isset($this->resources[$name])) {
             return $this->resources[$name];
         }
+
         return null;
     }
 
@@ -97,6 +100,7 @@ class Context
      * Returns the identifiers.
      *
      * @param bool $with_current
+     *
      * @return array
      */
     public function getIdentifiers($with_current = false)
@@ -108,6 +112,7 @@ class Context
                 $identifiers[$name . 'Id'] = $resource->getId();
             }
         }
+
         return $identifiers;
     }
 
@@ -115,7 +120,7 @@ class Context
      * Returns the template resources vars.
      *
      * @param array $extra
-     * @throws \RuntimeException
+     *
      * @return array
      */
     public function getTemplateVars(array $extra = [])
@@ -124,12 +129,18 @@ class Context
         if (0 < count($extraKeys)) {
             foreach (array_keys($this->resources) as $key) {
                 if (array_key_exists($key, $extraKeys)) {
-                    throw new \RuntimeException(sprintf('Key "%s" used in extra template vars overrides a resource key.', $key));
+                    throw new \RuntimeException(sprintf(
+                        'Key "%s" used in extra template vars overrides a resource key.',
+                        $key
+                    ));
                 }
             }
             foreach (['identifiers', 'resource_name', 'resource_id', 'route_prefix'] as $key) {
                 if (array_key_exists($key, $extraKeys)) {
-                    throw new \RuntimeException(sprintf('Key "%s" is reserved and cannot be used in extra template vars.', $key));
+                    throw new \RuntimeException(sprintf(
+                        'Key "%s" is reserved and cannot be used in extra template vars.',
+                        $key
+                    ));
                 }
             }
         }
@@ -138,6 +149,7 @@ class Context
             'identifiers'   => $this->getIdentifiers(),
             'resource_name' => $this->config->getResourceName(),
             'resource_id'   => $this->config->getResourceId(),
+            'trans_prefix'  => $this->config->getTranslationPrefix(),
             'route_prefix'  => $this->config->getRoutePrefix(),
             'form_template' => $this->config->getTemplate('_form.html'),
         ], $extra);

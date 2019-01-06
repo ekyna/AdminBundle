@@ -179,10 +179,38 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
+    public function hasFullName()
+    {
+        return !empty($this->firstName) && !empty($this->lastName);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFullName()
+    {
+        if (!empty($this->firstName) && !empty($this->lastName)) {
+            return $this->firstName . ' ' . $this->lastName;
+        }
+
+        return $this->email;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function hasShortName()
+    {
+        return !empty($this->firstName) && !empty($this->lastName);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getShortName()
     {
         if (!empty($this->firstName) && !empty($this->lastName)) {
-            return $this->firstName . ' ' . $this->lastName[0];
+            return $this->firstName . ' ' . $this->lastName[0] . '.';
         }
 
         return $this->email;

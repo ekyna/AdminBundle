@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints;
 /**
  * Class NotificationSettingsSchema
  * @package Ekyna\Bundle\AdminBundle\Settings
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
 class NotificationSettingsSchema extends AbstractSchema
 {
@@ -25,12 +25,13 @@ class NotificationSettingsSchema extends AbstractSchema
             ->setDefaults(array_merge([
                 'from_name'  => 'Default admin name',
                 'from_email' => 'contact@example.org',
+                'no_reply'   => null,
                 'to_emails'  => ['contact@example.org'],
             ], $this->defaults))
-            ->setAllowedTypes('from_name',  'string')
+            ->setAllowedTypes('from_name', 'string')
             ->setAllowedTypes('from_email', 'string')
-            ->setAllowedTypes('to_emails',  'array')
-        ;
+            ->setAllowedTypes('no_reply', ['null', 'string'])
+            ->setAllowedTypes('to_emails', 'array');
     }
 
     /**
@@ -40,17 +41,24 @@ class NotificationSettingsSchema extends AbstractSchema
     {
         $builder
             ->add('from_name', TextType::class, [
-                'label' => 'ekyna_admin.settings.notification.from_name',
+                'label'       => 'ekyna_admin.settings.notification.from_name',
                 'constraints' => [
-                    new Constraints\NotBlank()
-                ]
+                    new Constraints\NotBlank(),
+                ],
             ])
             ->add('from_email', TextType::class, [
-                'label' => 'ekyna_admin.settings.notification.from_email',
+                'label'       => 'ekyna_admin.settings.notification.from_email',
                 'constraints' => [
                     new Constraints\NotBlank(),
                     new Constraints\Email(),
-                ]
+                ],
+            ])
+            ->add('no_reply', TextType::class, [
+                'label'       => 'ekyna_admin.settings.notification.no_reply',
+                'constraints' => [
+                    new Constraints\NotBlank(),
+                    new Constraints\Email(),
+                ],
             ])
             ->add('to_emails', CollectionType::class, [
                 'label'           => 'ekyna_admin.settings.notification.to_emails',
@@ -72,8 +80,7 @@ class NotificationSettingsSchema extends AbstractSchema
                         'minMessage' => 'ekyna_admin.settings.notification.at_least_one_email',
                     ]),
                 ],
-            ])
-        ;
+            ]);
     }
 
     /**

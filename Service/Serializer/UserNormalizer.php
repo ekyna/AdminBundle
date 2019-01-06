@@ -19,13 +19,9 @@ class UserNormalizer extends AbstractResourceNormalizer
      */
     public function normalize($user, $format = null, array $context = [])
     {
-        $groups = isset($context['groups']) ? (array)$context['groups'] : [];
-
         $data = parent::normalize($user, $format, $context);
 
-        /** @var Model\UserInterface $user */
-
-        if (in_array('Default', $groups) || in_array('Search', $groups)) {
+        if ($this->contextHasGroup(['Default', 'User', 'Search'], $context)) {
             $data = array_replace([
                 'email'      => $user->getEmail(),
                 'first_name' => $user->getFirstName(),

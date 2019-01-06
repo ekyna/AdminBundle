@@ -86,6 +86,27 @@ interface UserInterface extends RC\ResourceInterface, RB\UserInterface, RC\Times
     public function setLastName($lastName);
 
     /**
+     * Returns whether the user has a full name.
+     *
+     * @return string
+     */
+    public function hasFullName();
+
+    /**
+     * Returns the user full name.
+     *
+     * @return string
+     */
+    public function getFullName();
+
+    /**
+     * Returns whether the user has a short name.
+     *
+     * @return string
+     */
+    public function hasShortName();
+
+    /**
      * Returns the user short name.
      *
      * @return string

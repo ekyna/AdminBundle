@@ -78,11 +78,17 @@ class ShortcutsWidgetType extends AbstractWidgetType
 
         $resolver
             ->setDefaults([
+                'title'    => 'ekyna_admin.shortcuts',
                 'position' => -9999,
                 'css_path' => '/bundles/ekynaadmin/css/dashboard-shortcuts.css',
             ]);
     }
 
+    /**
+     * Creates the columns.
+     *
+     * @return array
+     */
     private function createColumns()
     {
         $groups = $this->createGroups();
@@ -131,6 +137,11 @@ class ShortcutsWidgetType extends AbstractWidgetType
         return $columns;
     }
 
+    /**
+     * Creates the groups.
+     *
+     * @return array
+     */
     private function createGroups()
     {
         $groups = [];

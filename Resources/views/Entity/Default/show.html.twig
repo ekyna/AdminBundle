@@ -6,7 +6,7 @@
 
 {% block title %}
 {{ admin_resource_pin(resource) }}
-<h1>{{ (resource_id ~ '.header.show')|trans({'%name%': resource})|raw }}</h1>
+<h1>{{ (trans_prefix ~ '.header.show')|trans({'%name%': resource})|raw }}</h1>
 {% endblock title %}
 
 {% block actions %}
