@@ -564,7 +564,7 @@ input.search {
 
 body > .content {
     min-width: 400px;
-    min-height:100%;
+    min-height: 100%;
     overflow: hidden;
     position: relative;
     background: #fff;
@@ -675,6 +675,7 @@ body > .content .skins-nav a .text {
     line-height: 36px;
     margin-right: 6px;
 }
+
 .page-header a.user-pin:hover,
 .page-header a.user-pin:active {
     color: #6187c0;
@@ -683,6 +684,7 @@ body > .content .skins-nav a .text {
 .page-header a.user-pin.unpin {
     color: #6187c0;
 }
+
 .page-header a.user-pin.unpin:hover,
 .page-header a.user-pin.unpin:active {
     color: #ccc;
@@ -742,6 +744,19 @@ body > .content .skins-nav a .text {
 
 .btn-sm .glyphicon {
     top: 1px;
+}
+
+.flags-icons,
+.table > tbody > tr > td.flags-icons {
+    line-height: 1.2;
+}
+
+.flags-icons > i {
+    margin-right: 4px;
+}
+
+.flags-icons > i:last-child {
+    margin-right: 0;
 }
 
 /* Entity Layout */

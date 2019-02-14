@@ -409,12 +409,13 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
 
                 return $this->redirect($redirectPath);
-            } elseif ($isXhr) {
-                // TODO all event messages should be bound to XHR response
-                foreach ($event->getErrors() as $error) {
-                    $form->addError(new FormError($error->getMessage()));
-                }
             }
+
+            // TODO all event messages should be bound to XHR response
+            foreach ($event->getErrors() as $error) {
+                $form->addError(new FormError($error->getMessage()));
+            }
+
         }
 
         if ($isXhr) {
