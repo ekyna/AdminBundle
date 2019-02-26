@@ -7,7 +7,7 @@ module.exports = function (grunt, options) {
             files: [{
                 expand: true,
                 cwd: 'src/Ekyna/Bundle/AdminBundle/Resources/private/img/',
-                src: ['**/*.{png,jpg,gif,svg}'],
+                src: ['**/*.{png,jpg,gif,svg,ico}'],
                 dest: 'src/Ekyna/Bundle/AdminBundle/Resources/public/img/'
             }]
         }
