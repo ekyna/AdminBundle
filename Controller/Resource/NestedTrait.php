@@ -86,6 +86,8 @@ trait NestedTrait
         $context->addResource($resourceName, $child);
         $context->addResource('parent_resource', $resource);
 
+        $this->getOperator()->initialize($resource);
+
         $form = $this->createNewResourceForm($context, !$isXhr, ['action' => $action]);
 
         $form->handleRequest($request);
