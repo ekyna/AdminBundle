@@ -353,6 +353,6 @@ class User implements UserInterface
             $this->id,
             $this->email,
             $this->password,
-        ) = unserialize($serialized, array('allowed_classes' => false));
+        ) = unserialize($serialized, ['allowed_classes' => false]);
     }
 }
