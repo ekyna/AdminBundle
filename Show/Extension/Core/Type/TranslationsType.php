@@ -3,7 +3,6 @@
 namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 
 use Doctrine\Common\Collections\Collection;
-use Ekyna\Bundle\AdminBundle\Show\Exception\InvalidArgumentException;
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
 use Ekyna\Bundle\AdminBundle\Show\View;
 use Symfony\Component\OptionsResolver\Options;
@@ -19,16 +18,26 @@ class TranslationsType extends AbstractType
     /**
      * @var array
      */
-    private $locales = ['fr', 'en', 'es'];
+    private $locales;
 
+
+    /**
+     * Constructor.
+     *
+     * @param array $locales
+     */
+    public function __construct(array $locales)
+    {
+        $this->locales = $locales;
+    }
 
     /**
      * @inheritDoc
      */
     public function build(View $view, $value, array $options = [])
     {
-        if (!$value instanceof Collection) {
-            throw new InvalidArgumentException("Expected instance of " . Collection::class);
+        if ($value instanceof Collection) {
+            $value = $value->toArray();
         }
 
         parent::build($view, $value, $options);
@@ -36,7 +45,7 @@ class TranslationsType extends AbstractType
         $prefix = $options['prefix'] ?? $options['id'] ?: 'translations';
 
         $view->vars = array_replace($view->vars, [
-            'value'   => $value->toArray(),
+            'value'   => $value,
             'locales' => $this->locales,
             'prefix'  => $prefix,
             'name'    => $prefix . '_' . preg_replace('~[^A-Za-z0-9]+~', '', base64_encode(random_bytes(3))),

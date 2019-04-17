@@ -25,20 +25,19 @@ class CoreExtension extends AbstractExtension
     public function __construct()
     {
         $this->classes = [
-            'boolean'      => Type\BooleanType::class,
-            'collection'   => Type\CollectionType::class,
-            'color'        => Type\ColorType::class,
-            'choice'       => Type\ChoiceType::class,
-            'datetime'     => Type\DateTimeType::class,
-            'entity'       => Type\EntityType::class,
-            'map'          => Type\MapType::class,
-            'number'       => Type\NumberType::class,
-            'text'         => Type\TextType::class,
-            'textarea'     => Type\TextAreaType::class,
-            'tinymce'      => Type\TinyMceType::class,
-            'translations' => Type\TranslationsType::class,
-            'upload'       => Type\UploadType::class,
-            'url'          => Type\UrlType::class,
+            'boolean'    => Type\BooleanType::class,
+            'collection' => Type\CollectionType::class,
+            'color'      => Type\ColorType::class,
+            'choice'     => Type\ChoiceType::class,
+            'datetime'   => Type\DateTimeType::class,
+            'entity'     => Type\EntityType::class,
+            'map'        => Type\MapType::class,
+            'number'     => Type\NumberType::class,
+            'text'       => Type\TextType::class,
+            'textarea'   => Type\TextAreaType::class,
+            'tinymce'    => Type\TinyMceType::class,
+            'upload'     => Type\UploadType::class,
+            'url'        => Type\UrlType::class,
         ];
     }
 
@@ -57,7 +56,7 @@ class CoreExtension extends AbstractExtension
     {
         $class = $this->classes[$name];
 
-        if (!in_array(TypeInterface::class, class_implements($class), true)) {
+        if (!is_subclass_of($class, TypeInterface::class)) {
             throw new InvalidArgumentException("Class '$class' must implements " . TypeInterface::class);
         }
 

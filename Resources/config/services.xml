@@ -204,6 +204,11 @@
             <argument type="service" id="ekyna_admin.show.registry"/>
             <argument type="service" id="twig"/>
         </service>
+        <service id="ekyna_admin.show_type.translations"
+                 class="Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type\TranslationsType">
+            <argument>%locales%</argument>
+            <tag name="ekyna_admin.show.type" alias="translations"/>
+        </service>
 
         <!-- Serialization -->
         <service id="ekyna_admin.user.normalizer"
