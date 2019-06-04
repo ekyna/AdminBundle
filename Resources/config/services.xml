@@ -72,6 +72,14 @@
             <argument type="service" id="security.token_storage"/>
         </service>
 
+        <!-- Security login manager -->
+        <service id="Ekyna\Bundle\AdminBundle\Service\Security\LoginManager">
+            <argument type="service" id="Symfony\Component\Security\Core\User\UserCheckerInterface"/>
+            <argument type="service" id="Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface"/>
+            <argument type="service" id="Symfony\Component\HttpFoundation\RequestStack"/>
+            <argument type="service" id="Symfony\Component\Security\Http\Session\SessionAuthenticationStrategyInterface"/>
+        </service>
+
         <!-- Admin Menus -->
         <service id="ekyna_admin.menu.pool"
                  class="Ekyna\Bundle\AdminBundle\Menu\MenuPool"/>
