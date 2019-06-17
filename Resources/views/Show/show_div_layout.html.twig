@@ -4,7 +4,7 @@
 {% block label %}
     {% spaceless %}
         {% if label is not null %}
-            <div class="col-md-{{ label_col }} show-label">{{ label|trans }}</div>
+            <div class="col-md-{{ label_col }} show-label">{{ label|trans({}, trans_domain) }}</div>
         {% endif %}
     {% endspaceless %}
 {% endblock label %}
@@ -59,7 +59,7 @@
         {{ block('undefined') }}
     {%- elseif trans_domain is null -%}
         {{ value|trans|raw }}
-    {%- elseif trans_domain is same as(false) -%}
+    {%- elseif trans_domain is not same as(false) -%}
         {{ value|trans(trans_params, trans_domain)|raw }}
     {%- else -%}
         {{ value|raw }}

@@ -5,8 +5,6 @@ namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 use Ekyna\Bundle\AdminBundle\Show\Exception\InvalidArgumentException;
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
 use Ekyna\Bundle\AdminBundle\Show\View;
-use Ekyna\Bundle\ResourceBundle\Model\ConstantsInterface;
-use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -25,7 +23,7 @@ class ChoiceType extends AbstractType
 
         $choices = $options['choices'];
 
-        if (is_string($choices) && class_exists($choices) && is_subclass_of($choices, ConstantsInterface::class)) {
+        if (is_string($choices) && class_exists($choices)) {
             $choices = call_user_func($choices . '::getChoices');
         } elseif (is_callable($choices)) {
             $choices = call_user_func($choices);
@@ -71,22 +69,13 @@ class ChoiceType extends AbstractType
             ->setRequired('choices')
             ->setDefaults([
                 'multiple'     => false,
-                'trans_domain' => null,
                 'trans_params' => [],
                 'empty_label'  => 'ekyna_core.value.undefined',
             ])
             ->setAllowedTypes('multiple', 'bool')
             ->setAllowedTypes('choices', ['array', 'callable', 'string'])
-            ->setAllowedTypes('trans_domain', ['null', 'bool', 'string'])
             ->setAllowedTypes('trans_params', 'array')
-            ->setAllowedTypes('empty_label', 'string')
-            ->setNormalizer('trans_domain', function (Options $options, $value) {
-                if (true === $value) {
-                    return null;
-                }
-
-                return $value;
-            });
+            ->setAllowedTypes('empty_label', 'string');
     }
 
     /**

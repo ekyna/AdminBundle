@@ -46,7 +46,7 @@ class UserController extends ResourceController
         $data = $this->container->get('serializer')->serialize([
             'results'     => $results,
             'total_count' => count($results),
-        ], 'json', ['groups' => ['Default']]);
+        ], 'json', ['groups' => ['Search']]);
 
         $response = new Response($data);
         $response->headers->set('Content-Type', 'text/javascript');

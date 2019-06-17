@@ -4,7 +4,6 @@ namespace Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type;
 
 use Ekyna\Bundle\AdminBundle\Show\Type\AbstractType;
 use Ekyna\Bundle\AdminBundle\Show\View;
-use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -21,7 +20,6 @@ class TextType extends AbstractType
     {
         parent::build($view, $value, $options);
 
-        $view->vars['trans_domain'] = $options['trans_domain'];
         $view->vars['trans_params'] = $options['trans_params'];
     }
 
@@ -33,19 +31,8 @@ class TextType extends AbstractType
         parent::configureOptions($resolver);
 
         $resolver
-            ->setDefaults([
-                'trans_domain' => false,
-                'trans_params' => [],
-            ])
-            ->setAllowedTypes('trans_domain', ['null', 'bool', 'string'])
-            ->setAllowedTypes('trans_params', 'array')
-            ->setNormalizer('trans_domain', function (Options $options, $value) {
-                if (true === $value) {
-                    return null;
-                }
-
-                return $value;
-            });
+            ->setDefault('trans_params', [])
+            ->setAllowedTypes('trans_params', 'array');
     }
 
     /**

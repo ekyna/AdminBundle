@@ -43,6 +43,7 @@ abstract class AbstractType implements TypeInterface
             'label_col'     => $options['label_col'],
             'widget_col'    => $options['widget_col'],
             'label'         => $options['label'],
+            'trans_domain'  => $options['trans_domain'],
             'attr'          => $attr,
             'value'         => $value,
             'row_prefix'    => $options['row_prefix'] ?: $this->getRowPrefix(),
@@ -93,6 +94,7 @@ abstract class AbstractType implements TypeInterface
                 'id'            => null,
                 'class'         => null,
                 'label'         => null,
+                'trans_domain'  => null,
                 'label_col'     => 2,
                 'widget_col'    => 10,
                 'row_prefix'    => null,
@@ -101,12 +103,20 @@ abstract class AbstractType implements TypeInterface
             ])
             ->setAllowedTypes('id', ['null', 'string'])
             ->setAllowedTypes('label', ['null', 'string'])
+            ->setAllowedTypes('trans_domain', ['null', 'bool', 'string'])
             ->setAllowedTypes('class', ['null', 'string'])
             ->setAllowedTypes('label_col', 'int')
             ->setAllowedTypes('widget_col', 'int')
             ->setAllowedTypes('row_prefix', ['null', 'string'])
             ->setAllowedTypes('widget_prefix', ['null', 'string'])
             ->setAllowedTypes('attr', 'array')
+            ->setNormalizer('trans_domain', function (Options $options, $value) {
+                if (true === $value) {
+                    return null;
+                }
+
+                return $value;
+            })
             ->setNormalizer('widget_col', function (Options $options, $value) {
                 if (12 != $options['label_col'] + $value) {
                     $value = 12 - $options['label_col'];
