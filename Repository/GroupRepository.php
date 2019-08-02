@@ -38,7 +38,7 @@ class GroupRepository extends ResourceRepository implements GroupRepositoryInter
         $qb = $this->createQueryBuilder('g');
 
         return $qb
-            ->andWhere($qb->expr()->like('g.roles', $qb->expr()->literal('%"' . strtoupper($role) . '"%')))
+            ->andWhere($qb->expr()->like('g.roles', $qb->expr()->literal(strtoupper($role))))
             ->orderBy('g.position', 'DESC')
             ->getQuery()
             ->getResult();

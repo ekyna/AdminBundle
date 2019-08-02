@@ -17,12 +17,12 @@ class Renderer implements RendererInterface
     private $registry;
 
     /**
-     * @var \Twig_Environment
+     * @var \Twig\Environment
      */
     private $environment;
 
     /**
-     * @var \Twig_TemplateWrapper[]
+     * @var \Twig\TemplateWrapper[]
      */
     private $templates = [];
 
@@ -36,9 +36,9 @@ class Renderer implements RendererInterface
      * Constructor.
      *
      * @param RegistryInterface $registry
-     * @param \Twig_Environment $environment
+     * @param \Twig\Environment $environment
      */
-    public function __construct(RegistryInterface $registry, \Twig_Environment $environment)
+    public function __construct(RegistryInterface $registry, \Twig\Environment $environment)
     {
         $this->registry = $registry;
         $this->environment = $environment;
@@ -101,7 +101,7 @@ class Renderer implements RendererInterface
      *
      * @param string $name
      *
-     * @return \Twig_TemplateWrapper
+     * @return \Twig\TemplateWrapper
      */
     private function getTemplate($name)
     {
@@ -119,7 +119,7 @@ class Renderer implements RendererInterface
      *
      * @param string $block
      *
-     * @return \Twig_TemplateWrapper
+     * @return \Twig\TemplateWrapper
      */
     private function getTemplateForBlock($block)
     {

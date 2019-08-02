@@ -114,15 +114,16 @@
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
-        {%- if color %}<label class="{{ value is null ? null_class : (value ? true_class : false_class) }}">{% endif -%}
+        {%- set class = value is null ? null_class : (value ? true_class : false_class) -%}
+        {%- if toggle_path %}<a href="{{ toggle_path }}" class="{{ class }}">{% elseif color %}<span class="{{ class }}">{% endif -%}
         {%- if value is null -%}
             {{ null_label|trans }}
         {%- elseif value -%}
-            {{ 'ekyna_core.value.yes'|trans }}
+            {{ true_label|trans }}
         {%- else -%}
-            {{ 'ekyna_core.value.no'|trans }}
+            {{ false_label|trans }}
         {%- endif -%}
-        {%- if color %}</label>{% endif -%}
+        {%- if toggle_path %}</a>{% elseif color %}</span>{% endif -%}
     </div>
 {% endspaceless %}
 {% endblock boolean_widget %}

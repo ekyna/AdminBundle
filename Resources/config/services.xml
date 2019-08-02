@@ -168,15 +168,16 @@
         </service>
 
         <!-- Resource Helper -->
-        <service id="ekyna_admin.helper.resource_helper"
-                 class="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper"
-                 lazy="true">
+        <service id="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper" lazy="true">
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
             <argument type="service" id="ekyna_resource.configuration_registry"/>
             <argument type="service" id="security.authorization_checker"/>
             <argument type="service" id="router"/>
             <argument type="service" id="ekyna_resource.event_dispatcher"/>
+            <tag name="twig.runtime"/>
         </service>
+        <service alias="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper"
+                 id="ekyna_admin.helper.resource_helper"/>
 
         <!-- Pin Helper -->
         <service id="ekyna_admin.helper.pin_helper"
