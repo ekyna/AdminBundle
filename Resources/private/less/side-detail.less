@@ -1,0 +1,18 @@
+#side-detail {
+    position: fixed;
+    bottom: 0;
+    top: 0;
+    right: calc(-33% - 15px);
+    z-index: 9999;
+    background: white;
+    width: 33%;
+    padding: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: right ease-out .2s .6s;
+    box-shadow: 0 0 15px rgba(0, 0, 0, .4);
+
+    &.opened {
+        right: 0;
+    }
+}

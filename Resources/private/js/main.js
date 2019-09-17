@@ -270,6 +270,13 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
     });
 
     /* -----------------------------------------------------------------------------------------------------------------
+     * Resource summary
+     */
+    require(['ekyna-admin/side-detail'], function(SideDetail) {
+        SideDetail.init();
+    });
+
+    /* -----------------------------------------------------------------------------------------------------------------
      * User Pins
      */
     var $pinList = $('.navbar li.user-pins > div');
