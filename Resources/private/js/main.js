@@ -270,10 +270,70 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
     });
 
     /* -----------------------------------------------------------------------------------------------------------------
-     * Resource summary
+     * Resource side detail
      */
     require(['ekyna-admin/side-detail'], function(SideDetail) {
         SideDetail.init();
+    });
+
+    /* -----------------------------------------------------------------------------------------------------------------
+     * Resource side detail
+     */
+    var $bcBtn = $('#barcode-scanner-button');
+    require(['ekyna-admin/barcode-scanner'], function(bsScanner) {
+        bsScanner.init({
+            //debug: true
+        });
+        bsScanner.addListener(function(barcode) {
+            $bcBtn.find('> i').removeClass('fa-barcode').addClass('fa-spinner fa-pulse fa-3x fa-fw');
+
+            var xhr = $.ajax({
+                url: router.generate('ekyna_admin_barcode', {
+                    barcode: barcode
+                }),
+                method: 'GET'
+            });
+
+            xhr.done(function(data, textStatus, jqXHR) {
+                if ("text/html" === jqXHR.getResponseHeader("Content-Type")) {
+                    return;
+                }
+
+                if ("application/json" !== jqXHR.getResponseHeader("Content-Type")) {
+                    throw "Unexpected barcode response type";
+                }
+
+                if (!data.hasOwnProperty('results')) {
+                    return;
+                }
+
+                if (0 === data.results.length) {
+                    return;
+                }
+
+                if (1 === data.results.length) {
+                    if (data.results[0].type === 'redirect') {
+                        window.location.href = data.results[0].url;
+                    } else if (data.results[0].type === 'modal') {
+                        // TODO
+                        console.log('Not yet implemented');
+                    } else {
+                        throw 'Unexpected result type';
+                    }
+
+                    return;
+                }
+
+                // Dropdown
+                data.results.forEach(function(result) {
+                    // TODO
+                });
+            });
+
+            xhr.always(function() {
+                $bcBtn.find('> i').removeClass('fa-spinner fa-pulse fa-3x fa-fw').addClass('fa-barcode');
+            });
+        });
     });
 
     /* -----------------------------------------------------------------------------------------------------------------

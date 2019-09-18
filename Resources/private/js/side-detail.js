@@ -31,7 +31,7 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
     };
 
     SideDetail.open = function ($element) {
-        this.$container.html($element.data('side-detail-content')).addClass('opened');
+        this.$container.addClass('opened').find('> div').html($element.data('side-detail-content'));
     };
 
     SideDetail.close = function () {
@@ -60,7 +60,9 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
             return;
         }
 
-        this.$container = $('<div id="side-detail"></div>').appendTo('body');
+        this.$container = $(
+            '<div id="side-detail"><span><i class="glyphicon glyphicon-pushpin"/></span><div></div></div>'
+        ).appendTo('body');
 
         $(document)
             .on('mouseenter', '[data-side-detail]', function (e) {
@@ -95,21 +97,20 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
 
                 SideDetail.close();
             })
-            .on('keydown', function (e) {
-                if (e.which !== 27) { // Escape
-                    return true;
-                }
-
-                SideDetail.close();
-            })
             .on('keyup', function (e) {
                 if (e.which === 17) { // Ctrl
-                    if (SideDetail.isOpened()) {
+                    if (SideDetail.isLocked()) {
+                        SideDetail.unlock();
+                    } else if (SideDetail.isOpened()) {
                         SideDetail.lock();
                     }
                 } else if (e.which === 27) { // Escape
-                    SideDetail.unlock();
-                    SideDetail.close();
+                    if (SideDetail.isLocked()) {
+                        SideDetail.unlock();
+                    }
+                    if (SideDetail.isOpened()) {
+                        SideDetail.close();
+                    }
                 }
             });
     };

@@ -1,18 +1,42 @@
+@import "variables.less";
+
 #side-detail {
     position: fixed;
     bottom: 0;
     top: 0;
-    right: calc(-33% - 15px);
-    z-index: 9999;
+    right: -33%;
+    z-index: 9998;
     background: white;
     width: 33%;
     padding: 12px;
     overflow-y: auto;
     overflow-x: hidden;
-    transition: right ease-out .2s .6s;
-    box-shadow: 0 0 15px rgba(0, 0, 0, .4);
+    transition: right ease-out .2s;
+
+    > span {
+        position: absolute;
+        z-index: 9999;
+        top: 0;
+        left: 0;
+        display: block;
+        width: 24px;
+        height: 24px;
+        background-color: white;
+        color: @gray-lighter;
+        text-align: center;
+        font-size: 12px;
+        line-height: 24px;
+        border-bottom-right-radius: 12px;
+    }
 
     &.opened {
         right: 0;
+        box-shadow: 0 0 15px rgba(0, 0, 0, .4);
+    }
+
+    &.locked {
+        > span {
+            color: @brand-primary;
+        }
     }
 }

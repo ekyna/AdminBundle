@@ -109,7 +109,7 @@
         </a>
     </li>
     #}
-    <li class="user-pins hidden-xs">
+    <li class="user-pins">
         <div>
             {% for pin in admin_user_pins() %}
             <span data-id="{{ pin.id }}">
@@ -123,14 +123,19 @@
             {% endfor %}
         </div>
     </li>
+    <li class="settings">
+        <a href="javascript: void(0)" role="button" id="barcode-scanner-button" title="{{ 'ekyna_core.field.barcode'|trans }}">
+            <i class="fa fa-barcode"></i>
+        </a>
+    </li>
     {% for button in config.buttons -%}
-    <li class="settings hidden-xs">
+    <li class="settings">
         <a href="{{ path(button.route) }}" role="button" title="{{ button.title|trans }}" target="{{ button.target }}">
             <i class="fa fa-{{ button.icon }}"></i>
         </a>
     </li>
     {%- endfor %}
-    <li class="settings hidden-xs">
+    <li class="settings">
         <a href="{{ path('ekyna_admin_security_logout') }}" role="button" title="{{ 'ekyna_core.button.logout'|trans }}">
             <i class="fa fa-power-off"></i>
         </a>

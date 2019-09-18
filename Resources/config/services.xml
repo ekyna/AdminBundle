@@ -13,6 +13,11 @@
 
     <services>
 
+        <!-- Controllers -->
+        <service id="Ekyna\Bundle\AdminBundle\Controller\ToolbarController">
+            <argument type="service" id="Symfony\Component\EventDispatcher\EventDispatcherInterface"/>
+        </service>
+
         <!-- Event listeners -->
         <service id="ekyna_admin.user.event_subscriber"
                  class="Ekyna\Bundle\AdminBundle\EventListener\UserEventSubscriber">
