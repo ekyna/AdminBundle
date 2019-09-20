@@ -14,7 +14,7 @@ define(['jquery'], function ($) {
 
     BarcodeScanner.defaults = {
         filter: /^[0-9A-Za-z]$/,
-        interval: 30,
+        interval: 60,
         lengths: [8, 13],
         endCode: 'Enter',
         debug: false
