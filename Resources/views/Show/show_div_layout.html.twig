@@ -2,18 +2,20 @@
 
 
 {% block label %}
-    {% spaceless %}
-        {% if label is not null %}
-            <div class="col-md-{{ label_col }} show-label">{{ label|trans({}, trans_domain) }}</div>
-        {% endif %}
-    {% endspaceless %}
+{% spaceless %}
+    {% if label is not null %}
+        <div class="col-md-{{ label_col }} show-label" title="{{ label|trans({}, trans_domain) }}">
+            {{- label|trans({}, trans_domain) -}}
+        </div>
+    {% endif %}
+{% endspaceless %}
 {% endblock label %}
 
 
 {% block undefined %}
-    {% spaceless %}
-        <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-    {% endspaceless %}
+{% spaceless %}
+    <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
+{% endspaceless %}
 {% endblock undefined %}
 
 
