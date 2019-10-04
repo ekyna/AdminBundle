@@ -5,7 +5,6 @@ namespace Ekyna\Bundle\AdminBundle\Service\Search;
 use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
 use Ekyna\Component\Resource\Search\Elastica\ResourceRepository;
 use Elastica\Query;
-use Elastica\Filter;
 
 /**
  * Class UserRepository
@@ -15,43 +14,50 @@ use Elastica\Filter;
 class UserRepository extends ResourceRepository
 {
     /**
-     * Search users having the given roles.
+     * Creates the search query.
      *
-     * @param string           $expression
+     * @param string $expression
      * @param GroupInterface[] $groups
-     * @param int              $limit
      *
-     * @return \Ekyna\Bundle\ProductBundle\Model\ProductInterface[]
+     * @return Query
      */
-    public function searchByGroups($expression, array $groups, $limit = 10)
+    public function createSearchQuery(string $expression, array $groups = []): Query
     {
-        $matchQuery = new Query\MultiMatch();
-        $matchQuery->setQuery($expression)->setFields($this->getDefaultMatchFields());
+        $match = new Query\MultiMatch();
+        $match
+            ->setQuery($expression)
+            ->setType(Query\MultiMatch::TYPE_CROSS_FIELDS)
+            ->setFields($this->getDefaultMatchFields());
+
+        if (empty($groups)) {
+            return Query::create($match);
+        }
 
         $groupsIds = [];
         foreach ($groups as $group) {
             $groupsIds[] = $group->getId();
         }
 
-        $rolesFilter = new Filter\Terms();
-        $rolesFilter->setTerms('group', $groupsIds);
+        $bool = new Query\BoolQuery();
+        $bool
+            ->addMust($match)
+            ->addMust(new Query\Terms('group', $groupsIds));
 
-        $filtered = new Query\Filtered();
-        $filtered->setQuery($matchQuery);
-        $filtered->setFilter($rolesFilter);
-
-        return $this->find($filtered, $limit);
+        return Query::create($bool);
     }
 
     /**
      * @inheritdoc
      */
-    protected function getDefaultMatchFields()
+    protected function getDefaultMatchFields(): array
     {
         return [
-            'email',
             'first_name',
+            'first_name.analyzed',
             'last_name',
+            'last_name.analyzed',
+            'email',
+            'email.analyzed',
         ];
     }
 }

@@ -9,6 +9,7 @@ use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Ekyna\Component\Resource\Search\SearchRepositoryInterface;
+use Elastica\Result;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -48,7 +49,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
 
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function setConfiguration(ConfigurationInterface $config)
     {
@@ -56,7 +57,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function homeAction()
     {
@@ -64,7 +65,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function listAction(Request $request)
     {
@@ -96,7 +97,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function showAction(Request $request)
     {
@@ -143,7 +144,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function newAction(Request $request)
     {
@@ -265,7 +266,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function editAction(Request $request)
     {
@@ -370,7 +371,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function removeAction(Request $request)
     {
@@ -532,34 +533,53 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function searchAction(Request $request)
     {
-        //$callback = $request->query->get('callback');
-        $limit = intval($request->query->get('limit'));
-        $query = trim($request->query->get('query'));
+        $page = intval($request->query->get('page', 1)) - 1;
+        $limit = intval($request->query->get('limit', 10));
 
+        $query = $this
+            ->createSearchQuery($request)
+            ->setFrom($limit * $page)
+            ->setSize($limit);
+
+        $results = $this
+            ->get('fos_elastica.client')
+            ->getIndex($this->config->getAlias())
+            ->getType('doc')
+            ->search($query);
+
+        $data = [
+            'results'     => array_map(function (Result $result) {
+                return $result->getSource();
+            }, $results->getResults()),
+            'total_count' => $results->getTotalHits(),
+        ];
+
+        return new JsonResponse($data);
+    }
+
+    /**
+     * Returns the search query.
+     *
+     * @param Request $request
+     *
+     * @return \Elastica\Query
+     */
+    protected function createSearchQuery(Request $request): \Elastica\Query
+    {
         $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
         if (!$repository instanceOf SearchRepositoryInterface) {
             throw new \RuntimeException('Repository must implements "SearchRepositoryInterface".');
         }
 
-        // TODO result pagination
-        $results = $repository->defaultSearch($query, $limit);
-        $data = $this->container->get('serializer')->serialize([
-            'results'     => $results,
-            'total_count' => count($results),
-        ], 'json');
-
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'text/javascript');
-
-        return $response;
+        return $repository->createMatchQuery(trim($request->query->get('query')));
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function findAction(Request $request)
     {
@@ -588,7 +608,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function hasParent()
     {
@@ -596,7 +616,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getConfiguration()
     {
@@ -604,7 +624,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getParentController()
     {
@@ -620,7 +640,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function getParentConfiguration()
     {
@@ -636,7 +656,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function loadContext(Request $request, Context $context = null)
     {

@@ -1,18 +1,33 @@
 fos_elastica:
     indexes:
-        search:
+        ekyna_admin_user:
+            settings:
+                index:
+                    analysis:
+                        filter:
+                            email_capture: { type: pattern_capture, preserve_original: true, patterns: ["([^@]+)", "(\\p{L}+)", "(\\d+)", "@(.+)"] }
+                            email_edge: { type: edge_ngram, min_gram: 3, max_gram: 10 }
+                        tokenizer:
+                            edge: { type: edge_ngram, min_gram: 3, max_gram: 10, token_chars: [letter, digit] }
+                        analyzer:
+                            edge: { tokenizer: edge, filter: [icu_folding] }
+                            email: { tokenizer: uax_url_email, filter: [email_capture, lowercase, stop, email_edge] }
+                            search: { tokenizer: standard, filter: [icu_folding] }
             types:
-                ekyna_admin_user:
+                doc:
                     serializer:
                         groups: [Search]
-                    mappings:
-                        email: {type: string, search_analyzer: search, index_analyzer: index}
+                    properties:
+                        id: { type: integer }
+                        text: { type: text }
+                        email: { type: text, fields: { analyzed: { type: text, analyzer: email, search_analyzer: search } } }
+                        first_name: { type: text, fields: { analyzed: { type: text, analyzer: edge, search_analyzer: search } } }
+                        last_name: { type: text, fields: { analyzed: { type: text, analyzer: edge, search_analyzer: search } } }
                         group: {type: long}
                     persistence:
                         driver: orm
                         model: "%ekyna_admin.user.class%"
-                        provider:
-                            batch_size: 25
+                        provider: { batch_size: 25 }
                         listener: ~
                         finder: ~
                         repository: "%ekyna_admin.user.search_repository.class%"

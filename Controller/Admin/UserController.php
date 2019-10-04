@@ -9,7 +9,6 @@ use Ekyna\Bundle\AdminBundle\Service\Search\UserRepository;
 use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Component\Resource\Event\ResourceMessage;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class UserController
@@ -21,37 +20,22 @@ class UserController extends ResourceController
     use ToggleableTrait;
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
-    public function searchAction(Request $request)
+    protected function createSearchQuery(Request $request): \Elastica\Query
     {
-        //$callback = $request->query->get('callback');
-        $limit = intval($request->query->get('limit'));
-        $query = trim($request->query->get('query'));
-        $roles = $request->query->get('roles');
-
         $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
         if (!$repository instanceOf UserRepository) {
             throw new \RuntimeException('Expected instance of ' . UserRepository::class);
         }
 
-        if (!empty($roles)) {
-            $groups = $this->get('ekyna_admin.group.repository')->findByRoles((array)$roles);
+        $query = trim($request->query->get('query'));
 
-            $results = $repository->searchByGroups($query, $groups, $limit);
-        } else {
-            $results = $repository->defaultSearch($query, $limit);
-        }
+        $groups = $this
+            ->get('ekyna_admin.group.repository')
+            ->findByRoles((array)$request->query->get('roles'));
 
-        $data = $this->container->get('serializer')->serialize([
-            'results'     => $results,
-            'total_count' => count($results),
-        ], 'json', ['groups' => ['Search']]);
-
-        $response = new Response($data);
-        $response->headers->set('Content-Type', 'text/javascript');
-
-        return $response;
+        return $repository->createSearchQuery($query, $groups);
     }
 
     /**
