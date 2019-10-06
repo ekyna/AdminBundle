@@ -1,25 +1,10 @@
 fos_elastica:
     indexes:
         ekyna_admin_user:
-            settings:
-                index:
-                    analysis:
-                        filter:
-                            email_capture: { type: pattern_capture, preserve_original: true, patterns: ["([^@]+)", "(\\p{L}+)", "(\\d+)", "@(.+)"] }
-                            email_edge: { type: edge_ngram, min_gram: 3, max_gram: 10 }
-                        tokenizer:
-                            edge: { type: edge_ngram, min_gram: 3, max_gram: 10, token_chars: [letter, digit] }
-                        analyzer:
-                            edge: { tokenizer: edge, filter: [icu_folding] }
-                            email: { tokenizer: uax_url_email, filter: [email_capture, lowercase, stop, email_edge] }
-                            search: { tokenizer: standard, filter: [icu_folding] }
             types:
                 doc:
-                    serializer:
-                        groups: [Search]
+                    serializer: { groups: [Search] }
                     properties:
-                        id: { type: integer }
-                        text: { type: text }
                         email: { type: text, fields: { analyzed: { type: text, analyzer: email, search_analyzer: search } } }
                         first_name: { type: text, fields: { analyzed: { type: text, analyzer: edge, search_analyzer: search } } }
                         last_name: { type: text, fields: { analyzed: { type: text, analyzer: edge, search_analyzer: search } } }
