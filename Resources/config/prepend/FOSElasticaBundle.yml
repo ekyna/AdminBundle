@@ -1,6 +1,7 @@
 fos_elastica:
     indexes:
         ekyna_admin_user:
+            index_name: "%elasticsearch.name%_admin_user"
             types:
                 doc:
                     serializer: { groups: [Search] }
