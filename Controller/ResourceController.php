@@ -545,11 +545,10 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             ->setFrom($limit * $page)
             ->setSize($limit);
 
-        $results = $this
-            ->get('fos_elastica.client')
-            ->getIndex($this->config->getAlias())
-            ->getType('doc')
-            ->search($query);
+        /** @var \Elastica\SearchableInterface $type */
+        $type = $this->get(sprintf('fos_elastica.index.%s.doc', $this->config->getAlias()));
+
+        $results = $type->search($query);
 
         $data = [
             'results'     => array_map(function (Result $result) {
