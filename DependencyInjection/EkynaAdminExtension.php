@@ -2,6 +2,8 @@
 
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
+use Ekyna\Bundle\AdminBundle\Dashboard\Dashboard;
+use Ekyna\Bundle\AdminBundle\Twig\AdminExtension;
 use Ekyna\Bundle\ResourceBundle\DependencyInjection\AbstractExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -21,18 +23,24 @@ class EkynaAdminExtension extends AbstractExtension
 
         $this->configureMenus($config['menus'], $container);
 
-        $navbarConfig = $config['navbar'];
-        usort($navbarConfig['buttons'], function($a, $b) {
+        $buttons = $config['navbar']['buttons'];
+        usort($buttons, function($a, $b) {
             if ($a['position'] == $b['position']) return 0;
             return $a['position'] > $b['position'] ? 1 : -1;
         });
+        $config['navbar']['buttons'] = $buttons;
 
-        $container->setParameter('ekyna_admin.config.dashboard', $config['dashboard']);
-        $container->setParameter('ekyna_admin.config.front', [
-            'logo_path'   => $config['logo_path'],
-            'stylesheets' => $config['stylesheets'],
-            'navbar'      => $config['navbar'],
-        ]);
+        $container
+            ->getDefinition(AdminExtension::class)
+            ->replaceArgument(4, [
+                'logo_path'   => $config['logo_path'],
+                'stylesheets' => $config['stylesheets'],
+                'navbar'      => $config['navbar'],
+            ]);
+
+        $container
+            ->getDefinition(Dashboard::class)
+            ->replaceArgument(0, $config['dashboard']);
 
         $templates = $config['show']['templates'];
         array_unshift($templates, $config['show']['default_template']);

@@ -56,7 +56,7 @@ class AdminExtension extends \Twig_Extension
         PinHelper $pinHelper,
         AuthorizationCheckerInterface $authorizationChecker,
         UiRenderer $uiRenderer,
-        $config
+        array $config
     ) {
         $this->resourceHelper = $resourceHelper;
         $this->pinHelper = $pinHelper;

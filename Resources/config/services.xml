@@ -14,6 +14,10 @@
     <services>
 
         <!-- Controllers -->
+        <service id="Ekyna\Bundle\AdminBundle\Controller\DashboardController">
+            <argument type="service" id="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard"/>
+            <argument type="service" id="Symfony\Component\Templating\EngineInterface"/>
+        </service>
         <service id="Ekyna\Bundle\AdminBundle\Controller\ToolbarController">
             <argument type="service" id="Symfony\Component\EventDispatcher\EventDispatcherInterface"/>
         </service>
@@ -233,22 +237,19 @@
         </service>
 
         <!-- Twig Extensions -->
-        <service id="ekyna_admin.twig.admin_extension"
-                 class="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
+        <service id="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
             <argument type="service" id="ekyna_admin.helper.resource_helper"/>
             <argument type="service" id="ekyna_admin.helper.pin_helper"/>
             <argument type="service" id="security.authorization_checker"/>
             <argument type="service" id="ekyna_core.ui.renderer"/>
-            <argument>%ekyna_admin.config.front%</argument>
+            <argument type="collection"/><!-- Replaced by DI extension -->
             <tag name="twig.extension"/>
         </service>
-        <service id="ekyna_admin.twig.show_extension"
-                 class="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
+        <service id="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
             <argument type="service" id="ekyna_admin.show.renderer"/>
             <tag name="twig.extension"/>
         </service>
-        <service id="ekyna_dashboard_extension"
-                 class="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
+        <service id="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
             <tag name="twig.extension"/>
         </service>
 
@@ -274,10 +275,9 @@
             <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts"/>
         </service>
 
-        <service id="ekyna_admin.dashboard"
-                 class="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard">
+        <service id="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard">
             <factory service="ekyna_admin.dashboard.factory" method="create"/>
-            <argument>%ekyna_admin.config.dashboard%</argument>
+            <argument type="collection"/><!-- Replaced by DI extension -->
         </service>
 
         <!-- Commands -->

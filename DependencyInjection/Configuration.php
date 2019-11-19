@@ -64,6 +64,7 @@ class Configuration implements ConfigurationInterface
                         ->arrayNode('buttons')
                             ->useAttributeAsKey('name')
                             ->prototype('array')
+                                ->addDefaultsIfNotSet()
                                 ->children()
                                     ->scalarNode('route')->isRequired()->cannotBeEmpty()->end()
                                     ->scalarNode('icon')->isRequired()->cannotBeEmpty()->end()

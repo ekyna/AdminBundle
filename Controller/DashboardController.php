@@ -2,15 +2,40 @@
 
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
-use Ekyna\Bundle\CoreBundle\Controller\Controller;
+use Ekyna\Bundle\AdminBundle\Dashboard\Dashboard;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Templating\EngineInterface;
 
 /**
  * Class DashboardController
  * @package Ekyna\Bundle\AdminBundle\Controller
- * @author Étienne Dauvergne <contact@ekyna.com>
+ * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class DashboardController extends Controller
+class DashboardController
 {
+    /**
+     * @var Dashboard
+     */
+    private $dashboard;
+
+    /**
+     * @var EngineInterface
+     */
+    private $templating;
+
+
+    /**
+     * Constructor.
+     *
+     * @param Dashboard       $dashboard
+     * @param EngineInterface $templating
+     */
+    public function __construct(Dashboard $dashboard, EngineInterface $templating)
+    {
+        $this->dashboard = $dashboard;
+        $this->templating = $templating;
+    }
+
     /**
      * Dashboard index action.
      *
@@ -18,8 +43,8 @@ class DashboardController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('@EkynaAdmin/Dashboard/index.html.twig', array(
-            'dashboard' => $this->get('ekyna_admin.dashboard'),
-        ));
+        return new Response($this->templating->render('@EkynaAdmin/Dashboard/index.html.twig', [
+            'dashboard' => $this->dashboard,
+        ]));
     }
 }
