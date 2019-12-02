@@ -21,7 +21,9 @@ class TinyMceType extends AbstractType
         parent::build($view, $value, $options);
 
         $view->vars = array_replace($view->vars, [
-            'height' => $options['height'],
+            'height'       => $options['height'],
+            'route'        => $options['route'],
+            'route_params' => $options['route_params'],
         ]);
     }
 
@@ -32,9 +34,13 @@ class TinyMceType extends AbstractType
     {
         $resolver
             ->setDefaults([
-                'height' => 250,
+                'height'       => 250,
+                'route'        => null,
+                'route_params' => [],
             ])
-            ->setAllowedTypes('height', 'int');
+            ->setAllowedTypes('height', 'int')
+            ->setAllowedTypes('route', ['null', 'string'])
+            ->setAllowedTypes('route_params', 'array');
     }
 
     /**

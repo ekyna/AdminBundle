@@ -38,14 +38,20 @@ class TranslationsType extends AbstractType
     {
         if ($value instanceof Collection) {
             $value = $value->toArray();
+        } elseif (!is_array($value)) {
+            $value = [];
         }
 
-        parent::build($view, $value, $options);
+        $translations = [];
+        foreach ($this->locales as $locale) {
+            $translations[$locale] = $value[$locale] ?? null;
+        }
+
+        parent::build($view, $translations, $options);
 
         $prefix = $options['prefix'] ?? $options['id'] ?: 'translations';
 
         $view->vars = array_replace($view->vars, [
-            'value'   => $value,
             'locales' => $this->locales,
             'prefix'  => $prefix,
             'name'    => $prefix . '_' . preg_replace('~[^A-Za-z0-9]+~', '', base64_encode(random_bytes(3))),

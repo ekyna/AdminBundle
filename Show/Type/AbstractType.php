@@ -44,6 +44,7 @@ abstract class AbstractType implements TypeInterface
             'widget_col'    => $options['widget_col'],
             'label'         => $options['label'],
             'trans_domain'  => $options['trans_domain'],
+            'locale'        => $options['locale'],
             'attr'          => $attr,
             'value'         => $value,
             'row_prefix'    => $options['row_prefix'] ?: $this->getRowPrefix(),
@@ -95,6 +96,7 @@ abstract class AbstractType implements TypeInterface
                 'class'         => null,
                 'label'         => null,
                 'trans_domain'  => null,
+                'locale'        => null,
                 'label_col'     => 2,
                 'widget_col'    => 10,
                 'row_prefix'    => null,
@@ -104,6 +106,7 @@ abstract class AbstractType implements TypeInterface
             ->setAllowedTypes('id', ['null', 'string'])
             ->setAllowedTypes('label', ['null', 'string'])
             ->setAllowedTypes('trans_domain', ['null', 'bool', 'string'])
+            ->setAllowedTypes('locale', ['null', 'string'])
             ->setAllowedTypes('class', ['null', 'string'])
             ->setAllowedTypes('label_col', 'int')
             ->setAllowedTypes('widget_col', 'int')

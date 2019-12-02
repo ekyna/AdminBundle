@@ -226,6 +226,9 @@
 {% spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
+        {% if route is not empty %}
+            {% set value = path(route, route_params|merge({'_locale': locale})) %}
+        {% endif %}
         <iframe src="{{ value }}" style="height:{{ height }}px"></iframe>
     </div>
 {% endspaceless %}
@@ -285,19 +288,16 @@
 {% spaceless %}
     <div class="translations-forms show-row">
         <ul class="translations-locales nav nav-tabs">
-            {% for locale, translation in value -%}
-                <li{% if loop.first %} class="active"{% endif %}>
-                    <a href="#{{ name }}-{{ locale }}" data-toggle="tab">
-                        {{- locale|language|capitalize -}}
-                    </a>
-                </li>
-            {%- else -%}
-                <li class="active">
-                    <a href="#{{ name }}-{{ locales|first }}" data-toggle="tab">
-                        {{- locales|first|language|capitalize -}}
-                    </a>
-                </li>
-            {%- endfor %}
+            {%- for locale, translation in value -%}
+            <li{% if loop.first %} class="active"{% endif %}>
+                <a href="#{{ name }}-{{ locale }}" data-toggle="tab">
+                    {{- locale|language|capitalize -}}
+                    {%- if translation is null -%}
+                        &nbsp;<i class="fa fa-warning text-danger"></i>
+                    {%- endif -%}
+                </a>
+            </li>
+            {%- endfor -%}
         </ul>
         <div class="translations-fields tab-content">
             {{ block('translations_content') }}
@@ -310,21 +310,16 @@
 {% spaceless %}
     <ul class="nav nav-tabs">
         {% for locale, translation in value -%}
-            <li{% if loop.first %} class="active"{% endif %}>
-                <a href="#{{ name }}-{{ locale }}"
-                   id="toggle-{{ name }}-{{ locale }}"
-                   data-toggle="tab">
-                    {{- locale|language|capitalize -}}
-                </a>
-            </li>
-        {%- else -%}
-            <li class="active">
-                <a href="#{{ name }}-{{ locales|first }}"
-                   id="toggle-{{ name }}-{{ locales|first }}"
-                   data-toggle="tab">
-                    {{- locales|first|language|capitalize -}}
-                </a>
-            </li>
+        <li{% if loop.first %} class="active"{% endif %}>
+            <a href="#{{ name }}-{{ locale }}"
+               id="toggle-{{ name }}-{{ locale }}"
+               data-toggle="tab">
+                {{- locale|language|capitalize -}}
+                {%- if translation is null -%}
+                    &nbsp;<i class="fa fa-warning text-danger"></i>
+                {%- endif -%}
+            </a>
+        </li>
         {%- endfor %}
     </ul>
     <div class="panel-body"
@@ -339,26 +334,22 @@
 {% block translations_content %}
 {% spaceless %}
     {% for locale, translation in value -%}
-        <div class="tab-pane{% if loop.first %} active{% endif %}"
-             id="{{ name }}-{{ locale }}">
-            {% for field in fields -%}
-                {% set content = field.value is not null ? field.value : attribute(translation, field.property_path) %}
-                {{ show_row(content, field.type, field.options|merge({
-                    'label': field.label,
-                    'id': name ~ '_' ~ locale ~ '_' ~ field.property_path
-                })) }}
-            {%- endfor %}
-        </div>
-    {%- else -%}
-        <div class="tab-pane active"
-             id="{{ name }}-translation-{{ locales|first }}">
-            {% for field in fields -%}
-                {{ show_row(null, field.type, field.options|merge({
-                    'label': field.label,
-                    'id': name ~ '_' ~ (locales|first) ~ '_' ~ field.property_path
-                })) }}
-            {%- endfor %}
-        </div>
+    <div class="tab-pane{% if loop.first %} active{% endif %}"
+         id="{{ name }}-{{ locale }}">
+        {% for field in fields -%}
+            {% if field.value is not null -%}
+                {% set content = field.value -%}
+            {% elseif translation is not null -%}
+                {% set content = attribute(translation, field.property_path) -%}
+            {% else -%}
+                {% set content = null -%}
+            {% endif -%}
+            {{ show_row(content, field.type, field.options|merge({
+                'label': field.label,
+                'id': name ~ '_' ~ locale ~ '_' ~ field.property_path
+            })) }}
+        {%- endfor %}
+    </div>
     {%- endfor %}
 {% endspaceless %}
 {% endblock translations_content %}
