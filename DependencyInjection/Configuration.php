@@ -21,7 +21,6 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('ekyna_admin');
 
-        /** @noinspection PhpUndefinedMethodInspection */
         $rootNode
             ->children()
                 ->scalarNode('logo_path')->defaultValue('bundles/ekynaadmin/img/logo.png')->end()
@@ -152,7 +151,6 @@ class Configuration implements ConfigurationInterface
      */
     private function addShowSection(ArrayNodeDefinition $node)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $node
             ->children()
                 ->arrayNode('show')
@@ -176,7 +174,6 @@ class Configuration implements ConfigurationInterface
      */
     private function addPoolsSection(ArrayNodeDefinition $node)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $node
             ->children()
                 ->arrayNode('pools')

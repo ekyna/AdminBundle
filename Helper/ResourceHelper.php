@@ -123,9 +123,9 @@ class ResourceHelper
      * @param array  $parameters
      * @param bool   $absolute
      *
-     * @throws \RuntimeException
-     *
      * @return string
+     *@throws \RuntimeException
+     *
      */
     public function generateResourcePath($resource, $action = 'show', array $parameters = [], $absolute = false)
     {
@@ -182,17 +182,49 @@ class ResourceHelper
      *
      * @return string|null
      */
-    public function generatePublicUrl(ResourceInterface $resource, $absolute = false, $locale = null)
+    public function generatePublicUrl(ResourceInterface $resource, bool $absolute = false, string $locale = null): ?string
     {
+        return $this->generateUrl($resource, 'public_url', $absolute, $locale);
+    }
+
+    /**
+     * Returns the image url for the given resource.
+     *
+     * @param ResourceInterface $resource
+     * @param bool              $absolute
+     *
+     * @return string|null
+     */
+    public function generateImageUrl(ResourceInterface $resource, bool $absolute = false): ?string
+    {
+        return $this->generateUrl($resource, 'image_url', $absolute);
+    }
+
+    /**
+     * Returns the public url for the given resource.
+     *
+     * @param ResourceInterface $resource
+     * @param string            $name
+     * @param bool              $absolute
+     * @param string            $locale
+     *
+     * @return string|null
+     */
+    private function generateUrl(
+        ResourceInterface $resource,
+        string $name,
+        bool $absolute = false,
+        string $locale = null
+    ): ?string {
         if (null === $event = $this->dispatcher->createResourceEvent($resource, false)) {
             return null;
         }
 
         $event->addData('_locale', $locale);
+        $eventName = $this->dispatcher->getResourceEventName($resource, $name);
 
-        $name = $this->dispatcher->getResourceEventName($resource, 'public_url');
-
-        $this->dispatcher->dispatch($name, $event);
+        /** @noinspection PhpParamsInspection */
+        $this->dispatcher->dispatch($eventName, $event);
 
         if (!$event->hasData('route')) {
             return null;
