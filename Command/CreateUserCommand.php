@@ -149,6 +149,11 @@ class CreateUserCommand extends Command
             }
         }
 
+        if (!($group && $email)) {
+            $output->writeln('<info>Abort.</info>');
+
+            return;
+        }
 
         // Create user ---------------------------------------------------------------
         /** @var \Ekyna\Bundle\AdminBundle\Model\UserInterface $user */
