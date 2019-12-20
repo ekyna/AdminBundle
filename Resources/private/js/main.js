@@ -211,7 +211,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
         require(['ekyna-media/thumb'], function (Thumb) {
             Thumb.init()
         });
-    }catch (e) {
+    } catch (e) {
         console.log('Media thumb is not available.');
     }
 

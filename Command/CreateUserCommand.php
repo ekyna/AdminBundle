@@ -93,7 +93,7 @@ class CreateUserCommand extends Command
                 return;
             }
 
-            $question = new ChoiceQuestion('Please select the user group', array_keys($groups));
+            $question = new ChoiceQuestion('Please select the user group', array_keys($groups), 0);
             $question->setErrorMessage('Group %s is invalid.');
             $groupName = $helper->ask($input, $output, $question);
             $group = $groups[$groupName];
