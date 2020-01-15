@@ -988,6 +988,14 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
             }
 
+            $buttons['save'] = [
+                'type'    => Type\SubmitType::class,
+                'options' => [
+                    'button_class' => 'primary',
+                    'label'        => 'ekyna_core.button.save',
+                    'attr'         => ['icon' => 'ok'],
+                ],
+            ];
             if (!$this->hasParent()) {
                 $buttons['saveAndList'] = [
                     'type'    => Type\SubmitType::class,
@@ -998,14 +1006,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                     ],
                 ];
             }
-            $buttons['save'] = [
-                'type'    => Type\SubmitType::class,
-                'options' => [
-                    'button_class' => 'primary',
-                    'label'        => 'ekyna_core.button.save',
-                    'attr'         => ['icon' => 'ok'],
-                ],
-            ];
             $buttons['cancel'] = [
                 'type'    => Type\ButtonType::class,
                 'options' => [

@@ -189,7 +189,7 @@ class User implements UserInterface
      */
     public function getFullName()
     {
-        if (!empty($this->firstName) && !empty($this->lastName)) {
+        if ($this->hasFullName()) {
             return $this->firstName . ' ' . $this->lastName;
         }
 
