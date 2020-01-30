@@ -1,4 +1,4 @@
-require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, router) {
+require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form'], function(require, $, Router) {
 
     // XHR forbidden access handler
     $(document).ajaxError(function (event, jqXHR) {
@@ -53,7 +53,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
 
 
     /*var $ = require('jquery'),
-        router = require('routing');
+        Router = require('routing');
     require('bootstrap');*/
 
     // navbar notification popups
@@ -297,7 +297,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
             $bcBtn.find('> i').removeClass('fa-barcode').addClass('fa-spinner fa-pulse fa-3x fa-fw');
 
             var xhr = $.ajax({
-                url: router.generate('ekyna_admin_barcode', {
+                url: Router.generate('ekyna_admin_toolbar_barcode', {
                     barcode: barcode
                 }),
                 method: 'GET'
@@ -346,6 +346,127 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
     });
 
     /* -----------------------------------------------------------------------------------------------------------------
+     * Wide search
+     */
+    (function() {
+        var self = this,
+            busy = false,
+            $searchForm = $('#wide-search > form'),
+            $searchInput = $searchForm.find('input[type=text]'),
+            $searchFilters = $searchForm.find('input[type=checkbox]'),
+            $searchIcon = $searchForm.find('.input-group-addon > i'),
+            $searchResults = $('#wide-search > div.list-group'),
+            searchXhr, searchTimeout;
+
+        this.start = function() {
+            busy = true;
+
+            $searchIcon.removeClass('fa-search').addClass('fa-spinner fa-spin');
+
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            if (searchXhr) {
+                searchXhr.abort();
+            }
+
+            searchTimeout = setTimeout(self.search, 300);
+        };
+
+        this.stop = function() {
+            busy = false;
+            $searchIcon.removeClass('fa-spinner fa-spin').addClass('fa-search');
+        };
+
+        this.search = function() {
+            $searchResults.empty();
+
+            if ('' === $searchInput.val()) {
+                self.stop();
+                return;
+            }
+
+            searchXhr = $.ajax({
+                url: Router.generate('ekyna_admin_toolbar_search'),
+                method: 'POST',
+                data: $searchForm.formSerialize(),
+                dataType: 'json'
+            });
+
+            searchXhr.done(function (data) {
+                self.stop();
+
+                if (!data.hasOwnProperty('results')) {
+                    return;
+                }
+
+                if (0 === data.results.length) {
+                    return;
+                }
+
+                data.results.forEach(function(result) {
+                    var $a = $('<a class="list-group-item"></a>');
+
+                    if (result.icon) {
+                        $('<i></i>').addClass(result.icon).appendTo($a);
+                    }
+
+                    $a.append(document.createTextNode(result.title));
+                    $a.attr('href', result.url);
+                    $a.appendTo($searchResults);
+                });
+
+                $searchResults.show();
+            });
+
+            searchXhr.always(function () {
+                //$bcBtn.find('> i').removeClass('fa-spinner fa-pulse fa-3x fa-fw').addClass('fa-barcode');
+            });
+        };
+
+        this.init = function() {
+            // Prevent filters dropdown to hide on choice selection
+            $searchForm.find('.dropdown-menu input, .dropdown-menu label').on('click', function(e) {
+                e.stopPropagation();
+            });
+
+            $searchFilters.on('change', self.start);
+            $searchInput.on('keyup', self.start);
+
+            $searchInput.on('focus', function() {
+                if ($searchResults.is(':empty')) {
+                    if ('' !== $searchInput.val()) {
+                        self.start();
+                    }
+
+                    return;
+                }
+
+                $searchResults.show();
+            });
+
+            $(document).on('click', function(e) {
+                if (busy) {
+                    return;
+                }
+
+                if (1 === $(e.target).closest('#wide-search').length) {
+                    return;
+                }
+
+                $searchResults.hide();
+            });
+
+            /*$searchInput.on('blur', function () {
+                $searchResults.hide();
+            });*/
+        };
+
+        this.init();
+    })();
+
+    /* -----------------------------------------------------------------------------------------------------------------
      * User Pins
      */
     var $pinList = $('.navbar li.user-pins > div');
@@ -357,7 +478,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
             // Add new entry in user pins list
             var $span = $('<span data-id="' + data.added.id + '"></span>'),
                 $link = $('<a href="' + data.added.path + '">' + data.added.label + '</a>'),
-                path = router.generate('ekyna_admin_pin_remove', {id: data.added.id}),
+                path = Router.generate('ekyna_admin_pin_remove', {id: data.added.id}),
                 $remove = ('<a href="' + path + '"><i class="fa fa-remove"></i></a>');
 
             $span
@@ -374,7 +495,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
             if (1 === $userPinLink.size()) {
                 $userPinLink
                     .addClass('unpin')
-                    .attr('href', router.generate('ekyna_admin_pin_resource_unpin', {
+                    .attr('href', Router.generate('ekyna_admin_pin_resource_unpin', {
                         name: data.added.resource,
                         identifier: data.added.identifier
                     }));
@@ -394,7 +515,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
             if (1 === $userPinLink.size()) {
                 $userPinLink
                     .removeClass('unpin')
-                    .attr('href', router.generate('ekyna_admin_pin_resource_pin', {
+                    .attr('href', Router.generate('ekyna_admin_pin_resource_pin', {
                         name: data.removed.resource,
                         identifier: data.removed.identifier
                     }));
@@ -435,7 +556,7 @@ require(['require', 'jquery', 'routing', 'bootstrap'], function(require, $, rout
             if (reference) {
                 $helperContent.append($helperLoading);
                 $.ajax({
-                    url: router.generate('ekyna_setting_api_helper_fetch'),
+                    url: Router.generate('ekyna_setting_api_helper_fetch'),
                     data: {reference: reference},
                     type: 'GET',
                     dataType: 'xml'

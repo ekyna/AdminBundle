@@ -7,7 +7,6 @@
 
 
     <parameters>
-        <parameter key="ekyna_admin.user.search_repository.class">Ekyna\Bundle\AdminBundle\Service\Search\UserRepository</parameter>
         <parameter key="ekyna_admin.security.remember_me">_admin_remember_me</parameter>
     </parameters>
 
@@ -19,6 +18,9 @@
             <argument type="service" id="Symfony\Component\Templating\EngineInterface"/>
         </service>
         <service id="Ekyna\Bundle\AdminBundle\Controller\ToolbarController">
+            <argument type="service" id="Ekyna\Component\Resource\Search\Search"/>
+            <argument type="service" id="Ekyna\Bundle\AdminBundle\Service\Search\SearchHelper"/>
+            <argument type="service" id="Symfony\Component\Routing\Generator\UrlGeneratorInterface"/>
             <argument type="service" id="Symfony\Component\EventDispatcher\EventDispatcherInterface"/>
         </service>
 
@@ -43,6 +45,17 @@
             <argument type="service" id="ekyna_admin.admin_mailer"/>
             <argument type="collection"/><!-- Replaced by DI extension -->
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Search repository -->
+        <service id="ekyna_admin.user.search"
+                 class="Ekyna\Bundle\AdminBundle\Service\Search\UserRepository">
+            <argument type="service" id="fos_elastica.index.ekyna_admin_user.doc"/>
+            <argument type="service" id="fos_elastica.elastica_to_model_transformer.ekyna_admin_user.doc"/>
+            <call method="setGroupRepository">
+                <argument type="service" id="ekyna_admin.group.repository"/>
+            </call>
+            <!--<tag name="ekyna_resource.search" resource="ekyna_admin.user"/>-->
         </service>
 
         <!-- User mailer registry -->
@@ -174,6 +187,14 @@
                  class="Ekyna\Bundle\AdminBundle\Table\Context\TableTypeExtension">
             <argument type="service" id="ekyna_admin.table.profile_storage"/>
             <tag name="table.type_extension" extended_type="Ekyna\Component\Table\Extension\Core\Type\TableType"/>
+        </service>
+
+        <!-- Resource search helper -->
+        <service id="Ekyna\Bundle\AdminBundle\Service\Search\SearchHelper">
+            <argument type="service" id="Symfony\Component\HttpFoundation\Session\SessionInterface"/>
+            <argument type="service" id="Symfony\Component\Templating\EngineInterface"/>
+            <argument>%ekyna_resource.search_resources%</argument>
+            <tag name="twig.runtime"/>
         </service>
 
         <!-- Resource Helper -->

@@ -5,9 +5,9 @@ namespace Ekyna\Bundle\AdminBundle\Controller\Admin;
 use Ekyna\Bundle\AdminBundle\Controller\Resource\ToggleableTrait;
 use Ekyna\Bundle\AdminBundle\Controller\ResourceController;
 use Ekyna\Bundle\AdminBundle\Event\UserEvents;
-use Ekyna\Bundle\AdminBundle\Service\Search\UserRepository;
 use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Component\Resource\Event\ResourceMessage;
+use Ekyna\Component\Resource\Search\Request as SearchRequest;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -19,23 +19,17 @@ class UserController extends ResourceController
 {
     use ToggleableTrait;
 
+
     /**
      * @inheritDoc
      */
-    protected function createSearchQuery(Request $request): \Elastica\Query
+    protected function createSearchRequest(Request $request): SearchRequest
     {
-        $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
-        if (!$repository instanceOf UserRepository) {
-            throw new \RuntimeException('Expected instance of ' . UserRepository::class);
-        }
+        $searchRequest = parent::createSearchRequest($request);
 
-        $query = trim($request->query->get('query'));
+        $searchRequest->setParameter('roles', (array)$request->query->get('roles'));
 
-        $groups = $this
-            ->get('ekyna_admin.group.repository')
-            ->findByRoles((array)$request->query->get('roles'));
-
-        return $repository->createSearchQuery($query, $groups);
+        return $searchRequest;
     }
 
     /**

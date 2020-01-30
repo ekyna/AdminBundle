@@ -2,11 +2,11 @@
 <ul class="nav navbar-nav pull-right hidden-xs">
     {% set config = admin_navbar_config() %}
 
-    {#
-    <li class="hidden-xs hidden-sm">
-        <input class="search" type="text" />
+    <li class="hidden-xs hidden-sm" id="wide-search">
+        {{ admin_search_bar() }}
     </li>
-    <li class="notification-dropdown hidden-xs hidden-sm">
+
+    {#<li class="notification-dropdown hidden-xs hidden-sm">
         <a href="#" class="trigger">
             <i class="fa fa-warning"></i>
             <span class="count">8</span>

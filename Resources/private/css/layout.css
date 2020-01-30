@@ -75,29 +75,6 @@ input.search {
     z-index: 999;
     font-size: 12px;
 }
-
-.navbar-inverse input.search {
-    height: 27px;
-    width: 220px;
-    padding: 3px 6px;
-    background: url("/bundles/ekynaadmin/img/lens.png") #0f1217 no-repeat 95%;
-    border: 1px solid #0f1217;
-    position: relative;
-    border-radius: 4px;
-    top: 9px;
-    color: #000;
-    font-size: 13px;
-    margin-right: 40px;
-    -webkit-transition: all .3s linear;
-    -moz-transition: all .3s linear;
-    transition: all .3s linear;
-}
-
-.navbar-inverse input.search:focus {
-    background-color: #fff;
-    border: 0;
-}
-
 .navbar-inverse .settings i {
     color: #9ba3ad;
     font-size: 21px;
@@ -358,6 +335,65 @@ input.search {
     background: #445566;
     color: #d6d6d6;
     text-decoration: none;
+}
+
+#wide-search {
+    position: relative;
+    height: 46px;
+    padding: 6px;
+    max-width: 320px;
+}
+
+#wide-search .input-group {
+    border-radius: 6px;
+    border: 1px solid #0f1217;
+}
+
+#wide-search input[type=text], #wide-search button, #wide-search .input-group-addon {
+    background-color: #0f1217;
+    border-color: #0f1217;
+    color: #9ba3ad;
+    height: 32px;
+    font-size: 13px;
+    transition: background-color .2s linear, color .2s linear;
+}
+
+#wide-search input[type=text]:focus, #wide-search .open button {
+    background-color: #fff;
+    color: inherit;
+}
+
+#wide-search ul.dropdown-menu {
+    padding: 5px 10px;
+}
+
+#wide-search ul.dropdown-menu label {
+    font-weight: normal;
+}
+
+#wide-search ul.dropdown-menu input {
+    font-weight: normal;
+}
+
+#wide-search > div.list-group {
+    position: absolute;
+    top: 44px;
+    right: 0;
+    min-width: 100%;
+    font-size: 14px;
+    box-shadow: 0 4px 12px 0 rgba(0,0,0,0.3);
+}
+
+#wide-search > div.list-group:empty {
+    display: none;
+}
+
+#wide-search > div.list-group > a {
+    white-space: nowrap;
+}
+
+#wide-search > div.list-group > a > i {
+    margin-right: 4px;
 }
 
 /* Sidebar */
@@ -839,7 +875,7 @@ div.mce-fullscreen {
 }
 
 @media (max-width: 822px) {
-    .navbar-inverse input.search {
+    #wide-search {
         display: none;
     }
 }

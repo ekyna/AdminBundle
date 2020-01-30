@@ -2,8 +2,11 @@
 
 namespace Ekyna\Bundle\AdminBundle\Service\Search;
 
-use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
+use Ekyna\Bundle\AdminBundle\Repository\GroupRepository;
+use Ekyna\Bundle\UserBundle\Model\UserInterface;
 use Ekyna\Component\Resource\Search\Elastica\ResourceRepository;
+use Ekyna\Component\Resource\Search\Request;
+use Ekyna\Component\Resource\Search\Result;
 use Elastica\Query;
 
 /**
@@ -14,23 +17,35 @@ use Elastica\Query;
 class UserRepository extends ResourceRepository
 {
     /**
-     * Creates the search query.
-     *
-     * @param string $expression
-     * @param GroupInterface[] $groups
-     *
-     * @return Query
+     * @var GroupRepository
      */
-    public function createSearchQuery(string $expression, array $groups = []): Query
-    {
-        $match = new Query\MultiMatch();
-        $match
-            ->setQuery($expression)
-            ->setType(Query\MultiMatch::TYPE_CROSS_FIELDS)
-            ->setFields($this->getDefaultMatchFields());
+    private $groupRepository;
 
-        if (empty($groups)) {
-            return Query::create($match);
+
+    /**
+     * Sets the group repository.
+     *
+     * @param GroupRepository $repository
+     */
+    public function setGroupRepository(GroupRepository $repository): void
+    {
+        $this->groupRepository = $repository;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createQuery(Request $request): Query\AbstractQuery
+    {
+        $query = parent::createQuery($request);
+
+        if (empty($roles = (array)$request->getParameter('roles', []))) {
+            return $query;
+        }
+
+        // TODO Use scalar result to ids directly
+        if (empty($groups = $this->groupRepository->findByRoles($roles))) {
+            return $query;
         }
 
         $groupsIds = [];
@@ -40,16 +55,33 @@ class UserRepository extends ResourceRepository
 
         $bool = new Query\BoolQuery();
         $bool
-            ->addMust($match)
+            ->addMust($query)
             ->addMust(new Query\Terms('group', $groupsIds));
 
-        return Query::create($bool);
+        return $query;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function createResult($source, Request $request): ?Result
+    {
+        if (null === $result = parent::createResult($source, $request)) {
+            return null;
+        }
+
+        $id = $source instanceof UserInterface ? $source->getId() : $source['id'];
+
+        return $result
+            ->setIcon('fa fa-user')
+            ->setRoute('ekyna_admin_user_admin_show')
+            ->setParameters(['userId' => $id]);
     }
 
     /**
      * @inheritdoc
      */
-    protected function getDefaultMatchFields(): array
+    protected function getDefaultFields(): array
     {
         return [
             'first_name',

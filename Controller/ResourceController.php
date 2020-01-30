@@ -8,8 +8,8 @@ use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
-use Ekyna\Component\Resource\Search\SearchRepositoryInterface;
-use Elastica\Result;
+use Ekyna\Component\Resource\Search\Request as SearchRequest;
+use Ekyna\Component\Resource\Search\ResourceRepositoryInterface;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
@@ -177,7 +177,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
 
                 $redirectPath = null;
-                /** @noinspection PhpUndefinedMethodInspection */
                 if ($form->get('actions')->has('saveAndList') && $form->get('actions')->get('saveAndList')->isClicked()) {
                     $redirectPath = $this->generateResourcePath($resource, 'list');
                 } elseif (null === $redirectPath = $form->get('_redirect')->getData()) {
@@ -294,7 +293,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 }
 
                 $redirectPath = null;
-                /** @noinspection PhpUndefinedMethodInspection */
                 if ($form->get('actions')->has('saveAndList') && $form->get('actions')->get('saveAndList')->isClicked()) {
                     $redirectPath = $this->generateResourcePath($resource, 'list');
                 } elseif (null === $redirectPath = $form->get('_redirect')->getData()) {
@@ -537,44 +535,51 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     public function searchAction(Request $request)
     {
-        $page = intval($request->query->get('page', 1)) - 1;
-        $limit = intval($request->query->get('limit', 10));
-
-        $query = $this
-            ->createSearchQuery($request)
-            ->setFrom($limit * $page)
-            ->setSize($limit);
-
-        /** @var \Elastica\SearchableInterface $type */
-        $type = $this->get(sprintf('fos_elastica.index.%s.doc', $this->config->getAlias()));
-
-        $results = $type->search($query);
-
         $data = [
-            'results'     => array_map(function (Result $result) {
-                return $result->getSource();
-            }, $results->getResults()),
-            'total_count' => $results->getTotalHits(),
+            'results' => [],
+            'total_count' => 0,
         ];
+
+        $id = sprintf('%s.search', $this->config->getResourceId());
+        if (!$this->has($id)) {
+            return new JsonResponse($data);
+        }
+
+        $repository = $this->get($id);
+        if (!$repository instanceof ResourceRepositoryInterface) {
+            throw new \RuntimeException("Expected instance of " . ResourceRepositoryInterface::class);
+        }
+
+        $searchRequest = $this->createSearchRequest($request);
+
+        if ($repository->supports($searchRequest)) {
+            $data = $repository->search($searchRequest);
+        }
 
         return new JsonResponse($data);
     }
 
     /**
-     * Returns the search query.
+     * Creates the search request.
      *
      * @param Request $request
      *
-     * @return \Elastica\Query
+     * @return SearchRequest
      */
-    protected function createSearchQuery(Request $request): \Elastica\Query
+    protected function createSearchRequest(Request $request): SearchRequest
     {
-        $repository = $this->get('fos_elastica.manager')->getRepository($this->config->getResourceClass());
-        if (!$repository instanceOf SearchRepositoryInterface) {
-            throw new \RuntimeException('Repository must implements "SearchRepositoryInterface".');
-        }
+        $page = intval($request->query->get('page', 1)) - 1;
+        $limit = intval($request->query->get('limit', 10));
 
-        return $repository->createMatchQuery(trim($request->query->get('query')));
+        $expression = (string)($request->request->get('expression') ?? $request->query->get('query'));
+
+        $searchRequest = new SearchRequest($expression);
+
+        return $searchRequest
+            ->setType(SearchRequest::RAW)
+            ->setPrivate(true)
+            ->setLimit($limit)
+            ->setOffset($page * $limit);
     }
 
     /**

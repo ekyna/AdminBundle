@@ -16,4 +16,3 @@ fos_elastica:
                         provider: { batch_size: 25 }
                         listener: ~
                         finder: ~
-                        repository: "%ekyna_admin.user.search_repository.class%"

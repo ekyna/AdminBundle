@@ -9,3 +9,7 @@ ekyna_admin_group_admin:
 ekyna_admin_pin:
     resource: admin/pin.yml
     prefix: /pins
+
+ekyna_admin_toolbar:
+    resource: admin/toolbar.yml
+    prefix: /toolbar

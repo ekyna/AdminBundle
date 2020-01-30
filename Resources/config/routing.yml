@@ -26,14 +26,6 @@ ekyna_admin_security_check:
 ekyna_admin_security_logout:
     path: /admin/logout
 
-ekyna_admin_barcode:
-    path:  /admin/barcode/{barcode}
-    methods: [GET]
-    defaults:
-        _controller: Ekyna\Bundle\AdminBundle\Controller\ToolbarController::barcode
-    options:
-        expose: true
-
 ekyna_admin_admin:
     resource: "routing/admin.yml"
     prefix: /admin

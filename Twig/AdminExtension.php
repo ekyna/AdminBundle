@@ -5,16 +5,19 @@ namespace Ekyna\Bundle\AdminBundle\Twig;
 use Ekyna\Bundle\AdminBundle\Entity\UserPin;
 use Ekyna\Bundle\AdminBundle\Helper\ResourceHelper;
 use Ekyna\Bundle\AdminBundle\Helper\PinHelper;
+use Ekyna\Bundle\AdminBundle\Service\Search\SearchHelper;
 use Ekyna\Bundle\CoreBundle\Service\Ui\UiRenderer;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Class AdminExtension
  * @package Ekyna\Bundle\AdminBundle\Twig
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class AdminExtension extends \Twig_Extension
+class AdminExtension extends AbstractExtension
 {
     /**
      * @var ResourceHelper
@@ -71,44 +74,49 @@ class AdminExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_logo_path',
                 [$this, 'getLogoPath']
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_navbar_config',
                 [$this, 'getNavbarConfig']
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_stylesheets',
                 [$this, 'renderStylesheets'],
                 ['is_safe' => ['html']]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_resource_btn',
                 [$this, 'renderResourceButton'],
                 ['is_safe' => ['html']]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_resource_access',
                 [$this, 'hasResourceAccess']
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_resource_path',
                 [$this, 'generateResourcePath']
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_user_pins',
                 [$this, 'getUserPins']
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_resource_pin',
                 [$this, 'renderResourcePin'],
                 ['is_safe' => ['html']]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'admin_front_helper',
                 [$this, 'renderFrontHelper'],
+                ['is_safe' => ['html']]
+            ),
+            new TwigFunction(
+                'admin_search_bar',
+                [SearchHelper::class, 'render'],
                 ['is_safe' => ['html']]
             ),
         ];
