@@ -241,7 +241,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             'action'            => $action,
             'method'            => 'POST',
             'attr'              => ['class' => 'form-horizontal form-with-tabs'],
-            'admin_mode'        => true,
             '_redirect_enabled' => true,
         ], $options));
 
@@ -357,7 +356,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
             'action'            => $action,
             'attr'              => ['class' => 'form-horizontal form-with-tabs'],
             'method'            => 'POST',
-            'admin_mode'        => true,
             '_redirect_enabled' => true,
         ], $options));
 
@@ -472,7 +470,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 'action'            => $action,
                 'attr'              => ['class' => 'form-horizontal'],
                 'method'            => 'POST',
-                'admin_mode'        => true,
                 '_redirect_enabled' => true,
             ], $options))
             ->add('confirm', Type\CheckboxType::class, [

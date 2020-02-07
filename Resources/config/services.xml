@@ -5,7 +5,6 @@
         xsi:schemaLocation="http://symfony.com/schema/dic/services
                         http://symfony.com/schema/dic/services/services-1.0.xsd">
 
-
     <parameters>
         <parameter key="ekyna_admin.security.remember_me">_admin_remember_me</parameter>
     </parameters>
@@ -126,8 +125,8 @@
         </service>
 
         <!-- Form Types Extensions -->
-        <service id="ekyna_admin.form.admin_extension"
-                 class="Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension">
+        <service id="Ekyna\Bundle\AdminBundle\Form\Extension\AdminTypeExtension" public="false">
+            <argument type="service" id="Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface"/>
             <tag name="form.type_extension" extended-type="Symfony\Component\Form\Extension\Core\Type\FormType"/>
         </service>
 
