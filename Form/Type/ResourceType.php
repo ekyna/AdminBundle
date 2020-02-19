@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -40,12 +41,12 @@ class ResourceType extends AbstractType
      */
     public function __construct(ConfigurationRegistry $registry, AuthorizationCheckerInterface $authorization)
     {
-        $this->registry = $registry;
+        $this->registry      = $registry;
         $this->authorization = $authorization;
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
@@ -56,18 +57,18 @@ class ResourceType extends AbstractType
         }
 
         if ($options['new_route']) {
-            $view->vars['new_route'] = $options['new_route'];
+            $view->vars['new_route']        = $options['new_route'];
             $view->vars['new_route_params'] = $options['new_route_params'];
         } elseif ($options['allow_new'] && $this->authorization->isGranted(Actions::CREATE, $options['class'])) {
-            $view->vars['new_route'] = $configuration->getRoute('new');
+            $view->vars['new_route']        = $configuration->getRoute('new');
             $view->vars['new_route_params'] = $options['new_route_params']; // TODO
         }
 
         if ($options['list_route']) {
-            $view->vars['list_route'] = $options['list_route'];
+            $view->vars['list_route']        = $options['list_route'];
             $view->vars['list_route_params'] = $options['list_route_params'];
         } elseif ($options['allow_list'] && $this->authorization->isGranted(Actions::VIEW, $options['class'])) {
-            $view->vars['list_route'] = $configuration->getRoute('list');
+            $view->vars['list_route']        = $configuration->getRoute('list');
             $view->vars['list_route_params'] = array_merge(
                 $options['list_route_params'],
                 ['selector' => 1, 'multiple' => $options['multiple']] // TODO
@@ -76,12 +77,42 @@ class ResourceType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritDoc
      */
     public function configureOptions(OptionsResolver $resolver)
     {
+        // TODO Assert that resource and class points to the same configuration.
+
         $resolver
             ->setDefaults([
+                'class'             => function (Options $options, $value) {
+                    if (empty($value)) {
+                        if (!isset($options['resource'])) {
+                            throw new InvalidOptionsException("You must define either 'resource' or 'class' option.");
+                        }
+
+                        return $this
+                            ->registry
+                            ->findConfiguration($options['resource'])
+                            ->getResourceClass();
+                    }
+
+                    return $value;
+                },
+                'resource'          => function (Options $options, $value) {
+                    if (empty($value)) {
+                        if (!isset($options['class'])) {
+                            throw new InvalidOptionsException("You must define either 'resource' or 'class' option.");
+                        }
+
+                        return $this
+                            ->registry
+                            ->findConfiguration($options['class'])
+                            ->getResourceId();
+                    }
+
+                    return $value;
+                },
                 'new_route'         => null,
                 'new_route_params'  => [],
                 'list_route'        => null,
@@ -89,12 +120,23 @@ class ResourceType extends AbstractType
                 'allow_new'         => false,
                 'allow_list'        => false,
             ])
+            ->setAllowedTypes('resource', ['null', 'string'])
             ->setAllowedTypes('new_route', ['null', 'string'])
             ->setAllowedTypes('new_route_params', 'array')
             ->setAllowedTypes('list_route', ['null', 'string'])
             ->setAllowedTypes('list_route_params', 'array')
             ->setAllowedTypes('allow_new', 'bool')
             ->setAllowedTypes('allow_list', 'bool')
+            ->setNormalizer('label', function (Options $options, $value) {
+                if (empty($value)) {
+                    $value = $this
+                        ->registry
+                        ->findConfiguration($options['class'])
+                        ->getResourceLabel($options['multiple']);
+                }
+
+                return $value;
+            })
             ->setNormalizer('placeholder', function (Options $options, $value) {
                 if (empty($value) && !$options['required'] && !$options['multiple']) {
                     $value = 'ekyna_core.value.none';
