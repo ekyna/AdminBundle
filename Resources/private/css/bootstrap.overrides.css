@@ -294,6 +294,12 @@ textarea::-webkit-input-placeholder {
     background: rgb(60, 91, 121) !important;
 }*/
 
+/* Make tabs smaller if 10 or more */
+.nav-tabs > li:first-child:nth-last-child(n + 10) > a,
+.nav-tabs > li:first-child:nth-last-child(n + 10) ~ li > a {
+    padding: 5px 10px;
+}
+
 /* PAGINATION */
 .pagination > li > a, .pagination > li > span {
     font-weight: 600;
