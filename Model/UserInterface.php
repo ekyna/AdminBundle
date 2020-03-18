@@ -17,7 +17,7 @@ interface UserInterface extends RC\ResourceInterface, RB\UserInterface, RC\Times
      *
      * @return GroupInterface
      */
-    public function getGroup();
+    public function getGroup(): ?GroupInterface;
 
     /**
      * Sets the group.
@@ -26,14 +26,14 @@ interface UserInterface extends RC\ResourceInterface, RB\UserInterface, RC\Times
      *
      * @return $this|UserInterface
      */
-    public function setGroup(GroupInterface $group);
+    public function setGroup(GroupInterface $group): UserInterface;
 
     /**
      * Returns the email.
      *
-     * @return string
+     * @return string|null
      */
-    public function getEmail();
+    public function getEmail(): ?string;
 
     /**
      * Sets the email.
@@ -42,7 +42,7 @@ interface UserInterface extends RC\ResourceInterface, RB\UserInterface, RC\Times
      *
      * @return $this|UserInterface
      */
-    public function setEmail($email);
+    public function setEmail(string $email): UserInterface;
 
     /**
      * Sets the password.
@@ -51,106 +51,122 @@ interface UserInterface extends RC\ResourceInterface, RB\UserInterface, RC\Times
      *
      * @return $this|UserInterface
      */
-    public function setPassword($password);
+    public function setPassword(string $password): UserInterface;
 
     /**
-     * Returns the firstName.
+     * Returns the api token.
      *
-     * @return string
+     * @return string|null
      */
-    public function getFirstName();
+    public function getApiToken(): ?string;
 
     /**
-     * Sets the firstName.
+     * Sets the api token.
      *
-     * @param string $firstName
+     * @param string|null $token
+     *
+     * @return UserInterface
+     */
+    public function setApiToken(string $token = null): UserInterface;
+
+    /**
+     * Returns the first name.
+     *
+     * @return string|null
+     */
+    public function getFirstName(): ?string;
+
+    /**
+     * Sets the first name.
+     *
+     * @param string|null $firstName
      *
      * @return $this|UserInterface
      */
-    public function setFirstName($firstName);
+    public function setFirstName(string $firstName = null): UserInterface;
 
     /**
      * Returns the lastName.
      *
-     * @return string
+     * @return string|null
      */
-    public function getLastName();
+    public function getLastName(): ?string;
 
     /**
      * Sets the lastName.
      *
-     * @param string $lastName
+     * @param string|null $lastName
      *
      * @return $this|UserInterface
      */
-    public function setLastName($lastName);
+    public function setLastName(string $lastName = null);
 
     /**
      * Returns whether the user has a full name.
      *
-     * @return string
+     * @return bool
      */
-    public function hasFullName();
+    public function hasFullName(): bool;
 
     /**
      * Returns the user full name.
      *
-     * @return string
+     * @return string|null
      */
-    public function getFullName();
+    public function getFullName(): ?string;
 
     /**
      * Returns whether the user has a short name.
      *
-     * @return string
+     * @return bool
      */
-    public function hasShortName();
+    public function hasShortName(): bool;
 
     /**
      * Returns the user short name.
      *
-     * @return string
+     * @return string|null
      */
-    public function getShortName();
+    public function getShortName(): ?string;
 
     /**
-     * Returns the imap.
+     * Returns the email (imap) configuration.
      *
-     * @return array
+     * @return array|null
      */
-    public function getEmailConfig();
+    public function getEmailConfig(): ?array;
 
     /**
-     * Sets the imap.
+     * Sets the email (imap) configuration.
      *
-     * @param array $imap
+     * @param array|null $imap
      *
      * @return $this|UserInterface
      */
-    public function setEmailConfig(array $imap = null);
+    public function setEmailConfig(array $imap = null): UserInterface;
 
     /**
      * Returns the email signature.
      *
-     * @return string
+     * @return string|null
      */
-    public function getEmailSignature();
+    public function getEmailSignature(): ?string;
 
     /**
      * Sets the email signature.
      *
-     * @param string $signature
+     * @param string|null $signature
      *
      * @return $this|UserInterface
      */
-    public function setEmailSignature($signature);
+    public function setEmailSignature(string $signature = null): UserInterface;
 
     /**
      * Returns whether the user is active.
      *
      * @return bool
      */
-    public function isActive();
+    public function isActive(): bool;
 
     /**
      * Sets whether the user is active.
@@ -159,21 +175,21 @@ interface UserInterface extends RC\ResourceInterface, RB\UserInterface, RC\Times
      *
      * @return $this|UserInterface
      */
-    public function setActive($active);
+    public function setActive(bool $active): UserInterface;
 
     /**
      * Returns the plain password.
      *
-     * @return string
+     * @return string|null
      */
-    public function getPlainPassword();
+    public function getPlainPassword(): ?string;
 
     /**
      * Sets the plain password.
      *
-     * @param string $plain
+     * @param string|null $plain
      *
      * @return $this|UserInterface
      */
-    public function setPlainPassword($plain);
+    public function setPlainPassword(string $plain = null): UserInterface;
 }

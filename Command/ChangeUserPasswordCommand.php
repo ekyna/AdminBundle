@@ -2,10 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Command;
 
-use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
 use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
-use Ekyna\Component\Resource\Operator\ResourceOperatorInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -16,41 +13,16 @@ use Symfony\Component\Console\Question\Question;
  * @package Ekyna\Bundle\AdminBundle\Command
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class ChangeUserPasswordCommand extends Command
+class ChangeUserPasswordCommand extends AbstractUserCommand
 {
-    /**
-     * @var UserRepositoryInterface
-     */
-    private $userRepository;
-
-    /**
-     * @var ResourceOperatorInterface
-     */
-    private $userOperator;
-
-
-    /**
-     * Constructor.
-     *
-     * @param UserRepositoryInterface   $userRepository
-     * @param ResourceOperatorInterface $userOperator
-     */
-    public function __construct(UserRepositoryInterface $userRepository, ResourceOperatorInterface $userOperator)
-    {
-        $this->userRepository = $userRepository;
-        $this->userOperator = $userOperator;
-
-        parent::__construct();
-    }
+    protected static $defaultName = 'ekyna:admin:change-user-password';
 
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
-        $this
-            ->setName('ekyna:admin:change-user-password')
-            ->setDescription("Changes a admin user's password.");
+        $this->setDescription("Changes a admin user's password.");
     }
 
     /**

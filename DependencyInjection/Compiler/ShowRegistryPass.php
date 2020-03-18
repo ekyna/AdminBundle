@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler;
 
+use Ekyna\Bundle\AdminBundle\Show\Extension\DependencyInjection\DependencyInjectionExtension;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\InvalidArgumentException;
@@ -19,7 +20,7 @@ class ShowRegistryPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('ekyna_admin.show.extension.dependency_injection')) {
+        if (!$container->hasDefinition(DependencyInjectionExtension::class)) {
             return;
         }
 
@@ -34,7 +35,7 @@ class ShowRegistryPass implements CompilerPassInterface
         }
 
         $container
-            ->getDefinition('ekyna_admin.show.extension.dependency_injection')
+            ->getDefinition(DependencyInjectionExtension::class)
             ->replaceArgument(1, $types);
     }
 }

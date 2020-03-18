@@ -57,6 +57,7 @@ ekyna_admin:
         field:
             email_config: Configuration email
             email_signature: Signature email
+            api_token: API Token
         alert:
             empty_list: Aucun utilisateur configuré
         message:

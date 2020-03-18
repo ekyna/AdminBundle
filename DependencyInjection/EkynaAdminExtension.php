@@ -3,6 +3,9 @@
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Dashboard;
+use Ekyna\Bundle\AdminBundle\EventListener\SecurityEventSubscriber;
+use Ekyna\Bundle\AdminBundle\Menu\MenuPool;
+use Ekyna\Bundle\AdminBundle\Show\Registry;
 use Ekyna\Bundle\AdminBundle\Twig\AdminExtension;
 use Ekyna\Bundle\ResourceBundle\DependencyInjection\AbstractExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -46,11 +49,11 @@ class EkynaAdminExtension extends AbstractExtension
         array_unshift($templates, $config['show']['default_template']);
 
         $container
-            ->getDefinition('ekyna_admin.show.registry')
+            ->getDefinition(Registry::class)
             ->addMethodCall('registerTemplates', [$templates]);
 
         $container
-            ->getDefinition('ekyna_admin.security.event_subscriber')
+            ->getDefinition(SecurityEventSubscriber::class)
             ->replaceArgument(3, $config['notification']);
     }
 
@@ -62,11 +65,11 @@ class EkynaAdminExtension extends AbstractExtension
      */
     private function configureMenus(array $menus, ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('ekyna_admin.menu.pool')) {
+        if (!$container->hasDefinition(MenuPool::class)) {
             return;
         }
 
-        $pool = $container->getDefinition('ekyna_admin.menu.pool');
+        $pool = $container->getDefinition(MenuPool::class);
 
         foreach ($menus as $groupName => $groupConfig) {
             $pool->addMethodCall('createGroup', [[

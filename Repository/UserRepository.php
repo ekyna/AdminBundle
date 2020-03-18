@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Repository;
 
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Component\Resource\Doctrine\ORM\ResourceRepository;
 
 /**
@@ -14,7 +15,7 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
     /**
      * @inheritDoc
      */
-    public function findOneByEmail(string $email, bool $active = true)
+    public function findOneByEmail(string $email, bool $active = true): ?UserInterface
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -37,7 +38,7 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
     /**
      * @inheritdoc
      */
-    public function findByRole(string $role, bool $active = true)
+    public function findByRole(string $role, bool $active = true): array
     {
         $this->validateRole($role);
 
@@ -63,7 +64,7 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
     /**
      * @inheritdoc
      */
-    public function findByRoles(array $roles, bool $active = true)
+    public function findByRoles(array $roles, bool $active = true): array
     {
         if (empty($roles)) {
             return [];
@@ -98,7 +99,7 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
     /**
      * @inheritdoc
      */
-    public function findAllActive()
+    public function findAllActive(): array
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -110,13 +111,36 @@ class UserRepository extends ResourceRepository implements UserRepositoryInterfa
     }
 
     /**
+     * @inheritDoc
+     */
+    public function findOneByApiToken(string $token, bool $active = true): ?UserInterface
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        $parameters = [
+            'token' => $token,
+        ];
+
+        if ($active) {
+            $qb->andWhere($qb->expr()->eq('u.active', ':active'));
+            $parameters['active'] = true;
+        }
+
+        return $qb
+            ->andWhere($qb->expr()->eq('u.apiToken', ':token'))
+            ->getQuery()
+            ->setParameters($parameters)
+            ->getOneOrNullResult();
+    }
+
+    /**
      * Validates the given role.
      *
      * @param string $role
      *
      * @throws \InvalidArgumentException
      */
-    private function validateRole($role)
+    private function validateRole($role): void
     {
         if (!preg_match('~^ROLE_([A-Z_]+)~', $role)) {
             throw new \InvalidArgumentException("Role must start with 'ROLE_'.");

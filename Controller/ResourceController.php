@@ -4,6 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Braincrafted\Bundle\BootstrapBundle\Form\Type\FormActionsType;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Ekyna\Bundle\AdminBundle\Menu\MenuBuilder;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Ekyna\Bundle\CoreBundle\Modal\Modal;
 use Ekyna\Component\Resource\Configuration\ConfigurationInterface;
@@ -605,7 +606,7 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     protected function appendBreadcrumb($name, $label, $route = null, array $parameters = [])
     {
-        $this->container->get('ekyna_admin.menu.builder')->breadcrumbAppend($name, $label, $route, $parameters);
+        $this->container->get(MenuBuilder::class)->breadcrumbAppend($name, $label, $route, $parameters);
     }
 
     /**

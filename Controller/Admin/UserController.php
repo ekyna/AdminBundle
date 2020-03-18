@@ -5,6 +5,7 @@ namespace Ekyna\Bundle\AdminBundle\Controller\Admin;
 use Ekyna\Bundle\AdminBundle\Controller\Resource\ToggleableTrait;
 use Ekyna\Bundle\AdminBundle\Controller\ResourceController;
 use Ekyna\Bundle\AdminBundle\Event\UserEvents;
+use Ekyna\Bundle\AdminBundle\Service\Mailer\AdminMailer;
 use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Component\Resource\Event\ResourceMessage;
 use Ekyna\Component\Resource\Search\Request as SearchRequest;
@@ -80,7 +81,7 @@ class UserController extends ResourceController
         $operator->update($event);
         if (!$event->isPropagationStopped()) {
             $sent = $this
-                ->get('ekyna_admin.admin_mailer')
+                ->get(AdminMailer::class)
                 ->sendNewPasswordEmailMessage($resource, $password);
 
             if (0 < $sent) {
@@ -95,5 +96,33 @@ class UserController extends ResourceController
         $event->toFlashes($this->getFlashBag());
 
         return $this->redirect($redirect);
+    }
+
+    /**
+     * Generate API token action.
+     *
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function generateApiToken(Request $request)
+    {
+        $context = $this->loadContext($request);
+        $resourceName = $this->config->getResourceName();
+        /** @var \Ekyna\Bundle\AdminBundle\Model\UserInterface $resource */
+        $resource = $context->getResource($resourceName);
+
+        $this->isGranted('EDIT', $resource);
+
+        SecurityUtil::generateApiToken($resource);
+
+        // TODO use ResourceManager
+        // Update event
+        $event = $this->getOperator()->update($resource);
+
+        // Flashes
+        $event->toFlashes($this->getFlashBag());
+
+        return $this->redirect($this->generateResourcePath($resource));
     }
 }

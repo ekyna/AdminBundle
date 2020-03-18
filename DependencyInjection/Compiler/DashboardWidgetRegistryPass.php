@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\DependencyInjection\Compiler;
 
+use Ekyna\Bundle\AdminBundle\Dashboard\Widget\Registry;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -18,7 +19,7 @@ class DashboardWidgetRegistryPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('ekyna_admin.dashboard.widget.registry')) {
+        if (!$container->hasDefinition(Registry::class)) {
             return;
         }
 
@@ -29,7 +30,7 @@ class DashboardWidgetRegistryPass implements CompilerPassInterface
         }
 
         $container
-            ->getDefinition('ekyna_admin.dashboard.widget.registry')
+            ->getDefinition(Registry::class)
             ->replaceArgument(0, $types)
         ;
     }

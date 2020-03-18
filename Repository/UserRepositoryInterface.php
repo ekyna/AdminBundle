@@ -2,6 +2,7 @@
 
 namespace Ekyna\Bundle\AdminBundle\Repository;
 
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Component\Resource\Doctrine\ORM\ResourceRepositoryInterface;
 
 /**
@@ -17,9 +18,9 @@ interface UserRepositoryInterface extends ResourceRepositoryInterface
      * @param string $email  The user's email address
      * @param bool   $active Whether to filter active users
      *
-     * @return \Ekyna\Bundle\AdminBundle\Model\UserInterface|null
+     * @return UserInterface|null
      */
-    public function findOneByEmail(string $email, bool $active = true);
+    public function findOneByEmail(string $email, bool $active = true): ?UserInterface;
 
     /**
      * Finds the users having the given role.
@@ -27,9 +28,9 @@ interface UserRepositoryInterface extends ResourceRepositoryInterface
      * @param string $role   The user's role
      * @param bool   $active Whether to filter active users
      *
-     * @return \Ekyna\Bundle\AdminBundle\Model\UserInterface[]
+     * @return UserInterface[]
      */
-    public function findByRole(string $role, bool $active = true);
+    public function findByRole(string $role, bool $active = true): array;
 
     /**
      * Finds the users having at least one of the given roles.
@@ -37,14 +38,24 @@ interface UserRepositoryInterface extends ResourceRepositoryInterface
      * @param array $roles  The user's roles
      * @param bool  $active Whether to filter active users
      *
-     * @return \Ekyna\Bundle\AdminBundle\Model\userInterface[]
+     * @return UserInterface[]
      */
-    public function findByRoles(array $roles, bool $active = true);
+    public function findByRoles(array $roles, bool $active = true): array;
+
+    /**
+     * Finds one user by api token.
+     *
+     * @param string $token The user's api token
+     * @param bool  $active Whether to filter active users
+     *
+     * @return UserInterface|null
+     */
+    public function findOneByApiToken(string $token, bool $active = true): ?UserInterface;
 
     /**
      * Returns all active users.
      *
-     * @return \Ekyna\Bundle\AdminBundle\Model\userInterface[]
+     * @return UserInterface[]
      */
-    public function findAllActive();
+    public function findAllActive(): array;
 }

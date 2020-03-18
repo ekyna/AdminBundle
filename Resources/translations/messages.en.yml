@@ -55,11 +55,9 @@ ekyna_admin:
             remove: Remove the suser
             impersonate: Use the user session
         field:
-            send_creation_email: Notify user about his account creation
-            password_request_at: Password reset date
-            confirmation_token: Confirmation token
-            credentials_expired: Expired password
-            credentials_expires_at: Password expires at
+            email_config: Email configuration
+            email_signature: Email signature
+            api_token: API Token
         alert:
             empty_list: No user configured
             no_password_request: No password reset request found

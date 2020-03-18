@@ -38,6 +38,11 @@ class User implements UserInterface
     /**
      * @var string
      */
+    private $apiToken;
+
+    /**
+     * @var string
+     */
     private $firstName;
 
     /**
@@ -89,7 +94,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getGroup()
+    public function getGroup(): ?GroupInterface
     {
         return $this->group;
     }
@@ -97,7 +102,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setGroup(GroupInterface $group)
+    public function setGroup(GroupInterface $group): UserInterface
     {
         $this->group = $group;
 
@@ -107,7 +112,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getEmail()
+    public function getEmail(): ?string
     {
         return $this->email;
     }
@@ -115,7 +120,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setEmail($email)
+    public function setEmail(string $email): UserInterface
     {
         $this->email = $email;
 
@@ -125,7 +130,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return $this->password;
     }
@@ -133,7 +138,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setPassword($password)
+    public function setPassword(string $password): UserInterface
     {
         $this->password = $password;
 
@@ -143,7 +148,25 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getFirstName()
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setApiToken(string $token = null): UserInterface
+    {
+        $this->apiToken = $token;
+
+        return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
@@ -151,7 +174,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setFirstName($firstName)
+    public function setFirstName(string $firstName = null): UserInterface
     {
         $this->firstName = $firstName;
 
@@ -161,7 +184,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getLastName()
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
@@ -169,7 +192,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setLastName($lastName)
+    public function setLastName(string $lastName = null): UserInterface
     {
         $this->lastName = $lastName;
 
@@ -179,7 +202,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function hasFullName()
+    public function hasFullName(): bool
     {
         return !empty($this->firstName) && !empty($this->lastName);
     }
@@ -187,10 +210,10 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getFullName()
+    public function getFullName(): ?string
     {
         if ($this->hasFullName()) {
-            return $this->firstName . ' ' . $this->lastName;
+            return trim($this->firstName . ' ' . $this->lastName);
         }
 
         return $this->email;
@@ -199,7 +222,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function hasShortName()
+    public function hasShortName(): bool
     {
         return !empty($this->firstName) && !empty($this->lastName);
     }
@@ -207,10 +230,10 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getShortName()
+    public function getShortName(): ?string
     {
         if (!empty($this->firstName) && !empty($this->lastName)) {
-            return $this->firstName . ' ' . $this->lastName[0] . '.';
+            return trim($this->firstName . ' ' . $this->lastName[0] . '.');
         }
 
         return $this->email;
@@ -219,7 +242,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         if ($this->group) {
             return $this->group->getRoles();
@@ -231,7 +254,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function isActive()
+    public function isActive(): bool
     {
         return $this->active;
     }
@@ -239,7 +262,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setActive($active)
+    public function setActive(bool $active): UserInterface
     {
         $this->active = $active;
 
@@ -249,7 +272,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getEmailConfig()
+    public function getEmailConfig(): ?array
     {
         return $this->emailConfig;
     }
@@ -257,7 +280,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setEmailConfig(array $emailConfig = null)
+    public function setEmailConfig(array $emailConfig = null): UserInterface
     {
         $this->emailConfig = $emailConfig;
 
@@ -267,7 +290,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getEmailSignature()
+    public function getEmailSignature(): ?string
     {
         return $this->emailSignature;
     }
@@ -275,7 +298,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setEmailSignature($signature)
+    public function setEmailSignature(string $signature = null): UserInterface
     {
         $this->emailSignature = $signature;
 
@@ -285,7 +308,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getPlainPassword()
+    public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
@@ -293,7 +316,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function setPlainPassword($plain)
+    public function setPlainPassword(string $plain = null): UserInterface
     {
         $this->plainPassword = $plain;
 
@@ -303,7 +326,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
     }
@@ -311,7 +334,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function getUsername()
+    public function getUsername(): ?string
     {
         return $this->email;
     }
@@ -319,7 +342,7 @@ class User implements UserInterface
     /**
      * @inheritdoc
      */
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         $this->plainPassword = null;
     }
@@ -327,7 +350,7 @@ class User implements UserInterface
     /**
      * @inheritDoc
      */
-    public function getSecurityId()
+    public function getSecurityId(): string
     {
         return sprintf('admin_%d', $this->getId());
     }
@@ -349,10 +372,10 @@ class User implements UserInterface
      */
     public function unserialize($serialized)
     {
-        list (
+        [
             $this->id,
             $this->email,
             $this->password,
-        ) = unserialize($serialized, ['allowed_classes' => false]);
+        ] = unserialize($serialized, ['allowed_classes' => false]);
     }
 }

@@ -6,7 +6,6 @@ use Ekyna\Bundle\AdminBundle\Repository\GroupRepositoryInterface;
 use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
 use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Component\Resource\Operator\ResourceOperatorInterface;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,41 +18,31 @@ use Symfony\Component\Console\Question\Question;
  * @package Ekyna\Bundle\AdminBundle\Command
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class CreateUserCommand extends Command
+class CreateUserCommand extends AbstractUserCommand
 {
-    /**
-     * @var UserRepositoryInterface
-     */
-    private $userRepository;
+    protected static $defaultName = 'ekyna:admin:create-user';
 
     /**
      * @var GroupRepositoryInterface
      */
-    private $groupRepository;
-
-    /**
-     * @var ResourceOperatorInterface
-     */
-    private $userOperator;
+    protected $groupRepository;
 
 
     /**
      * Constructor.
      *
      * @param UserRepositoryInterface   $userRepository
-     * @param GroupRepositoryInterface  $groupRepository
      * @param ResourceOperatorInterface $userOperator
+     * @param GroupRepositoryInterface  $groupRepository
      */
     public function __construct(
         UserRepositoryInterface $userRepository,
-        GroupRepositoryInterface $groupRepository,
-        ResourceOperatorInterface $userOperator
+        ResourceOperatorInterface $userOperator,
+        GroupRepositoryInterface $groupRepository
     ) {
-        $this->userRepository = $userRepository;
-        $this->groupRepository = $groupRepository;
-        $this->userOperator = $userOperator;
+        parent::__construct($userRepository, $userOperator);
 
-        parent::__construct();
+        $this->groupRepository = $groupRepository;
     }
 
     /**
@@ -62,7 +51,6 @@ class CreateUserCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('ekyna:admin:create-user')
             ->addArgument('group', InputArgument::OPTIONAL, 'The user group id')
             ->addArgument('email', InputArgument::OPTIONAL, 'The user email')
             ->addArgument('password', InputArgument::OPTIONAL, 'The user password')

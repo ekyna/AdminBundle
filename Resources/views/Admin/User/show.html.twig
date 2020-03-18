@@ -63,6 +63,25 @@
                         }) }}
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if user.apiToken is empty %}
+                            {% set token = '<em>' ~ ('ekyna_core.value.undefined'|trans) ~ '</em>' %}
+                        {% else %}
+                            {% set token = '<span data-clipboard-copy="' ~ user.apiToken ~ '">'
+                                ~ (user.apiToken|slice(0, 32)) ~ '&hellip;' ~
+                            '</span>' %}
+                        {% endif %}
+                        {% set token = token ~ '&nbsp;' ~ admin_resource_btn(user, 'generate_api_token', {
+                            'label': 'ekyna_core.button.generate',
+                            'size': 'xs',
+                            'theme': 'default'
+                        }) %}
+                        {{ show_row(token, 'text', {
+                            'label': 'ekyna_admin.user.field.api_token'
+                        }) }}
+                    </div>
+                </div>
             </div>
             <div class="tab-pane" id="menu-email">
                 {% set config = {

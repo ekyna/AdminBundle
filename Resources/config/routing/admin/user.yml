@@ -34,6 +34,13 @@ ekyna_admin_user_admin_generate_password:
     requirements:
         userId: \d+
 
+ekyna_admin_user_admin_generate_api_token:
+    path: /{userId}/generate-api-token
+    defaults: { _controller: "ekyna_admin.user.controller:generateApiToken" }
+    methods: [GET|POST]
+    requirements:
+        userId: \d+
+
 ekyna_admin_user_admin_toggle:
     path: /{userId}/toggle/{field}
     defaults: { _controller: "ekyna_admin.user.controller:toggleAction", field: locked }

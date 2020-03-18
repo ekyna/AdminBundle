@@ -3,6 +3,7 @@
 namespace Ekyna\Bundle\AdminBundle\Controller;
 
 use Ekyna\Bundle\AdminBundle\Entity\UserPin;
+use Ekyna\Bundle\AdminBundle\Helper\PinHelper;
 use Ekyna\Bundle\CoreBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -50,7 +51,7 @@ class PinController extends Controller
             throw $this->createNotFoundException('Resource not found.');
         }
 
-        $pinData = $this->get('ekyna_admin.helper.pin_helper')->pinResource($resource);
+        $pinData = $this->get(PinHelper::class)->pinResource($resource);
 
         return new JsonResponse([
             'added' => $pinData,
@@ -73,7 +74,7 @@ class PinController extends Controller
 
         $data = [];
 
-        if (null !== $pinData = $this->get('ekyna_admin.helper.pin_helper')->unpinResource($resource)) {
+        if (null !== $pinData = $this->get(PinHelper::class)->unpinResource($resource)) {
             $data['removed'] = $pinData;
         }
 
