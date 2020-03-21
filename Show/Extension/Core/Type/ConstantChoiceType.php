@@ -38,17 +38,56 @@ class ConstantChoiceType extends AbstractType
     {
         parent::build($view, $value, $options);
 
-        $view->vars['value'] = $label = $this->translator->trans(
-            call_user_func($options['class'] . '::getLabel', $value)
-        );
+        if (empty($value)) {
+            $view->vars['value'] = '';
 
-        if (!$options['theme']) {
             return;
         }
 
-        $theme = call_user_func($options['class'] . '::getTheme', $value);
+        if (!is_array($value)) {
+            $value = [$value];
+        }
 
-        $view->vars['value'] = sprintf('<span class="label label-%s">%s</span>', $theme, $label);
+        $constants = [];
+
+        foreach ($value as $const) {
+            $label = $this->translator->trans(
+                call_user_func($options['class'] . '::getLabel', $const)
+            );
+
+            if (!$options['theme']) {
+                $constants[] = $label;
+
+                continue;
+            }
+
+            $theme = call_user_func($options['class'] . '::getTheme', $const);
+
+            $constants[] = sprintf('<span class="label label-%s">%s</span>', $theme, $label);
+        }
+
+        if (0 === count($constants)) {
+            $view->vars['value'] = '';
+
+            return;
+        }
+
+        if (1 === count($constants)) {
+            $view->vars['value'] = reset($constants);
+
+            return;
+        }
+
+        if ($options['theme']) {
+            $view->vars['value'] = implode('&nbsp;', $constants);
+
+            return;
+        }
+
+        $view->vars['value'] =
+            implode(', ', array_slice($constants, 0, count($constants) - 1)) .
+            ' and ' . // TODO Translation ?
+            end($constants);
     }
 
     /**
@@ -67,6 +106,5 @@ class ConstantChoiceType extends AbstractType
             ->setAllowedValues('class', function ($class) {
                 return is_subclass_of($class, ConstantsInterface::class);
             });
-
     }
 }
