@@ -936,7 +936,6 @@ class ResourceController extends Controller implements ResourceControllerInterfa
                 'label'    => 'ekyna_core.button.save',
                 'icon'     => 'glyphicon glyphicon-ok',
                 'cssClass' => 'btn-success',
-                'autospin' => true,
             ];
             if ($action === 'edit') {
                 $submitButton['icon'] = 'glyphicon glyphicon-ok';

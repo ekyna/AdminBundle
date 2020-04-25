@@ -152,7 +152,6 @@
                  class="Ekyna\Bundle\AdminBundle\Table\Type\UserType">
             <argument type="service" id="Ekyna\Bundle\AdminBundle\Service\Security\UserProvider"/>
             <argument>%ekyna_admin.user.class%</argument>
-            <argument>%ekyna_admin.group.class%</argument>
             <tag name="table.type"/>
         </service>
         <service id="Ekyna\Bundle\AdminBundle\Table\Type\Column\ConstantChoiceType">

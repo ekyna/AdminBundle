@@ -5,9 +5,9 @@ namespace Ekyna\Bundle\AdminBundle\Table\Type;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Ekyna\Bundle\AdminBundle\Service\Security\UserProviderInterface;
+use Ekyna\Bundle\ResourceBundle\Table\Filter\ResourceType;
 use Ekyna\Bundle\TableBundle\Extension\Type as BType;
 use Ekyna\Component\Table\Bridge\Doctrine\ORM\Source\EntitySource;
-use Ekyna\Component\Table\Bridge\Doctrine\ORM\Type\Filter\EntityType;
 use Ekyna\Component\Table\Extension\Core\Type as CType;
 use Ekyna\Component\Table\TableBuilderInterface;
 use Symfony\Component\OptionsResolver\Options;
@@ -25,25 +25,18 @@ class UserType extends ResourceTableType
      */
     protected $userProvider;
 
-    /**
-     * @var string
-     */
-    protected $groupClass;
-
 
     /**
      * Constructor.
      *
      * @param UserProviderInterface $userProvider
      * @param string                $userClass
-     * @param string                $groupClass
      */
-    public function __construct(UserProviderInterface $userProvider, string $userClass, string $groupClass)
+    public function __construct(UserProviderInterface $userProvider, string $userClass)
     {
         parent::__construct($userClass);
 
         $this->userProvider = $userProvider;
-        $this->groupClass = $groupClass;
     }
 
     /**
@@ -110,9 +103,9 @@ class UserType extends ResourceTableType
 
         if (null !== $group) {
             $builder
-                ->addFilter('group', EntityType::class, [
-                    'label'         => 'ekyna_core.field.group',
-                    'class'         => $this->groupClass,
+                ->addFilter('group', ResourceType::class, [
+                    //'label'         => 'ekyna_core.field.group',
+                    'resource'      => 'ekyna_admin.group',
                     'entity_label'  => 'name',
                     'query_builder' => function (EntityRepository $er) use ($group) {
                         $qb = $er->createQueryBuilder('g');
