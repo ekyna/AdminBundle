@@ -54,7 +54,6 @@ class Configuration implements ConfigurationInterface
      */
     private function addNavBarSection(ArrayNodeDefinition $node)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $node
             ->children()
                 ->arrayNode('navbar')
@@ -86,7 +85,6 @@ class Configuration implements ConfigurationInterface
      */
     private function addMenusSection(ArrayNodeDefinition $node)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $node
             ->children()
                 ->arrayNode('menus')
@@ -124,7 +122,6 @@ class Configuration implements ConfigurationInterface
      */
     private function addDashboardSection(ArrayNodeDefinition $node)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
         $node
             ->children()
                 ->arrayNode('dashboard')

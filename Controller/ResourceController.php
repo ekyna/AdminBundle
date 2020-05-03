@@ -566,8 +566,8 @@ class ResourceController extends Controller implements ResourceControllerInterfa
      */
     protected function createSearchRequest(Request $request): SearchRequest
     {
-        $page = intval($request->query->get('page', 1)) - 1;
-        $limit = intval($request->query->get('limit', 10));
+        $page = $request->query->getInt('page', 1) - 1;
+        $limit = $request->query->getInt('limit', 10);
 
         $expression = (string)($request->request->get('expression') ?? $request->query->get('query'));
 

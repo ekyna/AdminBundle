@@ -72,6 +72,14 @@ class User implements UserInterface
 
 
     /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->active = false;
+    }
+
+    /**
      * @inheritDoc
      */
     public function __toString()
