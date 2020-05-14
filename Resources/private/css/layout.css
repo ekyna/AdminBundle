@@ -451,12 +451,12 @@ input.search {
     text-decoration: none;
 }
 
-#sidebar-nav > ul > li.active a {
+#sidebar-nav > ul > li.active > a {
     font-weight: 600;
     text-shadow: 1px 1px 1px #fff;
 }
 
-#sidebar-nav > ul > li.active i {
+#sidebar-nav > ul > li.active > i {
     opacity: 1;
 }
 
