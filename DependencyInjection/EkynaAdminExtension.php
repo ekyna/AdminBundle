@@ -36,7 +36,6 @@ class EkynaAdminExtension extends AbstractExtension
         $container
             ->getDefinition(AdminExtension::class)
             ->replaceArgument(4, [
-                'logo_path'   => $config['logo_path'],
                 'stylesheets' => $config['stylesheets'],
                 'navbar'      => $config['navbar'],
             ]);

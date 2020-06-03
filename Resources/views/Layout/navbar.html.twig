@@ -1,144 +1,155 @@
-{% spaceless %}
-<ul class="nav navbar-nav pull-right hidden-xs">
-    {% set config = admin_navbar_config() %}
-
-    <li class="hidden-xs hidden-sm" id="wide-search">
-        {{ admin_search_bar() }}
-    </li>
-
-    {#<li class="notification-dropdown hidden-xs hidden-sm">
-        <a href="#" class="trigger">
-            <i class="fa fa-warning"></i>
-            <span class="count">8</span>
+{% apply spaceless %}
+{% set config = admin_navbar_config() %}
+<header class="navbar navbar-inverse{% if config.light %} light{% endif %}"
+        role="banner" style="background-color:{{ config.background }}">
+    <div class="navbar-header">
+        <button class="navbar-toggle" type="button" data-toggle="collapse" id="menu-toggler">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="{{ path('ekyna_admin_dashboard') }}">
+            <img alt="Administration" src="{{ asset(config.logo) }}">
         </a>
-        <div class="pop-dialog">
-            <div class="pointer right">
-                <div class="arrow"></div>
-                <div class="arrow_border"></div>
+    </div>
+    <ul class="nav navbar-nav pull-right hidden-xs">
+        <li class="user-pins">
+            <div>
+                {% for pin in admin_user_pins() -%}
+                    <span data-id="{{ pin.id }}">
+                    <a href="{{ pin.path }}" title="{{ pin.label|raw }}">
+                        {{- pin.label|raw -}}
+                    </a>
+                    <a href="{{ path('ekyna_admin_pin_remove', {'id': pin.id}) }}">
+                        <i class="fa fa-remove"></i>
+                    </a>
+                </span>
+                {%- endfor %}
             </div>
-            <div class="body">
-                <a href="#" class="close-icon"><i class="fa fa-times"></i></a>
-                <div class="notifications">
-                    <h3>You have 6 new notifications</h3>
-                    <a href="#" class="item">
-                        <i class="fa fa-user"></i> New user registration
-                        <span class="time"><i class="fa fa-clock-o"></i> 13 min.</span>
-                    </a>
-                    <a href="#" class="item">
-                        <i class="fa fa-user"></i> New user registration
-                        <span class="time"><i class="fa fa-clock-o"></i> 18 min.</span>
-                    </a>
-                    <a href="#" class="item">
-                        <i class="fa fa-envelope"></i> New message from Alejandra
-                        <span class="time"><i class="fa fa-clock-o"></i> 28 min.</span>
-                    </a>
-                    <a href="#" class="item">
-                        <i class="fa fa-user"></i> New user registration
-                        <span class="time"><i class="fa fa-clock-o"></i> 49 min.</span>
-                    </a>
-                    <a href="#" class="item">
-                        <i class="fa fa-download"></i> New order placed
-                        <span class="time"><i class="fa fa-clock-o"></i> 1 day.</span>
-                    </a>
-                    <div class="footer">
-                        <a href="#" class="logout">View all notifications</a>
+        </li>
+        <li class="hidden-xs hidden-sm" id="wide-search">
+            {{- admin_search_bar() -}}
+        </li>
+        {#<li class="notification-dropdown hidden-xs hidden-sm">
+            <a href="#" class="trigger">
+                <i class="fa fa-warning"></i>
+                <span class="count">8</span>
+            </a>
+            <div class="pop-dialog">
+                <div class="pointer right">
+                    <div class="arrow"></div>
+                    <div class="arrow_border"></div>
+                </div>
+                <div class="body">
+                    <a href="#" class="close-icon"><i class="fa fa-times"></i></a>
+                    <div class="notifications">
+                        <h3>You have 6 new notifications</h3>
+                        <a href="#" class="item">
+                            <i class="fa fa-user"></i> New user registration
+                            <span class="time"><i class="fa fa-clock-o"></i> 13 min.</span>
+                        </a>
+                        <a href="#" class="item">
+                            <i class="fa fa-user"></i> New user registration
+                            <span class="time"><i class="fa fa-clock-o"></i> 18 min.</span>
+                        </a>
+                        <a href="#" class="item">
+                            <i class="fa fa-envelope"></i> New message from Alejandra
+                            <span class="time"><i class="fa fa-clock-o"></i> 28 min.</span>
+                        </a>
+                        <a href="#" class="item">
+                            <i class="fa fa-user"></i> New user registration
+                            <span class="time"><i class="fa fa-clock-o"></i> 49 min.</span>
+                        </a>
+                        <a href="#" class="item">
+                            <i class="fa fa-download"></i> New order placed
+                            <span class="time"><i class="fa fa-clock-o"></i> 1 day.</span>
+                        </a>
+                        <div class="footer">
+                            <a href="#" class="logout">View all notifications</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </li>
-    <li class="notification-dropdown hidden-xs hidden-sm">
-        <a href="#" class="trigger">
-            <i class="fa fa-envelope"></i>
-        </a>
-        <div class="pop-dialog">
-            <div class="pointer right">
-                <div class="arrow"></div>
-                <div class="arrow_border"></div>
-            </div>
-            <div class="body">
-                <a href="#" class="close-icon"><i class="fa fa-times"></i></a>
-                <div class="messages">
-                    <a href="#" class="item">
-                        <img src="{{ asset('bundles/ekynaadmin/img/contact-img.png') }}" class="display" />
-                        <div class="name">Alejandra Galván</div>
-                        <div class="msg">
-                            There are many variations of available, but the majority have suffered alterations.
+        </li>
+        <li class="notification-dropdown hidden-xs hidden-sm">
+            <a href="#" class="trigger">
+                <i class="fa fa-envelope"></i>
+            </a>
+            <div class="pop-dialog">
+                <div class="pointer right">
+                    <div class="arrow"></div>
+                    <div class="arrow_border"></div>
+                </div>
+                <div class="body">
+                    <a href="#" class="close-icon"><i class="fa fa-times"></i></a>
+                    <div class="messages">
+                        <a href="#" class="item">
+                            <img src="{{ asset('bundles/ekynaadmin/img/contact-img.png') }}" class="display" />
+                            <div class="name">Alejandra Galván</div>
+                            <div class="msg">
+                                There are many variations of available, but the majority have suffered alterations.
+                            </div>
+                            <span class="time"><i class="fa fa-clock-o"></i> 13 min.</span>
+                        </a>
+                        <a href="#" class="item">
+                            <img src="{{ asset('bundles/ekynaadmin/img/contact-img2.png') }}" class="display" />
+                            <div class="name">Alejandra Galván</div>
+                            <div class="msg">
+                                There are many variations of available, have suffered alterations.
+                            </div>
+                            <span class="time"><i class="fa fa-clock-o"></i> 26 min.</span>
+                        </a>
+                        <a href="#" class="item last">
+                            <img src="{{ asset('bundles/ekynaadmin/img/contact-img.png') }}" class="display" />
+                            <div class="name">Alejandra Galván</div>
+                            <div class="msg">
+                                There are many variations of available, but the majority have suffered alterations.
+                            </div>
+                            <span class="time"><i class="fa fa-clock-o"></i> 48 min.</span>
+                        </a>
+                        <div class="footer">
+                            <a href="#" class="logout">View all messages</a>
                         </div>
-                        <span class="time"><i class="fa fa-clock-o"></i> 13 min.</span>
-                    </a>
-                    <a href="#" class="item">
-                        <img src="{{ asset('bundles/ekynaadmin/img/contact-img2.png') }}" class="display" />
-                        <div class="name">Alejandra Galván</div>
-                        <div class="msg">
-                            There are many variations of available, have suffered alterations.
-                        </div>
-                        <span class="time"><i class="fa fa-clock-o"></i> 26 min.</span>
-                    </a>
-                    <a href="#" class="item last">
-                        <img src="{{ asset('bundles/ekynaadmin/img/contact-img.png') }}" class="display" />
-                        <div class="name">Alejandra Galván</div>
-                        <div class="msg">
-                            There are many variations of available, but the majority have suffered alterations.
-                        </div>
-                        <span class="time"><i class="fa fa-clock-o"></i> 48 min.</span>
-                    </a>
-                    <div class="footer">
-                        <a href="#" class="logout">View all messages</a>
                     </div>
                 </div>
             </div>
-        </div>
-    </li>
-    <li class="dropdown">
-        <a href="#" class="dropdown-toggle hidden-xs hidden-sm" data-toggle="dropdown">
-            Your account
-            <b class="caret"></b>
-        </a>
-        <ul class="dropdown-menu">
-            <li><a href="personal-info.html">Personal info</a></li>
-            <li><a href="#">Account settings</a></li>
-            <li><a href="#">Billing</a></li>
-            <li><a href="#">Export your data</a></li>
-            <li><a href="#">Send feedback</a></li>
-        </ul>
-    </li>
-    <li class="settings hidden-xs hidden-sm">
-        <a href="personal-info.html" role="button">
-            <i class="fa fa-cog"></i>
-        </a>
-    </li>
-    #}
-    <li class="user-pins">
-        <div>
-            {% for pin in admin_user_pins() %}
-            <span data-id="{{ pin.id }}">
-                <a href="{{ pin.path }}">
-                    {{ pin.label|raw }}
-                </a>
-                <a href="{{ path('ekyna_admin_pin_remove', {'id': pin.id}) }}">
-                    <i class="fa fa-remove"></i>
-                </a>
-            </span>
-            {% endfor %}
-        </div>
-    </li>
-    <li class="settings">
-        <a href="javascript: void(0)" role="button" id="barcode-scanner-button" title="{{ 'ekyna_core.field.barcode'|trans }}">
-            <i class="fa fa-barcode"></i>
-        </a>
-    </li>
-    {% for button in config.buttons -%}
-    <li class="settings">
-        <a href="{{ path(button.route) }}" role="button" title="{{ button.title|trans }}" target="{{ button.target }}">
-            <i class="fa fa-{{ button.icon }}"></i>
-        </a>
-    </li>
-    {%- endfor %}
-    <li class="settings">
-        <a href="{{ path('ekyna_admin_security_logout') }}" role="button" title="{{ 'ekyna_core.button.logout'|trans }}">
-            <i class="fa fa-power-off"></i>
-        </a>
-    </li>
-</ul>
-{% endspaceless %}
+        </li>
+        <li class="dropdown">
+            <a href="#" class="dropdown-toggle hidden-xs hidden-sm" data-toggle="dropdown">
+                Your account
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="personal-info.html">Personal info</a></li>
+                <li><a href="#">Account settings</a></li>
+                <li><a href="#">Billing</a></li>
+                <li><a href="#">Export your data</a></li>
+                <li><a href="#">Send feedback</a></li>
+            </ul>
+        </li>
+        <li class="hidden-xs hidden-sm">
+            <a href="personal-info.html" role="button">
+                <i class="fa fa-cog"></i>
+            </a>
+        </li>#}
+        <li>
+            <a href="javascript: void(0)" role="button" id="barcode-scanner-button" title="{{ 'ekyna_core.field.barcode'|trans }}">
+                <i class="fa fa-barcode"></i>
+            </a>
+        </li>
+        {% for button in config.buttons -%}
+        <li>
+            <a href="{{ path(button.route) }}" role="button" title="{{ button.title|trans }}" target="{{ button.target }}">
+                <i class="fa fa-{{ button.icon }}"></i>
+            </a>
+        </li>
+        {%- endfor %}
+        <li>
+            <a href="{{ path('ekyna_admin_security_logout') }}" role="button" title="{{ 'ekyna_core.button.logout'|trans }}">
+                <i class="fa fa-power-off"></i>
+            </a>
+        </li>
+    </ul>
+</header>
+{% endapply %}

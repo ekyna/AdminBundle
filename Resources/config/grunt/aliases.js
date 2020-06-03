@@ -1,13 +1,9 @@
 module.exports = {
-    'cssmin:admin': [
-        'cssmin:admin_less',
-        'cssmin:admin_css'
-    ],
     'build:admin': [
         'clean:admin_pre',
         'imagemin:admin',
         'less:admin',
-        'cssmin:admin',
+        'cssmin:admin_less',
         'uglify:admin_js',
         'clean:admin_post'
     ]

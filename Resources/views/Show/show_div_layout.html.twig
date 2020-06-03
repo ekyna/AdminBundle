@@ -2,37 +2,37 @@
 
 
 {% block label %}
-{% spaceless %}
+{% apply spaceless %}
     {% if label is not null %}
         <div class="col-md-{{ label_col }} show-label" title="{{ label|trans({}, trans_domain) }}">
             {{- label|trans({}, trans_domain) -}}
         </div>
     {% endif %}
-{% endspaceless %}
+{% endapply %}
 {% endblock label %}
 
 
 {% block undefined %}
-{% spaceless %}
+{% apply spaceless %}
     <em>{{ 'ekyna_core.value.undefined'|trans }}</em>
-{% endspaceless %}
+{% endapply %}
 {% endblock undefined %}
 
 
 {% block default_row %}
-{% spaceless %}
+{% apply spaceless %}
     <div class="row show-row">
         {{ block('label') }}
         <div class="col-md-{{ widget_col }}">
             {{ show_widget(view) }}
         </div>
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock default_row %}
 
 
 {% block default_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty %}
@@ -41,22 +41,22 @@
             {{ value|raw }}
         {% endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock default_widget %}
 
 
 {% block text_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {{ block('text_widget_value') }}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock text_widget %}
 
 
 {% block text_widget_value %}
-{% spaceless %}
+{% apply spaceless %}
     {% if value is empty -%}
         {{ block('undefined') }}
     {%- elseif trans_domain is null -%}
@@ -66,12 +66,12 @@
     {%- else -%}
         {{ value|raw }}
     {%- endif %}
-{% endspaceless %}
+{% endapply %}
 {% endblock text_widget_value %}
 
 
 {% block number_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is null -%}
@@ -80,12 +80,12 @@
             {{ value|localizednumber }}{% if append is not empty %}&nbsp;{{ append }}{% endif %}
         {%- endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock number_widget %}
 
 
 {% block datetime_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is null -%}
@@ -94,12 +94,12 @@
             {{ value|localizeddate(date_format, time_format, locale, timezone, format)|capitalize }}
         {%- endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock datetime_widget %}
 
 
 {% block color_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty -%}
@@ -108,12 +108,12 @@
             <span class="show-color" style="background-color: {{ value }};"></span> {{ value }}
         {%- endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock color_widget %}
 
 
 {% block boolean_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {%- set class = value is null ? null_class : (value ? true_class : false_class) -%}
@@ -127,12 +127,12 @@
         {%- endif -%}
         {%- if toggle_path %}</a>{% elseif color %}</span>{% endif -%}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock boolean_widget %}
 
 
 {% block choice_widget %}
-{% spaceless %}
+{% apply spaceless %}
 {% if multiple %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
@@ -152,12 +152,12 @@
         {%- endwith %}
     </div>
 {% endif %}
-{% endspaceless %}
+{% endapply %}
 {% endblock choice_widget %}
 
 
 {% block entity_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty -%}
@@ -177,23 +177,23 @@
             {% endfor %}
         {% endif -%}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock entity_widget %}
 
 
 {% block entity_widget_value %}
-{% spaceless %}
+{% apply spaceless %}
     {% if field -%}
         {{ attribute(entity, field)|raw }}
     {%- else -%}
         {{ entity|raw }}
     {%- endif %}
-{% endspaceless %}
+{% endapply %}
 {% endblock entity_widget_value %}
 
 
 {% block url_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty %}
@@ -202,12 +202,12 @@
             <a href="{{ value }}"{% if target is not empty %} target="{{ target }}"{% endif %}>{{ value }}</a>
         {% endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock url_widget %}
 
 
 {% block textarea_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty %}
@@ -218,12 +218,12 @@
             {{ value|nl2br|raw }}
         {% endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock textarea_widget %}
 
 
 {% block tinymce_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if route is not empty %}
@@ -231,12 +231,12 @@
         {% endif %}
         <iframe src="{{ value }}" style="height:{{ height }}px"></iframe>
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock tinymce_widget %}
 
 
 {% block upload_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-inline ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is same as(null) -%}
@@ -247,12 +247,12 @@
             </a>
         {%- endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock upload_widget %}
 
 
 {% block collection_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty -%}
@@ -261,12 +261,12 @@
             {% for val in value %}{{ val|raw }}<br>{% endfor %}
         {%- endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock collection_widget %}
 
 
 {% block map_widget %}
-{% spaceless %}
+{% apply spaceless %}
     {% set attr = attr|merge({'class': ('show-widget show-widget-block ' ~ attr.class|default(''))|trim }) %}
     <div{{ block('widget_attributes') }}>
         {% if value is empty -%}
@@ -280,12 +280,12 @@
             </dl>
         {%- endif %}
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock map_widget %}
 
 
 {% block translations_row %}
-{% spaceless %}
+{% apply spaceless %}
     <div class="translations-forms show-row">
         <ul class="translations-locales nav nav-tabs">
             {%- for locale, translation in value -%}
@@ -303,11 +303,11 @@
             {{ block('translations_content') }}
         </div>
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock translations_row %}
 
 {% block translations_widget %}
-{% spaceless %}
+{% apply spaceless %}
     <ul class="nav nav-tabs">
         {% for locale, translation in value -%}
         <li{% if loop.first %} class="active"{% endif %}>
@@ -328,11 +328,11 @@
             {{ block('translations_content') }}
         </div>
     </div>
-{% endspaceless %}
+{% endapply %}
 {% endblock translations_widget %}
 
 {% block translations_content %}
-{% spaceless %}
+{% apply spaceless %}
     {% for locale, translation in value -%}
     <div class="tab-pane{% if loop.first %} active{% endif %}"
          id="{{ name }}-{{ locale }}">
@@ -351,5 +351,5 @@
         {%- endfor %}
     </div>
     {%- endfor %}
-{% endspaceless %}
+{% endapply %}
 {% endblock translations_content %}

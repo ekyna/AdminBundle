@@ -8,7 +8,7 @@
 {% block body %}
     <div class="login-wrapper">
         <a href="{{ path('ekyna_admin_security_login') }}" class="logo">
-            <img src="{{ asset(admin_logo_path()) }}" height="28px"/>
+            <img alt="logo" src="{{ asset(admin_navbar_config()['logo']) }}" height="28px"/>
         </a>
         <div class="box">
             <form method="post" action="{{ path('ekyna_admin_security_check') }}" class="content-wrap">

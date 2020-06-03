@@ -13,7 +13,7 @@
 {% endblock list %}
 
 {% block label %}
-{% spaceless %}
+{% apply spaceless %}
     {% if item.labelAttribute('icon') %}
         <i class="fa fa-{{ item.labelAttribute('icon') }}"></i>
         <span>
@@ -29,12 +29,12 @@
             item.getExtra('translation_domain', 'messages')
         ) }}
     {% endif %}
-{% endspaceless %}
+{% endapply %}
 {% endblock label %}
 
 {% block spanElement %}
-{% spaceless %}
+{% apply spaceless %}
     {% import 'knp_menu.html.twig' as knp_menu %}
     <a class="dropdown-toggle" {{ knp_menu.attributes(item.labelAttributes) }} href="javascript:void(0)">{{ block('label') }}</a>
-{% endspaceless %}
+{% endapply %}
 {% endblock spanElement %}

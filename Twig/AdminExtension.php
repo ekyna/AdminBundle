@@ -75,10 +75,6 @@ class AdminExtension extends AbstractExtension
     {
         return [
             new TwigFunction(
-                'admin_logo_path',
-                [$this, 'getLogoPath']
-            ),
-            new TwigFunction(
                 'admin_navbar_config',
                 [$this, 'getNavbarConfig']
             ),
@@ -120,16 +116,6 @@ class AdminExtension extends AbstractExtension
                 ['is_safe' => ['html']]
             ),
         ];
-    }
-
-    /**
-     * Returns the logo path.
-     *
-     * @return string
-     */
-    public function getLogoPath()
-    {
-        return $this->config['logo_path'];
     }
 
     /**

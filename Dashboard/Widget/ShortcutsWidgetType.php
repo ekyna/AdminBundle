@@ -80,7 +80,6 @@ class ShortcutsWidgetType extends AbstractWidgetType
             ->setDefaults([
                 'title'    => 'ekyna_admin.shortcuts',
                 'position' => -9999,
-                'css_path' => '/bundles/ekynaadmin/css/dashboard-shortcuts.css',
             ]);
     }
 

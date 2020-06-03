@@ -3,10 +3,10 @@ module.exports = function (grunt, options) {
     return {
         admin: {
             files: {
-                'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/css/bootstrap.css':
-                    'src/Ekyna/Bundle/AdminBundle/Resources/private/less/bootstrap.less',
-                'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/css/side-detail.css':
-                    'src/Ekyna/Bundle/AdminBundle/Resources/private/less/side-detail.less'
+                'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/css/admin.css':
+                    'src/Ekyna/Bundle/AdminBundle/Resources/private/less/admin.less',
+                'src/Ekyna/Bundle/AdminBundle/Resources/public/tmp/css/login.css':
+                    'src/Ekyna/Bundle/AdminBundle/Resources/private/less/login.less'
             }
         }
     }

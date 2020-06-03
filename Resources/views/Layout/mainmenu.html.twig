@@ -1,10 +1,10 @@
 {% extends '@EkynaAdmin/Layout/sidemenu.html.twig' %}
 
 {% block spanElement -%}
-{% spaceless %}
+{% apply spaceless %}
     <a{{ knp_menu.attributes(item.labelAttributes) }}>
         {{ block('label') }}
         {% if item.hasChildren %} <b class="caret">{% endif %}</b>
     s</a>
-{% endspaceless %}
+{% endapply %}
 {%- endblock spanElement %}

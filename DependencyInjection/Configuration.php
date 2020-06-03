@@ -23,7 +23,6 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('logo_path')->defaultValue('bundles/ekynaadmin/img/logo.png')->end()
                 ->arrayNode('notification')
                     ->addDefaultsIfNotSet()
                     ->children()
@@ -59,6 +58,15 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('navbar')
                     ->addDefaultsIfNotSet()
                     ->children()
+                        ->scalarNode('background')
+                            ->defaultValue('#2c3742')
+                        ->end()
+                        ->scalarNode('logo')
+                            ->defaultValue('bundles/ekynaadmin/img/logo.png')
+                        ->end()
+                        ->booleanNode('light')
+                            ->defaultFalse()
+                        ->end()
                         ->arrayNode('buttons')
                             ->useAttributeAsKey('name')
                             ->prototype('array')

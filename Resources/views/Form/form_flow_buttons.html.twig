@@ -1,4 +1,4 @@
-{% spaceless %}
+{% apply spaceless %}
 {% set button_prefix = button_prefix|default('form_flow_') %}
 {% set renderBackButton = flow.getFirstStepNumber() < flow.getLastStepNumber() and flow.getCurrentStepNumber() in (flow.getFirstStepNumber() + 1) .. flow.getLastStepNumber() %}
 <div class="form-footer">
@@ -57,4 +57,4 @@
         </div>
     </div>
 </div>
-{% endspaceless %}
+{% endapply %}

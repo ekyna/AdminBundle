@@ -440,7 +440,7 @@ require(['require', 'jquery', 'routing', 'bootstrap', 'jquery/form', 'ekyna-clip
         if (data.hasOwnProperty('added')) {
             // Add new entry in user pins list
             var $span = $('<span data-id="' + data.added.id + '"></span>'),
-                $link = $('<a href="' + data.added.path + '">' + data.added.label + '</a>'),
+                $link = $('<a href="' + data.added.path + '" title="' + data.added.label + '">' + data.added.label + '</a>'),
                 path = Router.generate('ekyna_admin_pin_remove', {id: data.added.id}),
                 $remove = ('<a href="' + path + '"><i class="fa fa-remove"></i></a>');
 
