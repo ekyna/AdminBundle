@@ -84,10 +84,12 @@ class ConstantChoiceType extends AbstractType
             return;
         }
 
-        $view->vars['value'] =
-            implode(', ', array_slice($constants, 0, count($constants) - 1)) .
-            ' and ' . // TODO Translation ?
-            end($constants);
+        $view->vars['value'] = sprintf(
+            '%s %s %s',
+            implode(', ', array_slice($constants, 0, count($constants) - 1)),
+            $this->translator->trans('ekyna_core.value.and'),
+            end($constants)
+        );
     }
 
     /**
