@@ -6,12 +6,14 @@ use Ekyna\Bundle\AdminBundle\Repository\GroupRepositoryInterface;
 use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
 use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Component\Resource\Operator\ResourceOperatorInterface;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use Throwable;
 
 /**
  * Class CreateUserCommand
@@ -46,7 +48,7 @@ class CreateUserCommand extends AbstractUserCommand
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function configure()
     {
@@ -58,7 +60,7 @@ class CreateUserCommand extends AbstractUserCommand
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -91,10 +93,10 @@ class CreateUserCommand extends AbstractUserCommand
         // Email ---------------------------------------------------------------
         $emailValidator = function ($answer) {
             if (!filter_var($answer, FILTER_VALIDATE_EMAIL)) {
-                throw new \RuntimeException('This is not a valid email address.');
+                throw new RuntimeException('This is not a valid email address.');
             }
             if (null !== $this->userRepository->findOneByEmail($answer, false)) {
-                throw new \RuntimeException('This email address is already used.');
+                throw new RuntimeException('This email address is already used.');
             }
 
             return $answer;
@@ -102,7 +104,7 @@ class CreateUserCommand extends AbstractUserCommand
 
         try {
             $email = $emailValidator($input->getArgument('email'));
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $email = null;
         }
         if (is_null($email)) {
@@ -115,8 +117,10 @@ class CreateUserCommand extends AbstractUserCommand
 
         // Password ---------------------------------------------------------------
         $passwordValidator = function ($answer) {
-            if (!(preg_match('#^[a-zA-Z0-9]+$#', $answer) && strlen($answer) >= 5)) {
-                throw new \RuntimeException('Password should be composed of at least 5 letters and numbers.');
+            if (!preg_match(self::PASSWORD_REGEX, $answer)) {
+                throw new RuntimeException(
+                    'Password should be composed of at least 6 digits excluding white-space characters.'
+                );
             }
 
             return $answer;
@@ -124,7 +128,7 @@ class CreateUserCommand extends AbstractUserCommand
 
         try {
             $password = $passwordValidator($input->getArgument('password'));
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
             $password = null;
         }
         if (is_null($password)) {

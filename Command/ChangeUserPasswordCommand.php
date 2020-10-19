@@ -18,7 +18,7 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
     protected static $defaultName = 'ekyna:admin:change-user-password';
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function configure()
     {
@@ -26,7 +26,7 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -56,8 +56,8 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
         if (!$helper->ask($input, $output, $question)) {
             $question = new Question('Password: ');
             $question->setValidator(function ($answer) {
-                if (!(preg_match('#^[a-zA-Z0-9]+$#', $answer) && strlen($answer) > 5)) {
-                    throw new \RuntimeException('Password should be composed of at least 6 letters and numbers.');
+                if (!preg_match(self::PASSWORD_REGEX, $answer)) {
+                    throw new \RuntimeException('Password should be composed of at least 6 digits excluding white-space characters.');
                 }
 
                 return $answer;

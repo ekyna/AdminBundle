@@ -13,6 +13,8 @@ use Symfony\Component\Console\Command\Command;
  */
 abstract class AbstractUserCommand extends Command
 {
+    protected const PASSWORD_REGEX = '#^[\S]{6,}$#';
+
     /**
      * @var UserRepositoryInterface
      */
