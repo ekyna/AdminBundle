@@ -2,13 +2,13 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link href="{{ asset('bundles/ekynaadmin/css/login.css') }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ absolute_url(asset('bundles/ekynaadmin/css/login.css')) }}" rel="stylesheet" type="text/css"/>
 {% endblock stylesheets %}
 
 {% block body %}
     <div class="login-wrapper">
         <a href="{{ path('ekyna_admin_security_login') }}" class="logo">
-            <img alt="logo" src="{{ asset(admin_navbar_config()['logo']) }}" height="28px"/>
+            <img alt="logo" src="{{ absolute_url(sset(admin_navbar_config()['logo'])) }}" height="28px"/>
         </a>
         <div class="box">
             <form method="post" action="{{ path('ekyna_admin_security_check') }}" class="content-wrap">

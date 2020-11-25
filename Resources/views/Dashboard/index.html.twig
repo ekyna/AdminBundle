@@ -42,13 +42,13 @@
 {% block stylesheets %}
     {{ parent() }}
     {% for path in dashboard.stylesheets -%}
-        <link href="{{ path }}" rel="stylesheet" type="text/css" />
+        <link href="{{ absolute_url(asset(path)) }}" rel="stylesheet" type="text/css" />
     {%- endfor %}
 {% endblock stylesheets %}
 
 {% block javascripts %}
     {{ parent() }}
     {% for path in dashboard.javascripts -%}
-        <script type="text/javascript" src="{{ path }}"></script>
+        <script type="text/javascript" src="{{ absolute_url(asset(path)) }}"></script>
     {%- endfor %}
 {% endblock javascripts %}
