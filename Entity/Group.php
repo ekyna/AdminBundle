@@ -31,17 +31,19 @@ class Group implements GroupInterface
 
 
     /**
-     * @inheritdoc
+     * Returns the string representation.
+     *
+     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->name;
+        return $this->name ?: 'New group';
     }
 
     /**
      * @inheritdoc
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

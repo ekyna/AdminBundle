@@ -80,21 +80,23 @@ class User implements UserInterface
     }
 
     /**
-     * @inheritDoc
+     * Returns the string representation.
+     *
+     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if (!empty($this->firstName) && !empty($this->lastName)) {
             return $this->firstName . ' ' . $this->lastName;
         }
 
-        return $this->email;
+        return $this->email ?: 'New user';
     }
 
     /**
      * @inheritdoc
      */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }

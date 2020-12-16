@@ -60,9 +60,9 @@ class UserPin
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->label;
+        return $this->label ?: 'New user pin';
     }
 
     /**
