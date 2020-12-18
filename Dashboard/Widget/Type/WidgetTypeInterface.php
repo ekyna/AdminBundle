@@ -4,6 +4,7 @@ namespace Ekyna\Bundle\AdminBundle\Dashboard\Widget\Type;
 
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\WidgetInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Environment;
 
 /**
  * Interface WidgetTypeInterface
@@ -23,12 +24,12 @@ interface WidgetTypeInterface
     /**
      * Renders the widget.
      *
-     * @param WidgetInterface   $widget
-     * @param \Twig_Environment $twig
+     * @param WidgetInterface $widget
+     * @param Environment     $twig
      *
      * @return string
      */
-    public function render(WidgetInterface $widget, \Twig_Environment $twig);
+    public function render(WidgetInterface $widget, Environment $twig);
 
     /**
      * Configures the options.

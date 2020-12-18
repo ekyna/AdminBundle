@@ -203,8 +203,9 @@
         <service id="Ekyna\Bundle\AdminBundle\Helper\PinHelper">
             <argument type="service" id="ekyna_resource.configuration_registry"/>
             <argument type="service" id="Ekyna\Bundle\AdminBundle\Service\Security\UserProvider"/>
-            <argument type="service" id="ekyna_admin.helper.resource_helper"/>
+            <argument type="service" id="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper"/>
             <argument type="service" id="doctrine.orm.default_entity_manager"/>
+            <tag name="twig.runtime"/>
         </service>
 
         <!-- Show -->
@@ -223,11 +224,6 @@
                 <argument type="service" id="Ekyna\Bundle\AdminBundle\Show\Extension\DependencyInjection\DependencyInjectionExtension"/>
             </argument>
         </service>
-        <service id="Ekyna\Bundle\AdminBundle\Show\Renderer"
-                 public="false">
-            <argument type="service" id="Ekyna\Bundle\AdminBundle\Show\Registry"/>
-            <argument type="service" id="twig"/>
-        </service>
         <service class="Ekyna\Bundle\AdminBundle\Show\Extension\Core\Type\TranslationsType">
             <argument>%locales%</argument>
             <tag name="ekyna_admin.show.type" alias="translations"/>
@@ -236,6 +232,13 @@
             <argument type="service" id="Symfony\Component\Translation\TranslatorInterface"/>
             <tag name="ekyna_admin.show.type" alias="constant_choice"/>
         </service>
+        <service id="Ekyna\Bundle\AdminBundle\Show\Renderer">
+            <argument type="service" id="Ekyna\Bundle\AdminBundle\Show\Registry"/>
+            <argument type="service" id="Twig\Environment"/>
+            <tag name="twig.runtime"/>
+        </service>
+        <service id="Ekyna\Bundle\AdminBundle\Show\RendererInterface"
+                 alias="Ekyna\Bundle\AdminBundle\Show\Renderer" />
 
         <!-- Serialization -->
         <service id="ekyna_admin.user.normalizer"
@@ -243,23 +246,6 @@
                  parent="ekyna_resource.serializer.resource_normalizer">
             <tag name="serializer.normalizer"/>
             <tag name="serializer.denormalizer"/>
-        </service>
-
-        <!-- Twig Extensions -->
-        <service id="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
-            <argument type="service" id="ekyna_admin.helper.resource_helper"/>
-            <argument type="service" id="Ekyna\Bundle\AdminBundle\Helper\PinHelper"/>
-            <argument type="service" id="security.authorization_checker"/>
-            <argument type="service" id="ekyna_core.ui.renderer"/>
-            <argument type="collection"/><!-- Replaced by DI extension -->
-            <tag name="twig.extension"/>
-        </service>
-        <service id="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
-            <argument type="service" id="Ekyna\Bundle\AdminBundle\Show\Renderer"/>
-            <tag name="twig.extension"/>
-        </service>
-        <service id="Ekyna\Bundle\AdminBundle\Twig\DashboardExtension">
-            <tag name="twig.extension"/>
         </service>
 
         <!-- Dashboard -->
@@ -275,14 +261,35 @@
         <service id="Ekyna\Bundle\AdminBundle\Dashboard\Widget\ShortcutsWidgetType">
             <argument id="Ekyna\Bundle\AdminBundle\Menu\MenuPool" type="service"/>
             <argument id="ekyna_resource.configuration_registry" type="service"/>
-            <argument id="security.authorization_checker" type="service"/>
-            <argument id="router" type="service"/>
+            <argument id="Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface" type="service"/>
+            <argument id="Symfony\Component\Routing\RouterInterface" type="service"/>
             <tag name="ekyna_admin.dashboard.widget_type" alias="admin_shortcuts"/>
         </service>
-
         <service id="Ekyna\Bundle\AdminBundle\Dashboard\Dashboard">
             <factory service="Ekyna\Bundle\AdminBundle\Dashboard\Factory" method="create"/>
             <argument type="collection"/><!-- Replaced by DI extension -->
+        </service>
+        <service id="Ekyna\Bundle\AdminBundle\Service\Renderer\DashboardRenderer">
+            <argument type="service" id="Twig\Environment" />
+            <argument type="collection"/><!-- Replaced by DI extension -->
+        </service>
+
+        <!-- Admin renderer -->
+        <service id="Ekyna\Bundle\AdminBundle\Service\Renderer\AdminRenderer">
+            <argument type="service" id="Ekyna\Bundle\AdminBundle\Helper\ResourceHelper"/>
+            <argument type="service" id="Ekyna\Bundle\AdminBundle\Helper\PinHelper"/>
+            <argument type="service" id="security.authorization_checker"/>
+            <argument type="service" id="ekyna_core.ui.renderer"/>
+            <argument type="collection"/><!-- Replaced by DI extension -->
+            <tag name="twig.runtime"/>
+        </service>
+
+        <!-- Twig Extensions -->
+        <service id="Ekyna\Bundle\AdminBundle\Twig\AdminExtension">
+            <tag name="twig.extension"/>
+        </service>
+        <service id="Ekyna\Bundle\AdminBundle\Twig\ShowExtension">
+            <tag name="twig.extension"/>
         </service>
 
         <!-- Commands -->

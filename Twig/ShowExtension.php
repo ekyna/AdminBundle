@@ -2,45 +2,31 @@
 
 namespace Ekyna\Bundle\AdminBundle\Twig;
 
-use Ekyna\Bundle\AdminBundle\Show\RendererInterface;
+use Ekyna\Bundle\AdminBundle\Show\Renderer;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Class ShowExtension
  * @package Ekyna\Bundle\AdminBundle\Twig
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class ShowExtension extends \Twig_Extension
+class ShowExtension extends AbstractExtension
 {
     /**
-     * @var RendererInterface
-     */
-    protected $renderer;
-
-
-    /**
-     * Constructor
-     *
-     * @param RendererInterface $renderer
-     */
-    public function __construct(RendererInterface $renderer)
-    {
-        $this->renderer = $renderer;
-    }
-
-    /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'show_row',
-                [$this->renderer, 'renderRow'],
+                [Renderer::class, 'renderRow'],
                 ['is_safe' => ['html']]
             ),
-            new \Twig_SimpleFunction(
+            new TwigFunction(
                 'show_widget',
-                [$this->renderer, 'renderWidget'],
+                [Renderer::class, 'renderWidget'],
                 ['is_safe' => ['html']]
             ),
         ];

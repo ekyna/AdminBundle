@@ -10,6 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Twig\Environment;
 
 /**
  * Class ShortcutsWidgetType
@@ -62,7 +63,7 @@ class ShortcutsWidgetType extends AbstractWidgetType
     /**
      * {@inheritdoc}
      */
-    public function render(WidgetInterface $widget, \Twig_Environment $twig)
+    public function render(WidgetInterface $widget, Environment $twig)
     {
         return $twig->render('@EkynaAdmin/Dashboard/widget_shortcuts.html.twig', [
             'columns' => $this->createColumns(),
@@ -81,6 +82,14 @@ class ShortcutsWidgetType extends AbstractWidgetType
                 'title'    => 'ekyna_admin.shortcuts',
                 'position' => -9999,
             ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'admin_shortcuts';
     }
 
     /**
@@ -130,7 +139,6 @@ class ShortcutsWidgetType extends AbstractWidgetType
             $columns[] = $columnGroups;
             $columnGroups = [];
             $currentCount = 0;
-
         } while (!empty($groups));
 
         return $columns;
@@ -194,13 +202,5 @@ class ShortcutsWidgetType extends AbstractWidgetType
         }
 
         return $groups;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'admin_shortcuts';
     }
 }

@@ -18,7 +18,7 @@ interface RendererInterface
      *
      * @return string
      */
-    public function renderRow($data, $name, array $options = []);
+    public function renderRow($data, string $name, array $options = []): string;
 
     /**
      * Renders the widget.
@@ -29,5 +29,5 @@ interface RendererInterface
      *
      * @return string
      */
-    public function renderWidget($data, $name, array $options = []);
+    public function renderWidget($data, string $name, array $options = []): string;
 }

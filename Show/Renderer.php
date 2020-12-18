@@ -3,13 +3,16 @@
 namespace Ekyna\Bundle\AdminBundle\Show;
 
 use Ekyna\Bundle\AdminBundle\Show\Exception\RuntimeException;
+use Twig\Environment;
+use Twig\Extension\RuntimeExtensionInterface;
+use Twig\TemplateWrapper;
 
 /**
  * Class Renderer
  * @package Ekyna\Bundle\AdminBundle\Show
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class Renderer implements RendererInterface
+class Renderer implements RendererInterface, RuntimeExtensionInterface
 {
     /**
      * @var RegistryInterface
@@ -17,12 +20,12 @@ class Renderer implements RendererInterface
     private $registry;
 
     /**
-     * @var \Twig\Environment
+     * @var Environment
      */
     private $environment;
 
     /**
-     * @var \Twig\TemplateWrapper[]
+     * @var TemplateWrapper[]
      */
     private $templates = [];
 
@@ -36,9 +39,9 @@ class Renderer implements RendererInterface
      * Constructor.
      *
      * @param RegistryInterface $registry
-     * @param \Twig\Environment $environment
+     * @param Environment       $environment
      */
-    public function __construct(RegistryInterface $registry, \Twig\Environment $environment)
+    public function __construct(RegistryInterface $registry, Environment $environment)
     {
         $this->registry = $registry;
         $this->environment = $environment;
@@ -47,7 +50,7 @@ class Renderer implements RendererInterface
     /**
      * @inheritDoc
      */
-    public function renderRow($data, $name = 'text', array $options = [])
+    public function renderRow($data, string $name = 'text', array $options = []): string
     {
         $view = $this->buildView($data, $name, $options);
 
@@ -60,7 +63,7 @@ class Renderer implements RendererInterface
     /**
      * @inheritDoc
      */
-    public function renderWidget($data, $name = 'text', array $options = [])
+    public function renderWidget($data, string $name = 'text', array $options = []): string
     {
         $view = $this->buildView($data, $name, $options);
 
@@ -79,7 +82,7 @@ class Renderer implements RendererInterface
      *
      * @return View
      */
-    private function buildView($data, $name, $options)
+    private function buildView($data, string $name, array $options): View
     {
         if ($data instanceof View) {
             return $data;
@@ -101,9 +104,9 @@ class Renderer implements RendererInterface
      *
      * @param string $name
      *
-     * @return \Twig\TemplateWrapper
+     * @return TemplateWrapper
      */
-    private function getTemplate($name)
+    private function getTemplate(string $name): TemplateWrapper
     {
         if (isset($this->templates[$name])) {
             return $this->templates[$name];
@@ -119,9 +122,9 @@ class Renderer implements RendererInterface
      *
      * @param string $block
      *
-     * @return \Twig\TemplateWrapper
+     * @return TemplateWrapper
      */
-    private function getTemplateForBlock($block)
+    private function getTemplateForBlock(string $block): TemplateWrapper
     {
         if (isset($this->blocks[$block])) {
             return $this->getTemplate($this->blocks[$block]);

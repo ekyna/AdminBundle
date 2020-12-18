@@ -8,13 +8,14 @@ use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Bundle\AdminBundle\Service\Security\UserProviderInterface;
 use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Ekyna\Component\Resource\Model\ResourceInterface;
+use Twig\Extension\RuntimeExtensionInterface;
 
 /**
  * Class ResourcePinHelper
  * @package Ekyna\Bundle\AdminBundle\Helper
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-class PinHelper
+class PinHelper implements RuntimeExtensionInterface
 {
     /**
      * @var ConfigurationRegistry

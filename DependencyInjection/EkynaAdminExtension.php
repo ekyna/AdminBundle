@@ -5,8 +5,8 @@ namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 use Ekyna\Bundle\AdminBundle\Dashboard\Dashboard;
 use Ekyna\Bundle\AdminBundle\EventListener\SecurityEventSubscriber;
 use Ekyna\Bundle\AdminBundle\Menu\MenuPool;
+use Ekyna\Bundle\AdminBundle\Service\Renderer\AdminRenderer;
 use Ekyna\Bundle\AdminBundle\Show\Registry;
-use Ekyna\Bundle\AdminBundle\Twig\AdminExtension;
 use Ekyna\Bundle\ResourceBundle\DependencyInjection\AbstractExtension;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -27,14 +27,17 @@ class EkynaAdminExtension extends AbstractExtension
         $this->configureMenus($config['menus'], $container);
 
         $buttons = $config['navbar']['buttons'];
-        usort($buttons, function($a, $b) {
-            if ($a['position'] == $b['position']) return 0;
+        usort($buttons, function ($a, $b) {
+            if ($a['position'] == $b['position']) {
+                return 0;
+            }
+
             return $a['position'] > $b['position'] ? 1 : -1;
         });
         $config['navbar']['buttons'] = $buttons;
 
         $container
-            ->getDefinition(AdminExtension::class)
+            ->getDefinition(AdminRenderer::class)
             ->replaceArgument(4, [
                 'stylesheets' => $config['stylesheets'],
                 'navbar'      => $config['navbar'],
@@ -71,23 +74,28 @@ class EkynaAdminExtension extends AbstractExtension
         $pool = $container->getDefinition(MenuPool::class);
 
         foreach ($menus as $groupName => $groupConfig) {
-            $pool->addMethodCall('createGroup', [[
-                'name'     => $groupName,
-                'label'    => $groupConfig['label'],
-                'icon'     => $groupConfig['icon'],
-                'position' => $groupConfig['position'],
-                'domain'   => $groupConfig['domain'],
-                'route'    => $groupConfig['route'],
-            ]]);
+            $pool->addMethodCall('createGroup', [
+                [
+                    'name'     => $groupName,
+                    'label'    => $groupConfig['label'],
+                    'icon'     => $groupConfig['icon'],
+                    'position' => $groupConfig['position'],
+                    'domain'   => $groupConfig['domain'],
+                    'route'    => $groupConfig['route'],
+                ],
+            ]);
             foreach ($groupConfig['entries'] as $entryName => $entryConfig) {
-                $pool->addMethodCall('createEntry', [$groupName, [
-                    'name'     => $entryName,
-                    'route'    => $entryConfig['route'],
-                    'label'    => $entryConfig['label'],
-                    'resource' => $entryConfig['resource'],
-                    'position' => $entryConfig['position'],
-                    'domain'   => $entryConfig['domain'],
-                ]]);
+                $pool->addMethodCall('createEntry', [
+                    $groupName,
+                    [
+                        'name'     => $entryName,
+                        'route'    => $entryConfig['route'],
+                        'label'    => $entryConfig['label'],
+                        'resource' => $entryConfig['resource'],
+                        'position' => $entryConfig['position'],
+                        'domain'   => $entryConfig['domain'],
+                    ],
+                ]);
             }
         }
     }

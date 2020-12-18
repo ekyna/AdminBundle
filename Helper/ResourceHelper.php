@@ -8,9 +8,12 @@ use Ekyna\Component\Resource\Configuration\ConfigurationRegistry;
 use Ekyna\Component\Resource\Dispatcher\ResourceEventDispatcherInterface;
 use Ekyna\Component\Resource\Model\Actions;
 use Ekyna\Component\Resource\Model\ResourceInterface;
+use RuntimeException;
 use Symfony\Component\PropertyAccess\PropertyAccess;
+use Symfony\Component\PropertyAccess\PropertyAccessorInterface;
 use Symfony\Component\Routing\Exception\ExceptionInterface as RoutingException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -48,6 +51,11 @@ class ResourceHelper
      */
     private $dispatcher;
 
+    /**
+     * @var PropertyAccessorInterface
+     */
+    private $accessor;
+
 
     /**
      * Constructor.
@@ -73,11 +81,11 @@ class ResourceHelper
     }
 
     /**
-     * Returns the em.
+     * Returns the entity manager.
      *
      * @return EntityManagerInterface
      */
-    public function getEntityManager()
+    public function getEntityManager(): EntityManagerInterface
     {
         return $this->manager;
     }
@@ -87,7 +95,7 @@ class ResourceHelper
      *
      * @return ConfigurationRegistry
      */
-    public function getRegistry()
+    public function getRegistry(): ConfigurationRegistry
     {
         return $this->registry;
     }
@@ -97,7 +105,7 @@ class ResourceHelper
      *
      * @return UrlGeneratorInterface
      */
-    public function getUrlGenerator()
+    public function getUrlGenerator(): UrlGeneratorInterface
     {
         return $this->router;
     }
@@ -105,12 +113,12 @@ class ResourceHelper
     /**
      * Returns whether the user has access granted or not on the given resource for the given action.
      *
-     * @param mixed  $resource
-     * @param string $action
+     * @param string|object $resource
+     * @param string        $action
      *
-     * @return boolean
+     * @return bool
      */
-    public function isGranted($resource, $action = 'view')
+    public function isGranted($resource, string $action = 'view'): bool
     {
         return $this->authorization->isGranted($this->getPermission($action), $resource);
     }
@@ -118,27 +126,51 @@ class ResourceHelper
     /**
      * Generates an admin path for the given resource and action.
      *
-     * @param object $resource
-     * @param string $action
-     * @param array  $parameters
-     * @param bool   $absolute
+     * @param string|object $resource
+     * @param string        $action
+     * @param array         $parameters
+     * @param bool          $absolute
      *
      * @return string
-     *@throws \RuntimeException
      *
+     * @throws RuntimeException
      */
-    public function generateResourcePath($resource, $action = 'show', array $parameters = [], $absolute = false)
-    {
+    public function generateResourcePath(
+        $resource,
+        string $action = 'show',
+        array $parameters = [],
+        bool $absolute = false
+    ): string {
         $configuration = $this->registry->findConfiguration($resource);
         $routeName = $configuration->getRoute($action);
-
         $route = $this->findRoute($routeName);
-        $requirements = $route->getRequirements();
 
-        $accessor = PropertyAccess::createPropertyAccessor();
+        if ($resource instanceof ResourceInterface) {
+            $parameters = $this->buildParameters($route, $resource, $parameters);
+        }
+
+        $type = $absolute ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
+
+        return $this->router->generate($routeName, $parameters, $type);
+    }
+
+    /**
+     * Builds the route parameters.
+     *
+     * @param Route                  $route
+     * @param ResourceInterface|null $resource
+     * @param array                  $parameters
+     *
+     * @return array
+     */
+    public function buildParameters(Route $route, ResourceInterface $resource, array $parameters = []): array
+    {
+        $accessor = $this->getAccessor();
 
         $entities = [];
         if (is_object($resource)) {
+            $configuration = $this->registry->findConfiguration($resource);
+
             $entities[$configuration->getResourceName()] = $resource;
             $current = $resource;
             while (null !== $parentId = $configuration->getParentId()) {
@@ -161,6 +193,7 @@ class ResourceHelper
             }
         }
 
+        $requirements = $route->getRequirements();
         foreach ($entities as $name => $resource) {
             $parameter = $name . 'Id';
             if (array_key_exists($parameter, $requirements) && !isset($parameters[$parameter])) {
@@ -168,9 +201,7 @@ class ResourceHelper
             }
         }
 
-        $type = $absolute ? UrlGeneratorInterface::ABSOLUTE_URL : UrlGeneratorInterface::ABSOLUTE_PATH;
-
-        return $this->router->generate($routeName, $parameters, $type);
+        return $parameters;
     }
 
     /**
@@ -178,12 +209,15 @@ class ResourceHelper
      *
      * @param ResourceInterface $resource
      * @param bool              $absolute
-     * @param string            $locale
+     * @param string|null       $locale
      *
      * @return string|null
      */
-    public function generatePublicUrl(ResourceInterface $resource, bool $absolute = false, string $locale = null): ?string
-    {
+    public function generatePublicUrl(
+        ResourceInterface $resource,
+        bool $absolute = false,
+        string $locale = null
+    ): ?string {
         return $this->generateUrl($resource, 'public_url', $absolute, $locale);
     }
 
@@ -201,16 +235,66 @@ class ResourceHelper
     }
 
     /**
+     * Returns the permission for the given action.
+     *
+     * @param string $action
+     *
+     * @return string
+     */
+    public function getPermission(string $action): string
+    {
+        $action = strtoupper($action);
+
+        if ($action == 'LIST') {
+            return Actions::LIST; // TODO or VIEW ?
+        } elseif ($action == 'SHOW') {
+            return Actions::VIEW;
+        } elseif ($action == 'NEW') {
+            return Actions::CREATE;
+        } elseif ($action == 'EDIT') {
+            return Actions::EDIT;
+        } elseif ($action == 'REMOVE') {
+            return Actions::DELETE;
+        }
+
+        return $action;
+    }
+
+    /**
+     * Finds the route definition.
+     *
+     * @param string $routeName
+     * @param bool   $throw
+     *
+     * @return Route|null
+     */
+    public function findRoute(string $routeName, bool $throw = true): ?Route
+    {
+        //  TODO create a route finder ? (same in CmsBundle BreadcrumbBuilder)
+        $i18nRouterClass = 'JMS\I18nRoutingBundle\Router\I18nRouterInterface';
+        if (interface_exists($i18nRouterClass) && $this->router instanceof $i18nRouterClass) {
+            $route = $this->router->getOriginalRouteCollection()->get($routeName);
+        } else {
+            $route = $this->router->getRouteCollection()->get($routeName);
+        }
+        if (null === $route && $throw) {
+            throw new RuntimeException(sprintf('Route "%s" not found.', $routeName));
+        }
+
+        return $route;
+    }
+
+    /**
      * Returns the public url for the given resource.
      *
      * @param ResourceInterface $resource
      * @param string            $name
      * @param bool              $absolute
-     * @param string            $locale
+     * @param string|null       $locale
      *
      * @return string|null
      */
-    private function generateUrl(
+    protected function generateUrl(
         ResourceInterface $resource,
         string $name,
         bool $absolute = false,
@@ -246,52 +330,16 @@ class ResourceHelper
     }
 
     /**
-     * Returns the permission for the given action.
+     * Returns the property accessor.
      *
-     * @param string $action
-     *
-     * @return string
+     * @return PropertyAccessorInterface
      */
-    public function getPermission($action)
+    protected function getAccessor(): PropertyAccessorInterface
     {
-        $action = strtoupper($action);
-
-        if ($action == 'LIST') {
-            return Actions::LIST; // TODO or VIEW ?
-        } elseif ($action == 'SHOW') {
-            return Actions::VIEW;
-        } elseif ($action == 'NEW') {
-            return Actions::CREATE;
-        } elseif ($action == 'EDIT') {
-            return Actions::EDIT;
-        } elseif ($action == 'REMOVE') {
-            return Actions::DELETE;
+        if ($this->accessor) {
+            return $this->accessor;
         }
 
-        return $action;
-    }
-
-    /**
-     * Finds the route definition.
-     *
-     * @param string $routeName
-     * @param bool   $throw
-     *
-     * @return null|\Symfony\Component\Routing\Route
-     */
-    public function findRoute($routeName, $throw = true)
-    {
-        // TODO create a route finder ? (same in CmsBundle BreadcrumbBuilder)
-        $i18nRouterClass = 'JMS\I18nRoutingBundle\Router\I18nRouterInterface';
-        if (interface_exists($i18nRouterClass) && $this->router instanceof $i18nRouterClass) {
-            $route = $this->router->getOriginalRouteCollection()->get($routeName);
-        } else {
-            $route = $this->router->getRouteCollection()->get($routeName);
-        }
-        if (null === $route && $throw) {
-            throw new \RuntimeException(sprintf('Route "%s" not found.', $routeName));
-        }
-
-        return $route;
+        return $this->accessor = PropertyAccess::createPropertyAccessor();
     }
 }
