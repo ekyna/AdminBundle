@@ -70,7 +70,7 @@ class AdminExtension extends AbstractExtension
             ),
             new TwigFunction(
                 'admin_dashboard_widget',
-                [DashboardRenderer::class, 'render'],
+                [DashboardRenderer::class, 'renderWidget'],
                 ['is_safe' => ['html']]
             ),
         ];

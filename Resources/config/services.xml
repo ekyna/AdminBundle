@@ -272,6 +272,7 @@
         <service id="Ekyna\Bundle\AdminBundle\Service\Renderer\DashboardRenderer">
             <argument type="service" id="Twig\Environment" />
             <argument type="collection"/><!-- Replaced by DI extension -->
+            <tag name="twig.runtime"/>
         </service>
 
         <!-- Admin renderer -->
