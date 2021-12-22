@@ -18,8 +18,11 @@
     "license": "MIT",
     "require": {
         "php": ">=7.4",
+        "symfony/rate-limiter": "^5.0",
+        "symfony/security-bundle": "^5.0",
         "ekyna/user": "0.8.x-dev",
         "ekyna/api-bundle": "0.8.x-dev",
+        "ekyna/ui-bundle": "0.8.x-dev",
         "ekyna/table-bundle": "0.8.x-dev",
         "ekyna/google-bundle": "0.8.x-dev",
         "ekyna/setting-bundle": "0.8.x-dev",
