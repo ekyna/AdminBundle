@@ -146,6 +146,10 @@ class AdminExtension extends AbstractExtension
             $container->setDefinition($id, $definition = new Definition($class));
         }
 
+        if ($class !== $definition->getClass()) {
+            $definition->setClass($class);
+        }
+
         if (!$definition->hasTag('form.type')) {
             $definition->addTag('form.type');
         }
@@ -175,6 +179,10 @@ class AdminExtension extends AbstractExtension
             $definition = $container->getDefinition($id);
         } else {
             $container->setDefinition($id, $definition = new Definition($class));
+        }
+
+        if ($class !== $definition->getClass()) {
+            $definition->setClass($class);
         }
 
         if (!$definition->hasTag('table.type')) {

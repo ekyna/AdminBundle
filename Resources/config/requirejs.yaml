@@ -4,6 +4,3 @@ config:
             name: 'ekyna-admin'
             location: 'bundles/ekynaadmin/js'
             main: 'main'
-#build:
-#    include:
-#        - 'ekyna-admin'
