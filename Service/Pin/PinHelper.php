@@ -12,7 +12,7 @@ use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Bundle\ResourceBundle\Helper\ResourceHelper;
 use Ekyna\Component\Resource\Config\Registry\ResourceRegistryInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
-use Ekyna\Component\User\Service\UserProvider;
+use Ekyna\Component\User\Service\UserProviderInterface;
 
 /**
  * Class ResourcePinHelper
@@ -22,7 +22,7 @@ use Ekyna\Component\User\Service\UserProvider;
 class PinHelper
 {
     private ResourceRegistryInterface $registry;
-    private UserProvider              $userProvider;
+    private UserProviderInterface     $userProvider;
     private ResourceHelper            $resourceHelper;
     private EntityManagerInterface    $manager;
 
@@ -30,9 +30,9 @@ class PinHelper
 
     public function __construct(
         ResourceRegistryInterface $registry,
-        UserProvider $userProvider,
-        ResourceHelper $resourceHelper,
-        EntityManagerInterface $manager
+        UserProviderInterface     $userProvider,
+        ResourceHelper            $resourceHelper,
+        EntityManagerInterface    $manager
     ) {
         $this->registry = $registry;
         $this->userProvider = $userProvider;

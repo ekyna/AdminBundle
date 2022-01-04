@@ -6,7 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Service\Mailer;
 
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
-use Ekyna\Component\User\Service\UserProvider;
+use Ekyna\Component\User\Service\UserProviderInterface;
 use Symfony\Component\Mailer\Exception\ExceptionInterface;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
@@ -26,7 +26,7 @@ class MailerFactory
 {
     private MailerInterface         $defaultMailer;
     private Transport               $transportFactory;
-    private UserProvider            $userProvider;
+    private UserProviderInterface   $userProvider;
     private UserRepositoryInterface $userRepository;
 
     /** @var MailerInterface[] */
@@ -35,7 +35,7 @@ class MailerFactory
     public function __construct(
         MailerInterface         $defaultMailer,
         Transport               $transportFactory,
-        UserProvider            $userProvider,
+        UserProviderInterface   $userProvider,
         UserRepositoryInterface $userRepository
     ) {
         $this->defaultMailer = $defaultMailer;

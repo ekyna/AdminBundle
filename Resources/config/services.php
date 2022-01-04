@@ -16,10 +16,18 @@ use Ekyna\Bundle\AdminBundle\Service\Search\UserRepository;
 use Ekyna\Bundle\AdminBundle\Service\Setting\GeneralSettingSchema;
 use Ekyna\Bundle\AdminBundle\Service\Setting\NotificationSettingSchema;
 use Ekyna\Bundle\SettingBundle\DependencyInjection\Compiler\RegisterSchemasPass;
+use Ekyna\Component\User\Service\UserProvider;
 
 return static function (ContainerConfigurator $container) {
     $container
         ->services()
+
+        // User provider
+        ->set('ekyna_admin.provider.user', UserProvider::class)
+            ->args([
+                service('security.token_storage'),
+                param('ekyna_admin.class.user'),
+            ])
 
         // Admin mailer
         ->set('ekyna_admin.mailer', AdminMailer::class)

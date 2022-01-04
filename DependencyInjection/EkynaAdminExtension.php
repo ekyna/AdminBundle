@@ -7,13 +7,13 @@ namespace Ekyna\Bundle\AdminBundle\DependencyInjection;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Bundle\ResourceBundle\DependencyInjection\PrependBundleConfigTrait;
 use Ekyna\Component\User\Service\OAuth\OAuthConfigurator;
-use Ekyna\Component\User\Service\SecurityConfigurator;
+use Ekyna\Component\User\Service\Security\SecurityConfigurator;
+use KnpU\OAuth2ClientBundle\DependencyInjection\Configuration as KnpuConfiguration;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
-use KnpU\OAuth2ClientBundle\DependencyInjection\Configuration as KnpuConfiguration;
 
 use function array_keys;
 use function array_unique;
@@ -180,12 +180,12 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
             ],
             'providers'        => [
                 'ekyna_admin' => [
-                    'id' => 'ekyna_admin.provider.user',
+                    'id' => 'ekyna_admin.security.user_provider',
                 ],
             ],
             'password_hashers' => [
                 UserInterface::class => [
-                    'algorithm' => 'argon2i',
+                    'algorithm' => 'auto',
                 ],
             ],
             'firewalls'        => [

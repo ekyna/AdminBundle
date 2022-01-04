@@ -16,7 +16,7 @@ use Ekyna\Bundle\ResourceBundle\Action\ResourceEventDispatcherTrait;
 use Ekyna\Bundle\UiBundle\Action\FlashTrait;
 use Ekyna\Component\Resource\Action\Permission;
 use Ekyna\Component\Resource\Event\ResourceMessage;
-use Ekyna\Component\User\Service\SecurityUtil;
+use Ekyna\Component\User\Service\Security\SecurityUtil;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 

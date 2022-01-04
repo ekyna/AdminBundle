@@ -6,7 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Command;
 
 use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
 use Ekyna\Component\Resource\Manager\ResourceManagerInterface;
-use Ekyna\Component\User\Service\SecurityUtil;
+use Ekyna\Component\User\Service\Security\SecurityUtil;
 use Symfony\Component\Console\Command\Command;
 
 /**

@@ -8,7 +8,7 @@ use Ekyna\Bundle\AdminBundle\Factory\UserFactoryInterface;
 use Ekyna\Bundle\AdminBundle\Repository\GroupRepositoryInterface;
 use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
 use Ekyna\Component\Resource\Manager\ResourceManagerInterface;
-use Ekyna\Component\User\Service\SecurityUtil;
+use Ekyna\Component\User\Service\Security\SecurityUtil;
 use RuntimeException;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;

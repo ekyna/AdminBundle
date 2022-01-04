@@ -6,7 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Service\Security;
 
 use DateTime;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
-use Ekyna\Component\User\Service\SecurityUtil;
+use Ekyna\Component\User\Service\Security\SecurityUtil;
 
 use function time;
 

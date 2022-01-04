@@ -15,7 +15,7 @@ use Ekyna\Bundle\TableBundle\Extension\Type as BType;
 use Ekyna\Component\Table\Bridge\Doctrine\ORM\Source\EntitySource;
 use Ekyna\Component\Table\Extension\Core\Type as CType;
 use Ekyna\Component\Table\TableBuilderInterface;
-use Ekyna\Component\User\Service\UserProvider;
+use Ekyna\Component\User\Service\UserProviderInterface;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -28,9 +28,9 @@ use function Symfony\Component\Translation\t;
  */
 class UserType extends AbstractResourceType
 {
-    protected UserProvider $userProvider;
+    protected UserProviderInterface $userProvider;
 
-    public function __construct(UserProvider $userProvider)
+    public function __construct(UserProviderInterface $userProvider)
     {
         $this->userProvider = $userProvider;
     }

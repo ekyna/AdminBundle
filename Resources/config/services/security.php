@@ -9,11 +9,11 @@ use Ekyna\Bundle\AdminBundle\Repository\OAuthTokenRepository;
 use Ekyna\Bundle\AdminBundle\Service\Renderer\OauthRenderer;
 use Ekyna\Bundle\AdminBundle\Service\Security\ApiProvider;
 use Ekyna\Bundle\AdminBundle\Service\Security\ApiTokenGenerator;
-use Ekyna\Component\User\Service\LoginFormAuthenticator;
 use Ekyna\Component\User\Service\OAuth\OAuthPassportGenerator;
 use Ekyna\Component\User\Service\OAuth\RoutingLoader;
-use Ekyna\Component\User\Service\SecurityUtil;
-use Ekyna\Component\User\Service\UserProvider;
+use Ekyna\Component\User\Service\Security\LoginFormAuthenticator;
+use Ekyna\Component\User\Service\Security\SecurityUtil;
+use Ekyna\Component\User\Service\Security\UserProvider;
 use Symfony\Component\Security\Http\Event\LoginSuccessEvent;
 use Symfony\Component\Security\Http\Event\LogoutEvent;
 
@@ -42,11 +42,10 @@ return static function (ContainerConfigurator $container) {
             ->tag('twig.runtime')
 
         // User provider
-        ->set('ekyna_admin.provider.user', UserProvider::class)
+        ->set('ekyna_admin.security.user_provider', UserProvider::class)
             ->args([
                 service('ekyna_admin.repository.user'),
-                service('security.token_storage'),
-                param('ekyna_admin.class.user'),
+                service('ekyna_admin.manager.user'),
             ])
 
         // Api provider

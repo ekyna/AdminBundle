@@ -11,7 +11,7 @@ use Ekyna\Component\Table\Context\Profile\StorageInterface;
 use Ekyna\Component\Table\Exception\UnexpectedTypeException;
 use Ekyna\Component\Table\Table;
 use Ekyna\Component\Table\TableInterface;
-use Ekyna\Component\User\Service\UserProvider;
+use Ekyna\Component\User\Service\UserProviderInterface;
 use InvalidArgumentException;
 
 /**
@@ -21,17 +21,10 @@ use InvalidArgumentException;
  */
 class UserStorage implements StorageInterface
 {
-    private UserProvider           $userProvider;
+    private UserProviderInterface  $userProvider;
     private EntityManagerInterface $manager;
 
-
-    /**
-     * Constructor.
-     *
-     * @param UserProvider           $userProvider
-     * @param EntityManagerInterface $manager
-     */
-    public function __construct(UserProvider $userProvider, EntityManagerInterface $manager)
+    public function __construct(UserProviderInterface $userProvider, EntityManagerInterface $manager)
     {
         $this->userProvider = $userProvider;
         $this->manager = $manager;
