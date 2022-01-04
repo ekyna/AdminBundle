@@ -63,7 +63,7 @@ return static function (ContainerConfigurator $container) {
         // Form login authenticator
         ->set('ekyna_admin.security.authenticator.form_login', LoginFormAuthenticator::class)
             ->args([
-                service('ekyna_admin.repository.user'),
+                service('ekyna_admin.security.user_provider'),
                 service('router'),
                 'admin_security_login',
                 'admin_dashboard',
