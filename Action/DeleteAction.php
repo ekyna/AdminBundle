@@ -9,10 +9,9 @@ use Ekyna\Bundle\UiBundle\Model\Modal;
 use Ekyna\Component\Resource\Action\Permission;
 use Ekyna\Component\Resource\Event\ResourceEventInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class DeleteAction
@@ -82,7 +81,7 @@ class DeleteAction extends AbstractFormAction
             $options['cancel_path'] = $this->getCancelPath($options['action']);
         }
 
-        return $this->createForm(ConfirmType::class, null, array_replace([
+        return $this->createForm($this->getFormType(), null, array_replace([
             'method'            => 'POST',
             'attr'              => ['class' => 'form-horizontal'],
             'admin_mode'        => true,
@@ -102,6 +101,13 @@ class DeleteAction extends AbstractFormAction
         }
 
         return $this->generateResourcePath($this->context->getResource(), ListAction::class);
+    }
+
+    public static function configureOptions(OptionsResolver $resolver): void
+    {
+        parent::configureOptions($resolver);
+
+        $resolver->setDefault('type', ConfirmType::class);
     }
 
     public static function configureAction(): array

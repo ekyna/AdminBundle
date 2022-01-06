@@ -45,7 +45,7 @@ class AdminTypeExtension extends AbstractTypeExtension
         }
     }
 
-    public static function getExtendedTypes(): array
+    public static function getExtendedTypes(): iterable
     {
         return [FormType::class];
     }
