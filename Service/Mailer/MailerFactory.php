@@ -14,8 +14,8 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\Dsn;
 use Symfony\Component\Mime\Email;
 
-use function array_keys;
-use function reset;
+use function array_replace;
+use function urlencode;
 
 /**
  * Class MailerFactory
@@ -49,17 +49,13 @@ class MailerFactory
      */
     public function send(Email $message, UserInterface $sender = null): bool
     {
-        $from = array_keys($message->getFrom());
-        $from = reset($from);
+        if (null === $sender) {
+            $sender = $this->resolveSender($message);
+        }
 
-        if (!$sender && $from) {
-            if ($sender = $this->userRepository->findOneByEmail($from, true)) {
-                $current = $this->userProvider->getUser();
-
-                if ($current && ($current !== $sender)) {
-                    $message->getHeaders()->addTextHeader('X-Ekyna-User', $current->getEmail());
-                }
-            }
+        $current = $this->userProvider->getUser();
+        if ($sender && $current && ($current !== $sender)) {
+            $message->getHeaders()->addTextHeader('X-Ekyna-User', $current->getEmail());
         }
 
         $mailer = $this->getUserMailer($sender);
@@ -73,12 +69,25 @@ class MailerFactory
         return true;
     }
 
+    private function resolveSender(Email $message): ?UserInterface
+    {
+        $addresses = $message->getFrom();
+        foreach ($addresses as $address) {
+            $email = $address->getAddress();
+            if ($sender = $this->userRepository->findOneByEmail($email, true)) {
+                return $sender;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Returns the mailer for the given user.
      */
     public function getUserMailer(?UserInterface $user): MailerInterface
     {
-        if (!$user) {
+        if (null === $user) {
             return $this->defaultMailer;
         }
 
@@ -93,9 +102,21 @@ class MailerFactory
         return $this->userMailers[$user->getId()] = $this->defaultMailer;
     }
 
+    public function getDefaultMailer(): MailerInterface
+    {
+        return $this->defaultMailer;
+    }
+
     private function createUserMailer(array $config): ?Mailer
     {
-        $scheme = $config['smtp'] === 'smtp.gmail.com' ? 'gmail' : 'smtp';
+        $config = array_replace([
+            'host'     => '',
+            'username' => '',
+            'password' => '',
+            'port'     => '',
+        ], $config['smtp'] ?? []);
+
+        $scheme = 'smtp'; // TODO Configurable ?
 
         $dsn = new Dsn(
             $scheme,
