@@ -122,7 +122,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
 
         $container
             ->getDefinition('ekyna_admin.listener.security')
-            ->replaceArgument(3, $config['notification']);
+            ->replaceArgument(4, $config['notification']);
     }
 
     private function configureShow(array $config, ContainerBuilder $container): void
@@ -162,7 +162,13 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
         $configs = $container->getExtensionConfig('knpu_oauth2_client');
         $knpuConfig = $this->processConfiguration(new KnpuConfiguration(), $configs);
 
+        $entryPoint = null;
         $customAuthenticators = ['ekyna_admin.security.authenticator.form_login'];
+
+        if ('dev' === $container->getParameter('kernel.environment')) {
+            $entryPoint = 'ekyna_admin.security.authenticator.form_login';
+            $customAuthenticators[] = 'ekyna_admin.security.authenticator.dev';
+        }
 
         // OAuth authenticators
         $owners = array_keys($knpuConfig['clients']);
@@ -194,6 +200,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
                     'pattern'               => "^$routingPrefix",
                     'provider'              => 'ekyna_admin',
                     'custom_authenticators' => $customAuthenticators,
+                    'entry_point'           => $entryPoint,
                     'login_throttling'      => [
                         'max_attempts' => 3,
                         'interval'     => '15 minutes',

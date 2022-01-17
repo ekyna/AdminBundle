@@ -89,6 +89,7 @@ return static function (ContainerConfigurator $container) {
         ->set('ekyna_admin.listener.security', SecurityEventListener::class)
             ->args([
                 service('ekyna_admin.provider.user'),
+                service('ekyna_admin.manager.user'),
                 service('security.authorization_checker'),
                 service('ekyna_admin.mailer'),
                 abstract_arg('Security notification config'),

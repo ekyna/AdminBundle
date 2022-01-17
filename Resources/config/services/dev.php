@@ -6,10 +6,17 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
 use Ekyna\Bundle\AdminBundle\Service\Fixtures\AdminProcessor;
 use Ekyna\Bundle\AdminBundle\Service\Fixtures\AdminProvider;
+use Ekyna\Bundle\AdminBundle\Service\Security\DevAuthenticator;
 
 return static function (ContainerConfigurator $container) {
     $container
         ->services()
+
+        // Dev authenticator
+        ->set('ekyna_admin.security.authenticator.dev', DevAuthenticator::class)
+            ->args([
+                service('ekyna_admin.repository.user'),
+            ])
 
         // Admin provider
         ->set('ekyna_admin.fixtures.admin_provider', AdminProvider::class)

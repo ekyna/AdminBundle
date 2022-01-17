@@ -6,6 +6,8 @@ namespace Ekyna\Bundle\AdminBundle\EventListener;
 
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\AdminMailer;
+use Ekyna\Bundle\AdminBundle\Service\Security\DevAuthenticator;
+use Ekyna\Component\Resource\Manager\ResourceManagerInterface;
 use Ekyna\Component\User\EventListener\SecurityEventListener as BaseListener;
 use Ekyna\Component\User\Service\UserProviderInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -27,11 +29,12 @@ class SecurityEventListener extends BaseListener
 
     public function __construct(
         UserProviderInterface         $userUserProvider,
+        ResourceManagerInterface      $userManager,
         AuthorizationCheckerInterface $securityChecker,
         AdminMailer                   $mailer,
         array                         $config
     ) {
-        parent::__construct($userUserProvider);
+        parent::__construct($userUserProvider, $userManager);
 
         $this->securityChecker = $securityChecker;
         $this->mailer = $mailer;
@@ -44,6 +47,11 @@ class SecurityEventListener extends BaseListener
     public function onLoginSuccess(LoginSuccessEvent $event): void
     {
         parent::onLoginSuccess($event);
+
+        // Do not notify when using dev authenticator
+        if ($event->getRequest()->headers->has(DevAuthenticator::HEADER)) {
+            return;
+        }
 
         $this->notifyUser();
     }
