@@ -8,12 +8,8 @@ use Ekyna\Bundle\AdminBundle\Table\Context\Profile\UserStorage;
 use Ekyna\Bundle\AdminBundle\Table\Context\TableTypeExtension;
 use Ekyna\Bundle\AdminBundle\Table\Extension\SummaryTableTypeExtension;
 use Ekyna\Bundle\AdminBundle\Table\ResourceTableHelper;
-use Ekyna\Bundle\AdminBundle\Table\Type\Column\ActionsTypeExtension;
-use Ekyna\Bundle\AdminBundle\Table\Type\Column\AnchorTypeExtension;
-use Ekyna\Bundle\AdminBundle\Table\Type\Column\BooleanTypeExtension;
-use Ekyna\Bundle\AdminBundle\Table\Type\Column\ConstantChoiceType;
-use Ekyna\Bundle\AdminBundle\Table\Type\Column\EntityTypeExtension;
-use Ekyna\Bundle\AdminBundle\Table\Type\Column\NestedActionsTypeExtension;
+use Ekyna\Bundle\AdminBundle\Table\Type\Column;
+use Ekyna\Bundle\AdminBundle\Table\Type\Filter;
 use Ekyna\Bundle\AdminBundle\Table\Type\UserType;
 
 return static function (ContainerConfigurator $container) {
@@ -58,14 +54,14 @@ return static function (ContainerConfigurator $container) {
             ->tag('table.type')
 
         // Actions column type extension
-        ->set('ekyna_admin.table_column_type_extension.actions', ActionsTypeExtension::class)
+        ->set('ekyna_admin.table_column_type_extension.actions', Column\ActionsTypeExtension::class)
             ->args([
                 service('ekyna_resource.helper'),
             ])
             ->tag('table.column_type_extension')
 
         // Anchor column type extension
-        ->set('ekyna_admin.table_column_type_extension.anchor', AnchorTypeExtension::class)
+        ->set('ekyna_admin.table_column_type_extension.anchor', Column\AnchorTypeExtension::class)
             ->args([
                 service('ekyna_resource.registry.action'),
                 service('security.authorization_checker'),
@@ -74,7 +70,7 @@ return static function (ContainerConfigurator $container) {
             ->tag('table.column_type_extension')
 
         // Boolean column type extension
-        ->set('ekyna_admin.column_type_extension.boolean', BooleanTypeExtension::class)
+        ->set('ekyna_admin.column_type_extension.boolean', Column\BooleanTypeExtension::class)
             ->args([
                 service('ekyna_resource.registry.action'),
                 service('security.authorization_checker'),
@@ -83,24 +79,31 @@ return static function (ContainerConfigurator $container) {
             ->tag('table.column_type_extension')
 
         // Entity column type extension
-        ->set('ekyna_admin.table_column_type_extension.entity', EntityTypeExtension::class)
+        ->set('ekyna_admin.table_column_type_extension.entity', Column\EntityTypeExtension::class)
             ->args([
                 service('security.authorization_checker'),
             ])
             ->tag('table.column_type_extension')
 
         // Nested actions column type extension
-        ->set('ekyna_admin.table_column_type_extension.nested_actions', NestedActionsTypeExtension::class)
+        ->set('ekyna_admin.table_column_type_extension.nested_actions', Column\NestedActionsTypeExtension::class)
             ->args([
                 service('ekyna_resource.helper'),
             ])
             ->tag('table.column_type_extension')
 
         // Constant column type
-        ->set('ekyna_admin.table_column_type.constant_choice', ConstantChoiceType::class)
+        ->set('ekyna_admin.table_column_type.constant_choice', Column\ConstantChoiceType::class)
             ->args([
                 service('translator'),
             ])
             ->tag('table.column_type')
+
+        // Constant filter type
+        ->set('ekyna_admin.table_filter_type.constant_choice', Filter\ConstantChoiceType::class)
+            ->args([
+                service('translator'),
+            ])
+            ->tag('table.filter_type')
     ;
 };

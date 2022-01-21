@@ -91,15 +91,15 @@ class MailerFactory
             return $this->defaultMailer;
         }
 
-        if (isset($this->userMailers[$user->getId()])) {
-            return $this->userMailers[$user->getId()];
+        if (isset($this->userMailers[$userId = $user->getId()])) {
+            return $this->userMailers[$userId];
         }
 
         if ($mailer = $this->createUserMailer($user->getEmailConfig())) {
-            return $this->userMailers[$user->getId()] = $mailer;
+            return $this->userMailers[$userId] = $mailer;
         }
 
-        return $this->userMailers[$user->getId()] = $this->defaultMailer;
+        return $this->userMailers[$userId] = $this->defaultMailer;
     }
 
     public function getDefaultMailer(): MailerInterface
