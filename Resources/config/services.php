@@ -40,12 +40,14 @@ return static function (ContainerConfigurator $container) {
             ])
 
         // Mailer factory
-        ->set('ekyna_admin.mailer_factory', MailerFactory::class)
+        ->set('ekyna_admin.factory.mailer', MailerFactory::class)
             ->args([
                 service('mailer'),
                 service('mailer.transport_factory'),
                 service('ekyna_admin.provider.user'),
                 service('ekyna_admin.repository.user'),
+                service('messenger.default_bus')->ignoreOnInvalid(),
+                service('event_dispatcher')->ignoreOnInvalid(),
             ])
 
         // Search helper

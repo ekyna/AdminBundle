@@ -12,10 +12,11 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\Dsn;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 use function array_replace;
-use function urlencode;
 
 /**
  * Class MailerFactory
@@ -24,24 +25,30 @@ use function urlencode;
  */
 class MailerFactory
 {
-    private MailerInterface         $defaultMailer;
-    private Transport               $transportFactory;
-    private UserProviderInterface   $userProvider;
-    private UserRepositoryInterface $userRepository;
+    private MailerInterface           $defaultMailer;
+    private Transport                 $transportFactory;
+    private UserProviderInterface     $userProvider;
+    private UserRepositoryInterface   $userRepository;
+    private ?MessageBusInterface      $bus;
+    private ?EventDispatcherInterface $dispatcher;
 
     /** @var MailerInterface[] */
     private array $userMailers;
 
     public function __construct(
-        MailerInterface         $defaultMailer,
-        Transport               $transportFactory,
-        UserProviderInterface   $userProvider,
-        UserRepositoryInterface $userRepository
+        MailerInterface           $defaultMailer,
+        Transport                 $transportFactory,
+        UserProviderInterface     $userProvider,
+        UserRepositoryInterface   $userRepository,
+        ?MessageBusInterface      $bus = null,
+        ?EventDispatcherInterface $dispatcher = null
     ) {
         $this->defaultMailer = $defaultMailer;
         $this->transportFactory = $transportFactory;
         $this->userProvider = $userProvider;
         $this->userRepository = $userRepository;
+        $this->bus = $bus;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -107,8 +114,12 @@ class MailerFactory
         return $this->defaultMailer;
     }
 
-    private function createUserMailer(array $config): ?Mailer
+    private function createUserMailer(?array $config): ?Mailer
     {
+        if (empty($config)) {
+            return null;
+        }
+
         $config = array_replace([
             'host'     => '',
             'username' => '',
@@ -132,6 +143,6 @@ class MailerFactory
             return null;
         }
 
-        return new Mailer($transport); // TODO bus / dispatcher
+        return new Mailer($transport, $this->bus, $this->dispatcher);
     }
 }
