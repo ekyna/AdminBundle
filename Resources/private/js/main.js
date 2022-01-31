@@ -514,7 +514,7 @@ require(
     /* -----------------------------------------------------------------------------------------------------------------
      * Helpers
      */
-    var $helperContent = $('#helper-content:visible');
+    /* TODO var $helperContent = $('#helper-content:visible');
     var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');
 
     if ($helperContent.length === 1) {
@@ -551,5 +551,5 @@ require(
         }).on('blur', '*[data-helper]', function() {
             loadHelper(defaultReference);
         });
-    }
+    }*/
 });
