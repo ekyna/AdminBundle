@@ -19,7 +19,6 @@ class ApiTokenGenerator
 {
     private SecurityUtil $utils;
 
-
     public function __construct(SecurityUtil $utils)
     {
         $this->utils = $utils;
@@ -35,7 +34,7 @@ class ApiTokenGenerator
 
         $user
             ->setApiToken($this->utils->generateToken())
-            ->setApiExpiresAt(new DateTime('+1 hour')); // TODO Make configurable
+            ->setApiExpiresAt(new DateTime('+12 hour')); // TODO Make configurable
 
         return true;
     }
