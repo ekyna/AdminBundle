@@ -28,7 +28,7 @@ define(['jquery', 'ekyna-spinner'], function($) {
             checkModel(namespace, ['name', 'resources']);
 
             var $namespace = $acl.find('div.acl-namespace[data-name="' + namespace.name + '"]');
-            if (1 !== $namespace.size()) {
+            if (1 !== $namespace.length) {
                 throw 'Namespace element not found';
             }
 
@@ -37,7 +37,7 @@ define(['jquery', 'ekyna-spinner'], function($) {
                 checkModel(resource, ['name', 'permissions']);
 
                 var $resource = $namespace.find('div.acl-resource[data-name="' + resource.name + '"]');
-                if (1 !== $resource.size()) {
+                if (1 !== $resource.length) {
                     throw 'Resource element not found';
                 }
 
@@ -46,7 +46,7 @@ define(['jquery', 'ekyna-spinner'], function($) {
                     checkModel(perm, ['name', 'granted', 'value', 'inherited']);
 
                     var $permission = $resource.find('div.acl-permission[data-name="' + perm.name + '"] button');
-                    if (1 !== $permission.size()) {
+                    if (1 !== $permission.length) {
                         throw 'Permission element not found';
                     }
 
@@ -86,7 +86,7 @@ define(['jquery', 'ekyna-spinner'], function($) {
                     }
 
                     // Inherited
-                    if (1 !== $inherited.size()) {
+                    if (1 !== $inherited.length) {
                         continue;
                     }
 

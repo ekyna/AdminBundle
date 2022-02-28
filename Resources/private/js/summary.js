@@ -25,7 +25,8 @@ define(['jquery', 'routing', 'bootstrap'], function ($, Router) {
                 container: 'body',
                 html: true,
                 placement: 'auto',
-                trigger: 'hover'
+                trigger: 'hover',
+                sanitize: false
             });
 
             if ($element.is(':hover')) {

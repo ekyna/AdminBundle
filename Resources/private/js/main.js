@@ -36,7 +36,7 @@ require(
     }
 
     var $navTab = $('ul.nav-tabs[data-tab-key]');
-    if (1 === $navTab.size() && storageAvailable('localStorage')) {
+    if (1 === $navTab.length && storageAvailable('localStorage')) {
         var tabKey = $navTab.data('tab-key') + '.tab_id';
 
         $navTab.on('click', 'a', function (e) {
@@ -183,6 +183,12 @@ require(
         }
     });*/
 
+    // hack to fix jquery 3.6 focus security patch that bugs auto search in select-2
+    // https://forums.select2.org/t/search-being-unfocused/1203/10
+    $(document).on('select2:open', () => {
+        document.querySelector('.select2-search__field').focus();
+    });
+
     /* Tabs */
     $(document).on('click', '.nav-tabs a', function (e) {
         e.preventDefault();
@@ -191,7 +197,7 @@ require(
 
     // Forms
     var $forms = $('form');
-    if ($forms.size() > 0) {
+    if ($forms.length > 0) {
         require(['ekyna-form'], function(Form) {
             $forms.each(function(i, f) {
                 var form = Form.create(f);
@@ -202,7 +208,7 @@ require(
 
     // Tables
     var $tables = $('.ekyna-table');
-    if ($tables.size() > 0) {
+    if ($tables.length > 0) {
         require(['ekyna-table'], function(Table) {
             $tables.each(function(i, t) {
                 Table.create(t);
@@ -227,7 +233,7 @@ require(
 
         var $this = $(this), $target = $('#' + $this.data('toggle-details'));
 
-        if (1 === $target.size()) {
+        if (1 === $target.length) {
             if ($target.is(':visible')) {
                 $target.hide();
             } else {
@@ -459,7 +465,7 @@ require(
                 '[data-resource="' + data.added.resource + '"]' +
                 '[data-identifier="' + data.added.identifier + '"]'
             );
-            if (1 === $userPinLink.size()) {
+            if (1 === $userPinLink.length) {
                 $userPinLink
                     .addClass('unpin')
                     .attr('href', Router.generate('admin_pin_resource_unpin', {
@@ -479,7 +485,7 @@ require(
                 '[data-resource="' + data.removed.resource + '"]' +
                 '[data-identifier="' + data.removed.identifier + '"]'
             );
-            if (1 === $userPinLink.size()) {
+            if (1 === $userPinLink.length) {
                 $userPinLink
                     .removeClass('unpin')
                     .attr('href', Router.generate('admin_pin_resource_pin', {

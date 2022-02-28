@@ -15,6 +15,7 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use function sprintf;
+use function Symfony\Component\Translation\t;
 
 /**
  * Class TableType
@@ -27,14 +28,6 @@ class TableType extends AbstractType
     private TableFactoryInterface     $tableFactory;
     private RequestStack              $requestStack;
 
-
-    /**
-     * Constructor.
-     *
-     * @param ResourceRegistryInterface $resourceRegistry
-     * @param TableFactoryInterface     $tableFactory
-     * @param RequestStack              $requestStack
-     */
     public function __construct(
         ResourceRegistryInterface $resourceRegistry,
         TableFactoryInterface     $tableFactory,
@@ -79,17 +72,11 @@ class TableType extends AbstractType
         $view->vars['table'] = $table->createView();
     }
 
-    /**
-     * @inheritDoc
-     */
     public static function getName(): string
     {
         return 'table';
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
@@ -103,7 +90,7 @@ class TableType extends AbstractType
 
                 $rCfg = $this->resourceRegistry->find($options['resource']);
 
-                return $rCfg->getResourceLabel(true);
+                return t($rCfg->getResourceLabel(true), [], $rCfg->getTransDomain());
             })
             ->setAllowedTypes('resource', 'string');
     }
