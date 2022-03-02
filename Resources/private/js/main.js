@@ -1,5 +1,5 @@
 require(
-    ['require', 'jquery', 'routing', 'ekyna-api', 'bootstrap', 'jquery/form', 'ekyna-clipboard-copy'],
+    ['require', 'jquery', 'routing', 'ekyna-api', 'bootstrap', 'jquery/form', 'ekyna-clipboard-copy', 'ekyna-spinner'],
     function(require, $, Router, Api) {
 
     Api.init('admin_api_login');
@@ -12,9 +12,10 @@ require(
     });
 
     function storageAvailable(type) {
+        let storage, x;
         try {
-            var storage = window[type],
-                x = '__storage_test__';
+            storage = window[type];
+            x = '__storage_test__';
             storage.setItem(x, x);
             storage.removeItem(x);
             return true;
@@ -31,30 +32,31 @@ require(
                 // Firefox
                 e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
                 // acknowledge QuotaExceededError only if there's something already stored
-                storage.length !== 0;
+                storage && storage.length !== 0;
         }
     }
 
-    var $navTab = $('ul.nav-tabs[data-tab-key]');
-    if (1 === $navTab.length && storageAvailable('localStorage')) {
-        var tabKey = $navTab.data('tab-key') + '.tab_id';
+    (function() {
+        const $navTab = $('ul.nav-tabs[data-tab-key]');
+        if (1 === $navTab.length && storageAvailable('localStorage')) {
+            const tabKey = $navTab.data('tab-key') + '.tab_id';
 
-        $navTab.on('click', 'a', function (e) {
-            e.preventDefault();
-            $(this).tab('show');
+            $navTab.on('click', 'a', function (e) {
+                e.preventDefault();
+                $(this).tab('show');
 
-            var id = $(this).attr('id');
-            if (id) {
-                localStorage.setItem(tabKey, id);
+                const id = $(this).attr('id');
+                if (id) {
+                    localStorage.setItem(tabKey, id);
+                }
+            });
+
+            const tabId = localStorage.getItem(tabKey);
+            if (tabId) {
+                $navTab.find('a#' + tabId).trigger('click');
             }
-        });
-
-        var tabId = localStorage.getItem(tabKey);
-        if (tabId) {
-            $navTab.find('a#' + tabId).trigger('click');
         }
-    }
-
+    })();
 
     /*var $ = require('jquery'),
         Router = require('routing');
@@ -99,7 +101,7 @@ require(
     // sidebar menu dropdown toggle
     $('#sidebar-menu').on('click', '.dropdown-toggle', function(e) {
         e.preventDefault();
-        var $item = $(this).parent();
+        const $item = $(this).parent();
         $item.toggleClass("active");
         if ($item.hasClass("active")) {
             $item.find(".submenu").slideDown("fast");
@@ -109,26 +111,26 @@ require(
     });
 
     // mobile side-menu slide toggler
-    var $menu = $("#sidebar-nav");
-    $("body").click(function() {
-        if ($(this).hasClass("menu")) {
-            $(this).removeClass("menu");
+    const $menu = $("#sidebar-nav");
+    $('body').on('click', function() {
+        if ($(this).hasClass('menu')) {
+            $(this).removeClass('menu');
         }
     });
-    $menu.click(function(e) {
+    $menu.on('click', function(e) {
         e.stopPropagation();
     });
-    $("#menu-toggler").click(function(e) {
+    $("#menu-toggler").on('click', function(e) {
         e.stopPropagation();
-        $("body").toggleClass("menu");
+        $('body').toggleClass('menu');
     });
-    $(window).resize(function() {
-        $(this).width() > 769 && $("body.menu").removeClass("menu");
+    $(window).on('resize', function() {
+        $(this).width() > 769 && $('body.menu').removeClass('menu');
     });
 
     // quirk to fix dark skin sidebar menu because of B3 border-box
-    if ($menu.height() > $(".content").height()) {
-        $("html").addClass("small");
+    if ($menu.height() > $('.content').height()) {
+        $('html').addClass('small');
     }
 
     // build all tooltips from data-attributes
@@ -186,7 +188,7 @@ require(
     // hack to fix jquery 3.6 focus security patch that bugs auto search in select-2
     // https://forums.select2.org/t/search-being-unfocused/1203/10
     $(document).on('select2:open', () => {
-        document.querySelector('.select2-search__field').focus();
+        document.querySelector('.select2-container--open .select2-search__field').focus();
     });
 
     /* Tabs */
@@ -196,18 +198,18 @@ require(
     });
 
     // Forms
-    var $forms = $('form');
+    const $forms = $('form');
     if ($forms.length > 0) {
         require(['ekyna-form'], function(Form) {
             $forms.each(function(i, f) {
-                var form = Form.create(f);
+                const form = Form.create(f);
                 form.init();
             });
         });
     }
 
     // Tables
-    var $tables = $('.ekyna-table');
+    const $tables = $('.ekyna-table');
     if ($tables.length > 0) {
         require(['ekyna-table'], function(Table) {
             $tables.each(function(i, t) {
@@ -259,9 +261,9 @@ require(
     });
 
     /* -----------------------------------------------------------------------------------------------------------------
-     * Resource side detail
+     * Barcode scanner
      */
-    var $bcBtn = $('#barcode-scanner-button');
+    const $bcBtn = $('#barcode-scanner-button');
     require(['ekyna-admin/barcode-scanner'], function(bsScanner) {
         bsScanner.init({
             //debug: true
@@ -269,7 +271,7 @@ require(
         bsScanner.addListener(function(barcode) {
             $bcBtn.find('> i').removeClass('fa-barcode').addClass('fa-spinner fa-pulse fa-3x fa-fw');
 
-            var xhr = $.ajax({
+            const xhr = $.ajax({
                 url: Router.generate('admin_toolbar_barcode', {
                     barcode: barcode
                 }),
@@ -322,16 +324,16 @@ require(
      * Wide search
      */
     (function() {
-        var self = this,
-            busy = false,
+        const
             $searchForm = $('#wide-search > form'),
             $searchInput = $searchForm.find('input[type=text]'),
             $searchFilters = $searchForm.find('input[type=checkbox]'),
             $searchIcon = $searchForm.find('.input-group-addon > i'),
-            $searchResults = $('#wide-search > div.list-group'),
-            searchXhr, searchTimeout;
+            $searchResults = $('#wide-search > div.list-group');
 
-        this.start = function() {
+        let busy = false, searchXhr, searchTimeout;
+
+        this.start = () => {
             busy = true;
 
             $searchIcon.removeClass('fa-search').addClass('fa-spinner fa-spin');
@@ -344,7 +346,7 @@ require(
                 searchXhr.abort();
             }
 
-            searchTimeout = setTimeout(self.search, 300);
+            searchTimeout = setTimeout(this.search, 300);
         };
 
         this.stop = function() {
@@ -356,7 +358,7 @@ require(
             $searchResults.empty();
 
             if ('' === $searchInput.val()) {
-                self.stop();
+                this.stop();
                 return;
             }
 
@@ -367,9 +369,7 @@ require(
                 dataType: 'json'
             });
 
-            searchXhr.done(function (data) {
-                self.stop();
-
+            searchXhr.done((data) => {
                 if (!data.hasOwnProperty('results')) {
                     return;
                 }
@@ -379,7 +379,7 @@ require(
                 }
 
                 data.results.forEach(function(result) {
-                    var $a = $('<a class="list-group-item"></a>');
+                    let $a = $('<a class="list-group-item"></a>');
 
                     if (result.icon) {
                         $('<i></i>').addClass(result.icon).appendTo($a);
@@ -393,33 +393,51 @@ require(
                 $searchResults.show();
             });
 
-            searchXhr.always(function () {
-                //$bcBtn.find('> i').removeClass('fa-spinner fa-pulse fa-3x fa-fw').addClass('fa-barcode');
-            });
+            searchXhr.always(() => this.stop());
         };
 
         this.init = function() {
             // Prevent filters dropdown to hide on choice selection
-            $searchForm.find('.dropdown-menu input, .dropdown-menu label').on('click', function(e) {
+            $searchForm
+                .find('.dropdown-menu input, .dropdown-menu label')
+                .on('click', function(e) {
+                    e.stopPropagation();
+                });
+
+            // Prevent submitting search form
+            $searchForm.on('submit', function (e) {
+                e.preventDefault();
                 e.stopPropagation();
+
+                return false;
             });
 
-            $searchFilters.on('change', self.start);
-            $searchInput.on('keyup', self.start);
+            $searchFilters.on('change', this.start);
 
-            $searchInput.on('focus', function() {
+            $searchInput.on('keyup', (e) => {
+                if (!/Key[A-Z]|Digit[0-9]|Numpad[0-9]|Space|Comma|Period|Semicolon|(Back)?Slash|Minus|Equal|IntlBackslash|Bracket(Left|Right)|Quote|Backspace/.test(e.code)) {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    return false;
+                }
+
+                this.start();
+            });
+
+            $searchInput.on('focus', () => {
                 if ($searchResults.is(':empty')) {
                     if ('' !== $searchInput.val()) {
-                        self.start();
+                        this.start();
                     }
 
-                    return;
+                    return false;
                 }
 
                 $searchResults.show();
             });
 
-            $(document).on('click', function(e) {
+            $(document).on('click', (e) => {
                 if (busy) {
                     return;
                 }
@@ -431,7 +449,7 @@ require(
                 $searchResults.hide();
             });
 
-            /*$searchInput.on('blur', function () {
+            /*$searchInput.on('blur', () => {
                 $searchResults.hide();
             });*/
         };
@@ -442,120 +460,167 @@ require(
     /* -----------------------------------------------------------------------------------------------------------------
      * User Pins
      */
-    var $pinList = $('.navbar li.user-pins > div');
+    (function() {
+        const $pinList = $('.navbar li.user-pins > div');
 
-    function handlePinResponse(data) {
-        var $userPinLink;
+        function handlePinResponse(data) {
+            let $userPinLink;
 
-        if (data.hasOwnProperty('added')) {
-            // Add new entry in user pins list
-            var $span = $('<span data-id="' + data.added.id + '"></span>'),
-                $link = $('<a href="' + data.added.path + '" title="' + data.added.label + '">' + data.added.label + '</a>'),
-                path = Router.generate('admin_pin_remove', {id: data.added.id}),
-                $remove = ('<a href="' + path + '"><i class="fa fa-remove"></i></a>');
+            if (data.hasOwnProperty('added')) {
+                // Add new entry in user pins list
+                let $span = $('<span data-id="' + data.added.id + '"></span>'),
+                    $link = $('<a href="' + data.added.path + '" title="' + data.added.label + '">' + data.added.label + '</a>'),
+                    path = Router.generate('admin_pin_remove', {id: data.added.id}),
+                    $remove = ('<a href="' + path + '"><i class="fa fa-remove"></i></a>');
 
-            $span
-                .append($link)
-                .append($remove)
-                .prependTo($pinList);
+                $span
+                    .append($link)
+                    .append($remove)
+                    .prependTo($pinList);
 
-            // Toggle (resource) user pin link
-            $userPinLink = $(
-                'a.user-pin' +
-                '[data-resource="' + data.added.resource + '"]' +
-                '[data-identifier="' + data.added.identifier + '"]'
-            );
-            if (1 === $userPinLink.length) {
-                $userPinLink
-                    .addClass('unpin')
-                    .attr('href', Router.generate('admin_pin_resource_unpin', {
-                        name: data.added.resource,
-                        identifier: data.added.identifier
-                    }));
-            }
-        } else if (data.hasOwnProperty('removed')) {
-            // Remove entry in user pins list
-            $pinList
-                .find('span[data-id=' + data.removed.id + ']')
-                .remove();
+                // Toggle (resource) user pin link
+                $userPinLink = $(
+                    'a.user-pin' +
+                    '[data-resource="' + data.added.resource + '"]' +
+                    '[data-identifier="' + data.added.identifier + '"]'
+                );
+                if (1 === $userPinLink.length) {
+                    $userPinLink
+                        .addClass('unpin')
+                        .attr('href', Router.generate('admin_pin_resource_unpin', {
+                            name: data.added.resource,
+                            identifier: data.added.identifier
+                        }));
+                }
+            } else if (data.hasOwnProperty('removed')) {
+                // Remove entry in user pins list
+                $pinList
+                    .find('span[data-id=' + data.removed.id + ']')
+                    .remove();
 
-            // Toggle (resource) user pin link
-            $userPinLink = $(
-                'a.user-pin' +
-                '[data-resource="' + data.removed.resource + '"]' +
-                '[data-identifier="' + data.removed.identifier + '"]'
-            );
-            if (1 === $userPinLink.length) {
-                $userPinLink
-                    .removeClass('unpin')
-                    .attr('href', Router.generate('admin_pin_resource_pin', {
-                        name: data.removed.resource,
-                        identifier: data.removed.identifier
-                    }));
+                // Toggle (resource) user pin link
+                $userPinLink = $(
+                    'a.user-pin' +
+                    '[data-resource="' + data.removed.resource + '"]' +
+                    '[data-identifier="' + data.removed.identifier + '"]'
+                );
+                if (1 === $userPinLink.length) {
+                    $userPinLink
+                        .removeClass('unpin')
+                        .attr('href', Router.generate('admin_pin_resource_pin', {
+                            name: data.removed.resource,
+                            identifier: data.removed.identifier
+                        }));
+                }
             }
         }
-    }
 
-    $(document).on('click', 'a.user-pin', function(e) {
-        e.preventDefault();
+        $(document).on('click', 'a.user-pin', function(e) {
+            e.preventDefault();
 
-        var $this = $(this),
-            url = $this.attr('href');
+            $.ajax({url: $(this).attr('href'), method: 'GET', dataType: 'json'}).done(handlePinResponse);
 
-        $.ajax({url: url, method: 'GET', dataType: 'json'}).done(handlePinResponse);
+            return false;
+        });
 
-        return false;
-    });
+        $('li.user-pins').on('click', 'a:last-child', function(e) {
+            e.preventDefault();
 
-    $('li.user-pins').on('click', 'a:last-child', function(e) {
-        e.preventDefault();
+            $.ajax({url: $(this).attr('href'), method: 'GET', dataType: 'json'}).done(handlePinResponse);
 
-        var $this = $(this), url = $this.attr('href');
-
-        $.ajax({url: url, method: 'GET', dataType: 'json'}).done(handlePinResponse);
-
-        return false;
-    });
+            return false;
+        });
+    })();
 
     /* -----------------------------------------------------------------------------------------------------------------
      * Helpers
      */
-    /* TODO var $helperContent = $('#helper-content:visible');
-    var $helperLoading = $('<p id="helper-content-loading"><i class="fa fa-spinner fa-spin fa-2x"></i></p>');
+    (function() {
+        const $helperContent = $('#helper-content:visible');
+        if (1 !== $helperContent.length) {
+            return;
+        }
 
-    if ($helperContent.length === 1) {
+        if (!storageAvailable('localStorage')) {
+            return;
+        }
+
+        function helperKey(reference) {
+            return 'ekyna_cms_helper[' + reference + ']';
+        }
+
+        /**
+         * @param reference String
+         * @returns Promise<string>
+         */
         function loadHelper(reference) {
-            $helperContent.empty();
-            if (reference) {
-                $helperContent.append($helperLoading);
+            if (!reference) {
+                return Promise.reject('Empty reference');
+            }
+
+            let key = 'ekyna_cms_helper[' + reference + ']',
+                cache = localStorage.getItem(key);
+
+            if (cache) {
+                cache = JSON.parse(cache);
+
+                if (cache.expiresAt > Math.floor((new Date()).getTime() / 1000)) {
+                    return Promise.resolve(cache.content);
+                }
+            }
+
+            $helperContent.loadingSpinner('on');
+            const expiresAt = Math.floor((new Date()).getTime() / 1000) + 60*60*24*7; // One week
+
+            return new Promise((resolve, reject) => {
                 $.ajax({
                     url: Router.generate('ekyna_setting_api_helper_fetch'),
                     data: {reference: reference},
                     type: 'GET',
                     dataType: 'xml'
                 })
-                .done(function(xmldata) {
-                    $helperLoading.remove();
-                    var $content = $(xmldata).find('content');
-                    if ($content.length === 1) {
-                        var $div = $('<div />');
-                        $($content.text()).appendTo($div);
-                        $div.appendTo($helperContent);
+                .done(function (xml) {
+                    let $content = $(xml).find('content'),
+                        content = '';
+
+                    if (1 === $content.length) {
+                        content = $content.text();
                     }
+
+                    localStorage.setItem(key, JSON.stringify({expiresAt, content}));
+
+                    resolve(content);
                 })
-                .always(function() {
-                    $helperLoading.remove();
+                .fail(function () {
+                    localStorage.setItem(key, JSON.stringify({expiresAt, content: ''}));
+
+                    reject('Helper not found');
+                })
+                .always(function () {
+                    $helperContent.loadingSpinner('off');
                 });
-            }
+            })
         }
 
-        var defaultReference = $helperContent.data('helper') || null;
-        loadHelper(defaultReference);
+        function displayHelper(reference) {
+            $helperContent.empty();
 
-        $forms.on('focus', '*[data-helper]', function() {
-            loadHelper($(this).data('helper'));
-        }).on('blur', '*[data-helper]', function() {
-            loadHelper(defaultReference);
-        });
-    }*/
+            loadHelper(reference)
+                .then((content) => {
+                    $('<div />').append(content).appendTo($helperContent);
+                })
+                .catch(() => {});
+        }
+
+        let defaultReference = $helperContent.data('helper') || null;
+        displayHelper(defaultReference);
+
+        $forms
+            .on('focus', '*[data-helper]', function() {
+                displayHelper($(this).data('helper'));
+            })
+            .on('blur', '*[data-helper]', function() {
+                displayHelper(defaultReference);
+            });
+    })();
 });

@@ -22,13 +22,6 @@ class ToolbarController
     private SearchHelper             $helper;
     private EventDispatcherInterface $dispatcher;
 
-
-    /**
-     * Constructor.
-     *
-     * @param SearchHelper             $helper
-     * @param EventDispatcherInterface $dispatcher
-     */
     public function __construct(
         SearchHelper $helper,
         EventDispatcherInterface $dispatcher
@@ -39,10 +32,6 @@ class ToolbarController
 
     /**
      * (Wide) Search action.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
     public function search(Request $request): Response
     {
@@ -57,10 +46,6 @@ class ToolbarController
 
     /**
      * Barcode action.
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
     public function barcode(Request $request): Response
     {

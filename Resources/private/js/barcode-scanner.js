@@ -44,11 +44,11 @@ define(['jquery'], function ($) {
         }
 
         if (this.config.debug) {
-            var ms = (new Date()).getMilliseconds() - this.start;
+            const ms = (new Date()).getMilliseconds() - this.start;
             this.log(this.stack.length + ' chars in ' + ms + ' ms. Avg: ' + Math.round(ms / this.stack.length) + ' ms.');
         }
 
-        var code = this.stack.join('');
+        const code = this.stack.join('');
         this.clear();
 
         this.listeners.forEach(function (listener) {
@@ -125,7 +125,7 @@ define(['jquery'], function ($) {
             clearTimeout(this.timeout);
         }
 
-        this.timeout = setTimeout($.proxy(this.onTimeout, this), this.config.interval);
+        this.timeout = setTimeout(() => this.onTimeout(), this.config.interval);
     };
 
     BarcodeScanner.prototype.init = function (config) {
@@ -138,9 +138,9 @@ define(['jquery'], function ($) {
         }
 
         $(document)
-            .on('focus', 'input, select, textarea, button', $.proxy(this.onFormFocus, this))
-            .on('blur', 'input, select, textarea, button', $.proxy(this.onFormBlur, this))
-            .on('keydown', $.proxy(this.onKeydown, this));
+            .on('focus', 'input, select, textarea, button', () => this.onFormFocus())
+            .on('blur', 'input, select, textarea, button', () => this.onFormBlur())
+            .on('keydown', () => this.onKeydown());
 
         this.binded = true;
 
