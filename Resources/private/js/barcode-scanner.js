@@ -138,12 +138,11 @@ define(['jquery'], function ($) {
         }
 
         $(document)
-            .on('focus', 'input, select, textarea, button', () => this.onFormFocus())
+            .on('focus', 'input, select, textarea, button', (e) => this.onFormFocus(e))
             .on('blur', 'input, select, textarea, button', () => this.onFormBlur())
-            .on('keydown', () => this.onKeydown());
+            .on('keydown', (e) => this.onKeydown(e));
 
         this.binded = true;
-
     };
 
     return new BarcodeScanner();
