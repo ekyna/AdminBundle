@@ -20,14 +20,15 @@ class User extends AbstractUser implements UserInterface
 {
     use AclSubjectTrait;
 
-    protected ?GroupInterface    $group          = null;
-    protected ?string            $apiToken       = null;
-    protected ?DateTimeInterface $apiExpiresAt   = null;
-    protected ?string            $firstName      = null;
-    protected ?string            $lastName       = null;
-    protected ?array             $emailConfig    = null;
-    protected ?string            $emailSignature = null;
-
+    protected ?GroupInterface    $group        = null;
+    protected ?string            $apiToken     = null;
+    protected ?DateTimeInterface $apiExpiresAt = null;
+    protected ?string            $firstName    = null;
+    protected ?string            $lastName     = null;
+    protected ?string            $position     = null;
+    protected ?string            $phone        = null;
+    protected ?string            $mobile       = null;
+    protected ?array             $emailConfig  = null;
 
     public function __toString(): string
     {
@@ -98,6 +99,42 @@ class User extends AbstractUser implements UserInterface
         return $this;
     }
 
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+
+    public function setPosition(?string $position): UserInterface
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(?string $phone): UserInterface
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getMobile(): ?string
+    {
+        return $this->mobile;
+    }
+
+    public function setMobile(?string $mobile): UserInterface
+    {
+        $this->mobile = $mobile;
+
+        return $this;
+    }
+
     public function hasFullName(): bool
     {
         return !empty($this->firstName) && !empty($this->lastName);
@@ -143,18 +180,6 @@ class User extends AbstractUser implements UserInterface
     public function setEmailConfig(array $config = null): UserInterface
     {
         $this->emailConfig = $config;
-
-        return $this;
-    }
-
-    public function getEmailSignature(): ?string
-    {
-        return $this->emailSignature;
-    }
-
-    public function setEmailSignature(string $signature = null): UserInterface
-    {
-        $this->emailSignature = $signature;
 
         return $this;
     }

@@ -1,0 +1,13 @@
+admin_api_login:
+    path: /login
+    methods: [ GET ]
+    controller: Ekyna\Bundle\AdminBundle\Controller\Api\LoginController
+    options:
+        expose: true
+
+admin_api_user_email_signature:
+    path: /user/{id}/email-signature
+    methods: [ GET ]
+    controller: Ekyna\Bundle\AdminBundle\Controller\Api\User\SignatureController
+    requirements:
+        id: \d+

@@ -10,25 +10,13 @@ admin_dashboard:
     methods: [ GET ]
     controller: Ekyna\Bundle\AdminBundle\Controller\DashboardController
 
-admin_api_login:
-    path: '%ekyna_admin.routing_prefix%/api/login'
-    methods: [ GET ]
-    controller: Ekyna\Bundle\AdminBundle\Controller\ApiController
-    options:
-        expose: true
+admin_security:
+    resource: routing/security.yaml
+    prefix: '%ekyna_admin.routing_prefix%'
 
-admin_security_login:
-    path: '%ekyna_admin.routing_prefix%/login'
-    methods: [ GET, POST ]
-    controller: ekyna_admin.controller.security:login
-
-admin_security_check:
-    path: '%ekyna_admin.routing_prefix%/login/check'
-    controller: ekyna_admin.controller.security:check
-
-admin_security_logout:
-    path: '%ekyna_admin.routing_prefix%/logout'
-    controller: ekyna_admin.controller.security:logout
+admin_api:
+    resource: routing/api.yaml
+    prefix: '%ekyna_admin.routing_prefix%/api'
 
 admin_pin:
     resource: routing/pin.yaml

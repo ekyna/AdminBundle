@@ -45,7 +45,6 @@ class GeneratePasswordAction extends AbstractAction implements AdminActionInterf
 
     public function __invoke(): Response
     {
-        /** @var UserInterface $resource */
         $resource = $this->context->getResource();
 
         if (!$resource instanceof UserInterface) {

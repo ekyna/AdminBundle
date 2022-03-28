@@ -11,6 +11,7 @@ use Ekyna\Bundle\AdminBundle\Install\AdminInstaller;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\AdminMailer;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\MailerFactory;
 use Ekyna\Bundle\AdminBundle\Service\Pin\PinHelper;
+use Ekyna\Bundle\AdminBundle\Service\Renderer\SignatureRenderer;
 use Ekyna\Bundle\AdminBundle\Service\Search\SearchHelper;
 use Ekyna\Bundle\AdminBundle\Service\Search\UserRepository;
 use Ekyna\Bundle\AdminBundle\Service\Setting\GeneralSettingSchema;
@@ -118,5 +119,14 @@ return static function (ContainerConfigurator $container) {
                 service('ekyna_resource.acl.manager'),
             ])
             ->tag('ekyna_install.installer', ['priority' => 100])
+
+        // User email signature renderer
+        ->set('ekyna_admin.renderer.user_signature', SignatureRenderer::class)
+            ->args([
+                service('twig'),
+                abstract_arg('User email signature template'),
+                param('kernel.default_locale'),
+            ])
+            ->tag('twig.runtime')
     ;
 };

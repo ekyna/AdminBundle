@@ -35,6 +35,18 @@ interface UserInterface extends BaseUser, AclSubjectInterface
 
     public function setLastName(string $lastName = null): UserInterface;
 
+    public function getPosition(): ?string;
+
+    public function setPosition(?string $position): UserInterface;
+
+    public function getPhone(): ?string;
+
+    public function setPhone(?string $phone): UserInterface;
+
+    public function getMobile(): ?string;
+
+    public function setMobile(?string $mobile): UserInterface;
+
     public function hasFullName(): bool;
 
     public function getFullName(): ?string;
@@ -46,8 +58,4 @@ interface UserInterface extends BaseUser, AclSubjectInterface
     public function getEmailConfig(): ?array;
 
     public function setEmailConfig(array $config = null): UserInterface;
-
-    public function getEmailSignature(): ?string;
-
-    public function setEmailSignature(string $signature = null): UserInterface;
 }

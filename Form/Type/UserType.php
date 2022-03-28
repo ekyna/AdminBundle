@@ -6,7 +6,6 @@ namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Ekyna\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Ekyna\Bundle\ResourceBundle\Form\Type\ResourceChoiceType;
-use Ekyna\Bundle\UiBundle\Form\Type\TinymceType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -30,13 +29,20 @@ class UserType extends AbstractResourceType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('email', Type\EmailType::class, [
+                'label' => t('field.email', [], 'EkynaUi'),
+            ])
             ->add('group', ResourceChoiceType::class, [
                 'label'    => t('field.group', [], 'EkynaUi'),
                 'resource' => 'ekyna_admin.group',
                 'disabled' => !$this->authorizationChecker->isGranted('ROLE_SUPER_ADMIN'),
             ])
-            ->add('email', Type\EmailType::class, [
-                'label' => t('field.email', [], 'EkynaUi'),
+            ->add('enabled', Type\CheckboxType::class, [
+                'label'    => t('field.enabled', [], 'EkynaUi'),
+                'required' => false,
+                'attr'     => [
+                    'align_with_widget' => true,
+                ],
             ])
             ->add('firstName', Type\TextType::class, [
                 'label'    => t('field.first_name', [], 'EkynaUi'),
@@ -46,19 +52,21 @@ class UserType extends AbstractResourceType
                 'label'    => t('field.last_name', [], 'EkynaUi'),
                 'required' => false,
             ])
-            ->add('enabled', Type\CheckboxType::class, [
-                'label'    => t('field.enabled', [], 'EkynaUi'),
+            ->add('position', Type\TextType::class, [
+                'label'    => t('user.field.position', [], 'EkynaAdmin'),
                 'required' => false,
-                'attr'     => [
-                    'align_with_widget' => true,
-                ],
+            ])
+            ->add('phone', Type\TextType::class, [
+                'label'    => t('field.phone', [], 'EkynaUi'),
+                'required' => false,
+            ])
+            ->add('mobile', Type\TextType::class, [
+                'label'    => t('field.mobile', [], 'EkynaUi'),
+                'required' => false,
             ])
             ->add('emailConfig', EmailConfigType::class, [
                 'required' => false,
             ])
-            ->add('emailSignature', TinymceType::class, [
-                'theme'    => 'advanced',
-                'required' => false,
-            ]);
+        ;
     }
 }

@@ -1,0 +1,39 @@
+{% apply spaceless %}
+<p>{{ 'email.closing_greetings'|trans({}, 'EkynaAdmin') }}</p>
+{{ get_setting('notification.signature_pre')|raw }}
+{% set font = 'font-family:Arial,Helvetica,sans-serif;color:#000;font-size:13px;line-height:18px;' %}
+{% set margin = 40 %}
+{% set site_name = get_setting('general.site_name') %}
+<table style="border:none;margin:10px 0 0 0;">
+    <tr>
+        {% if user is not null -%}
+        <td style="border:none;padding:0 {{ margin }}px 0 0;text-align:right;{{ font }}">
+            <p>
+                <strong style="font-size:14px;">{{ user.firstName }} {{ user.lastName }}</strong><br>
+                {% if user.position is not empty %}<em>{{ user.position }}</em><br>{% endif %}
+                {% if user.phone is not empty %}{{ user.phone }}<br>{% endif %}
+                {% if user.mobile is not empty %}{{ user.mobile }}<br>{% endif %}
+                <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+            </p>
+        </td>
+        {%- endif %}
+        {% if logo is not empty -%}
+        <td style="border:none;padding:0 {{ margin }}px 0 0;">
+            <a href="{{ absolute_url('/') }}" title="{{ site_name }}">
+                <img src="{{ logo }}" alt="{{ site_name }}">
+            </a>
+        </td>
+        {%- endif %}
+        <td style="border:none;padding:0;{{ font }}">
+            <strong>{{ site_name }}</strong><br>
+            {%- set address = get_setting('general.site_address') -%}
+            {{ address.street }}<br>
+            {%- if address.supplement is not empty %}{{ address.supplement }}<br>{% endif -%}
+            {{ address.postalCode ~ ' ' ~ address.city }}, {{ address.country|country(locale) }}<br>
+            {%- if address.phone is not empty -%}{{ address.phone }}<br>{%- endif %}
+            {%- if address.mobile is not empty -%}{{ address.mobile }}<br>{%- endif %}
+        </td>
+    </tr>
+</table>
+{{ get_setting('notification.signature_post')|raw }}
+{% endapply %}

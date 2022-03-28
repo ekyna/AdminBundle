@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
-use Ekyna\Bundle\AdminBundle\Controller\ApiController;
+use Ekyna\Bundle\AdminBundle\Controller\Api\LoginController;
+use Ekyna\Bundle\AdminBundle\Controller\Api\User\SignatureController;
 use Ekyna\Bundle\AdminBundle\Controller\DashboardController;
 use Ekyna\Bundle\AdminBundle\Controller\PinController;
 use Ekyna\Bundle\AdminBundle\Controller\ToolbarController;
@@ -15,13 +16,22 @@ return static function (ContainerConfigurator $container) {
         ->services()
 
         // Api controller
-        ->set('ekyna_admin.controller.api', ApiController::class)
+        ->set('ekyna_admin.controller.api.login', LoginController::class)
             ->args([
                 service('ekyna_admin.provider.user'),
                 service('ekyna_admin.security.api_token_generator'),
                 service('ekyna_admin.manager.user'),
             ])
-            ->alias(ApiController::class, 'ekyna_admin.controller.api')->public()
+            ->alias(LoginController::class, 'ekyna_admin.controller.api.login')->public()
+
+        // Api User Signature controller
+        ->set('ekyna_admin.controller.api.user.signature', SignatureController::class)
+            ->args([
+                service('ekyna_admin.repository.user'),
+                service('ekyna_admin.renderer.user_signature'),
+                param('kernel.debug'),
+            ])
+            ->alias(SignatureController::class, 'ekyna_admin.controller.api.user.signature')->public()
 
         // Dashboard controller
         ->set('ekyna_admin.controller.dashboard', DashboardController::class)

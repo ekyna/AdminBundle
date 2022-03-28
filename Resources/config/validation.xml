@@ -46,5 +46,36 @@
     </class>
 
     <!-- TODO user and group validation -->
+    <class name="Ekyna\Bundle\AdminBundle\Entity\User">
+        <property name="email">
+            <constraint name="NotBlank"/>
+            <constraint name="Email"/>
+        </property>
+        <property name="firstName">
+            <constraint name="Length">
+                <option name="max">32</option>
+            </constraint>
+        </property>
+        <property name="lastName">
+            <constraint name="Length">
+                <option name="max">32</option>
+            </constraint>
+        </property>
+        <property name="position">
+            <constraint name="Length">
+                <option name="max">64</option>
+            </constraint>
+        </property>
+        <property name="phone">
+            <constraint name="Length">
+                <option name="max">32</option>
+            </constraint>
+        </property>
+        <property name="mobile">
+            <constraint name="Length">
+                <option name="max">32</option>
+            </constraint>
+        </property>
+    </class>
 
 </constraint-mapping>

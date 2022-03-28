@@ -23,6 +23,9 @@ class ActionAutoConfigurePass extends BasePass
             Util\ModalTrait::class      => [
                 'setRenderer' => 'ekyna_ui.modal.renderer',
             ],
+            Util\SettingTrait::class    => [
+                'setSettingManager' => 'ekyna_setting.manager',
+            ],
             Util\TableTrait::class      => [
                 'setTableFactory' => 'table.factory',
             ],

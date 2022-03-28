@@ -1,0 +1,12 @@
+admin_security_login:
+    path: /login
+    methods: [ GET, POST ]
+    controller: ekyna_admin.controller.security:login
+
+admin_security_check:
+    path: /login/check
+    controller: ekyna_admin.controller.security:check
+
+admin_security_logout:
+    path: /logout
+    controller: ekyna_admin.controller.security:logout

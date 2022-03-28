@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ekyna\Bundle\AdminBundle\Controller;
+namespace Ekyna\Bundle\AdminBundle\Controller\Api;
 
 use Ekyna\Bundle\AdminBundle\Manager\UserManagerInterface;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
@@ -12,11 +12,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class ApiController
+ * Class LoginController
  * @package Ekyna\Bundle\AdminBundle\Controller
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class ApiController
+class LoginController
 {
     private UserProviderInterface $provider;
     private ApiTokenGenerator     $generator;

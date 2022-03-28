@@ -38,9 +38,22 @@
 {% block main_contents %}
     <div class="tab-pane active" id="menu-general">
         {{ show_row(user.email, 'text', {
-            'label': 'field.name',
+            'label': 'field.email',
             'label_trans_domain': 'EkynaUi'
         }) }}
+        <div class="row">
+            <div class="col-md-6">
+                {{ show_row(user.group, 'resource', {'label_col': 4}) }}
+            </div>
+            <div class="col-md-6">
+                {{ show_row(user.enabled, 'boolean', {
+                    'label': 'field.enabled',
+                    'label_trans_domain': 'EkynaUi',
+                    'color': true,
+                    'label_col': 4
+                }) }}
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-6">
                 {{ show_row(user.firstName, 'text', {
@@ -57,15 +70,22 @@
                 }) }}
             </div>
         </div>
+        {{ show_row(user.position, 'text', {
+            'label': 'user.field.position',
+            'label_trans_domain': 'EkynaAdmin'
+        }) }}
         <div class="row">
             <div class="col-md-6">
-                {{ show_row(user.group, 'resource', {'label_col': 4}) }}
+                {{ show_row(user.phone, 'text', {
+                    'label': 'field.phone',
+                    'label_trans_domain': 'EkynaUi',
+                    'label_col': 4
+                }) }}
             </div>
             <div class="col-md-6">
-                {{ show_row(user.enabled, 'boolean', {
-                    'label': 'field.enabled',
+                {{ show_row(user.mobile, 'text', {
+                    'label': 'field.mobile',
                     'label_trans_domain': 'EkynaUi',
-                    'color': true,
                     'label_col': 4
                 }) }}
             </div>
@@ -91,7 +111,7 @@
     </div>
     <div class="tab-pane" id="menu-email">
         {% set config = {
-            'smtp': {'host': null, 'port': null, 'encryption': null, 'auth_mode': null, 'username': null},
+            'smtp': {'host': null, 'port': null, 'encryption': null, 'auth_mode': null, 'username': null, 'password': null},
             'imap': {'mailbox': null, 'folder': null, 'user': null}
         }|merge(user.emailConfig|default({})) %}
         <div class="row show-row">
@@ -107,6 +127,7 @@
                                 <dt>Encryption</dt><dd>{{ config.smtp.encryption }}</dd>
                                 <dt>Auth mode</dt><dd>{{ config.smtp.auth_mode }}</dd>
                                 <dt>Username</dt><dd>{{ config.smtp.username }}</dd>
+                                <dt>Password</dt><dd>***({{ config.smtp.password|length }})</dd>
                             </dl>
                         </div>
                         <div class="col-md-6">
@@ -121,11 +142,6 @@
                 </div>
             </div>
         </div>
-        {{ show_row(user.emailSignature, 'textarea', {
-            'label': 'user.field.email_signature',
-            'label_trans_domain': 'EkynaAdmin',
-            'html': true
-        }) }}
     </div>
     <div class="tab-pane" id="user-acl">
         {{ resource_acl_list(user) }}

@@ -18,9 +18,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class EmailConfigType extends AbstractType
 {
-    /**
-     * @inheritDoc
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $smtp = $builder
@@ -87,8 +84,8 @@ class EmailConfigType extends AbstractType
 
                 $imap = $data['imap'];
                 if (
-                    empty($imap['mailbox']) && empty($imap['folder'])
-                    && empty($imap['user']) && empty($imap['password'])
+                    empty($imap['mailbox']) || empty($imap['folder'])
+                    || empty($imap['user']) || empty($imap['password'])
                 ) {
                     unset($data['imap']);
                 }
@@ -97,13 +94,24 @@ class EmailConfigType extends AbstractType
                     $data = null;
                 }
 
+                // Password lost during form submit => restore it
+                foreach (['smtp', 'imap'] as $key) {
+                    if (!isset($data[$key]) || isset($data[$key]['password'])) {
+                        continue;
+                    }
+
+                    $norm = $event->getForm()->getData();
+                    if (!isset($norm[$key]['password'])) {
+                        continue;
+                    }
+
+                    $data[$key]['password'] = $norm[$key]['password'];
+                }
+
                 $event->setData($data);
-            }, 2048);
+            }, -1);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -111,9 +119,6 @@ class EmailConfigType extends AbstractType
         ]);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function getBlockPrefix(): string
     {
         return 'ekyna_admin_email_config';

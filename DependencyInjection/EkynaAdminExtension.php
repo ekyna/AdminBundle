@@ -68,6 +68,7 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
         $this->configureMenus($config['menus'], $container);
         $this->configureSecurity($config['security'], $container);
         $this->configureShow($config['show'], $container);
+        $this->configureUser($config['user'], $container);
         $this->configureUi($config, $container);
     }
 
@@ -133,6 +134,13 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
         $container
             ->getDefinition('ekyna_admin.show.type_registry')
             ->addMethodCall('registerTemplates', [array_unique($templates)]);
+    }
+
+    private function configureUser(array $config, ContainerBuilder $container): void
+    {
+        $container
+            ->getDefinition('ekyna_admin.renderer.user_signature')
+            ->replaceArgument(1, $config['email_signature']);
     }
 
     private function configureUi(array $config, ContainerBuilder $container): void

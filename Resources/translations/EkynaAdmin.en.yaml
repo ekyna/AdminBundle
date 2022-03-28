@@ -22,6 +22,9 @@ settings:
         from_email: Sender email
         no_reply: No reply email
         to_emails: Recipients emails
+        signature_
+        signature_pre: Pre email signature
+        signature_post: Post email signature
 resource:
     button:
         show_admin: Back office sheet
@@ -49,7 +52,7 @@ user:
         impersonate: Use the user session
     field:
         email_config: Email configuration
-        email_signature: Email signature
+        position: Company position
         api_token: API Token
     alert:
         empty_list: No user configured
@@ -81,6 +84,7 @@ group:
     message:
         operation_denied: You are not allowed to create, edit or delete users groups.
 email:
+    closing_greetings: Regards,
     new_password:
         subject: "[%sitename%] New credentials"
         title : New credentials

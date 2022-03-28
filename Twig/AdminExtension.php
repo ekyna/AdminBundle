@@ -8,6 +8,7 @@ use Ekyna\Bundle\AdminBundle\Service\Pin\PinHelper;
 use Ekyna\Bundle\AdminBundle\Service\Renderer\AdminRenderer;
 use Ekyna\Bundle\AdminBundle\Service\Renderer\DashboardRenderer;
 use Ekyna\Bundle\AdminBundle\Service\Renderer\OauthRenderer;
+use Ekyna\Bundle\AdminBundle\Service\Renderer\SignatureRenderer;
 use Ekyna\Bundle\AdminBundle\Service\Search\SearchHelper;
 use Ekyna\Bundle\AdminBundle\Table\ResourceTableHelper;
 use Twig\Extension\AbstractExtension;
@@ -95,6 +96,12 @@ class AdminExtension extends AbstractExtension
             new TwigFunction(
                 'oauth_owners',
                 [OauthRenderer::class, 'getOAuthConnectButtons']
+            ),
+            /** @see SignatureRenderer::render() */
+            new TwigFunction(
+                'admin_email_signature',
+                [SignatureRenderer::class, 'render'],
+                ['is_safe' => ['html']]
             ),
         ];
     }

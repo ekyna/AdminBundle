@@ -22,6 +22,8 @@ settings:
         from_email: Email de l'expéditeur
         no_reply: Email sans réponse
         to_emails: Emails des destinataires
+        signature_pre: Avant signature email
+        signature_post: Après signature email
 resource:
     button:
         show_admin: Fiche administration
@@ -49,7 +51,7 @@ user:
         impersonate: Utiliser la session
     field:
         email_config: Configuration email
-        email_signature: Signature email
+        position: Poste occupé
         api_token: API Token
     alert:
         empty_list: Aucun utilisateur configuré
@@ -79,6 +81,7 @@ group:
     message:
         operation_denied: Vous n'êtes pas autorisé à créer, modifier ou supprimer les groupes d'utilisateurs.
 email:
+    closing_greetings: Cordialement,
     new_password:
         subject: "[%sitename%] Nouveaux identifiants"
         title : Nouveaux identifiants

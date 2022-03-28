@@ -15,9 +15,6 @@ use Twig\TwigFunction;
  */
 class ShowExtension extends AbstractExtension
 {
-    /**
-     * @inheritDoc
-     */
     public function getFunctions(): array
     {
         return [

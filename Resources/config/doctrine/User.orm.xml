@@ -26,11 +26,14 @@
 
         <field name="firstName" type="string" column="first_name" length="32" nullable="true"/>
         <field name="lastName" type="string" column="last_name" length="32" nullable="true"/>
+        <field name="position" type="string" column="position" length="64" nullable="true"/>
+        <field name="phone" type="string" column="phone" length="32" nullable="true"/>
+        <field name="mobile" type="string" column="mobile" length="32" nullable="true"/>
+
         <field name="enabled" type="boolean" column="enabled"/>
         <field name="lastLogin" type="datetime" column="last_login" nullable="true"/>
 
         <field name="emailConfig" type="encrypted_json" column="email_config" nullable="true"/>
-        <field name="emailSignature" type="text" column="email_signature" nullable="true"/>
 
         <field name="createdAt" type="datetime" column="created_at" nullable="false">
             <gedmo:timestampable on="create"/>

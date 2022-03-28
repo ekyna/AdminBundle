@@ -7,10 +7,10 @@ namespace Ekyna\Bundle\AdminBundle\Service\Setting;
 use Ekyna\Bundle\SettingBundle\Schema\AbstractSchema;
 use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilder;
 use Ekyna\Bundle\UiBundle\Form\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints;
-
 use Symfony\Contracts\Translation\TranslatableInterface;
 
 use function Symfony\Component\Translation\t;
@@ -26,15 +26,19 @@ class NotificationSettingSchema extends AbstractSchema
     {
         $builder
             ->setDefaults(array_merge([
-                'from_name'  => 'Default admin name',
-                'from_email' => 'contact@example.org',
-                'no_reply'   => 'contact@example.org',
-                'to_emails'  => ['contact@example.org'],
+                'from_name'      => 'Default admin name',
+                'from_email'     => 'contact@example.org',
+                'no_reply'       => 'contact@example.org',
+                'to_emails'      => ['contact@example.org'],
+                'signature_pre'  => null,
+                'signature_post' => null,
             ], $this->defaults))
             ->setAllowedTypes('from_name', 'string')
             ->setAllowedTypes('from_email', 'string')
             ->setAllowedTypes('no_reply', 'string')
-            ->setAllowedTypes('to_emails', 'array');
+            ->setAllowedTypes('to_emails', 'array')
+            ->setAllowedTypes('signature_pre', ['string', 'null'])
+            ->setAllowedTypes('signature_post', ['string', 'null']);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -76,6 +80,14 @@ class NotificationSettingSchema extends AbstractSchema
                         'minMessage' => 'settings.notification.at_least_one_email',
                     ]),
                 ],
+            ])
+            ->add('signature_pre', TextareaType::class, [
+                'label'    => t('settings.notification.signature_pre', [], 'EkynaAdmin'),
+                'required' => false,
+            ])
+            ->add('signature_post', TextareaType::class, [
+                'label'    => t('settings.notification.signature_post', [], 'EkynaAdmin'),
+                'required' => false,
             ]);
     }
 
