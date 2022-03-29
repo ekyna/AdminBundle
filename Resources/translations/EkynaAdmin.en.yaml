@@ -22,7 +22,6 @@ settings:
         from_email: Sender email
         no_reply: No reply email
         to_emails: Recipients emails
-        signature_
         signature_pre: Pre email signature
         signature_post: Post email signature
 resource:
