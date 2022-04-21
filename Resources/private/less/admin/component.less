@@ -445,12 +445,7 @@
     position: relative;
     overflow: hidden;
     background: #ffffff;
-    background: url("../img/select-bg.png"), -moz-linear-gradient(top, white 0%, #f0f1f2 100%);
-    background: url("../img/select-bg.png"), -webkit-gradient(linear, left top, left bottom, color-stop(0%, white), color-stop(100%, #f0f1f2));
-    background: url("../img/select-bg.png"), -webkit-linear-gradient(top, white 0%, #f0f1f2 100%);
-    background: url("../img/select-bg.png"), -o-linear-gradient(top, white 0%, #f0f1f2 100%);
-    background: url("../img/select-bg.png"), -ms-linear-gradient(top, white 0%, #f0f1f2 100%);
-    background: url("../img/select-bg.png"), linear-gradient(to bottom, white 0%, #f0f1f2 100%);
+    background: url("/bundles/ekynaadmin/img/select-bg.png"), linear-gradient(to bottom, white 0%, #f0f1f2 100%);
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#f0f1f2', GradientType=0);
     display: inline-block;
     border: 1px solid #cfdde8;
@@ -892,7 +887,7 @@ div.mce-fullscreen {
     }
 }
 
-@-webkit-keyframes reveal {
+@keyframes reveal {
     0% {
         margin-left: -999px;
         opacity: 0;
@@ -901,35 +896,14 @@ div.mce-fullscreen {
     1% {
         margin-left: 0;
         opacity: 0;
-        -webkit-transform: scale(0.98) translateY(-15px);
+        transform: scale(0.98) translateY(-15px);
     }
 
     80% {
-        -webkit-transform: scale(1);
+        transform: scale(1);
     }
 
     100% {
-        -webkit-transform: translateY(0);
-    }
-}
-
-@-moz-keyframes reveal {
-    0% {
-        margin-left: -999px;
-        opacity: 0;
-    }
-
-    1% {
-        margin-left: 0;
-        opacity: 0;
-        -moz-transform: scale(0.98) translateY(-15px);
-    }
-
-    80% {
-        -moz-transform: scale(1);
-    }
-
-    100% {
-        -moz-transform: translateY(0);
+        transform: translateY(0);
     }
 }

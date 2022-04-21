@@ -1,3 +1,5 @@
+@import (reference) "../variables.less";
+
 #side-detail {
     position: fixed;
     bottom: 0;
@@ -30,6 +32,12 @@
     h1 {
         font-size: 28px;
         margin-bottom: 14px;
+
+        &.header {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
     }
 
     h2 {
@@ -42,26 +50,17 @@
         margin-bottom: 10px;
     }
 
+    div.flex {
+        display:flex;
+        justify-content:space-between;
+        margin-bottom: 20px;
+    }
+
     dl.dl-horizontal {
         margin-bottom: 10px;
 
         dt, dd {
             line-height: 1.6;
-        }
-    }
-
-    table {
-        width: 100%;
-        margin-bottom: 14px;
-
-        &.header {
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-
-            h1 {
-                margin: 0;
-            }
         }
     }
 
