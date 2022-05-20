@@ -11,6 +11,7 @@ use Ekyna\Component\Table\Extension\AbstractColumnTypeExtension;
 use Ekyna\Component\Table\Source\RowInterface;
 use Ekyna\Component\Table\View\CellView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 use function array_diff_key;
@@ -24,77 +25,68 @@ use function count;
 class EntityTypeExtension extends AbstractColumnTypeExtension
 {
     private AuthorizationCheckerInterface $authorization;
+    private UrlGeneratorInterface         $urlGenerator;
 
-
-    /**
-     * Constructor.
-     *
-     * @param AuthorizationCheckerInterface $authorization
-     */
-    public function __construct(AuthorizationCheckerInterface $authorization)
-    {
+    public function __construct(
+        AuthorizationCheckerInterface $authorization,
+        UrlGeneratorInterface         $urlGenerator
+    ) {
         $this->authorization = $authorization;
+        $this->urlGenerator = $urlGenerator;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options): void
     {
         $view->vars['block_prefix'] = 'entity';
 
-        if (empty($route = $options['route_name'])) {
+        if (empty($route = $options['route'])) {
             return;
         }
 
         $accessor = $row->getPropertyAccessor();
-        $viewChoices = $view->vars['value'];
+        $entities = $view->vars['value'];
 
-        foreach ($viewChoices as &$viewChoice) {
-            $value = $viewChoice['value'];
+        foreach ($entities as &$entity) {
+            $value = $entity['value'];
             if (!$this->authorization->isGranted(Permission::READ, $value)) {
                 continue;
             }
 
-            $parameters = $options['route_parameters'];
-            if (!empty($options['route_parameters_map'])) {
-                foreach ($options['route_parameters_map'] as $parameter => $propertyPath) {
+            $parameters = $options['parameters'];
+            if (!empty($options['parameters_map'])) {
+                foreach ($options['parameters_map'] as $parameter => $propertyPath) {
                     if (null !== $value = $accessor->getValue($value, $propertyPath)) {
                         $parameters[$parameter] = $value;
                     }
                 }
 
-                if (0 < count(array_diff_key($options['route_parameters_map'], $parameters))) {
+                if (0 < count(array_diff_key($options['parameters_map'], $parameters))) {
                     continue;
                 }
             }
 
-            $viewChoice['parameters'] = $parameters;
+            $entity['tag'] = 'a';
+            $entity['attr'] = [
+                'href' => $this->urlGenerator->generate($route, $parameters),
+            ];
         }
 
-        $view->vars['value'] = $viewChoices;
-        $view->vars['route'] = $route;
+        $view->vars['value'] = $entities;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
-                'route_name'           => null,
-                'route_parameters'     => [],
-                'route_parameters_map' => [],
+                'route'          => null,
+                'parameters'     => [],
+                'parameters_map' => [],
             ])
-            ->setAllowedTypes('route_name', ['null', 'string'])
-            ->setAllowedTypes('route_parameters', 'array')
-            ->setAllowedTypes('route_parameters_map', 'array');
+            ->setAllowedTypes('route', ['null', 'string'])
+            ->setAllowedTypes('parameters', 'array')
+            ->setAllowedTypes('parameters_map', 'array');
     }
 
-    /**
-     * @inheritDoc
-     */
     public static function getExtendedTypes(): array
     {
         return [EntityType::class];

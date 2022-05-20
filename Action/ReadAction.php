@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ekyna\Bundle\AdminBundle\Action;
 
+use Ekyna\Bundle\AdminBundle\Event\ReadResourceEvent;
 use Ekyna\Bundle\ResourceBundle\Action as RA;
 use Ekyna\Component\Resource\Action\Permission;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +18,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ReadAction extends RA\AbstractAction implements AdminActionInterface
 {
     use RA\AuthorizationTrait;
+    use RA\EventDispatcherTrait;
     use RA\TemplatingTrait;
     use Util\BreadcrumbTrait;
 
@@ -45,7 +47,21 @@ class ReadAction extends RA\AbstractAction implements AdminActionInterface
         return [
             'context'                   => $this->context,
             $config->getCamelCaseName() => $this->context->getResource(),
+            'extra_tabs'                => $this->loadExtraTabs(),
         ];
+    }
+
+    protected function loadExtraTabs(): array
+    {
+        $resource = $this->context->getResource();
+
+        $event = new ReadResourceEvent($resource);
+
+        $name = $this->context->getConfig()->getEventName('admin_read');
+
+        $event = $this->getEventDispatcher()->dispatch($event, $name);
+
+        return $event->getSortedTabs();
     }
 
     public static function configureAction(): array

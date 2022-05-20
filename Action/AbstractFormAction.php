@@ -269,7 +269,7 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
             return $path;
         }
 
-        if ($parent = $this->context->getParentResource()) {
+        if ($this->options['redirect_to_parent'] && ($parent = $this->context->getParentResource())) {
             return $this->generateResourcePath($parent);
         }
 
@@ -286,11 +286,15 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
             return $referer;
         }
 
-        if ($parent = $this->context->getParent()) {
+        if ($this->options['redirect_to_parent'] && ($parent = $this->context->getParent())) {
             return $this->generateResourcePath($parent->getResource());
         }
 
-        return $this->generateResourcePath($this->context->getConfig()->getId(), ListAction::class);
+        if ($this->context->getConfig()->hasAction(ListAction::class)) {
+            return $this->generateResourcePath($this->context->getConfig()->getId(), ListAction::class);
+        }
+
+        return $this->generateResourcePath($this->context->getResource());
     }
 
     /**
@@ -316,10 +320,12 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
                 'form_template',
                 'serialization',
             ])
+            ->setDefault('redirect_to_parent', true)
             ->setAllowedTypes('type', 'string')
             ->setAllowedTypes('template', 'string')
             ->setAllowedTypes('form_template', 'string')
             ->setAllowedTypes('serialization', ['string', 'array'])
+            ->setAllowedTypes('redirect_to_parent', 'bool')
             ->setAllowedValues('type', function ($value) {
                 if (is_null($value)) {
                     return true;

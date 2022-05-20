@@ -63,9 +63,8 @@ return static function (ContainerConfigurator $container) {
         // Anchor column type extension
         ->set('ekyna_admin.table_column_type_extension.anchor', Column\AnchorTypeExtension::class)
             ->args([
-                service('ekyna_resource.registry.action'),
-                service('security.authorization_checker'),
                 service('ekyna_resource.helper'),
+                service('security.authorization_checker'),
             ])
             ->tag('table.column_type_extension')
 
@@ -82,6 +81,7 @@ return static function (ContainerConfigurator $container) {
         ->set('ekyna_admin.table_column_type_extension.entity', Column\EntityTypeExtension::class)
             ->args([
                 service('security.authorization_checker'),
+                service('router'),
             ])
             ->tag('table.column_type_extension')
 
@@ -95,6 +95,15 @@ return static function (ContainerConfigurator $container) {
         // Constant column type
         ->set('ekyna_admin.table_column_type.constant_choice', Column\ConstantChoiceType::class)
             ->args([
+                service('translator'),
+            ])
+            ->tag('table.column_type')
+
+        // Resource column type
+        ->set('ekyna_admin.table_column_type.resource', Column\ResourceType::class)
+            ->args([
+                service('ekyna_resource.helper'),
+                service('security.authorization_checker'),
                 service('translator'),
             ])
             ->tag('table.column_type')

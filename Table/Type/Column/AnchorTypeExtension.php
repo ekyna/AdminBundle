@@ -24,18 +24,15 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  */
 class AnchorTypeExtension extends AbstractColumnTypeExtension
 {
-    private ActionRegistryInterface       $actionRegistry;
-    private AuthorizationCheckerInterface $authorization;
     private ResourceHelper                $resourceHelper;
+    private AuthorizationCheckerInterface $authorization;
 
     public function __construct(
-        ActionRegistryInterface       $actionRegistry,
-        AuthorizationCheckerInterface $authorization,
-        ResourceHelper                $resourceHelper
+        ResourceHelper                $resourceHelper,
+        AuthorizationCheckerInterface $authorization
     ) {
-        $this->actionRegistry = $actionRegistry;
-        $this->authorization = $authorization;
         $this->resourceHelper = $resourceHelper;
+        $this->authorization = $authorization;
     }
 
     public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options): void
@@ -54,7 +51,7 @@ class AnchorTypeExtension extends AbstractColumnTypeExtension
             return;
         }
 
-        $aCfg = $this->actionRegistry->find($action);
+        $aCfg = $this->resourceHelper->getActionConfig($action);
 
         if (!$this->authorization->isGranted($aCfg->getPermission(), $resource)) {
             return;
