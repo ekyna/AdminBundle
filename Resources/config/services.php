@@ -9,7 +9,7 @@ use Ekyna\Bundle\AdminBundle\EventListener\GroupEventSubscriber;
 use Ekyna\Bundle\AdminBundle\EventListener\UserEventSubscriber;
 use Ekyna\Bundle\AdminBundle\Install\AdminInstaller;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\AdminMailer;
-use Ekyna\Bundle\AdminBundle\Service\Mailer\MailerFactory;
+use Ekyna\Bundle\AdminBundle\Service\Mailer\UserTransports;
 use Ekyna\Bundle\AdminBundle\Service\Pin\PinHelper;
 use Ekyna\Bundle\AdminBundle\Service\Renderer\SignatureRenderer;
 use Ekyna\Bundle\AdminBundle\Service\Search\SearchHelper;
@@ -40,15 +40,16 @@ return static function (ContainerConfigurator $container) {
                 service('mailer'),
             ])
 
-        // Mailer factory
-        ->set('ekyna_admin.factory.mailer', MailerFactory::class)
+        // User mailer transports
+        ->set('ekyna_admin.user_transports', UserTransports::class)
+            ->decorate('mailer.transports')
+            ->lazy()
             ->args([
-                service('mailer'),
+                service('.inner'),
                 service('mailer.transport_factory'),
-                service('ekyna_admin.provider.user'),
                 service('ekyna_admin.repository.user'),
-                service('messenger.default_bus')->ignoreOnInvalid(),
-                service('event_dispatcher')->ignoreOnInvalid(),
+                service('ekyna_admin.provider.user'),
+                abstract_arg('User transport DSN override'),
             ])
 
         // Search helper

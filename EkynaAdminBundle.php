@@ -23,7 +23,6 @@ class EkynaAdminBundle extends Bundle
         $container->addCompilerPass(new Pass\ActionAutoConfigurePass());
         $container->addCompilerPass(new Pass\ApiPass());
         $container->addCompilerPass(new Pass\DashboardWidgetRegistryPass());
-        $container->addCompilerPass(new Pass\MailerFactoryPass());
         $container->addCompilerPass(new Pass\ShowRegistryPass());
 
         $container->addCompilerPass(new OAuthPass('ekyna_admin', 'ekyna_admin.security.oauth_passport_generator', [

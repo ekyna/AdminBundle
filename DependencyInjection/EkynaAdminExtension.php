@@ -139,6 +139,10 @@ class EkynaAdminExtension extends Extension implements PrependExtensionInterface
     private function configureUser(array $config, ContainerBuilder $container): void
     {
         $container
+            ->getDefinition('ekyna_admin.user_transports')
+            ->setArgument(4, $config['transport']);
+
+        $container
             ->getDefinition('ekyna_admin.renderer.user_signature')
             ->replaceArgument(1, $config['email_signature']);
     }
