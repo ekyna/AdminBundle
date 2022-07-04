@@ -26,12 +26,6 @@ class MenuGroup
     private array $entries  = [];
     private bool  $prepared = false;
 
-
-    /**
-     * Creates a backend menu group.
-     *
-     * @param array $options
-     */
     public function __construct(array $options)
     {
         $this
@@ -42,23 +36,11 @@ class MenuGroup
             ->setRoute($options['route']);
     }
 
-    /**
-     * Returns the name.
-     *
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * Sets the name.
-     *
-     * @param string $name
-     *
-     * @return MenuGroup
-     */
     public function setName(string $name): self
     {
         $this->name = $name;
@@ -66,24 +48,11 @@ class MenuGroup
         return $this;
     }
 
-    /**
-     * Returns the label.
-     *
-     * @return string
-     */
     public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * Sets the label.
-     *
-     * @param string      $label
-     * @param string|null $domain
-     *
-     * @return MenuGroup
-     */
     public function setLabel(string $label, string $domain = null): self
     {
         $this->label = $label;
@@ -93,23 +62,11 @@ class MenuGroup
         return $this;
     }
 
-    /**
-     * Returns the icon.
-     *
-     * @return string
-     */
     public function getIcon(): string
     {
         return $this->icon;
     }
 
-    /**
-     * Sets the icon.
-     *
-     * @param string $icon
-     *
-     * @return MenuGroup
-     */
     public function setIcon(string $icon): self
     {
         $this->icon = $icon;
@@ -119,8 +76,6 @@ class MenuGroup
 
     /**
      * Returns the translation domain.
-     *
-     * @return string
      */
     public function getDomain(): ?string
     {
@@ -129,10 +84,6 @@ class MenuGroup
 
     /**
      * Sets the translation domain.
-     *
-     * @param string|null $domain
-     *
-     * @return MenuGroup
      */
     public function setDomain(?string $domain): self
     {
@@ -141,23 +92,11 @@ class MenuGroup
         return $this;
     }
 
-    /**
-     * Returns the position.
-     *
-     * @return int
-     */
     public function getPosition(): int
     {
         return $this->position;
     }
 
-    /**
-     * Sets the position.
-     *
-     * @param int $position
-     *
-     * @return MenuGroup
-     */
     public function setPosition(int $position): self
     {
         $this->position = $position;
@@ -167,8 +106,6 @@ class MenuGroup
 
     /**
      * Returns the route name.
-     *
-     * @return string|null
      */
     public function getRoute(): ?string
     {
@@ -177,10 +114,6 @@ class MenuGroup
 
     /**
      * Sets the route name.
-     *
-     * @param string|null $route
-     *
-     * @return MenuGroup
      */
     public function setRoute(?string $route): self
     {
@@ -189,11 +122,6 @@ class MenuGroup
         return $this;
     }
 
-    /**
-     * Returns the entries.
-     *
-     * @return MenuEntry[]
-     */
     public function getEntries(): array
     {
         return $this->entries;
@@ -202,9 +130,6 @@ class MenuGroup
     /**
      * Adds an entry.
      *
-     * @param MenuEntry $entry
-     *
-     * @return MenuGroup
      * @throws LogicException
      */
     public function addEntry(MenuEntry $entry): self
@@ -218,11 +143,6 @@ class MenuGroup
         return $this;
     }
 
-    /**
-     * Returns whether the group has entries or not.
-     *
-     * @return bool
-     */
     public function hasEntries(): bool
     {
         return 0 < count($this->entries);

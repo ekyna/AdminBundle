@@ -22,24 +22,11 @@ class SiteAddress
     protected ?string $longitude  = null;
     protected ?string $latitude   = null;
 
-
-    /**
-     * Returns the street.
-     *
-     * @return string
-     */
     public function getStreet(): ?string
     {
         return $this->street;
     }
 
-    /**
-     * Sets the street.
-     *
-     * @param string|null $street
-     *
-     * @return SiteAddress
-     */
     public function setStreet(?string $street): SiteAddress
     {
         $this->street = $street;
@@ -47,23 +34,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the supplement.
-     *
-     * @return string
-     */
     public function getSupplement(): ?string
     {
         return $this->supplement;
     }
 
-    /**
-     * Sets the supplement.
-     *
-     * @param string|null $supplement
-     *
-     * @return SiteAddress
-     */
     public function setSupplement(?string $supplement): SiteAddress
     {
         $this->supplement = $supplement;
@@ -71,23 +46,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the postal code.
-     *
-     * @return string
-     */
     public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
-    /**
-     * Sets the postal code.
-     *
-     * @param string|null $postalCode
-     *
-     * @return SiteAddress
-     */
     public function setPostalCode(?string $postalCode): SiteAddress
     {
         $this->postalCode = $postalCode;
@@ -95,23 +58,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the city.
-     *
-     * @return string
-     */
     public function getCity(): ?string
     {
         return $this->city;
     }
 
-    /**
-     * Sets the city.
-     *
-     * @param string|null $city
-     *
-     * @return SiteAddress
-     */
     public function setCity(?string $city): SiteAddress
     {
         $this->city = $city;
@@ -119,23 +70,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the country.
-     *
-     * @return string
-     */
-    public function getCountry(): ?string
+    public function getCountry(): string
     {
         return $this->country;
     }
 
-    /**
-     * Sets the country.
-     *
-     * @param string $country
-     *
-     * @return SiteAddress
-     */
     public function setCountry(string $country): SiteAddress
     {
         $this->country = $country;
@@ -143,23 +82,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the state.
-     *
-     * @return string
-     */
     public function getState(): ?string
     {
         return $this->state;
     }
 
-    /**
-     * Sets the state.
-     *
-     * @param string|null $state
-     *
-     * @return SiteAddress
-     */
     public function setState(?string $state): SiteAddress
     {
         $this->state = $state;
@@ -167,23 +94,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the phone number.
-     *
-     * @return string
-     */
     public function getPhone(): ?string
     {
         return $this->phone;
     }
 
-    /**
-     * Sets the phone number.
-     *
-     * @param string|null $phone
-     *
-     * @return SiteAddress
-     */
     public function setPhone(?string $phone): SiteAddress
     {
         $this->phone = $phone;
@@ -191,23 +106,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the mobile number.
-     *
-     * @return string
-     */
     public function getMobile(): ?string
     {
         return $this->mobile;
     }
 
-    /**
-     * Sets the mobile number.
-     *
-     * @param string|null $mobile
-     *
-     * @return SiteAddress
-     */
     public function setMobile(?string $mobile): SiteAddress
     {
         $this->mobile = $mobile;
@@ -215,23 +118,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the longitude.
-     *
-     * @return string
-     */
     public function getLongitude(): ?string
     {
         return $this->longitude;
     }
 
-    /**
-     * Sets the longitude.
-     *
-     * @param string|null $longitude
-     *
-     * @return SiteAddress
-     */
     public function setLongitude(?string $longitude): SiteAddress
     {
         $this->longitude = $longitude;
@@ -239,23 +130,11 @@ class SiteAddress
         return $this;
     }
 
-    /**
-     * Returns the latitude.
-     *
-     * @return string
-     */
     public function getLatitude(): ?string
     {
         return $this->latitude;
     }
 
-    /**
-     * Sets the latitude.
-     *
-     * @param string|null $latitude
-     *
-     * @return SiteAddress
-     */
     public function setLatitude(?string $latitude): SiteAddress
     {
         $this->latitude = $latitude;

@@ -35,12 +35,6 @@ trait ModalTrait
 
     /**
      * Creates a modal instance.
-     *
-     * @param string                 $action
-     * @param string|null            $title
-     * @param ResourceInterface|null $resource
-     *
-     * @return Modal
      */
     protected function createModal(string $action, string $title = null, ResourceInterface $resource = null): Modal
     {
@@ -88,10 +82,6 @@ trait ModalTrait
 
     /**
      * Renders the modal.
-     *
-     * @param Modal $modal
-     *
-     * @return Response
      */
     protected function renderModal(Modal $modal): Response
     {

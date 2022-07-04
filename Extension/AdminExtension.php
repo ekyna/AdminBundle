@@ -117,7 +117,6 @@ class AdminExtension extends AbstractExtension
 
     public function configureContainer(ContainerBuilder $container, RegistryFactoryInterface $factory): void
     {
-        /** @var ResourceConfig[] $resources */
         $resources = iterator_to_array($factory->getResourceRegistry()->all());
 
         foreach ($resources as $resource) {

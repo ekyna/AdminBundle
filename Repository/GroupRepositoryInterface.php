@@ -12,10 +12,7 @@ use Ekyna\Component\Resource\Repository\ResourceRepositoryInterface;
  * @package Ekyna\Bundle\AdminBundle\Model
  * @author  Etienne Dauvergne <contact@ekyna.com>
  *
- * @method GroupInterface|null find(int $id)
- * @method GroupInterface|null findOneBy(array $criteria, array $sorting = [])
- * @method GroupInterface[] findAll()
- * @method GroupInterface[] findBy(array $criteria, array $sorting = [], int $limit = null, int $offset = null)
+ * @implements ResourceRepositoryInterface<GroupInterface>
  */
 interface GroupRepositoryInterface extends ResourceRepositoryInterface
 {

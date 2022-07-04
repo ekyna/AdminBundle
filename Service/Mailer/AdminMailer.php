@@ -21,40 +21,17 @@ use Twig\Environment;
  */
 class AdminMailer
 {
-    protected SettingManagerInterface $setting;
-    protected TranslatorInterface     $translator;
-    protected Environment             $twig;
-    protected UrlGeneratorInterface   $urlGenerator;
-    protected MailerInterface         $mailer;
-
-
-    /**
-     * Constructor.
-     *
-     * @param SettingManagerInterface $settings
-     * @param TranslatorInterface     $translator
-     * @param Environment             $twig
-     * @param UrlGeneratorInterface   $urlGenerator
-     * @param MailerInterface            $mailer
-     */
     public function __construct(
-        SettingManagerInterface $settings,
-        TranslatorInterface $translator,
-        Environment $twig,
-        UrlGeneratorInterface $urlGenerator,
-        MailerInterface $mailer
+        protected readonly SettingManagerInterface $setting,
+        protected readonly TranslatorInterface $translator,
+        protected readonly Environment $twig,
+        protected readonly UrlGeneratorInterface $urlGenerator,
+        protected readonly MailerInterface $mailer
     ) {
-        $this->setting = $settings;
-        $this->translator = $translator;
-        $this->twig = $twig;
-        $this->urlGenerator = $urlGenerator;
-        $this->mailer = $mailer;
     }
 
     /**
      * Sends an email to the user to warn about successful login.
-     *
-     * @param UserInterface $user
      *
      * @noinspection PhpDocMissingThrowsInspection
      */
@@ -77,9 +54,6 @@ class AdminMailer
 
     /**
      * Sends an email to the user to warn about the new password.
-     *
-     * @param UserInterface $user
-     * @param string|null   $password
      *
      * @noinspection PhpDocMissingThrowsInspection
      */
@@ -109,10 +83,6 @@ class AdminMailer
 
     /**
      * Sends the message.
-     *
-     * @param string $recipient
-     * @param string $subject
-     * @param string $body
      */
     protected function sendEmail(string $recipient, string $subject, string $body): void
     {

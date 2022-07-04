@@ -7,6 +7,11 @@ namespace Ekyna\Bundle\AdminBundle\Dashboard;
 use Ekyna\Bundle\AdminBundle\Dashboard\Widget\WidgetInterface;
 use InvalidArgumentException;
 
+use function array_key_exists;
+use function in_array;
+use function sprintf;
+use function usort;
+
 /**
  * Class Dashboard
  * @package Ekyna\Bundle\AdminBundle\Dashboard
@@ -14,25 +19,15 @@ use InvalidArgumentException;
  */
 class Dashboard
 {
-    /**
-     * @var WidgetInterface[]
-     */
+    /** @var array<WidgetInterface> */
     protected array $widgets = [];
-
-    /**
-     * @var WidgetInterface[]
-     */
+    /** @var array<WidgetInterface>|null */
     protected ?array $sortedWidgets = null;
-
 
     /**
      * Returns whether the dashboard has the widget or not.
-     *
-     * @param string|WidgetInterface $nameOrWidget
-     *
-     * @return bool
      */
-    public function hasWidget($nameOrWidget): bool
+    public function hasWidget(WidgetInterface|string $nameOrWidget): bool
     {
         $name = $nameOrWidget instanceof WidgetInterface ? $nameOrWidget->getName() : $nameOrWidget;
 
@@ -41,10 +36,6 @@ class Dashboard
 
     /**
      * Adds the widget.
-     *
-     * @param WidgetInterface $widget
-     *
-     * @return Dashboard
      */
     public function addWidget(WidgetInterface $widget): Dashboard
     {
@@ -61,7 +52,7 @@ class Dashboard
     /**
      * Returns the widgets.
      *
-     * @return array|Widget\WidgetInterface[]
+     * @return array<WidgetInterface>
      */
     public function getWidgets(): array
     {
@@ -88,17 +79,19 @@ class Dashboard
     /**
      * Returns the stylesheets files paths.
      *
-     * @return string[]
+     * @return array<string>
      */
     public function getStylesheets(): array
     {
         $paths = [];
 
         foreach ($this->widgets as $widget) {
-            if (!empty($path = $widget->getOption('css_path'))) {
-                if (!in_array($path, $paths)) {
-                    $paths[] = $path;
-                }
+            if (empty($path = $widget->getOption('css_path'))) {
+                continue;
+            }
+
+            if (!in_array($path, $paths, true)) {
+                $paths[] = $path;
             }
         }
 
@@ -108,17 +101,19 @@ class Dashboard
     /**
      * Returns the javascript files paths.
      *
-     * @return string[]
+     * @return array<string>
      */
     public function getJavascripts(): array
     {
         $paths = [];
 
         foreach ($this->widgets as $widget) {
-            if (!empty($path = $widget->getOption('js_path'))) {
-                if (!in_array($path, $paths)) {
-                    $paths[] = $path;
-                }
+            if (empty($path = $widget->getOption('js_path'))) {
+                continue;
+            }
+
+            if (!in_array($path, $paths, true)) {
+                $paths[] = $path;
             }
         }
 

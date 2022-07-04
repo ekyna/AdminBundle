@@ -7,9 +7,14 @@ namespace Ekyna\Bundle\AdminBundle\Show\Exception;
 use Throwable;
 use UnexpectedValueException as BaseException;
 
+use function array_slice;
+use function count;
 use function get_class;
 use function gettype;
+use function implode;
 use function is_object;
+use function reset;
+use function sprintf;
 
 /**
  * Class InvalidTypeException
@@ -18,15 +23,7 @@ use function is_object;
  */
 class UnexpectedTypeException extends BaseException implements ExceptionInterface
 {
-    /**
-     * Constructor.
-     *
-     * @param mixed           $value
-     * @param string|string[] $types
-     * @param int             $code
-     * @param Throwable|null  $previous
-     */
-    public function __construct($value, $types, $code = 0, Throwable $previous = null)
+    public function __construct(mixed $value, array|string $types, int $code = 0, Throwable $previous = null)
     {
         $types = (array)$types;
 

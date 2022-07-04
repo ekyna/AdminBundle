@@ -36,11 +36,11 @@ class AdminRenderer
     private array                         $config;
 
     public function __construct(
-        ResourceHelper $resourceHelper,
-        PinHelper $pinHelper,
+        ResourceHelper                $resourceHelper,
+        PinHelper                     $pinHelper,
         AuthorizationCheckerInterface $authorizationChecker,
-        UiRenderer $uiRenderer,
-        array $config
+        UiRenderer                    $uiRenderer,
+        array                         $config
     ) {
         $this->resourceHelper = $resourceHelper;
         $this->pinHelper = $pinHelper;
@@ -75,10 +75,10 @@ class AdminRenderer
      * Renders a resource action button.
      */
     public function renderResourceButton(
-        $resource,
-        string $action = ReadAction::class,
-        array $options = [],
-        array $attributes = []
+        ResourceInterface|string $resource,
+        string                   $action = ReadAction::class,
+        array                    $options = [],
+        array                    $attributes = []
     ): string {
         // TODO Register and use ResourceButtonGeneratorInterface
         if (in_array($action, ['public', 'editor'], true)) {
@@ -134,7 +134,7 @@ class AdminRenderer
 
         /**
          * @TODO Check if prefixed translation exists.
-         * @see \Symfony\Component\Translation\MessageCatalogueInterface::defines
+         * @see  \Symfony\Component\Translation\MessageCatalogueInterface::defines
          */
         /*if (is_string($label) && (0 === strpos($label, 'button.')) && !($options['short'] ?? false)) {
             $config = $this->resourceHelper->getResourceConfig($resource);
@@ -163,23 +163,20 @@ class AdminRenderer
 
     /**
      * Returns whether the user has access granted or not on the given resource for the given action.
-     *
-     * @param string|object $resource
      */
-    public function hasResourceAccess($resource, string $action = 'view'): bool
+    public function hasResourceAccess(ResourceInterface|string $resource, string $action = 'view'): bool
     {
         return $this->resourceHelper->isGranted($action, $resource);
     }
 
     /**
      * Returns the resource path.
-     *
-     * @TODO PHP8 Union types
-     *
-     * @param string|object $resource
      */
-    public function generateResourcePath($resource, string $action = ReadAction::class, array $parameters = []): string
-    {
+    public function generateResourcePath(
+        ResourceInterface|string $resource,
+        string                   $action = ReadAction::class,
+        array                    $parameters = []
+    ): string {
         return $this->resourceHelper->generateResourcePath($resource, $action, $parameters);
     }
 
@@ -251,15 +248,13 @@ EOT;
         if ($this->hasResourceAccess($resource)) {
             $url = $this->resourceHelper->generateResourcePath($resource, ReadAction::class);
 
-            if (null !== $url) {
-                $buttons[] = $this
-                    ->uiRenderer
-                    ->renderButton('resource.button.show_admin', [
-                        'path'         => $url,
-                        'type'         => 'link',
-                        'trans_domain' => 'EkynaAdmin',
-                    ]);
-            }
+            $buttons[] = $this
+                ->uiRenderer
+                ->renderButton('resource.button.show_admin', [
+                    'path'         => $url,
+                    'type'         => 'link',
+                    'trans_domain' => 'EkynaAdmin',
+                ]);
         }
 
         if (empty($buttons)) {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ekyna\Bundle\AdminBundle\Service\Setting;
 
 use Ekyna\Bundle\SettingBundle\Schema\AbstractSchema;
-use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilder;
+use Ekyna\Bundle\SettingBundle\Schema\SettingBuilder;
 use Ekyna\Bundle\UiBundle\Form\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -22,7 +22,7 @@ use function Symfony\Component\Translation\t;
  */
 class NotificationSettingSchema extends AbstractSchema
 {
-    public function buildSettings(SettingsBuilder $builder): void
+    public function buildSettings(SettingBuilder $builder): void
     {
         $builder
             ->setDefaults(array_merge([

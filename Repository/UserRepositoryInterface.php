@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ekyna\Bundle\AdminBundle\Repository;
 
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
+use Ekyna\Component\Resource\Repository\ResourceRepositoryInterface;
 use Ekyna\Component\User\Repository\UserRepositoryInterface as BaseRepository;
 
 /**
@@ -12,10 +13,7 @@ use Ekyna\Component\User\Repository\UserRepositoryInterface as BaseRepository;
  * @package Ekyna\Bundle\AdminBundle\Repository
  * @author  Etienne Dauvergne <contact@ekyna.com>
  *
- * @method UserInterface|null find(int $id)
- * @method UserInterface|null findOneBy(array $criteria, array $sorting = [])
- * @method UserInterface[] findAll()
- * @method UserInterface[] findBy(array $criteria, array $sorting = [], int $limit = null, int $offset = null)
+ * @implements ResourceRepositoryInterface<UserInterface>
  */
 interface UserRepositoryInterface extends BaseRepository
 {

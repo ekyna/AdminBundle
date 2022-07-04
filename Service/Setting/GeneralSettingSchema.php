@@ -7,7 +7,7 @@ namespace Ekyna\Bundle\AdminBundle\Service\Setting;
 use Ekyna\Bundle\AdminBundle\Form\Type\SiteAddressType;
 use Ekyna\Bundle\AdminBundle\Model\SiteAddress;
 use Ekyna\Bundle\SettingBundle\Schema\AbstractSchema;
-use Ekyna\Bundle\SettingBundle\Schema\SettingsBuilder;
+use Ekyna\Bundle\SettingBundle\Schema\SettingBuilder;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints;
@@ -23,7 +23,7 @@ use function Symfony\Component\Translation\t;
  */
 class GeneralSettingSchema extends AbstractSchema
 {
-    public function buildSettings(SettingsBuilder $builder): void
+    public function buildSettings(SettingBuilder $builder): void
     {
         $builder
             ->setDefaults(array_merge([
