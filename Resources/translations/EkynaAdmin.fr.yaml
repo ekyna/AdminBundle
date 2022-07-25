@@ -51,6 +51,7 @@ user:
         impersonate: Utiliser la session
     field:
         email_config: Configuration email
+        email_signature: Signature email
         position: Poste occupé
         api_token: API Token
     alert:

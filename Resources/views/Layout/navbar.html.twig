@@ -136,6 +136,11 @@
                 <li style="white-space: nowrap;">
                     <span>{{ app.user.email }}<br><small>{{ app.user.group.name }}</small></span>
                 </li>
+                <li>
+                    <a href="{{ path('admin_api_user_email_signature', {'id': app.user.id}) }}">
+                        {{ 'user.field.email_signature'|trans({}, 'EkynaAdmin') }}
+                    </a>
+                </li>
                 <li role="separator" class="divider"></li>
                 <li>
                     <a href="{{ path('admin_security_logout') }}">
