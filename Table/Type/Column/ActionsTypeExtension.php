@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Ekyna\Bundle\AdminBundle\Table\Type\Column;
 
+use Ekyna\Bundle\AdminBundle\Action\DeleteAction;
+use Ekyna\Bundle\AdminBundle\Action\UpdateAction;
 use Ekyna\Bundle\ResourceBundle\Helper\ResourceHelper;
 use Ekyna\Bundle\TableBundle\Extension\Type\Column\ActionsType;
 use Ekyna\Component\Resource\Config\ResourceConfig;
@@ -120,9 +122,12 @@ class ActionsTypeExtension extends AbstractColumnTypeExtension
         $resolver
             ->setDefaults([
                 'resource'        => null,
-                'actions'         => [],
+                'actions'         => [
+                    UpdateAction::class,
+                    DeleteAction::class,
+                ],
                 'buttons_loader'  => function (Options $options, $extended) {
-                    return function (Options $options, array $buttons) use ($extended) {
+                    return function (Options $options, array $buttons) use ($extended): array {
                         if ($extended) {
                             $buttons = $extended($options, $buttons);
                         }
@@ -153,7 +158,7 @@ class ActionsTypeExtension extends AbstractColumnTypeExtension
                         $resource = $this->helper->getResourceConfig($r);
                     }
 
-                    return function (RowInterface $row, array $button) use ($extended, $resource) {
+                    return function (RowInterface $row, array $button) use ($extended, $resource): ?array {
                         $rCfg = $resource;
                         if ($r = $button['resource']) {
                             $rCfg = $this->helper->getResourceConfig($r);

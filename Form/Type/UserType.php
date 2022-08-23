@@ -59,14 +59,19 @@ class UserType extends AbstractResourceType
             ->add('phone', Type\TextType::class, [
                 'label'    => t('field.phone', [], 'EkynaUi'),
                 'required' => false,
+                'attr'     => [
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('mobile', Type\TextType::class, [
                 'label'    => t('field.mobile', [], 'EkynaUi'),
                 'required' => false,
+                'attr'     => [
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('emailConfig', EmailConfigType::class, [
                 'required' => false,
-            ])
-        ;
+            ]);
     }
 }

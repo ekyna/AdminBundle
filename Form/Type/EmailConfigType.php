@@ -48,9 +48,16 @@ class EmailConfigType extends AbstractType
                 ],
                 'required' => true,
             ])
-            ->add('username', Type\TextType::class)
+            ->add('username', Type\TextType::class, [
+                'attr' => [
+                    'autocomplete' => 'off',
+                ],
+            ])
             ->add('password', Type\PasswordType::class, [
                 'always_empty' => false,
+                'attr'         => [
+                    'autocomplete' => 'off',
+                ],
             ]);
 
         $imap = $builder
@@ -66,9 +73,15 @@ class EmailConfigType extends AbstractType
             ])
             ->add('user', Type\TextType::class, [
                 'required' => true,
+                'attr'     => [
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('password', Type\PasswordType::class, [
                 'always_empty' => false,
+                'attr'         => [
+                    'autocomplete' => 'off',
+                ],
             ]);
 
         $builder
@@ -84,8 +97,10 @@ class EmailConfigType extends AbstractType
 
                 $imap = $data['imap'];
                 if (
-                    empty($imap['mailbox']) || empty($imap['folder'])
-                    || empty($imap['user']) || empty($imap['password'])
+                    empty($imap['mailbox'])
+                    || empty($imap['folder'])
+                    || empty($imap['user'])
+                    || empty($imap['password'])
                 ) {
                     unset($data['imap']);
                 }

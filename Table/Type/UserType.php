@@ -6,8 +6,6 @@ namespace Ekyna\Bundle\AdminBundle\Table\Type;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use Ekyna\Bundle\AdminBundle\Action\DeleteAction;
-use Ekyna\Bundle\AdminBundle\Action\UpdateAction;
 use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
 use Ekyna\Bundle\ResourceBundle\Table\Filter\ResourceType;
 use Ekyna\Bundle\ResourceBundle\Table\Type\AbstractResourceType;
@@ -70,10 +68,6 @@ class UserType extends AbstractResourceType
             ])
             ->addColumn('actions', BType\Column\ActionsType::class, [
                 'resource' => $this->dataClass,
-                'actions'  => [
-                    UpdateAction::class,
-                    DeleteAction::class,
-                ],
             ])
             ->addFilter('email', CType\Filter\TextType::class, [
                 'label'    => t('field.email', [], 'EkynaUi'),
