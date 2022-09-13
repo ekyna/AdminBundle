@@ -76,6 +76,7 @@ return static function (ContainerConfigurator $container) {
         ->set('ekyna_admin.listener.user', UserEventSubscriber::class)
             ->call('setPasswordHasher', [service('security.user_password_hasher')])
             ->call('setSecurityUtil', [service('ekyna_admin.security_util')])
+            ->call('setPersistenceHelper', [service('ekyna_resource.orm.persistence_helper')])
             ->tag('resource.event_subscriber')
 
         // Group event subscriber
