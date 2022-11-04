@@ -23,12 +23,8 @@ use function sprintf;
  */
 class ChangeUserPasswordCommand extends AbstractUserCommand
 {
-    protected static $defaultName = 'ekyna:admin:change-user-password';
-
-    protected function configure(): void
-    {
-        $this->setDescription("Changes a admin user's password.");
-    }
+    protected static $defaultName        = 'ekyna:admin:change-user-password';
+    protected static $defaultDescription = 'Changes a admin user\'s password.';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -65,6 +61,7 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
                 return $answer;
             });
             $question->setMaxAttempts(3);
+            $question->setHidden(true);
             $password = $helper->ask($input, $output, $question);
         }
 

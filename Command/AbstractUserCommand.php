@@ -18,27 +18,11 @@ abstract class AbstractUserCommand extends Command
 {
     protected const PASSWORD_REGEX = '#^[\S]{6,}$#';
 
-    protected UserRepositoryInterface  $userRepository;
-    protected ResourceManagerInterface $userManager;
-    protected SecurityUtil             $securityUtil;
-
-
-    /**
-     * Constructor.
-     *
-     * @param UserRepositoryInterface  $userRepository
-     * @param ResourceManagerInterface $userManager
-     * @param SecurityUtil             $securityUtil
-     */
     public function __construct(
-        UserRepositoryInterface $userRepository,
-        ResourceManagerInterface $userManager,
-        SecurityUtil $securityUtil
+        protected readonly UserRepositoryInterface  $userRepository,
+        protected readonly ResourceManagerInterface $userManager,
+        protected readonly SecurityUtil             $securityUtil
     ) {
         parent::__construct();
-
-        $this->userRepository = $userRepository;
-        $this->userManager = $userManager;
-        $this->securityUtil = $securityUtil;
     }
 }

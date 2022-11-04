@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ekyna\Bundle\AdminBundle\Command;
 
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,8 +18,8 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
  */
 class GenerateUserApiTokenCommand extends AbstractUserCommand
 {
-    protected static $defaultName = 'ekyna:admin:generate-api-token';
-
+    protected static $defaultName        = 'ekyna:admin:generate-api-token';
+    protected static $defaultDescription = 'Generates user(s) api token(s).';
 
     /**
      * @inheritDoc
@@ -27,8 +28,7 @@ class GenerateUserApiTokenCommand extends AbstractUserCommand
     {
         $this
             ->addOption('id', null, InputOption::VALUE_REQUIRED, 'The user id')
-            ->addOption('email', null, InputOption::VALUE_REQUIRED, 'The user email')
-            ->setDescription('Generates user(s) api token(s).');
+            ->addOption('email', null, InputOption::VALUE_REQUIRED, 'The user email');
     }
 
     /**
@@ -58,6 +58,7 @@ class GenerateUserApiTokenCommand extends AbstractUserCommand
             return 0;
         }
 
+        /** @var UserInterface $user */
         foreach ($users as $user) {
             $name = sprintf('[%d] %s', $user->getId(), $user->getEmail());
 
@@ -66,7 +67,9 @@ class GenerateUserApiTokenCommand extends AbstractUserCommand
                 str_pad('.', 64 - mb_strlen($name), '.', STR_PAD_LEFT)
             ));
 
-            $this->securityUtil->generateToken($user);
+            $token = $this->securityUtil->generateToken();
+
+            $user->setApiToken($token);
 
             $event = $this->userManager->update($user);
 

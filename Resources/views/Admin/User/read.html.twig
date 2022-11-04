@@ -95,9 +95,7 @@
                 {% if user.apiToken is empty %}
                     {% set token = '<em>' ~ ('value.undefined'|trans({}, 'EkynaUi')) ~ '</em>' %}
                 {% else %}
-                    {% set token = '<span data-clipboard-copy="' ~ user.apiToken ~ '">'
-                        ~ (user.apiToken|slice(0, 32)) ~ '&hellip;' ~
-                        '</span>' %}
+                    {% set token = user.apiToken|ui_clipboard_copy({'label': user.apiToken|slice(0, 32) ~ '&hellip;'}) %}
                 {% endif %}
                 {% set button = admin_resource_btn(user, 'Ekyna\\Bundle\\AdminBundle\\Action\\User\\GenerateApiTokenAction', {
                     'size': 'xs',

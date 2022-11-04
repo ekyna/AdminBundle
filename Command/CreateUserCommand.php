@@ -26,22 +26,17 @@ use Throwable;
  */
 class CreateUserCommand extends AbstractUserCommand
 {
-    protected static $defaultName = 'ekyna:admin:create-user';
-
-    protected GroupRepositoryInterface $groupRepository;
-    protected UserFactoryInterface     $userFactory;
+    protected static $defaultName        = 'ekyna:admin:create-user';
+    protected static $defaultDescription = 'Creates a new admin user.';
 
     public function __construct(
-        UserRepositoryInterface $userRepository,
-        ResourceManagerInterface $userManager,
-        SecurityUtil $securityUtil,
-        UserFactoryInterface $userFactory,
-        GroupRepositoryInterface $groupRepository
+        UserRepositoryInterface                   $userRepository,
+        ResourceManagerInterface                  $userManager,
+        SecurityUtil                              $securityUtil,
+        private readonly UserFactoryInterface     $userFactory,
+        private readonly GroupRepositoryInterface $groupRepository
     ) {
         parent::__construct($userRepository, $userManager, $securityUtil);
-
-        $this->userFactory = $userFactory;
-        $this->groupRepository = $groupRepository;
     }
 
     protected function configure(): void
@@ -49,8 +44,7 @@ class CreateUserCommand extends AbstractUserCommand
         $this
             ->addArgument('group', InputArgument::OPTIONAL, 'The user group id')
             ->addArgument('email', InputArgument::OPTIONAL, 'The user email')
-            ->addArgument('password', InputArgument::OPTIONAL, 'The user password')
-            ->setDescription('Creates a new admin user.');
+            ->addArgument('password', InputArgument::OPTIONAL, 'The user password');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -95,7 +89,7 @@ class CreateUserCommand extends AbstractUserCommand
 
         try {
             $email = $emailValidator($input->getArgument('email'));
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             $email = null;
         }
         if (is_null($email)) {
@@ -119,7 +113,7 @@ class CreateUserCommand extends AbstractUserCommand
 
         try {
             $password = $passwordValidator($input->getArgument('password'));
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             $password = null;
         }
         if (is_null($password)) {
