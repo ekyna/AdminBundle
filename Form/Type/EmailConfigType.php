@@ -56,7 +56,7 @@ class EmailConfigType extends AbstractType
             ->add('password', Type\PasswordType::class, [
                 'always_empty' => false,
                 'attr'         => [
-                    'autocomplete' => 'off',
+                    'autocomplete' => 'new-password',
                 ],
             ]);
 
@@ -80,7 +80,7 @@ class EmailConfigType extends AbstractType
             ->add('password', Type\PasswordType::class, [
                 'always_empty' => false,
                 'attr'         => [
-                    'autocomplete' => 'off',
+                    'autocomplete' => 'new-password',
                 ],
             ]);
 

@@ -19,7 +19,6 @@ use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use function array_replace;
-use function strpos;
 use function Symfony\Component\Translation\t;
 
 /**
@@ -207,7 +206,7 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
 
             if (null === $cancelPath) {
                 $referer = $this->request->headers->get('referer');
-                if (!empty($referer) && false === strpos($referer, $form->getConfig()->getAction())) {
+                if (!empty($referer) && !str_contains($referer, $form->getConfig()->getAction())) {
                     $cancelPath = $referer;
                 } elseif ($parent) {
                     $cancelPath = $this->generateResourcePath($parent->getResource());
@@ -282,7 +281,7 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
     protected function getCancelPath(string $action): string
     {
         $referer = $this->request->headers->get('referer'); // TODO store referer in a hidden field.
-        if (!empty($referer) && false === strpos($referer, $action)) {
+        if (!empty($referer) && !str_contains($referer, $action)) {
             return $referer;
         }
 

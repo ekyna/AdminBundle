@@ -58,7 +58,7 @@ class CrudActions extends AbstractActionBuilder implements ActionBuilderInterfac
             ->setAllowedTypes('expose', ['array', 'string', 'bool'])
             ->setAllowedTypes('form', ['string', 'null'])
             ->setAllowedValues('templates', function ($value) {
-                return is_null($value) || preg_match('~^@[A-Za-z0-9]+(/[A-Za-z0-9]+)*+$~', $value);
+                return is_null($value) || preg_match('~^@?[A-Za-z0-9]+(/[A-Za-z0-9]+)*+$~', $value);
             })
             ->setNormalizer('list', $normalizer)
             ->setNormalizer('create', $normalizer)
