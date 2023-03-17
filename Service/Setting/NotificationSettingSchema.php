@@ -77,7 +77,7 @@ class NotificationSettingSchema extends AbstractSchema
                     ]),
                     new Constraints\Count([
                         'min'        => 1,
-                        'minMessage' => 'settings.notification.at_least_one_email',
+                        'minMessage' => 'ekyna_admin.settings.notification.at_least_one_email',
                     ]),
                 ],
             ])
