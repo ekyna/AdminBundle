@@ -77,6 +77,10 @@ return static function (ContainerConfigurator $container) {
             ])
             ->tag('table.column_type_extension')
 
+        // Copy clipboard column type extension
+        ->set('ekyna_admin.table_column_type_extension.clipboard_copy', Column\ClipboardCopyTypeExtension::class)
+            ->tag('table.column_type_extension')
+
         // Entity column type extension
         ->set('ekyna_admin.table_column_type_extension.entity', Column\EntityTypeExtension::class)
             ->args([
