@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Doctrine\ORM\Events;
 use Ekyna\Bundle\AdminBundle\Action\AdminActionInterface;
 use Ekyna\Bundle\AdminBundle\EventListener\GroupEventSubscriber;
 use Ekyna\Bundle\AdminBundle\EventListener\UserEventSubscriber;
@@ -20,115 +21,130 @@ use Ekyna\Bundle\SettingBundle\DependencyInjection\Compiler\RegisterSchemasPass;
 use Ekyna\Component\User\Service\UserProvider;
 
 return static function (ContainerConfigurator $container) {
-    $container
-        ->services()
+    $services = $container->services();
 
-        // User provider
+    // User provider
+    $services
         ->set('ekyna_admin.provider.user', UserProvider::class)
-            ->args([
-                service('security.token_storage'),
-                param('ekyna_admin.class.user'),
-            ])
+        ->args([
+            service('security.token_storage'),
+            param('ekyna_admin.class.user'),
+        ])
+        ->tag('doctrine.event_listener', [
+            'event'      => Events::onClear,
+            'connection' => 'default',
+        ]);
 
-        // Admin mailer
+    // Admin mailer
+    $services
         ->set('ekyna_admin.mailer', AdminMailer::class)
-            ->args([
-                service('ekyna_setting.manager'),
-                service('translator'),
-                service('twig'),
-                service('router'),
-                service('mailer'),
-            ])
+        ->args([
+            service('ekyna_setting.manager'),
+            service('translator'),
+            service('twig'),
+            service('router'),
+            service('mailer'),
+        ]);
 
-        // User mailer transports
+    // User mailer transports
+    $services
         ->set('ekyna_admin.user_transports', UserTransports::class)
-            ->decorate('mailer.transports')
-            ->lazy()
-            ->args([
-                service('.inner'),
-                service('mailer.transport_factory'),
-                service('ekyna_admin.repository.user'),
-                service('ekyna_admin.provider.user'),
-                abstract_arg('User transport DSN override'),
-            ])
+        ->decorate('mailer.transports')
+        ->lazy()
+        ->args([
+            service('.inner'),
+            service('mailer.transport_factory'),
+            service('ekyna_admin.repository.user'),
+            service('ekyna_admin.provider.user'),
+            abstract_arg('User transport DSN override'),
+        ]);
 
-        // Search helper
+    // Search helper
+    $services
         ->set('ekyna_admin.helper.search', SearchHelper::class)
-            ->args([
-                service('ekyna_resource.search'),
-                service('request_stack'),
-                service('router'),
-                service('twig'),
-            ])
-            ->tag('twig.runtime')
+        ->args([
+            service('ekyna_resource.search'),
+            service('request_stack'),
+            service('router'),
+            service('twig'),
+        ])
+        ->tag('twig.runtime');
 
-        // Pin helper
+    // Pin helper
+    $services
         ->set('ekyna_admin.helper.pin', PinHelper::class)
-            ->args([
-                service('ekyna_resource.registry.resource'),
-                service('ekyna_admin.provider.user'),
-                service('ekyna_resource.helper'),
-                service('doctrine.orm.default_entity_manager'),
-            ])
-            ->tag('twig.runtime')
+        ->args([
+            service('ekyna_resource.registry.resource'),
+            service('ekyna_admin.provider.user'),
+            service('ekyna_resource.helper'),
+            service('doctrine.orm.default_entity_manager'),
+        ])
+        ->tag('twig.runtime');
 
-        // User event subscriber
+    // User event subscriber
+    $services
         ->set('ekyna_admin.listener.user', UserEventSubscriber::class)
-            ->call('setPasswordHasher', [service('security.user_password_hasher')])
-            ->call('setSecurityUtil', [service('ekyna_admin.security_util')])
-            ->call('setPersistenceHelper', [service('ekyna_resource.orm.persistence_helper')])
-            ->tag('resource.event_subscriber')
+        ->call('setPasswordHasher', [service('security.user_password_hasher')])
+        ->call('setSecurityUtil', [service('ekyna_admin.security_util')])
+        ->call('setPersistenceHelper', [service('ekyna_resource.orm.persistence_helper')])
+        ->tag('resource.event_subscriber');
 
-        // Group event subscriber
+    // Group event subscriber
+    $services
         ->set('ekyna_admin.listener.group', GroupEventSubscriber::class)
-            ->args([
-                service('security.token_storage'),
-                service('security.authorization_checker'),
-            ])
-            ->tag('resource.event_subscriber')
+        ->args([
+            service('security.token_storage'),
+            service('security.authorization_checker'),
+        ])
+        ->tag('resource.event_subscriber');
 
-        // User search repository
+    // User search repository
+    $services
         ->set('ekyna_admin.search.user', UserRepository::class)
-            ->call('setGroupRepository', [
-                service('ekyna_admin.repository.group')
-            ])
+        ->call('setGroupRepository', [
+            service('ekyna_admin.repository.group'),
+        ]);
 
-        // Setting schemas
+    // Setting schemas
+    $services
         ->set('ekyna_admin.setting.general', GeneralSettingSchema::class)
-            ->tag(RegisterSchemasPass::TAG, ['namespace' => 'general', 'position' => 0])
+        ->tag(RegisterSchemasPass::TAG, ['namespace' => 'general', 'position' => 0]);
+    $services
         ->set('ekyna_admin.setting.notification', NotificationSettingSchema::class)
-            ->tag(RegisterSchemasPass::TAG, ['namespace' => 'notification', 'position' => 1])
+        ->tag(RegisterSchemasPass::TAG, ['namespace' => 'notification', 'position' => 1]);
 
-        // Routing loader
+    // Routing loader
+    $services
         ->set('ekyna_admin.routing.resource')
-            ->parent('ekyna_resource.routing.resource_loader')
-            ->args([
-                'admin_resource',
-                AdminActionInterface::class,
-                param('ekyna_admin.routing_prefix'),
-                param('kernel.default_locale'),
-                param('kernel.environment'),
-            ])
-            ->tag('routing.loader')
+        ->parent('ekyna_resource.routing.resource_loader')
+        ->args([
+            'admin_resource',
+            AdminActionInterface::class,
+            param('ekyna_admin.routing_prefix'),
+            param('kernel.default_locale'),
+            param('kernel.environment'),
+        ])
+        ->tag('routing.loader');
 
-        // Installer
+    // Installer
+    $services
         ->set('ekyna_admin.installer', AdminInstaller::class)
-            ->args([
-                service('ekyna_admin.repository.group'),
-                service('ekyna_admin.manager.group'),
-                service('ekyna_admin.factory.group'),
-                service('ekyna_resource.registry.resource'),
-                service('ekyna_resource.acl.manager'),
-            ])
-            ->tag('ekyna_install.installer', ['priority' => 100])
+        ->args([
+            service('ekyna_admin.repository.group'),
+            service('ekyna_admin.manager.group'),
+            service('ekyna_admin.factory.group'),
+            service('ekyna_resource.registry.resource'),
+            service('ekyna_resource.acl.manager'),
+        ])
+        ->tag('ekyna_install.installer', ['priority' => 100]);
 
-        // User email signature renderer
+    // User email signature renderer
+    $services
         ->set('ekyna_admin.renderer.user_signature', SignatureRenderer::class)
-            ->args([
-                service('twig'),
-                abstract_arg('User email signature template'),
-                param('kernel.default_locale'),
-            ])
-            ->tag('twig.runtime')
-    ;
+        ->args([
+            service('twig'),
+            abstract_arg('User email signature template'),
+            param('kernel.default_locale'),
+        ])
+        ->tag('twig.runtime');
 };

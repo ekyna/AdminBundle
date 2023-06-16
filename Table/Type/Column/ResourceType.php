@@ -29,18 +29,11 @@ use function sprintf;
  */
 class ResourceType extends AbstractColumnType
 {
-    private ResourceHelper                $resourceHelper;
-    private AuthorizationCheckerInterface $authorization;
-    private TranslatorInterface           $translator;
-
     public function __construct(
-        ResourceHelper                $resourceHelper,
-        AuthorizationCheckerInterface $authorization,
-        TranslatorInterface           $translator
+        private readonly ResourceHelper                $resourceHelper,
+        private readonly AuthorizationCheckerInterface $authorization,
+        private readonly TranslatorInterface           $translator
     ) {
-        $this->resourceHelper = $resourceHelper;
-        $this->authorization = $authorization;
-        $this->translator = $translator;
     }
 
     public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options): void
@@ -51,26 +44,32 @@ class ResourceType extends AbstractColumnType
         $summaryCfg = $options['summary'];
 
         if (null === $readCfg && null === $summaryCfg) {
-            throw new LogicException('You must use at least \'read\' or \'summary\' option. Otherwise, use EntityType column.');
+            throw new LogicException(
+                'You must use at least \'read\' or \'summary\' option. Otherwise, use EntityType column.'
+            );
         }
 
-        /** @var ResourceConfig $summaryCfg */
+        /** @var ResourceConfig $resourceCfg */
         $resourceCfg = $options['resource'];
 
         if ($readCfg && !$resourceCfg->hasAction($readCfg->getName())) {
-            throw new LogicException(sprintf(
-                'Resource \'%s\' does not have \'%s\' action.',
-                $resourceCfg->getName(),
-                $readCfg->getName()
-            ));
+            throw new LogicException(
+                sprintf(
+                    'Resource \'%s\' does not have \'%s\' action.',
+                    $resourceCfg->getName(),
+                    $readCfg->getName()
+                )
+            );
         }
 
         if ($summaryCfg && !$resourceCfg->hasAction($summaryCfg->getName())) {
-            throw new LogicException(sprintf(
-                'Resource \'%s\' does not have \'%s\' action.',
-                $resourceCfg->getName(),
-                $summaryCfg->getName()
-            ));
+            throw new LogicException(
+                sprintf(
+                    'Resource \'%s\' does not have \'%s\' action.',
+                    $resourceCfg->getName(),
+                    $summaryCfg->getName()
+                )
+            );
         }
 
         $entities = $view->vars['value'];

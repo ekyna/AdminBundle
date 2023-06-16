@@ -7,7 +7,6 @@ namespace Ekyna\Bundle\AdminBundle\Table\Type\Column;
 use Ekyna\Bundle\AdminBundle\Action\ReadAction;
 use Ekyna\Bundle\ResourceBundle\Helper\ResourceHelper;
 use Ekyna\Bundle\TableBundle\Extension\Type\Column\AnchorType;
-use Ekyna\Component\Resource\Config\Registry\ActionRegistryInterface;
 use Ekyna\Component\Resource\Exception\UnexpectedTypeException;
 use Ekyna\Component\Resource\Model\ResourceInterface;
 use Ekyna\Component\Table\Column\ColumnInterface;
@@ -24,15 +23,10 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
  */
 class AnchorTypeExtension extends AbstractColumnTypeExtension
 {
-    private ResourceHelper                $resourceHelper;
-    private AuthorizationCheckerInterface $authorization;
-
     public function __construct(
-        ResourceHelper                $resourceHelper,
-        AuthorizationCheckerInterface $authorization
+        private readonly ResourceHelper                $resourceHelper,
+        private readonly AuthorizationCheckerInterface $authorization
     ) {
-        $this->resourceHelper = $resourceHelper;
-        $this->authorization = $authorization;
     }
 
     public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options): void
