@@ -19,7 +19,9 @@
         'theme': 'default',
     }) -}}
 {%- endif %}
-{{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') }}
+{% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') %}
+    {{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') }}
+{% endif %}
 {% endblock actions %}
 
 {% block main %}

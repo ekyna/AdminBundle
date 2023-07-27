@@ -6,9 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Service\Mailer;
 
 use DateTime;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
-use Ekyna\Bundle\SettingBundle\Manager\SettingManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -22,11 +20,11 @@ use Twig\Environment;
 class AdminMailer
 {
     public function __construct(
-        protected readonly SettingManagerInterface $setting,
-        protected readonly TranslatorInterface $translator,
-        protected readonly Environment $twig,
-        protected readonly UrlGeneratorInterface $urlGenerator,
-        protected readonly MailerInterface $mailer
+        private readonly MailerHelper          $helper,
+        private readonly TranslatorInterface   $translator,
+        private readonly Environment           $twig,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly MailerInterface       $mailer
     ) {
     }
 
@@ -37,7 +35,7 @@ class AdminMailer
      */
     public function sendSuccessfulLoginEmail(UserInterface $user): void
     {
-        $siteName = $this->setting->getParameter('general.site_name');
+        $siteName = $this->helper->getSiteName();
 
         /** @noinspection PhpUnhandledExceptionInspection */
         $rendered = $this->twig->render('@EkynaAdmin/Email/login_success.html.twig', [
@@ -59,7 +57,7 @@ class AdminMailer
      */
     public function sendNewPasswordEmail(UserInterface $user, string $password = null): void
     {
-        $siteName = $this->setting->getParameter('general.site_name');
+        $siteName = $this->helper->getSiteName();
         $login = $user->getUsername();
 
         if (empty($password)) {
@@ -86,10 +84,7 @@ class AdminMailer
      */
     protected function sendEmail(string $recipient, string $subject, string $body): void
     {
-        $fromEmail = $this->setting->getParameter('notification.from_email');
-        $fromName = $this->setting->getParameter('notification.from_name');
-
-        $sender = new Address($fromEmail, $fromName);
+        $sender = $this->helper->getNotificationSender();
 
         $message = new Email();
         $message

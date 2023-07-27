@@ -24,18 +24,11 @@ use function is_array;
  */
 class ResourceType extends AbstractType
 {
-    private ResourceHelper            $helper;
-    private PropertyAccessorInterface $accessor;
+    private ?PropertyAccessorInterface $accessor = null;
 
-
-    /**
-     * Constructor.
-     *
-     * @param ResourceHelper $helper
-     */
-    public function __construct(ResourceHelper $helper)
-    {
-        $this->helper = $helper;
+    public function __construct(
+        private readonly ResourceHelper $helper
+    ) {
     }
 
     /**
@@ -60,7 +53,7 @@ class ResourceType extends AbstractType
         if (null === $view->vars['label']) {
             if (!empty($options['resource'])) {
                 $config = $this->helper->getResourceConfig($options['resource']);
-            } elseif (false !== $resource = current((array)$resources)) {
+            } elseif (false !== $resource = current($resources)) {
                 $config = $this->helper->getResourceConfig($resource);
             } else {
                 throw new RuntimeException('Failed to resolve resource configuration.');
@@ -119,7 +112,7 @@ class ResourceType extends AbstractType
      */
     private function getAccessor(): PropertyAccessorInterface
     {
-        if ($this->accessor) {
+        if (null !== $this->accessor) {
             return $this->accessor;
         }
 
