@@ -17,6 +17,18 @@ use InvalidArgumentException;
  */
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
+    public function findWithEmailConfig(string $email): ?UserInterface
+    {
+        $qb = $this->createQueryBuilder('u');
+
+        return $qb
+            ->andWhere($qb->expr()->eq('u.email', ':email'))
+            ->andWhere($qb->expr()->isNotNull('u.emailConfig'))
+            ->getQuery()
+            ->setParameter('email', $email)
+            ->getOneOrNullResult();
+    }
+
     public function findOneByApiToken(string $token, bool $enabled = true): ?UserInterface
     {
         $qb = $this->createQueryBuilder('u');

@@ -26,6 +26,10 @@ use function array_replace;
  */
 class UserTransports implements TransportInterface
 {
+    public const HEADER_INITIAL_USER       = 'X-Ekyna-Initial-User';
+    public const HEADER_AUTHENTICATED_USER = 'X-Ekyna-Authenticated-User';
+    public const HEADER_IMAP_COPY          = 'X-Ekyna-Imap-Copy';
+
     private TransportInterface      $default;
     private Transport               $transportFactory;
     private UserRepositoryInterface $userRepository;
@@ -34,7 +38,7 @@ class UserTransports implements TransportInterface
 
     /** @var array<int, TransportInterface> */
     private array               $transports = [];
-    private ?TransportInterface $override = null;
+    private ?TransportInterface $override   = null;
 
     public function __construct(
         TransportInterface      $default,
@@ -56,8 +60,29 @@ class UserTransports implements TransportInterface
             return $this->default->send($message, $envelope);
         }
 
-        if (null !== $transport = $this->getUserTransport($message)) {
-            return $transport->send($message, $envelope);
+        if (null === $user = $this->resolveSender($message)) {
+            return $this->default->send($message, $envelope);
+        }
+
+        if (null === $transport = $this->getUserTransport($user)) {
+            return $this->default->send($message, $envelope);
+        }
+
+        if (null !== $override = $this->getOverrideTransport()) {
+            $message->getHeaders()->addTextHeader(self::HEADER_INITIAL_USER, $user->getEmail());
+
+            return $override->send($message, $envelope);
+        }
+
+        $authenticated = $this->userProvider->getUser();
+        if ($authenticated && ($authenticated !== $user)) {
+            $message->getHeaders()->addTextHeader(self::HEADER_AUTHENTICATED_USER, $authenticated->getEmail());
+        }
+
+        if (null !== $sent = $transport->send($message, $envelope)) {
+            $this->copyToSent($user, $message);
+
+            return $sent;
         }
 
         return $this->default->send($message, $envelope);
@@ -68,49 +93,48 @@ class UserTransports implements TransportInterface
         return (string)$this->default;
     }
 
-    private function getUserTransport(Email $email): ?TransportInterface
-    {
-        if (null === $user = $this->resolveSender($email)) {
-            return null;
-        }
-
-        if (null === $id = $user->getId()) {
-            return null;
-        }
-
-        $authenticated = $this->userProvider->getUser();
-        if ($authenticated && ($authenticated !== $user)) {
-            $email->getHeaders()->addTextHeader('X-Ekyna-Authenticated-User', $authenticated->getEmail());
-        }
-
-        if (array_key_exists($id, $this->transports)) {
-            return $this->transports[$id];
-        }
-
-        return $this->transports[$id] = $this->createUserTransport($user->getEmailConfig());
-    }
-
     private function resolveSender(Email $message): ?UserInterface
     {
         $addresses = $message->getFrom();
         foreach ($addresses as $address) {
             $email = $address->getAddress();
-            if (null !== $sender = $this->userRepository->findOneByEmail($email, true)) {
-                return $sender;
+            if (null === $sender = $this->userRepository->findWithEmailConfig($email)) {
+                continue;
             }
+
+            if (null === $sender->getId()) {
+                continue;
+            }
+
+            if (null === $sender->getEmailConfig()) {
+                continue;
+            }
+
+            return $sender;
         }
 
         return null;
     }
 
-    private function createUserTransport(?array $config): ?TransportInterface
+    private function getUserTransport(UserInterface $user): ?TransportInterface
     {
-        if (empty($config)) {
+        $email = $user->getEmail();
+
+        if (array_key_exists($email, $this->transports)) {
+            return $this->transports[$email];
+        }
+
+        return $this->transports[$email] = $this->createUserTransport($user);
+    }
+
+    private function createUserTransport(UserInterface $user): ?TransportInterface
+    {
+        if (empty($config = $user->getEmailConfig())) {
             return null;
         }
 
-        if (null !== $mailer = $this->getOverrideTransport()) {
-            return $mailer;
+        if (empty($config['smtp'])) {
+            return null;
         }
 
         $config = array_replace([
@@ -118,7 +142,7 @@ class UserTransports implements TransportInterface
             'username' => '',
             'password' => '',
             'port'     => '',
-        ], $config['smtp'] ?? []);
+        ], $config['smtp']);
 
         $scheme = 'smtp'; // TODO Configurable ?
 
@@ -132,9 +156,44 @@ class UserTransports implements TransportInterface
 
         try {
             return $this->transportFactory->fromDsnObject($dsn);
-        } catch (ExceptionInterface $exception) {
-            return null;
+        } catch (ExceptionInterface) {
         }
+
+        return null;
+    }
+
+    private function copyToSent(UserInterface $user, Email $message): void
+    {
+        if (!$message->getHeaders()->has(self::HEADER_IMAP_COPY)) {
+            return;
+        }
+
+        $message->getHeaders()->remove(self::HEADER_IMAP_COPY);
+
+        if (empty($config = $user->getEmailConfig())) {
+            return;
+        }
+
+        if (empty($config['imap'])) {
+            return;
+        }
+
+        $config = array_replace([
+            'mailbox'  => '',
+            'folder'   => '',
+            'user'     => '',
+            'password' => '',
+        ], $config['imap']);
+
+        if (false === $mailbox = imap_open($config['mailbox'], $config['user'], $config['password'])) {
+            return;
+        }
+
+        $folder = $config['mailbox'] . mb_convert_encoding($config['folder'], 'UTF7-IMAP', 'UTF-8');
+
+        imap_append($mailbox, $folder, $message->toString(), '\Seen');
+
+        imap_close($mailbox);
     }
 
     private function getOverrideTransport(): ?TransportInterface

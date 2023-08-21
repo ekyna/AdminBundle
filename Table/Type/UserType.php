@@ -54,12 +54,9 @@ class UserType extends AbstractResourceType
 
         $builder
             ->addColumn('enabled', CType\Column\BooleanType::class, [
-                'label'          => t('field.enabled', [], 'EkynaUi'),
-                'sortable'       => true,
-                'route'          => 'ekyna_admin_user_admin_toggle',
-                'parameters'     => ['field' => 'enabled'],
-                'parameters_map' => ['userId' => 'id'],
-                'position'       => 30,
+                'label'    => t('field.enabled', [], 'EkynaUi'),
+                'sortable' => true,
+                'position' => 30,
             ])
             ->addColumn('createdAt', CType\Column\DateTimeType::class, [
                 'label'    => t('field.created_at', [], 'EkynaUi'),

@@ -18,6 +18,15 @@ use Ekyna\Component\User\Repository\UserRepositoryInterface as BaseRepository;
 interface UserRepositoryInterface extends BaseRepository
 {
     /**
+     * Finds one user having email configuration by its email address.
+     *
+     * @param string $email
+     *
+     * @return UserInterface|null
+     */
+    public function findWithEmailConfig(string $email): ?UserInterface;
+
+    /**
      * Finds one user by api token.
      *
      * @param string $token   The user's api token

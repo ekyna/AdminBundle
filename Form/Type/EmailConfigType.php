@@ -57,6 +57,7 @@ class EmailConfigType extends AbstractType
                 'always_empty' => false,
                 'attr'         => [
                     'autocomplete' => 'new-password',
+                    'help_text'    => 'Empty to keep the same password',
                 ],
             ]);
 
@@ -67,9 +68,15 @@ class EmailConfigType extends AbstractType
             ])
             ->add('mailbox', Type\TextType::class, [
                 'required' => true,
+                'attr'     => [
+                    'help_text' => 'Example: {imap.example.org:993/imap/ssl}',
+                ],
             ])
             ->add('folder', Type\TextType::class, [
                 'required' => true,
+                'attr'     => [
+                    'help_text' => 'Example: /INBOX.Sent',
+                ],
             ])
             ->add('user', Type\TextType::class, [
                 'required' => true,
@@ -81,6 +88,7 @@ class EmailConfigType extends AbstractType
                 'always_empty' => false,
                 'attr'         => [
                     'autocomplete' => 'new-password',
+                    'help_text'    => 'Empty to keep the same password',
                 ],
             ]);
 
@@ -89,25 +97,6 @@ class EmailConfigType extends AbstractType
             ->add($imap)
             ->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
                 $data = $event->getData();
-
-                $smtp = $data['smtp'];
-                if (empty($smtp['host']) && empty($smtp['port'])) {
-                    unset($data['smtp']);
-                }
-
-                $imap = $data['imap'];
-                if (
-                    empty($imap['mailbox'])
-                    || empty($imap['folder'])
-                    || empty($imap['user'])
-                    || empty($imap['password'])
-                ) {
-                    unset($data['imap']);
-                }
-
-                if (empty($data['smtp']) && empty($data['imap'])) {
-                    $data = null;
-                }
 
                 // Password lost during form submit => restore it
                 foreach (['smtp', 'imap'] as $key) {
@@ -121,6 +110,20 @@ class EmailConfigType extends AbstractType
                     }
 
                     $data[$key]['password'] = $norm[$key]['password'];
+                }
+
+                $smtp = $data['smtp'];
+                if (empty($smtp['host']) && empty($smtp['port'])) {
+                    unset($data['smtp']);
+                }
+
+                $imap = $data['imap'];
+                if (empty($imap['mailbox']) && empty($imap['folder'])) {
+                    unset($data['imap']);
+                }
+
+                if (empty($data['smtp']) && empty($data['imap'])) {
+                    $data = null;
                 }
 
                 $event->setData($data);
