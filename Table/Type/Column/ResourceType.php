@@ -6,6 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Table\Type\Column;
 
 use Ekyna\Bundle\AdminBundle\Action\ReadAction;
 use Ekyna\Bundle\AdminBundle\Action\SummaryAction;
+use Ekyna\Bundle\AdminBundle\Model\Ui;
 use Ekyna\Bundle\ResourceBundle\Helper\ResourceHelper;
 use Ekyna\Component\Resource\Config\ActionConfig;
 use Ekyna\Component\Resource\Config\ResourceConfig;
@@ -74,7 +75,7 @@ class ResourceType extends AbstractColumnType
 
         $entities = $view->vars['value'];
 
-        $summaryKey = $options['summary_as_panel'] ? 'data-side-detail' : 'data-summary';
+        $summaryKey = $options['summary_as_panel'] ? Ui::SIDE_DETAIL_ATTR : 'data-summary';
 
         foreach ($entities as &$entity) {
             $resource = $entity['value'];
