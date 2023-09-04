@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ekyna\Bundle\AdminBundle\Table\Extension;
 
 use Ekyna\Bundle\AdminBundle\Action\SummaryAction;
+use Ekyna\Bundle\AdminBundle\Model\Ui;
 use Ekyna\Bundle\ResourceBundle\Helper\ResourceHelper;
 use Ekyna\Component\Resource\Exception\UnexpectedTypeException;
 use Ekyna\Component\Resource\Model\ResourceInterface;
@@ -41,7 +42,9 @@ class SummaryTableTypeExtension extends AbstractTableTypeExtension
             throw new UnexpectedTypeException($resource, ResourceInterface::class);
         }
 
-        $view->vars['attr']['data-summary'] = $this->helper->generateResourcePath($resource, SummaryAction::class);
+        $view->vars['attr'][Ui::SUMMARY_ATTR] = $this
+            ->helper
+            ->generateResourcePath($resource, SummaryAction::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

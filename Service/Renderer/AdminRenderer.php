@@ -6,9 +6,9 @@ namespace Ekyna\Bundle\AdminBundle\Service\Renderer;
 
 use Ekyna\Bundle\AdminBundle\Action\ReadAction;
 use Ekyna\Bundle\AdminBundle\Action\SummaryAction;
+use Ekyna\Bundle\AdminBundle\Model\Ui;
 use Ekyna\Bundle\AdminBundle\Service\Pin\PinHelper;
 use Ekyna\Bundle\ResourceBundle\Helper\ResourceHelper;
-use Ekyna\Bundle\ResourceBundle\Service\Routing\RoutingUtil;
 use Ekyna\Bundle\UiBundle\Service\UiRenderer;
 use Ekyna\Component\Resource\Exception\LogicException;
 use Ekyna\Component\Resource\Model\ResourceInterface;
@@ -19,7 +19,6 @@ use function array_key_exists;
 use function array_merge;
 use function implode;
 use function in_array;
-use function json_encode;
 use function sprintf;
 
 /**
@@ -186,23 +185,16 @@ class AdminRenderer
     public function generateSummaryPath(ResourceInterface $resource, bool $asAttribute = true): ?string
     {
         try {
-            if ($asAttribute) {
-                $resourceConfig = $this->resourceHelper->getResourceConfig($resource);
-                $actionConfig = $this->resourceHelper->getActionConfig(SummaryAction::class);
-
-                return sprintf(" data-summary='%s'", json_encode([
-                    'route'      => RoutingUtil::getRouteName($resourceConfig, $actionConfig),
-                    'parameters' => [
-                        RoutingUtil::getRouteParameter($resourceConfig) => $resource->getId(),
-                    ],
-                ]));
-            }
-
-            return $this->resourceHelper->generateResourcePath($resource, SummaryAction::class);
-        } catch (Throwable $exception) {
+            $path = $this->resourceHelper->generateResourcePath($resource, SummaryAction::class);
+        } catch (Throwable) {
+            return null;
         }
 
-        return null;
+        if ($asAttribute) {
+            return sprintf(" %s='%s'", Ui::SUMMARY_ATTR, $path);
+        }
+
+        return $path;
     }
 
     /**

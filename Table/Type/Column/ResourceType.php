@@ -75,7 +75,7 @@ class ResourceType extends AbstractColumnType
 
         $entities = $view->vars['value'];
 
-        $summaryKey = $options['summary_as_panel'] ? Ui::SIDE_DETAIL_ATTR : 'data-summary';
+        $summaryKey = $options['summary_as_panel'] ? Ui::SIDE_DETAIL_ATTR : Ui::SUMMARY_ATTR;
 
         foreach ($entities as &$entity) {
             $resource = $entity['value'];
@@ -113,7 +113,7 @@ class ResourceType extends AbstractColumnType
                 'read_parameters'    => [],
                 'summary'            => false,
                 'summary_parameters' => [],
-                'summary_as_panel'   => false,
+                'summary_as_panel'   => true,
             ])
             ->setDefault('label', function (Options $options): string {
                 $config = $options['resource'];
