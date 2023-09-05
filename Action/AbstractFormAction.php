@@ -260,19 +260,23 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
     {
         $actions = $form->get('actions');
 
+        $resource = $this->context->getResource();
+
         if ($actions->has('saveAndList') && $actions->get('saveAndList')->isClicked()) {
-            return $this->generateResourcePath($this->context->getResource(), ListAction::class);
+            return $this->generateResourcePath($resource, ListAction::class);
         }
 
         if (!empty($path = $form->get('_redirect')->getData())) {
             return $path;
         }
 
-        if ($this->options['redirect_to_parent'] && ($parent = $this->context->getParentResource())) {
+        $parent = $this->context->getParentResource();
+        $hasRead = $this->getResourceHelper()->hasAction($resource, ReadAction::class);
+        if ($parent && ($this->options['redirect_to_parent'] || !$hasRead)) {
             return $this->generateResourcePath($parent);
         }
 
-        return $this->generateResourcePath($this->context->getResource());
+        return $this->generateResourcePath($resource);
     }
 
     /**
@@ -285,15 +289,19 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
             return $referer;
         }
 
-        if ($this->options['redirect_to_parent'] && ($parent = $this->context->getParent())) {
-            return $this->generateResourcePath($parent->getResource());
+        $resource = $this->context->getResource();
+
+        $parent = $this->context->getParentResource();
+        $hasRead = $this->getResourceHelper()->hasAction($resource, ReadAction::class);
+        if ($parent && ($this->options['redirect_to_parent'] || !$hasRead)) {
+            return $this->generateResourcePath($parent);
         }
 
         if ($this->context->getConfig()->hasAction(ListAction::class)) {
             return $this->generateResourcePath($this->context->getConfig()->getId(), ListAction::class);
         }
 
-        return $this->generateResourcePath($this->context->getResource());
+        return $this->generateResourcePath($resource);
     }
 
     /**
@@ -319,7 +327,7 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
                 'form_template',
                 'serialization',
             ])
-            ->setDefault('redirect_to_parent', true)
+            ->setDefault('redirect_to_parent', false)
             ->setAllowedTypes('type', 'string')
             ->setAllowedTypes('template', 'string')
             ->setAllowedTypes('form_template', 'string')
