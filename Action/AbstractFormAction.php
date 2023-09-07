@@ -271,7 +271,9 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
         }
 
         $parent = $this->context->getParentResource();
-        $hasRead = $this->getResourceHelper()->hasAction($resource, ReadAction::class);
+        $hasRead = null !== $resource->getId()
+            && $this->getResourceHelper()->hasAction($resource, ReadAction::class);
+
         if ($parent && ($this->options['redirect_to_parent'] || !$hasRead)) {
             return $this->generateResourcePath($parent);
         }
@@ -292,7 +294,9 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
         $resource = $this->context->getResource();
 
         $parent = $this->context->getParentResource();
-        $hasRead = $this->getResourceHelper()->hasAction($resource, ReadAction::class);
+        $hasRead = null !== $resource->getId()
+            && $this->getResourceHelper()->hasAction($resource, ReadAction::class);
+
         if ($parent && ($this->options['redirect_to_parent'] || !$hasRead)) {
             return $this->generateResourcePath($parent);
         }
