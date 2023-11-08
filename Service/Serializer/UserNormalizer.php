@@ -23,7 +23,7 @@ class UserNormalizer extends ResourceNormalizer
     {
         $data = parent::normalize($object, $format, $context);
 
-        if ($this->contextHasGroup(['Default', 'User', 'Search'], $context)) {
+        if (self::contextHasGroup(['Default', 'User', 'Search'], $context)) {
             $data = array_replace([
                 'email'      => $object->getEmail(),
                 'first_name' => $object->getFirstName(),
