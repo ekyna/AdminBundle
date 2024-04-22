@@ -153,8 +153,9 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
         $name = $this->context->getConfig()->getCamelCaseName();
 
         return [
-            $name     => $resource,
-            'success' => true,
+            'resource' => $name,
+            $name      => $resource,
+            'success'  => true,
         ];
     }
 
