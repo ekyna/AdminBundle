@@ -10,11 +10,11 @@ use Symfony\Component\Mime\Address;
 use function array_map;
 
 /**
- * Class MailerHelper
+ * Class AddressHelper
  * @package Ekyna\Bundle\AdminBundle\Service\Mailer
  * @author  Étienne Dauvergne <contact@ekyna.com>
  */
-class MailerHelper
+class AddressHelper
 {
     /** @var array<int, Address>|null */
     private ?array   $notificationRecipients = null;
@@ -23,7 +23,7 @@ class MailerHelper
     private ?string  $siteName               = null;
 
     public function __construct(
-        protected readonly SettingManagerInterface $setting,
+        private readonly SettingManagerInterface $setting,
     ) {
     }
 

@@ -20,7 +20,7 @@ use Twig\Environment;
 class AdminMailer
 {
     public function __construct(
-        private readonly MailerHelper          $helper,
+        private readonly AddressHelper         $helper,
         private readonly TranslatorInterface   $translator,
         private readonly Environment           $twig,
         private readonly UrlGeneratorInterface $urlGenerator,

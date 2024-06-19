@@ -10,7 +10,7 @@ use Ekyna\Bundle\AdminBundle\EventListener\GroupEventSubscriber;
 use Ekyna\Bundle\AdminBundle\EventListener\UserEventSubscriber;
 use Ekyna\Bundle\AdminBundle\Install\AdminInstaller;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\AdminMailer;
-use Ekyna\Bundle\AdminBundle\Service\Mailer\MailerHelper;
+use Ekyna\Bundle\AdminBundle\Service\Mailer\AddressHelper;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\UserTransports;
 use Ekyna\Bundle\AdminBundle\Service\Pin\PinHelper;
 use Ekyna\Bundle\AdminBundle\Service\Renderer\SignatureRenderer;
@@ -36,9 +36,9 @@ return static function (ContainerConfigurator $container) {
             'connection' => 'default',
         ]);
 
-    // Mailer helper
+    // Address helper
     $services
-        ->set('ekyna_admin.helper.mailer', MailerHelper::class)
+        ->set('ekyna_admin.helper.mailer.address', AddressHelper::class)
         ->args([
             service('ekyna_setting.manager'),
         ]);
@@ -47,7 +47,7 @@ return static function (ContainerConfigurator $container) {
     $services
         ->set('ekyna_admin.mailer', AdminMailer::class)
         ->args([
-            service('ekyna_admin.helper.mailer'),
+            service('ekyna_admin.helper.mailer.address'),
             service('translator'),
             service('twig'),
             service('router'),
