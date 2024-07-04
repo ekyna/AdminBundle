@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Ekyna\Bundle\AdminBundle\Service\Mailer;
 
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
+use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
 use Ekyna\Bundle\SettingBundle\Manager\SettingManagerInterface;
+use Ekyna\Component\User\Service\UserProviderInterface;
 use Symfony\Component\Mime\Address;
 
 use function array_map;
@@ -24,7 +27,19 @@ class AddressHelper
 
     public function __construct(
         private readonly SettingManagerInterface $setting,
+        private readonly UserRepositoryInterface $userRepository,
+        private readonly UserProviderInterface   $userProvider,
     ) {
+    }
+
+    public function getCurrentUserSender(): ?Address
+    {
+        if (null === $user = $this->userProvider->getUser()) {
+            return null;
+        }
+
+        /** @var UserInterface $user */
+        return $user->toAddress();
     }
 
     /**

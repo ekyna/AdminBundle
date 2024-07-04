@@ -10,6 +10,7 @@ use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Bundle\ResourceBundle\Model\AclSubjectInterface;
 use Ekyna\Bundle\ResourceBundle\Model\AclSubjectTrait;
 use Ekyna\Component\User\Model\AbstractUser;
+use Symfony\Component\Mime\Address;
 
 /**
  * Class User
@@ -182,6 +183,11 @@ class User extends AbstractUser implements UserInterface
         $this->emailConfig = $config;
 
         return $this;
+    }
+
+    public function toAddress(): ?Address
+    {
+        return new Address($this->getEmail(), $this->hasFullName() ? $this->getFullName() : '');
     }
 
     public function getAclParentSubject(): ?AclSubjectInterface

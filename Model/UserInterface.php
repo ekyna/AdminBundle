@@ -7,6 +7,7 @@ namespace Ekyna\Bundle\AdminBundle\Model;
 use DateTimeInterface;
 use Ekyna\Bundle\ResourceBundle\Model\AclSubjectInterface;
 use Ekyna\Component\User\Model\UserInterface as BaseUser;
+use Symfony\Component\Mime\Address;
 
 /**
  * Interface UserInterface
@@ -58,4 +59,6 @@ interface UserInterface extends BaseUser, AclSubjectInterface
     public function getEmailConfig(): ?array;
 
     public function setEmailConfig(array $config = null): UserInterface;
+
+    public function toAddress(): ?Address;
 }
