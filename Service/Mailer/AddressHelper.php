@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ekyna\Bundle\AdminBundle\Service\Mailer;
 
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
-use Ekyna\Bundle\AdminBundle\Repository\UserRepositoryInterface;
 use Ekyna\Bundle\SettingBundle\Manager\SettingManagerInterface;
 use Ekyna\Component\User\Service\UserProviderInterface;
 use Symfony\Component\Mime\Address;
@@ -27,7 +26,6 @@ class AddressHelper
 
     public function __construct(
         private readonly SettingManagerInterface $setting,
-        private readonly UserRepositoryInterface $userRepository,
         private readonly UserProviderInterface   $userProvider,
     ) {
     }
