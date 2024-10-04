@@ -13,7 +13,7 @@
 
 /* NAVBAR */
 .navbar-inverse {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -26,6 +26,8 @@
 
     border: 1px solid @navbar-ui-background;
     background: #2c3742;
+
+    transition: top 0.5s;
 
     &.light {
         border-color: @navbar-light-ui-border;
