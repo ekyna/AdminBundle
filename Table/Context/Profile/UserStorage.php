@@ -6,6 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Table\Context\Profile;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Ekyna\Bundle\AdminBundle\Entity\TableProfile;
+use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Component\Table\Context\Profile\ProfileInterface;
 use Ekyna\Component\Table\Context\Profile\StorageInterface;
 use Ekyna\Component\Table\Exception\UnexpectedTypeException;
@@ -41,7 +42,7 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function get(string $key): ProfileInterface
+    public function get(string $key): ?ProfileInterface
     {
         return $this
             ->manager
@@ -68,18 +69,22 @@ class UserStorage implements StorageInterface
     /**
      * @inheritDoc
      */
-    public function create(TableInterface $table, string $name)
+    public function create(TableInterface $table, string $name): void
     {
         if (null === $user = $this->userProvider->getUser()) {
             return;
         }
 
+        if (!$user instanceof UserInterface) {
+            throw new UnexpectedTypeException($user, [UserInterface::class]);
+        }
+
         $profile = new TableProfile();
         $profile
-            ->setUser($this->userProvider->getUser())
+            ->setUser($user)
             ->setTableHash($table->getHash())
-            ->setData($table->getContext()->toArray())
-            ->setName($name);
+            ->setName($name)
+            ->setData($table->getContext()->toArray());
 
         $this->validateProfile($profile);
 
@@ -114,7 +119,7 @@ class UserStorage implements StorageInterface
      *
      * @param ProfileInterface $profile
      */
-    private function validateProfile(ProfileInterface $profile)
+    private function validateProfile(ProfileInterface $profile): void
     {
         if (!$profile instanceof TableProfile) {
             throw new UnexpectedTypeException($profile, Table::class);

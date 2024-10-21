@@ -14,11 +14,11 @@ use Ekyna\Component\Table\Context\Profile\ProfileInterface;
  */
 class TableProfile implements ProfileInterface
 {
-    private ?int $id = null;
-    private ?UserInterface $user = null;
-    private ?string $tableHash = null;
-    private ?string $name = null;
-    private array $data;
+    private ?int           $id        = null;
+    private ?UserInterface $user      = null;
+    private ?string        $tableHash = null;
+    private ?string        $name      = null;
+    private array          $data;
 
 
     /**
@@ -29,11 +29,6 @@ class TableProfile implements ProfileInterface
         $this->data = [];
     }
 
-    /**
-     * Returns the id.
-     *
-     * @return int
-     */
     public function getId(): ?int
     {
         return $this->id;
@@ -72,9 +67,13 @@ class TableProfile implements ProfileInterface
     }
 
     /**
-     * @inheritDoc
+     * Sets the table hash.
+     *
+     * @param string $hash
+     *
+     * @return TableProfile
      */
-    public function setTableHash(string $hash): ProfileInterface
+    public function setTableHash(string $hash): TableProfile
     {
         $this->tableHash = $hash;
 
@@ -82,7 +81,9 @@ class TableProfile implements ProfileInterface
     }
 
     /**
-     * @inheritDoc
+     * Returns the table hash.
+     *
+     * @return string
      */
     public function getTableHash(): string
     {
@@ -96,7 +97,7 @@ class TableProfile implements ProfileInterface
      *
      * @return TableProfile
      */
-    public function setName(string $name): ProfileInterface
+    public function setName(string $name): TableProfile
     {
         $this->name = $name;
 
@@ -112,11 +113,11 @@ class TableProfile implements ProfileInterface
     }
 
     /**
-     * Sets the data.
+     * Sets the profile data.
      *
      * @param array $data
      *
-     * @return TableProfile
+     * @return ProfileInterface
      */
     public function setData(array $data): ProfileInterface
     {

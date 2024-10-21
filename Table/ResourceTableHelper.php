@@ -35,14 +35,21 @@ class ResourceTableHelper
 
     public function createResourceTableView(string $resource, array $options = []): TableView
     {
-        // Disable features that would require to return a response
-        $options = array_replace($options, [
-            'batchable'      => false,
-            'exportable'     => false,
-            'configurable'   => false,
-            'profileable'    => false,
-            'selection_mode' => null,
-        ]);
+        $options = array_replace(
+            [
+                'sortable'   => false,
+                'filterable' => false,
+            ],
+            $options,
+            // Disable features that would require to return a response
+            [
+                'batchable'      => false,
+                'exportable'     => false,
+                'configurable'   => false,
+                'profileable'    => false,
+                'selection_mode' => null,
+            ]
+        );
 
         $config = $this->resourceRegistry->find($resource);
 
@@ -56,7 +63,6 @@ class ResourceTableHelper
             if ($response instanceof RedirectResponse) {
                 throw new RedirectException($response->getTargetUrl());
             }
-
             // TODO Find a way to 'return' the response
         }
 
