@@ -81,7 +81,7 @@ class BooleanTypeExtension extends AbstractColumnTypeExtension
 
         $aCfg = $this->actionRegistry->find($action);
 
-        if (!$this->authorization->isGranted($aCfg->getPermission(), $resource)) {
+        if (!$this->authorization->isGranted($aCfg->getName(), $resource)) {
             return;
         }
 

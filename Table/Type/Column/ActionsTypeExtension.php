@@ -75,7 +75,7 @@ class ActionsTypeExtension extends AbstractColumnTypeExtension
             $button = array_replace([
                 'route'          => $this->helper->getRoute($resource, $action),
                 'parameters_map' => $parametersMap,
-                'permission'     => $aCfg->getPermission(), // TODO Not handled ?
+                'permission'     => $aCfg->getName(),
             ], $button, $config);
 
             $buttons[] = $button;
@@ -110,7 +110,7 @@ class ActionsTypeExtension extends AbstractColumnTypeExtension
         return array_replace($config, [
             'route'          => $this->helper->getRoute($resource->getId(), $action),
             'parameters_map' => $this->helper->buildParametersMap($resource),
-            'permission'     => $aCfg->getPermission(),
+            'permission'     => $aCfg->getName(),
         ], $button);
     }
 

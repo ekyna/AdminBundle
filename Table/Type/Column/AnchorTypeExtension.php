@@ -76,7 +76,7 @@ class AnchorTypeExtension extends AbstractColumnTypeExtension
 
         $aCfg = $this->resourceHelper->getActionConfig($options['action']);
 
-        if (!$this->authorization->isGranted($aCfg->getPermission(), $resource)) {
+        if (!$this->authorization->isGranted($aCfg->getName(), $resource)) {
             return;
         }
 
@@ -93,7 +93,7 @@ class AnchorTypeExtension extends AbstractColumnTypeExtension
 
         $aCfg = $this->resourceHelper->getActionConfig(SummaryAction::class);
 
-        if (!$this->authorization->isGranted($aCfg->getPermission(), $resource)) {
+        if (!$this->authorization->isGranted($aCfg->getName(), $resource)) {
             return;
         }
 

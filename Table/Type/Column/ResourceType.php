@@ -81,13 +81,13 @@ class ResourceType extends AbstractColumnType
             $resource = $entity['value'];
 
             $attr = [];
-            if ($readCfg && $this->authorization->isGranted($readCfg->getPermission(), $resource)) {
+            if ($readCfg && $this->authorization->isGranted($readCfg->getName(), $resource)) {
                 $attr['href'] = $this
                     ->resourceHelper
                     ->generateResourcePath($resource, $readCfg->getName(), $options['read_parameters']);
             }
 
-            if ($summaryCfg && $this->authorization->isGranted($summaryCfg->getPermission(), $resource)) {
+            if ($summaryCfg && $this->authorization->isGranted($summaryCfg->getName(), $resource)) {
                 $attr[$summaryKey] = $this
                     ->resourceHelper
                     ->generateResourcePath($resource, $summaryCfg->getName(), $options['summary_parameters']);
