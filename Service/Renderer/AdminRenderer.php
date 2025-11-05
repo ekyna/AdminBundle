@@ -163,7 +163,7 @@ class AdminRenderer
     /**
      * Returns whether the user has access granted or not on the given resource for the given action.
      */
-    public function hasResourceAccess(ResourceInterface|string $resource, string $action = 'view'): bool
+    public function hasResourceAccess(ResourceInterface|string $resource, string $action = ReadAction::class): bool
     {
         return $this->resourceHelper->isGranted($action, $resource);
     }

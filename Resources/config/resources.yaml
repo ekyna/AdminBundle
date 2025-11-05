@@ -5,6 +5,7 @@ actions:
     Ekyna\Bundle\AdminBundle\Action\CrudActions: null
     Ekyna\Bundle\AdminBundle\Action\CreateAction: null
     Ekyna\Bundle\AdminBundle\Action\DeleteAction: null
+    Ekyna\Bundle\AdminBundle\Action\DuplicateAction: null
     Ekyna\Bundle\AdminBundle\Action\ListAction: null
     Ekyna\Bundle\AdminBundle\Action\MoveUpAction: null
     Ekyna\Bundle\AdminBundle\Action\MoveDownAction: null

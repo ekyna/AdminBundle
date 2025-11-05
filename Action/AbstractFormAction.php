@@ -48,7 +48,6 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
 
         $options = array_replace([
             'method'            => 'POST',
-            'attr'              => ['class' => 'form-horizontal form-with-tabs'],
             'admin_mode'        => true,
             '_redirect_enabled' => true,
         ], $this->getFormOptions(), $options);
@@ -57,7 +56,7 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
             $options['action'] = $this->generateResourcePath($resource, static::class, $this->request->query->all());
         }
 
-        $form = $this->createForm($this->getFormType(), $resource, $options);
+        $form = $this->createForm($this->getFormType(), $this->getFormData(), $options);
 
         if (!$this->request->isXmlHttpRequest()) {
             $this->createFormFooter($form, [], $this->getCancelPath($options['action']));
@@ -66,9 +65,16 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
         return $form;
     }
 
+    protected function getFormData(): ?object
+    {
+        return $this->context->getResource();
+    }
+
     protected function getFormOptions(): array
     {
-        return [];
+        return [
+            'attr' => ['class' => 'form-horizontal form-with-tabs'],
+        ];
     }
 
     /**
@@ -203,6 +209,10 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
     protected function createFormFooter(FormInterface $form, array $buttons = [], string $cancelPath = null): void
     {
         if (empty($buttons)) {
+            $buttons = $this->getFormButtons();
+        }
+
+        if (!isset($buttons['cancel'])) {
             $parent = $this->context->getParent();
 
             if (null === $cancelPath) {
@@ -216,24 +226,6 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
                 }
             }
 
-            if (!$parent) {
-                $buttons['saveAndList'] = [
-                    'type'    => Type\SubmitType::class,
-                    'options' => [
-                        'button_class' => 'primary',
-                        'label'        => t('button.save_and_list', [], 'EkynaUi'),
-                        'attr'         => ['icon' => 'list'],
-                    ],
-                ];
-            }
-            $buttons['save'] = [
-                'type'    => Type\SubmitType::class,
-                'options' => [
-                    'button_class' => 'primary',
-                    'label'        => t('button.save', [], 'EkynaUi'),
-                    'attr'         => ['icon' => 'ok'],
-                ],
-            ];
             $buttons['cancel'] = [
                 'type'    => Type\ButtonType::class,
                 'options' => [
@@ -252,6 +244,33 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
         $form->add('actions', FormActionsType::class, [
             'buttons' => $buttons,
         ]);
+    }
+
+    protected function getFormButtons(): array
+    {
+        $buttons = [];
+
+        if (null === $this->context->getParent()) {
+            $buttons['saveAndList'] = [
+                'type'    => Type\SubmitType::class,
+                'options' => [
+                    'button_class' => 'primary',
+                    'label'        => t('button.save_and_list', [], 'EkynaUi'),
+                    'attr'         => ['icon' => 'list'],
+                ],
+            ];
+        }
+
+        $buttons['save'] = [
+            'type'    => Type\SubmitType::class,
+            'options' => [
+                'button_class' => 'primary',
+                'label'        => t('button.save', [], 'EkynaUi'),
+                'attr'         => ['icon' => 'ok'],
+            ],
+        ];
+
+        return $buttons;
     }
 
     /**

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Ekyna\Bundle\AdminBundle\Action;
 
 use Ekyna\Component\Resource\Action\Permission;
+use Ekyna\Component\Resource\Event\ResourceEventInterface;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+
+use function Symfony\Component\Translation\t;
 
 /**
  * Class DeleteAction
@@ -14,6 +18,27 @@ use Ekyna\Component\Resource\Action\Permission;
 class DeleteAction extends AbstractConfirmAction
 {
     protected const NAME = 'admin_delete';
+
+    protected function doPersist(): ResourceEventInterface
+    {
+        $resource = $this->context->getResource();
+
+        return $this->getManager()->delete($resource);
+    }
+
+    protected function getFormButtons(string $cancelPath = null): array
+    {
+        return [
+            'submit' => [
+                'type'    => SubmitType::class,
+                'options' => [
+                    'button_class' => 'danger',
+                    'label'        => t('button.confirm', [], 'EkynaUi'),
+                    'attr'         => ['icon' => 'remove'],
+                ],
+            ],
+        ];
+    }
 
     public static function configureAction(): array
     {

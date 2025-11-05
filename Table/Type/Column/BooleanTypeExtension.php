@@ -55,6 +55,10 @@ class BooleanTypeExtension extends AbstractColumnTypeExtension
      */
     public function buildCellView(CellView $view, ColumnInterface $column, RowInterface $row, array $options): void
     {
+        if ($options['disabled']) {
+            return;
+        }
+
         if (null !== $disablePath = $options['disable_property_path']) {
             if ($row->getData($disablePath)) {
                 return;

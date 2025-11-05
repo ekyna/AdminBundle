@@ -6,13 +6,14 @@ namespace Ekyna\Bundle\AdminBundle\Action;
 
 use Ekyna\Bundle\UiBundle\Form\Type\ConfirmType;
 use Ekyna\Bundle\UiBundle\Model\Modal;
-use Ekyna\Component\Resource\Event\ResourceEventInterface;
 use Ekyna\Component\Resource\Model\ResourceInterface;
+use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 use function array_replace;
+use function Symfony\Component\Translation\t;
 
 /**
  * Class AbstractConfirmAction
@@ -47,13 +48,6 @@ abstract class AbstractConfirmAction extends AbstractFormAction
         return null;
     }
 
-    protected function doPersist(): ResourceEventInterface
-    {
-        $resource = $this->context->getResource();
-
-        return $this->getManager()->delete($resource);
-    }
-
     protected function buildJsonData(): array
     {
         return [
@@ -68,27 +62,31 @@ abstract class AbstractConfirmAction extends AbstractFormAction
         return $modal->setSize(Modal::SIZE_NORMAL);
     }
 
-    protected function getForm(array $options = []): FormInterface
+    protected function getFormData(): ?object
     {
-        $resource = $this->context->getResource();
+        return null;
+    }
 
-        $options = array_replace([
-            'method'            => 'POST',
-            'attr'              => ['class' => 'form-horizontal'],
-            'admin_mode'        => true,
-            'buttons'           => !$this->request->isXmlHttpRequest(),
-            '_redirect_enabled' => true,
-        ], $this->getFormOptions(), $options);
+    protected function getFormOptions(): array
+    {
+        return array_replace(parent::getFormOptions(), [
+            'attr'    => ['class' => 'form-horizontal'],
+            'buttons' => false,
+        ]);
+    }
 
-        if (!isset($options['action'])) {
-            $options['action'] = $this->generateResourcePath($resource, static::class, $this->request->query->all());
-        }
-
-        if (!isset($options['cancel_path'])) {
-            $options['cancel_path'] = $this->getCancelPath($options['action']);
-        }
-
-        return $this->createForm($this->getFormType(), null, $options);
+    protected function getFormButtons(string $cancelPath = null): array
+    {
+        return [
+            'submit' => [
+                'type'    => Type\SubmitType::class,
+                'options' => [
+                    'button_class' => 'success',
+                    'label'        => t('button.confirm', [], 'EkynaUi'),
+                    'attr'         => ['icon' => 'ok'],
+                ],
+            ],
+        ];
     }
 
     protected function getRedirectPath(FormInterface $form): string
@@ -101,7 +99,12 @@ abstract class AbstractConfirmAction extends AbstractFormAction
             return $this->generateResourcePath($parent);
         }
 
-        return $this->generateResourcePath($this->context->getResource(), ListAction::class);
+        return $this->generateResourcePath($this->context->getResource(), $this->getRedirectAction());
+    }
+
+    protected function getRedirectAction(): string
+    {
+        return ListAction::class;
     }
 
     public static function configureOptions(OptionsResolver $resolver): void

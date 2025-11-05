@@ -6,7 +6,7 @@
 {% block page_title %}{{ resource|raw }}{% endblock page_title %}
 
 {% block title %}
-<h1>{{ (context.config.transPrefix ~ '.header.edit')|trans({'%name%': resource|ui_clipboard_copy}, context.config.transDomain)|raw }}</h1>
+<h1>{{ (context.config.transPrefix ~ '.header.duplicate')|trans({'%name%': resource|ui_clipboard_copy}, context.config.transDomain)|raw }}</h1>
 {% endblock title %}
 
 {% block actions %}

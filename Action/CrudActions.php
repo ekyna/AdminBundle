@@ -46,7 +46,8 @@ class CrudActions extends AbstractActionBuilder implements ActionBuilderInterfac
                 'expose',    // Whether to expose all routes (JS)
             ])
             ->setDefaults([
-                'summary' => false,
+                'duplicate' => false,
+                'summary'   => false,
             ])
             ->setAllowedTypes('templates', ['string', 'null'])
             ->setAllowedTypes('list', ['array', 'string', 'bool', 'null'])
@@ -54,6 +55,7 @@ class CrudActions extends AbstractActionBuilder implements ActionBuilderInterfac
             ->setAllowedTypes('read', ['array', 'string', 'bool', 'null'])
             ->setAllowedTypes('update', ['array', 'string', 'bool', 'null'])
             ->setAllowedTypes('delete', ['array', 'string', 'bool', 'null'])
+            ->setAllowedTypes('duplicate', ['array', 'string', 'bool'])
             ->setAllowedTypes('summary', ['array', 'string', 'bool'])
             ->setAllowedTypes('expose', ['array', 'string', 'bool'])
             ->setAllowedTypes('form', ['string', 'null'])
@@ -65,18 +67,20 @@ class CrudActions extends AbstractActionBuilder implements ActionBuilderInterfac
             ->setNormalizer('read', $normalizer)
             ->setNormalizer('update', $normalizer)
             ->setNormalizer('delete', $normalizer)
+            ->setNormalizer('duplicate', $normalizer)
             ->setNormalizer('summary', $normalizer);
     }
 
     protected static function getMap(array $config): array
     {
         $actions = [
-            'list'    => ListAction::class,
-            'create'  => CreateAction::class,
-            'read'    => ReadAction::class,
-            'update'  => UpdateAction::class,
-            'delete'  => DeleteAction::class,
-            'summary' => SummaryAction::class,
+            'list'      => ListAction::class,
+            'create'    => CreateAction::class,
+            'read'      => ReadAction::class,
+            'update'    => UpdateAction::class,
+            'delete'    => DeleteAction::class,
+            'duplicate' => DuplicateAction::class,
+            'summary'   => SummaryAction::class,
         ];
 
         if (isset($config['parent'])) {
@@ -94,7 +98,7 @@ class CrudActions extends AbstractActionBuilder implements ActionBuilderInterfac
             $options['template'] = sprintf('%s/%s.html.twig', $all['templates'], $name);
         }
 
-        if (in_array($name, ['create', 'update'], true) && !isset($options['form_template'])) {
+        if (in_array($name, ['create', 'update', 'duplicate'], true) && !isset($options['form_template'])) {
             if (isset($all['form'])) {
                 $options['form_template'] = $all['form'];
             } elseif (isset($all['templates'])) {
