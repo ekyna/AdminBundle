@@ -8,6 +8,7 @@ use Ekyna\Bundle\AdminBundle\Factory\GroupFactoryInterface;
 use Ekyna\Bundle\AdminBundle\Manager\GroupManagerInterface;
 use Ekyna\Bundle\AdminBundle\Repository\GroupRepositoryInterface;
 use Ekyna\Bundle\InstallBundle\Install\AbstractInstaller;
+use Ekyna\Bundle\ResourceBundle\Repository\AceRepository;
 use Ekyna\Bundle\ResourceBundle\Service\Security\AclManagerInterface;
 use Ekyna\Component\Resource\Action\Permission;
 use Ekyna\Component\Resource\Config\Registry\ResourceRegistryInterface;
@@ -27,12 +28,6 @@ use const STR_PAD_LEFT;
  */
 class AdminInstaller extends AbstractInstaller
 {
-    private GroupRepositoryInterface  $groupRepository;
-    private GroupManagerInterface     $groupManager;
-    private GroupFactoryInterface     $groupFactory;
-    private ResourceRegistryInterface $resourceRegistry;
-    private AclManagerInterface       $aclManager;
-
     /**
      * Default groups
      */
@@ -68,27 +63,14 @@ class AdminInstaller extends AbstractInstaller
         ],
     ];
 
-    /**
-     * Constructor.
-     *
-     * @param GroupRepositoryInterface  $groupRepository
-     * @param GroupManagerInterface     $groupManager
-     * @param GroupFactoryInterface     $groupFactory
-     * @param ResourceRegistryInterface $resourceRegistry
-     * @param AclManagerInterface       $aclManager
-     */
     public function __construct(
-        GroupRepositoryInterface $groupRepository,
-        GroupManagerInterface $groupManager,
-        GroupFactoryInterface $groupFactory,
-        ResourceRegistryInterface $resourceRegistry,
-        AclManagerInterface $aclManager
+        private readonly GroupRepositoryInterface  $groupRepository,
+        private readonly GroupManagerInterface     $groupManager,
+        private readonly GroupFactoryInterface     $groupFactory,
+        private readonly ResourceRegistryInterface $resourceRegistry,
+        private readonly AceRepository             $aceRepository,
+        private readonly AclManagerInterface       $aclManager
     ) {
-        $this->groupRepository = $groupRepository;
-        $this->groupManager = $groupManager;
-        $this->groupFactory = $groupFactory;
-        $this->resourceRegistry = $resourceRegistry;
-        $this->aclManager = $aclManager;
     }
 
     /**
@@ -145,6 +127,12 @@ class AdminInstaller extends AbstractInstaller
      */
     private function configureAcl(OutputInterface $output): void
     {
+        if ($this->aceRepository->hasAce()) {
+            $output->writeln('<comment>Skipped</comment>');
+
+            return;
+        }
+
         foreach ($this->groups as $name => $config) {
             $output->write(sprintf(
                 '- <comment>%s</comment> %s ',

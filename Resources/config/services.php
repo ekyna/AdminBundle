@@ -143,6 +143,7 @@ return static function (ContainerConfigurator $container) {
             service('ekyna_admin.manager.group'),
             service('ekyna_admin.factory.group'),
             service('ekyna_resource.registry.resource'),
+            service('ekyna_resource.repository.ace'),
             service('ekyna_resource.acl.manager'),
         ])
         ->tag('ekyna_install.installer', ['priority' => 100]);
