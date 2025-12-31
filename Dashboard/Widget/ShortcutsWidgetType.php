@@ -115,7 +115,15 @@ class ShortcutsWidgetType extends AbstractWidgetType
                     'domain' => $menuEntry->getDomain(),
                 ];
 
-                if (null !== $resource = $menuEntry->getResource()) {
+                if (!empty($route = $menuEntry->getRoute())) {
+                    if (!empty($resource = $menuEntry->getResource()) && !empty($permission = $menuEntry->getPermission())) {
+                        // Skip if not granted
+                        if (!$this->helper->isGranted($permission, $resource)) {
+                            continue;
+                        }
+                    }
+                    $entry['path'] = $this->helper->getUrlGenerator()->generate($route);
+                } elseif (null !== $resource = $menuEntry->getResource()) {
                     $config = $this->helper->getResourceConfig($resource);
 
                     if (empty($entry['label'])) {
@@ -150,8 +158,6 @@ class ShortcutsWidgetType extends AbstractWidgetType
                         } catch (Exception $e) {
                         }
                     }
-                } elseif (!empty($route = $menuEntry->getRoute())) {
-                    $entry['path'] = $this->helper->getUrlGenerator()->generate($menuEntry->getRoute());
                 } else {
                     continue;
                 }
