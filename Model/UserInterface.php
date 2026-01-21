@@ -6,6 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Model;
 
 use DateTimeInterface;
 use Ekyna\Bundle\ResourceBundle\Model\AclSubjectInterface;
+use Ekyna\Component\Resource\Model\LocalizedInterface;
 use Ekyna\Component\User\Model\UserInterface as BaseUser;
 use Symfony\Component\Mime\Address;
 
@@ -14,7 +15,7 @@ use Symfony\Component\Mime\Address;
  * @package Ekyna\Bundle\AdminBundle\Model
  * @author  Etienne Dauvergne <contact@ekyna.com>
  */
-interface UserInterface extends BaseUser, AclSubjectInterface
+interface UserInterface extends BaseUser, AclSubjectInterface, LocalizedInterface
 {
     public function getGroup(): ?GroupInterface;
 

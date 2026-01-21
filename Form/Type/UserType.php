@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ekyna\Bundle\AdminBundle\Form\Type;
 
 use Ekyna\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
+use Ekyna\Bundle\ResourceBundle\Form\Type\LocaleChoiceType;
 use Ekyna\Bundle\ResourceBundle\Form\Type\ResourceChoiceType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -36,6 +37,9 @@ class UserType extends AbstractResourceType
                 'label'    => t('field.group', [], 'EkynaUi'),
                 'resource' => 'ekyna_admin.group',
                 'disabled' => !$this->authorizationChecker->isGranted('ROLE_SUPER_ADMIN'),
+            ])
+            ->add('locale', LocaleChoiceType::class, [
+                'required' => false,
             ])
             ->add('enabled', Type\CheckboxType::class, [
                 'label'    => t('field.enabled', [], 'EkynaUi'),

@@ -56,6 +56,22 @@
         </div>
         <div class="row">
             <div class="col-md-6">
+                {{ show_row(user.position, 'text', {
+                    'label': 'user.field.position',
+                    'label_trans_domain': 'EkynaAdmin',
+                    'label_col': 4
+                }) }}
+            </div>
+            <div class="col-md-6">
+                {{ show_row(user.locale|locale_name, 'text', {
+                    'label': 'field.locale',
+                    'label_trans_domain': 'EkynaUi',
+                    'label_col': 4
+                }) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
                 {{ show_row(user.firstName, 'text', {
                     'label': 'field.first_name',
                     'label_trans_domain': 'EkynaUi',
@@ -70,10 +86,6 @@
                 }) }}
             </div>
         </div>
-        {{ show_row(user.position, 'text', {
-            'label': 'user.field.position',
-            'label_trans_domain': 'EkynaAdmin'
-        }) }}
         <div class="row">
             <div class="col-md-6">
                 {{ show_row(user.phone, 'text', {

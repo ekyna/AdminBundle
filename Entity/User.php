@@ -9,6 +9,7 @@ use Ekyna\Bundle\AdminBundle\Model\GroupInterface;
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use Ekyna\Bundle\ResourceBundle\Model\AclSubjectInterface;
 use Ekyna\Bundle\ResourceBundle\Model\AclSubjectTrait;
+use Ekyna\Component\Resource\Model\LocalizedTrait;
 use Ekyna\Component\User\Model\AbstractUser;
 use Symfony\Component\Mime\Address;
 
@@ -20,6 +21,7 @@ use Symfony\Component\Mime\Address;
 class User extends AbstractUser implements UserInterface
 {
     use AclSubjectTrait;
+    use LocalizedTrait;
 
     protected ?GroupInterface    $group        = null;
     protected ?string            $apiToken     = null;

@@ -7,7 +7,9 @@ namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 use Doctrine\ORM\Events;
 use Ekyna\Bundle\AdminBundle\Action\AdminActionInterface;
 use Ekyna\Bundle\AdminBundle\EventListener\GroupEventSubscriber;
+use Ekyna\Bundle\AdminBundle\EventListener\LocaleListener;
 use Ekyna\Bundle\AdminBundle\EventListener\UserEventSubscriber;
+use Ekyna\Bundle\AdminBundle\EventListener\UserLocaleListener;
 use Ekyna\Bundle\AdminBundle\Install\AdminInstaller;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\AddressHelper;
 use Ekyna\Bundle\AdminBundle\Service\Mailer\AdminMailer;
@@ -20,6 +22,8 @@ use Ekyna\Bundle\AdminBundle\Service\Setting\GeneralSettingSchema;
 use Ekyna\Bundle\AdminBundle\Service\Setting\NotificationSettingSchema;
 use Ekyna\Bundle\SettingBundle\DependencyInjection\Compiler\RegisterSchemasPass;
 use Ekyna\Component\User\Service\UserProvider;
+use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
 return static function (ContainerConfigurator $container) {
     $services = $container->services();
@@ -89,6 +93,28 @@ return static function (ContainerConfigurator $container) {
             service('doctrine.orm.default_entity_manager'),
         ])
         ->tag('twig.runtime');
+
+    // User locale listener
+    $services
+        ->set('ekyna_admin.listener.user_locale', UserLocaleListener::class)
+        ->args([
+            service('request_stack'),
+        ])
+        ->tag('kernel.event_listener', [
+            'event'  => InteractiveLoginEvent::class,
+            'method' => 'onInteractiveLoginEvent',
+        ]);
+
+    // Admin locale listener
+    $services
+        ->set('ekyna_admin.listener.locale', LocaleListener::class)
+        ->args([
+            param('ekyna_admin.routing_prefix'),
+        ])
+        ->tag('kernel.event_listener', [
+            'event'    => KernelEvents::REQUEST,
+            'priority' => 30,
+        ]);
 
     // User event subscriber
     $services
