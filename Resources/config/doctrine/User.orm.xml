@@ -20,7 +20,7 @@
 
         <field name="email" type="string" column="email" length="255" nullable="false"/>
         <field name="password" type="string" column="password" length="128" nullable="true"/>
-        <field name="locale" column="locale" type="string" length="6"/>
+        <field name="locale" column="locale" type="string" length="6" nullable="true"/>
 
         <field name="apiToken" type="string" column="api_token" length="128" nullable="true"/>
         <field name="apiExpiresAt" type="datetime" column="api_expires_at" nullable="true"/>
