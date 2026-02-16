@@ -86,10 +86,10 @@ class UserRepository extends SearchRepository
     protected function getDefaultFields(): array
     {
         return [
-            'first_name',
-            'first_name.analyzed',
-            'last_name',
-            'last_name.analyzed',
+            'firstName',
+            'firstName.analyzed',
+            'lastName',
+            'lastName.analyzed',
             'email',
             'email.analyzed',
         ];
