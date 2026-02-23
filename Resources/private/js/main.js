@@ -1,6 +1,6 @@
 require(
-    ['require', 'jquery', 'routing', 'ekyna-api', 'bootstrap', 'jquery/form', 'ekyna-clipboard-copy', 'ekyna-spinner'],
-    function(require, $, Router, Api) {
+    ['require', 'underscore', 'jquery', 'routing', 'ekyna-api', 'bootstrap', 'jquery/form', 'ekyna-clipboard-copy', 'ekyna-spinner'],
+    function(require, _, $, Router, Api) {
 
     Api.init('admin_api_login');
 
@@ -342,11 +342,7 @@ require(
                 clearTimeout(searchTimeout);
             }
 
-            if (searchXhr) {
-                searchXhr.abort();
-            }
-
-            searchTimeout = setTimeout(this.search, 300);
+            searchTimeout = setTimeout(this.search, 1000);
         };
 
         this.stop = function() {
@@ -362,6 +358,9 @@ require(
                 return;
             }
 
+            if (searchXhr) {
+                searchXhr.abort();
+            }
             searchXhr = $.ajax({
                 url: Router.generate('admin_toolbar_search'),
                 method: 'POST',
@@ -412,9 +411,12 @@ require(
                 return false;
             });
 
+
+            let start = _.throttle(this.start, 2000, {trailing: false});
+
             $searchFilters.on('change', this.start);
 
-            $searchInput.on('keyup', (e) => {
+            $searchInput.on('keyup mouseup', (e) => {
                 if (!/Key[A-Z]|Digit[0-9]|Numpad[0-9]|Space|Comma|Period|Semicolon|(Back)?Slash|Minus|Equal|IntlBackslash|Bracket(Left|Right)|Quote|Backspace/.test(e.code)) {
                     e.stopPropagation();
                     e.preventDefault();
