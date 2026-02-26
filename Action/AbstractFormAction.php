@@ -250,6 +250,15 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
     {
         $buttons = [];
 
+        $buttons['save'] = [
+            'type'    => Type\SubmitType::class,
+            'options' => [
+                'button_class' => 'primary',
+                'label'        => t('button.save', [], 'EkynaUi'),
+                'attr'         => ['icon' => 'ok'],
+            ],
+        ];
+
         if (null === $this->context->getParent()) {
             $buttons['saveAndList'] = [
                 'type'    => Type\SubmitType::class,
@@ -260,15 +269,6 @@ abstract class AbstractFormAction extends RA\AbstractAction implements AdminActi
                 ],
             ];
         }
-
-        $buttons['save'] = [
-            'type'    => Type\SubmitType::class,
-            'options' => [
-                'button_class' => 'primary',
-                'label'        => t('button.save', [], 'EkynaUi'),
-                'attr'         => ['icon' => 'ok'],
-            ],
-        ];
 
         return $buttons;
     }
