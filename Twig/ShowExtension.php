@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ekyna\Bundle\AdminBundle\Twig;
 
+use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil;
 use Ekyna\Bundle\AdminBundle\Show\ShowRenderer;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -27,6 +28,10 @@ class ShowExtension extends AbstractExtension
                 'show_widget',
                 [ShowRenderer::class, 'renderWidget'],
                 ['is_safe' => ['html']]
+            ),
+            new TwigFunction(
+                'password_generation_allowed',
+                [SecurityUtil::class, 'isPasswordGenerationAllowed']
             ),
         ];
     }

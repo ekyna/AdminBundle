@@ -6,6 +6,7 @@ namespace Ekyna\Bundle\AdminBundle\Command;
 
 use Ekyna\Bundle\AdminBundle\Model\UserInterface;
 use RuntimeException;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -72,10 +73,11 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
         if (null === $user) {
             $output->writeln(sprintf('<error>No user found for email "%s".</error>', $email));
 
-            return 1;
+            return Command::INVALID;
         }
 
-        // Set or generate password
+
+        // Set or generate password -------------------------------------------------
         if (empty($password)) {
             $password = $this->securityUtil->generatePassword();
             $output->writeln(sprintf('<info>Generated password: %s</info>', $password));
@@ -93,7 +95,7 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
                 $user->getEmail()
             ));
 
-            return 1;
+            return Command::FAILURE;
         }
 
         $output->writeln(sprintf(
@@ -101,6 +103,6 @@ class ChangeUserPasswordCommand extends AbstractUserCommand
             $user->getEmail()
         ));
 
-        return 0;
+        return Command::SUCCESS;
     }
 }

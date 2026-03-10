@@ -19,6 +19,7 @@ use Ekyna\Component\Resource\Event\ResourceMessage;
 use Ekyna\Component\User\Service\Security\SecurityUtil;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Ekyna\Bundle\AdminBundle\Service\Security\SecurityUtil as AdminUtil;
 
 use function sprintf;
 
@@ -51,8 +52,8 @@ class GeneratePasswordAction extends AbstractAction implements AdminActionInterf
             throw new UnexpectedTypeException($resource, UserInterface::class);
         }
 
-        // Prevent changing password of super admin
-        if (in_array('ROLE_SUPER_ADMIN', $resource->getGroup()->getRoles())) {
+        // Prevent unauthorized password change
+        if (!AdminUtil::isPasswordGenerationAllowed($resource)) {
             throw new AccessDeniedHttpException();
         }
 

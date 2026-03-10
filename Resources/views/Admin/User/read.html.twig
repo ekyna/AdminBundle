@@ -2,16 +2,9 @@
 
 
 {% block main_actions %}
-    {#{% if admin_resource_access(user, constant('Ekyna\\Component\\Resource\\Action\\Permission::UPDATE')) -%}
-        {{ ui_button('user.button.generate_password', {
-            'path': path('ekyna_admin_user_admin_generate_password', {'userId': user.id}),
-            'type': 'link',
-            'size': 'sm',
-            'theme': 'warning',
-            'trans_domain': 'EkynaAdmin'
-        }) }}
-    {%- endif %}#}
+    {% if password_generation_allowed(user)  %}
     {{- admin_resource_btn(user, 'Ekyna\\Bundle\\AdminBundle\\Action\\User\\GeneratePasswordAction', {'size': 'sm'}) -}}
+    {% endif %}
     {{  parent() }}
 {% endblock main_actions %}
 
