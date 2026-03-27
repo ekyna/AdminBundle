@@ -45,7 +45,10 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         /** @noinspection PhpUnhandledExceptionInspection */
         return $qb
             ->andWhere($qb->expr()->eq('u.apiToken', ':token'))
-            ->andWhere($qb->expr()->gte('u.apiExpiresAt', ':now'))
+            ->andWhere($qb->expr()->orX(
+                $qb->expr()->isNull('u.apiExpiresAt'),
+                $qb->expr()->gte('u.apiExpiresAt', ':now')
+            ))
             ->getQuery()
             ->setParameters($parameters)
             ->setParameter('now', new DateTime(), Types::DATETIME_MUTABLE)

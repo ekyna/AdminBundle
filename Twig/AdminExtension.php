@@ -46,6 +46,11 @@ class AdminExtension extends AbstractExtension
                 'admin_resource_access',
                 [AdminRenderer::class, 'hasResourceAccess']
             ),
+            /** @see AdminRenderer::hasResourceAccess() */
+            new TwigFunction(
+                'admin_resource_has_action',
+                [AdminRenderer::class, 'hasAction']
+            ),
             /** @see AdminRenderer::generateResourcePath() */
             new TwigFunction(
                 'admin_resource_path',

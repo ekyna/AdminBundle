@@ -11,7 +11,7 @@
 {% endblock title %}
 
 {% block actions %}
-{% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') %}
+{% if admin_resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') %}
     {{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') }}
 {% endif %}
 {% endblock actions %}

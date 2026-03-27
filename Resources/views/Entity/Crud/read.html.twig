@@ -11,10 +11,10 @@
 {% endblock title %}
 
 {% block actions %}
-{% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') %}
+{% if admin_resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') %}
     {{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') }}
 {% endif %}
-{% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') %}
+{% if admin_resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') %}
     {{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\CreateAction') }}
 {% endif %}
 {% endblock actions %}
@@ -34,13 +34,13 @@
                     'theme': 'default',
                 }) }}
             {%- endif %}
-            {% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\DuplicateAction') -%}
+            {% if admin_resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\DuplicateAction') -%}
                 {{ admin_resource_btn(resource, 'Ekyna\\Bundle\\AdminBundle\\Action\\DuplicateAction') }}
             {%- endif %}
-            {% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\UpdateAction') -%}
+            {% if admin_resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\UpdateAction') -%}
                 {{ admin_resource_btn(resource, 'Ekyna\\Bundle\\AdminBundle\\Action\\UpdateAction') }}
             {%- endif %}
-            {% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\DeleteAction') -%}
+            {% if admin_resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\DeleteAction') -%}
                 {{ admin_resource_btn(resource, 'Ekyna\\Bundle\\AdminBundle\\Action\\DeleteAction') }}
             {%- endif %}
         {%- endblock main_actions %}

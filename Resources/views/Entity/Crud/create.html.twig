@@ -19,7 +19,7 @@
         'theme': 'default',
     }) -}}
 {%- endif %}
-{% if resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') %}
+{% if admin_resource_has_action(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') %}
     {{ admin_resource_btn(context.config.id, 'Ekyna\\Bundle\\AdminBundle\\Action\\ListAction') }}
 {% endif %}
 {% endblock actions %}
