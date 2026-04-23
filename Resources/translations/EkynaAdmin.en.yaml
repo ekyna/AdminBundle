@@ -85,6 +85,17 @@ group:
         operation_denied: You are not allowed to create, edit or delete users groups.
 email:
     closing_greetings: Regards,
+    account_created:
+        subject: "[%sitename%] Your administrator account"
+        title : Your administrator account
+        message: |
+            <p>Hello,</p>
+            <p>You are receiving this email following the creation of your administrator account on %sitename%.</p>
+            <p>You can now <a href="%login_url%">log in</a> using your new credentials:<br>
+            Username: <strong>%login%</strong><br>
+            Password: <strong>%password%</strong>.</p>
+            <p>If the following information is incorrect, please notify the site administrator.</p>
+            <p>%information%</p>
     new_password:
         subject: "[%sitename%] New credentials"
         title : New credentials

@@ -119,6 +119,9 @@ return static function (ContainerConfigurator $container) {
     // User event subscriber
     $services
         ->set('ekyna_admin.listener.user', UserEventSubscriber::class)
+        ->args([
+            service('ekyna_admin.mailer'),
+        ])
         ->call('setPasswordHasher', [service('security.user_password_hasher')])
         ->call('setSecurityUtil', [service('ekyna_admin.security_util')])
         ->call('setPersistenceHelper', [service('ekyna_resource.orm.persistence_helper')])
