@@ -91,7 +91,7 @@ email:
             <p>Vous recevez cet email suite à la création de votre compte administrateur sur %sitename%.</p>
             <p>Vous pouvez dès à présent <a href="%login_url%">vous connecter</a> en utilisant vos nouveaux identifiants :<br>
             Nom d'utilisateur : <strong>%login%</strong><br>
-            Mot de passe : <strong>%password%</strong>.</p>
+            Mot de passe : <strong>%password%</strong></p>
             <p>Si les informations suivantes sont incorrectes, merci d'en informer l'administrateur du site.</p>
             <p>%information%</p>
     new_password:
