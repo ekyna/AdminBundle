@@ -99,7 +99,11 @@ class AdminMailer
 
         $rendered = $this->twig->render('@EkynaAdmin/Email/account_created.html.twig', [
             'sitename'    => $siteName,
-            'login_url'   => $this->urlGenerator->generate('admin_security_login'),
+            'login_url' => $this->urlGenerator->generate(
+                'admin_security_login',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ),
             'login'       => $user->getUserIdentifier(),
             'password'    => $password,
             'information' => $information,
@@ -126,7 +130,11 @@ class AdminMailer
         /** @noinspection PhpUnhandledExceptionInspection */
         $rendered = $this->twig->render('@EkynaAdmin/Email/new_password_email.html.twig', [
             'sitename'  => $siteName,
-            'login_url' => $this->urlGenerator->generate('admin_security_login'),
+            'login_url' => $this->urlGenerator->generate(
+                'admin_security_login',
+                [],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ),
             'login'     => $user->getUserIdentifier(),
             'password'  => $password,
         ]);
