@@ -104,7 +104,7 @@ email:
             <p>This email concerns your %sitename% password change.</p>
             <p>Now you can <a href="%login_url%">sign in</a> using your new credentials:</p>
             Username : <strong>%login%</strong><br>
-            Password : <strong>%password%</strong>.</p>
+            Password : <strong>%password%</strong></p>
     login_success:
         subject: "[%sitename%] Notification de connexion"
         title : Sign in notification

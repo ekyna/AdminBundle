@@ -102,7 +102,7 @@ email:
             <p>Vous recevez cet email suite à la modification de votre mot de passe sur %sitename%.</p>
             <p>Vous pouvez dès à présent <a href="%login_url%">vous connecter</a> en utilisant vos nouveaux identifiants :<br>
             Nom d'utilisateur : <strong>%login%</strong><br>
-            Mot de passe : <strong>%password%</strong>.</p>
+            Mot de passe : <strong>%password%</strong></p>
     login_success:
         subject: "[%sitename%] Notification de connexion"
         title : Notification de connexion
